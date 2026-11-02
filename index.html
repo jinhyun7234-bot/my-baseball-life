@@ -1161,10 +1161,10 @@ const TRD={pcl:'수 싸움·구종 조합 — 구종이 많을수록 시너지�
 const POS={C:'포수','1B':'1루수','2B':'2루수','3B':'3루수',SS:'유격수',LF:'좌익수',CF:'중견수',RF:'우익수',SP:'선발투수',RP:'불펜투수'};
 const PHASE=['스프링캠프','전반기','후반기'],PMON=[[11,12,1,2],[3,4,5,6,7],[8,9,10]];
 const TEAMS=[
-  {city:'서울',nick:'트윈스',ab:'TWN',c:'#a50034'},{city:'서울',nick:'베어스',ab:'BRS',c:'#1b1f4a'},{city:'고척',nick:'히어로즈',ab:'HRS',c:'#7b1f32'},
+  {city:'서울',nick:'트윈스',ab:'TWN',c:'#a50034'},{city:'서울',nick:'베어스',ab:'BRS',c:'#1b1f4a'},{city:'서울',nick:'히어로즈',ab:'HRS',c:'#7b1f32'},
   {city:'인천',nick:'랜더스',ab:'LND',c:'#c8102e'},{city:'수원',nick:'위즈',ab:'WIZ',c:'#2b2b2b'},{city:'대전',nick:'이글스',ab:'EGL',c:'#e05a00'},
   {city:'대구',nick:'라이온스',ab:'LNS',c:'#0a4fa3'},{city:'광주',nick:'타이거스',ab:'TGS',c:'#c9001f'},{city:'부산',nick:'자이언츠',ab:'GNT',c:'#0d2b55'},{city:'창원',nick:'다이노스',ab:'DNS',c:'#2f5596'}];
-const SCHOOLS=[{n:'한강고',s:43},{n:'남산공고',s:41},{n:'해운대고',s:42},{n:'무등고',s:44},{n:'달구벌고',s:40},{n:'갑천고',s:39},{n:'팔달고',s:41},{n:'마산만고',s:38},{n:'인천항고',s:42},{n:'청주상고',s:37}];
+const SCHOOLS=[{n:'한강고',s:43},{n:'남산공고',s:41},{n:'해운대고',s:42},{n:'무등고',s:44},{n:'달구벌고',s:40},{n:'갑천고',s:39},{n:'팔달고',s:41},{n:'마산만고',s:38},{n:'인천항고',s:42},{n:'목동고',s:37}];
 const UNIVS=['한빛대','동명대','청람대','서강원대','남도대'];
 const ABROAD={MLB:['시애틀','샌디에이고','토론토','텍사스','디트로이트','피츠버그','애리조나'],NPB:['도쿄','오사카','후쿠오카','요코하마','나고야','센다이']};
 const LV={hs:36,univ:41,fut:45,KBO:51,NPB:55,MLB:59};
@@ -1835,10 +1835,11 @@ function followGame(o){
 function phi(z){return 1/(1+Math.exp(-1.702*z))}
 function careerPerf(lv){const b=blankB(),p=blankP();S.rows.filter(r=>r.lv===lv).forEach(r=>{addTo(b,r.b);addTo(p,r.p)});
   if(isP())return p.outs<30?0:cl((3.3-eraN(p))*2,-6,6);return b.PA<40?0:cl((opsN(b)-.85)*20,-6,6)}
+var DRK={n:1000,c:61,s:8};
 function draftEvent(){
   const o=ovrE(),lv=S.stage==='hs'?'hs':'univ';
   const v=o+(ME.pot+rn(0,3))*.55+careerPerf(lv)+S.rel.fame*.06+(isP()&&ME.hand.startsWith('좌')?3:0)-(lv==='univ'?6:0);
-  const rank=Math.max(1,Math.round(1000*(1-phi((v-71)/8))+rn(0,4))),yr=S.y,order=S.lg.prev.slice().reverse();
+  const rank=Math.max(1,Math.round(DRK.n*(1-phi((v-DRK.c)/DRK.s))+rn(0,4))),yr=S.y,order=S.lg.prev.slice().reverse();
   const rv=S.rival.o+S.rival.pot*.55,rr=Math.max(1,Math.round(1000*(1-phi((rv-71)/8))+rn(0,6)));
   if(S.rival.team==null){if(rr<=110){S.rival.team=order[(rr-1)%10];news(`라이벌 ${S.rival.name}, ${Math.ceil(rr/10)}라운드 ${TEAMS[S.rival.team].nick} 지명.`)}else S.rival.team=-1}
   const ch=[],intro=`${yr+1} KBO 신인 드래프트. 스카우트 종합 평가는 전국 ${rank}위 수준으로 알려졌다.`;
@@ -5971,10 +5972,10 @@ function runAnim(g,e,draw){try{const L=e.last;if(!L||!L.pb||!e.b)return null;con
 {const _mb5=meBatPA;meBatPA=function(pR,risp){const t=_mb5(pR,risp);_meBat=true;return t}}
 
 /* ===================== 고교 지역 표시 · 연고 구단 지명 30% ===================== */
-const SREG=['서울','서울','부산','광주','대구','대전','수원','창원','인천','청주'];
-const REGT={서울:[0,1,2],부산:[8],광주:[7],대구:[6],대전:[5],청주:[5],수원:[4],창원:[9],인천:[3]};
+const SREG=['서울','서울','부산','광주','대구','대전','수원','창원','인천','서울'];
+const REGT={서울:[0,1,2],부산:[8],광주:[7],대구:[6],대전:[5],수원:[4],창원:[9],인천:[3]};
 {const _de10=draftEvent;draftEvent=function(){const q=_de10();try{if(!q||!q.ch)return q;const sign=q.ch.find(c=>c.act==='draftSign');if(!sign)return q;
-  const reg=SREG[S.school]||'서울',loc=REGT[reg]||[];const base=loc.length/10,sw=Math.max(.05,(.3-base)/(1-base));if(!loc.length||loc.includes(sign.arg.team)||R()>=sw)return q;
+  const reg=SREG[S.school]||'서울',loc=REGT[reg]||[];const base=loc.length/10,sw=Math.max(0,(.3-base)/(1-base));if(!loc.length||loc.includes(sign.arg.team)||R()>=sw)return q;
   const old=sign.arg.team,nt=pick(loc);sign.arg.team=nt;const on=`${TEAMS[old].city} ${TEAMS[old].nick}`,nn=`${TEAMS[nt].city} ${TEAMS[nt].nick}`;
   sign.t=sign.t.replace(on,nn);q.text=q.text.replace(jo(on,'이','가'),jo(nn,'이','가')).replace(on,nn)+`\n연고 지역(${reg}) 구단이 지역 출신 유망주를 놓치지 않았다.`;
   const sh=S.queue&&S.queue.find(x=>x&&x.type==='draftshow');const show=q._show||sh;if(show&&show.board){const me=show.board.find(b=>b.me);if(me){const sw=show.board.find(b=>!b.me&&b.k>me.k&&b.t===nt);me.t=nt;if(sw)sw.t=old}}}catch(e){}return q}}
