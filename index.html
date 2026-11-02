@@ -7623,7 +7623,7 @@ if(typeof document!=='undefined'){document.addEventListener('input',e=>{if(e.tar
 /* ===================== 제작자 용돈 주기 · 홈 버튼 ===================== */
 const TIP_BANK='KB국민은행',TIP_ACC='93770201727073',TIP_ACC_FMT='937702-01-727073';
 function tipOpen(){fbModal(`<div class="fbm-h"><b>☕ 제작자 용돈 주기</b><button class="ibtn" data-fb="close">✕</button></div>
-  <div class="tip-acc"><span class="tiny muted">${TIP_BANK}</span><b id="tipacc">${TIP_ACC_FMT}</b><button class="btn pri" data-tip="copy">계좌번호 복사</button></div>
+  <div class="tip-acc"><span class="tiny muted">${TIP_BANK}</span><b id="tipacc">${TIP_ACC_FMT}</b><span class="tiny muted">예금주 ㅎㅈㅎ</span><button class="btn pri" data-tip="copy">계좌번호 복사</button></div>
   <p class="tip-msg">500원도 정말 큰 힘이 돼요.</p>
   <p class="small muted" style="line-height:1.7">보내주신 마음은 서버비와 다음 업데이트에 소중히 쓰겠습니다.<br>재밌게 플레이해 주시는 것만으로도 충분히 감사해요. 고맙습니다. ⚾</p>`)}
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-tip]');if(!b)return;e.stopPropagation();e.preventDefault();const k=b.getAttribute('data-tip');
