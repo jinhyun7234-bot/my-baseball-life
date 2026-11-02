@@ -1139,6 +1139,7 @@ html[data-gt="light"]{--good:#08875a;--g6:#08875a}
 .tip-msg{font-size:1.05rem;font-weight:700;text-align:center;margin:4px 0 0;color:var(--ink)}
 .fbm-box{background:var(--surface)!important;color:var(--ink)!important;border:0!important}
 .trcnt{font-size:.72rem;font-weight:600;color:var(--muted);margin-left:6px;letter-spacing:0}
+.crtop{display:flex;justify-content:flex-end;margin:-4px 0 6px}.crhome{background:var(--soft);color:var(--ink);border:0;border-radius:10px;padding:7px 12px;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer}
 </style>
 </head>
 <body>
@@ -7716,6 +7717,9 @@ function bestPitch(){try{let k=null,v=0;PITCHES.forEach(p=>{if(p==='FB'||!(ME.pt
       :[`${gn} ${pn} 죽인다 진짜 ㅋㅋㅋ`,`오늘 ${pn} 각 미쳤다 타자들 헛방망이만 돌림`,`${pn} 들어올 때마다 타자 표정 봐라 ㅋㅋ`,`${gn} ${eun} 알고도 못 친다`,`${pn} 떨어지는 거 보소 이게 공이냐`,`리그에서 ${pn} 제일 잘 던지는 투수 ${gn} 맞지?`,`${gn} ${pn} 하나 믿고 들어가는 거 보니 자신감 붙었네`];
     put(L,['ㄹㅇ 마구임','저건 못 친다','타자들 불쌍하다 ㅋㅋ','그 공 하나로 먹고 산다','오늘 그 공만 던져도 될 듯'],shut&&x.ps==='KS'?2:1,[600,3500])}
   out.splice(0,0,...add)}catch(e){}return out}}
+/* 7) 선수 만들기 화면에도 홈 버튼 → 첫 화면으로 */
+{const _vc=vCreate;vCreate=function(){const h=_vc();try{if(!S&&ui.cr)return`<div class="crtop"><button class="crhome" data-crhome="1" aria-label="홈 화면으로">🏠 홈</button></div>`+h}catch(e){}return h}}
+if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-crhome]');if(!b)return;e.stopPropagation();e.preventDefault();ui.cr=null;ui.screen='title';ui.ptsWarn=0;try{window.scrollTo(0,0)}catch(er){}render()},true);
 
 </script>
 
