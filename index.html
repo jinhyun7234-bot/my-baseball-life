@@ -7697,7 +7697,7 @@ if(typeof document!=='undefined'){const auOff=()=>{try{if(AU.timer)AU._wasOn=tru
   const lab=g('lab');if(lab){lab.p=78000;lab.d='1년간 모든 능력치 훈련 효과 +15%, 파워·구속 훈련 +25%'}
   ITEMS.forEach(it=>{if(/^te2_/.test(it.id))it.p=2400})})();
 /* 5) 투수는 MLB 제의를 조금 더 자주 */
-{const _ao=abroadOffers;abroadOffers=function(o){let out=_ao(o);try{if(isP()&&S.pro&&S.pro.league==='KBO'&&!S.rows.some(r=>r.lv==='MLB')&&!out.some(c=>c.arg&&c.arg.lg==='MLB')&&o>=61&&R()<cl((o-59)/12,.12,.5)){
+{const _ao=abroadOffers;abroadOffers=function(o){let out=_ao(o);try{if(isP()&&S.pro&&S.pro.league==='KBO'&&!S.rows.some(r=>r.lv==='MLB')&&!out.some(c=>c.arg&&c.arg.lg==='MLB')&&(()=>{const mvp=S.awards.filter(a=>/정규시즌 MVP/.test(a.n)).length;return mvp>=1?(o>=55&&R()<.85):(o>=61&&R()<cl((o-59)/12,.12,.5))})()){
   const w=lastWAR(),wt=weakTools().length,usd=+Math.min(30,mlbUSD(o,w,false)*rn(1,.08)*(wt?.85:1)).toFixed(1),yrs=mlbYears(usd,false),per=Math.round(usd*USDM/1000)*1000,nm=usd>=8&&!wt,tn=pick(ABROAD.MLB);
   out.push({t:`${tn} (MLB)`,s:`${yrs}년 총액 ${usd2(usd*yrs)} (연 ${usd2(usd)})${wt?' · 툴 보완 필요':''}`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.12)} · 마이너 거부권 ${nm?'있음':'없음 (성적이 나쁘면 마이너행)'}`,act:'abroad',arg:{lg:'MLB',yrs,per,noMinor:nm,opt:optOf(per*yrs,yrs),tname:tn,toolsWeak:wt||undefined}})}}catch(e){}return out}}
 /* 6) 잘 던진 날: 주무기 구종 칭찬 · 가을 완봉은 확실하게 */
