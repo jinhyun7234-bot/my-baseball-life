@@ -45,6 +45,9 @@ alter table public.hof_records add column if not exists kbo_war numeric(5,1) def
 alter table public.hof_records add column if not exists mlb_war numeric(5,1) default 0;
 alter table public.hof_records add column if not exists npb_war numeric(5,1) default 0;
 alter table public.hof_records add column if not exists minor_war numeric(5,1) default 0;
+alter table public.hof_records add column if not exists extra jsonb;   -- 은퇴 카드·커리어 리캡 (다른 플레이어가 볼 수 있게)
+alter table public.hof_records drop constraint if exists hof_extra_size;
+alter table public.hof_records add constraint hof_extra_size check (extra is null or pg_column_size(extra) < 40000);
 
 create index if not exists hof_war_idx on public.hof_records (war desc);
 create index if not exists hof_wwar_idx on public.hof_records (wwar desc);
