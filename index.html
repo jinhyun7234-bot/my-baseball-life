@@ -7799,6 +7799,85 @@ function noLB(m){try{if(!m)return;const c=v=>Math.min(80,v);if(m.lb){delete m.lb
 /* 경기력 보정: 감각 저하가 없어진 만큼 능력치 대비 결과를 아주 미세하게 낮춤 (내부 수치 PERF_ADJ, 표시 능력치는 그대로) */
 const PERF_ADJ={B:.3,P:0};
 {const _sb=spBonus;spBonus=function(k){let v=_sb(k);try{if(S&&S.me===ME&&!['we','men','dur'].includes(k))v-=PERF_ADJ[isP()?'P':'B']||0}catch(e){}return v}}
+/* 장비 보너스를 더해도 능력치는 최대 100 */
+{const _ib=itemBonus;itemBonus=function(k){const b=_ib(k);try{if(b>0){const v=raw(k);return Math.max(0,Math.min(b,80-v))}}catch(e){}return b}}
+
+/* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
+/* 방망이 점수(수비 제외)와 수비 적합도 */
+function batOnly(){return E('con')*.4+E('pow')*.35+E('eye')*.25}
+function defWeak(){try{return!isP()&&posFit()<ovrE()-4}catch(e){return false}}
+/* 정규시즌(월 단위)
+   - 원래 '벤치'인데 방망이가 1군 기준 +4 이상: 70% 확률로 지명타자 선발
+   - 원래 '2군'인데 방망이가 1군 기준 이상: 50% 확률로 1군 대타 요원(벤치)
+   - 주전인데 수비 적합도가 1군 기준 -6 미만: 50% 확률로 지명타자로 출전(수비 실책 없음) */
+{const _dr=decideRole;decideRole=function(){let r=_dr();try{S.dhNow=0;if(isP()||S.stage!=='pro'||!S.pro||S.pro.dev||S.m<3||S.m>9||ME.inj)return r;
+  const L=LV[S.pro.league]||LV.KBO,bat=batOnly()+(S.rel.coach-50)*.08+ME.form*.4;
+  if(r==='bench'&&bat>=L+4&&R()<.7){S.dhNow=1;return'start'}
+  if(r==='fB'&&bat>=L+1&&R()<.5)return'bench';
+  if(r==='start'&&posFit()<L-6&&R()<.5)S.dhNow=1}catch(e){}return r}}
+{const _sb=simBat;simBat=function(role,tg,L,row,lvk){const r=_sb(role,tg,L,row,lvk);try{if(S.dhNow&&role==='start'&&!isP()&&r&&r.m&&r.m.E){row.b.E=Math.max(0,(row.b.E||0)-r.m.E);r.m.E=0}}catch(e){}return r}}
+/* 가을야구: 벤치 멤버도 매 경기 같은 역할만 하지 않게
+   벤치 → 선발(지명타자 포함) 30% (수비가 약하고 방망이가 되면 50%) · 대타 50% · 결장 20%
+   대타만 2경기 연속이면 다음 경기는 70% 확률로 선발 → 5경기 내내 대타만은 드묾 */
+{const _pp=psPick;psPick=function(base,gn,g7,need){let r=_pp(base,gn,g7,need);try{if(isP())return r;S._dhG=0;const P=S._phS||(S._phS={run:0});if(gn===1)P.run=0;
+  if(r==='bench'){const L=(S.pro&&LV[S.pro.league])||LV.KBO,good=batOnly()>=L+2,ps=(defWeak()&&good)?.5:.3,x=R();
+    if(P.run>=2&&R()<.7)r='start';else r=x<ps?'start':x<ps+.5?'bench':'none';if(r==='start'&&(defWeak()||base==='bench'))S._dhG=1}
+  else if(r==='start'&&defWeak()&&R()<.5)S._dhG=1;
+  P.run=r==='bench'?P.run+1:0}catch(e){}return r}}
+/* 지명타자로 나온 경기: 중계 문구를 '지명타자'로, 내 수비 장면은 빼기 */
+{const _fg=followGame;followGame=function(o){const dh=!isP()&&o&&o.role==='start'&&(o.title&&/차전|결승/.test(o.title)?S._dhG:S.dhNow);const g=_fg(o);try{if(dh&&g&&g.ev){const pn=POS[ME.pos];
+  g.ev=g.ev.filter(e=>!/\bme\b/.test(e.c)||!/\bdef\b/.test(e.c));g.ev.forEach(e=>{if(e.t&&pn)e.t=e.t.replace(new RegExp('(\\d번) '+pn),'$1 지명타자')});g.dh=1}}catch(e){}S._dhG=0;return g}}
+
+/* ===================== 큰 경기 댓글 확장: 경기가 클수록 댓글 수↑ · 커뮤 드립(대○○ 호감 · ○○ 사랑하면 개추 …) · 투수/타자 분리 ===================== */
+/* 경기 크기: 0 정규시즌 · 1 와일드카드/준PO · 2 PO/디비전 · 3 한국시리즈/월드시리즈/챔피언십 · 4 우승 확정·국제대회 결승 승리 */
+function cmLevel(tone,x){if(!x)return 0;const t=String(x.title||'');if(tone==='ring'||tone==='ws'||(x.clinch&&x.win&&/한국시리즈|월드시리즈/.test(t)))return 4;if(x.intl&&/결승/.test(t))return x.win?4:3;if(x.intl)return 1;if(!x.ps)return 0;
+  if(/한국시리즈|월드시리즈|챔피언십/.test(t))return 3;if(/플레이오프|디비전/.test(t)&&!/준플레이오프/.test(t))return 2;return 1}
+const CMB={
+ /* 공통(투수·타자 모두): 잘한 날 */
+ goodA:['대{g} 호감 ㅋㅋㅋㅋ','대{g} 시대 개막이다','{g} 사랑하면 개추','오늘 {g} 잘했다 생각하면 개추','{g} 오늘 MVP 인정하면 개추','{g} 연봉 두 배 찬성하면 개추','{g} 영구결번 찬성하면 개추 ㅋㅋ','갓{g} 갓{g} 갓{g}','{g} 폼 미쳤다 진짜','{g} 업고 튀어야 된다','{g} 없었으면 오늘 어쩔 뻔했냐','이게 {g}야 이게','{g} 오늘 유니폼 산다 지금 주문함','오늘부터 {g} 비판하는 놈은 적이다','{g}아 형이 미안했다 그동안 욕해서','{g} 까던 놈들 다 어디 갔냐 ㅋㅋㅋ','{g} 보려고 야구 본다','{g} 국밥이다 국밥 든든하다','{g} 오늘 지렸다 ㄹㅇ','{g} 큰 경기 체질 맞네','오늘 {g} 하이라이트만 10번 봄','회사에서 {g} 보다가 소리 질렀다 ㅋㅋ','{g} 오늘 클라스 증명했다','{g} 이 정도면 국대 가야지','{g} 이름 석 자 오늘 확실히 박았다','{f} 이 이름 기억해라 다들','{g} 응원가 부르다 목 나감','직관 갔는데 {g} 때문에 승요 됐다 ㅋㅋ','{g} 오늘 경기 평생 소장각','{g} 오늘은 진짜 우리 형이다'],
+ /* 공통: 못한 날 */
+ badA:['대{g} 비호감 전환…','{g} 오늘 보고 혈압 오른 사람 개추','오늘 {g} 때문에 TV 끈 사람 개추','{g} 오늘은 진짜 할 말이 없다','{g}아 제발 정신 차려라','{g} 큰 경기만 되면 작아지네','{g} 오늘 출근 안 함 ㅋㅋ','{g} 폼 어디 갔냐 찾습니다','{g} 오늘 유니폼 환불하고 싶다','{g} 믿은 내가 바보지','오늘 {g} 보고 소주 한 병 깠다','{g} 오늘은 쉬는 날이었냐','{g}아 내일은 제발…','{g} 오늘 경기는 없던 걸로 하자','{g} 실드 치던 사람들 오늘은 조용하네'],
+ /* 타자 전용 */
+ goodB:['{g} 방망이 오늘 불났다 🔥','{g} 스윙 한 번에 경기 끝났다','{g} 타석 들어서면 왜 이렇게 든든하냐','{g} 오늘 투수들 영혼까지 털었다','{g} 배트에 뭐 발랐냐 ㅋㅋ','{g} 타구 속도 봤냐 저게 사람이 친 거냐','{g} 오늘 출루 머신 그 자체','{g} 4번 박아라 그냥','{g} 타석마다 기대돼서 화장실도 못 감','상대 투수 {g} 나오니까 표정 썩는 거 봤냐 ㅋㅋ','{g} 클러치 능력 미쳤다 진짜','{g} 오늘 타점 쓸어담네','{g} 가을 남자 인정이요','{g} 홈런 치고 배트 던지는 거 개간지','{g} 오늘 타격감 진짜 미쳤다'],
+ badB:['{g} 오늘 방망이 집에 두고 왔냐','{g} 선풍기 돌리러 나왔냐 ㅋㅋ','{g} 타석에서 풍경 감상 중','{g} 오늘 출루 0 실화냐','{g} 찬스마다 병살 각','{g} 타순 좀 내려라 진짜','{g} 오늘 삼진 공장장','{g} 득점권에서 왜 이렇게 작아지냐','{g} 방망이랑 공이랑 합의 이혼함','{g} 대타 쓰는 게 낫겠다 오늘은'],
+ /* 투수 전용 */
+ goodP:['{g} 오늘 공 미쳤다 진짜','{g} 마운드에서 포효하는 거 개간지','{g} 오늘 상대 타선 그냥 지웠다','{g} 오늘 삼진 몇 개냐 ㅋㅋㅋ','{g} 공 끝 살아있는 거 봐라','{g} 위기 때마다 삼진 잡는 거 실화냐','{g} 오늘 에이스 모드 ON','{g} 투구 수 관리 잘해서 다음 경기도 가자','{g} 공 하나하나가 예술이다','{g} 이닝 순삭 ㅋㅋㅋ 타자들 퇴근 서두르네','{g} 오늘 포수 미트 소리부터 다르다','{g} 오늘은 진짜 못 친다 저 공','{g} 마운드 위에서 여유가 느껴진다','{g} 큰 경기 에이스 맞네','{g} 오늘 불펜 휴가 줬다 ㅋㅋ'],
+ badP:['{g} 오늘 배팅볼 투수였냐','{g} 공 한가운데로만 들어가네','{g} 오늘 제구 어디 갔냐','{g} 볼넷 남발 진짜 답답하다','{g} 오늘 불 지르러 나왔냐 🔥','{g} 마운드에서 표정부터 졌다','{g} 오늘 맞는 공만 던짐','{g} 위기만 되면 한가운데 꽂네','{g} 오늘은 빨리 내려간 게 다행','{g} 공이 너무 밋밋하다 오늘'],
+ /* 팀 승리했는데 나는 부진 / 나는 잘했는데 팀 패배 */
+ winBad:['{g}는 못했는데 이겼으니 됐다 ㅋㅋ','{g} 오늘 버스 탑승 감사합니다','이긴 날엔 {g}도 용서한다','팀이 {g} 멱살 잡고 끌고 갔다','{g} 다음 경기엔 갚아라 이번엔 넘어간다'],
+ loseGood:['{g} 혼자 야구했는데 졌다 ㅠㅠ','{g}만 잘했다 진짜 나머지 뭐함','{g} 오늘 원맨쇼였는데 아깝다','{g} 고생했다 너 탓 아니다','{g} 오늘 같은 날 이겼어야 했는데'],
+ /* 시리즈 결정·우승 */
+ ringA:['우승이다!!!!!! {g} 사랑한다','{g} 우승 반지 축하한다 ㅠㅠ','{g} 너 덕분에 올해 행복했다','우승 확정 순간 {g} 표정 보고 울었다','{g} 이 우승은 평생 기억한다','{g} 반지 끼고 은퇴까지 가자','{g} 우승 세리머니 무한 반복 중','오늘 {g} 사랑하는 사람 다 개추','{g} 동상 세워라 구장 앞에','대{g} 우승 기념 호감 ㅋㅋㅋㅋ','{g} 오늘 밤 술은 내가 산다','우승 퍼레이드 때 {g} 이름 제일 크게 부른다','{g} 가을의 전설 확정','{g} 올해 고생 많았다 진짜','{g} 우승 반지 손가락 다 채우자'],
+ ringPoor:['{g}는 오늘 조용했지만 우승이니까 됐다','{g} 시리즈 내내 고생했다 반지는 반지다','오늘은 {g} 못 쳐도 다 용서됨 우승임 ㅋㅋ'],
+ /* 한국시리즈 지배급(아주 잘한 날) 추가 빨기 */
+ ksHeroB:['한국시리즈에서 이러는 게 말이 되냐 {g}','{g} 한국시리즈 MVP 확정 아니냐','{g} 오늘 경기는 다큐로 만들어야 됨','{g} 한국시리즈 하드캐리 미쳤다','{g} 오늘 이 팀의 심장이다','{g} 연봉 협상 때 오늘 영상 틀어라','{g} 한국시리즈에서 타격 레전드 찍네'],
+ ksHeroP:['한국시리즈에서 이렇게 던지는 게 말이 되냐 {g}','{g} 한국시리즈 MVP 확정 아니냐','{g} 오늘 경기는 다큐로 만들어야 됨','{g} 오늘 이 팀의 심장이다','{g} 한국시리즈 마운드 지배했다','{g} 연봉 협상 때 오늘 영상 틀어라','{g} 한국시리즈 투구 레전드 찍네']};
+const CMB_RE={good:['ㅇㅈ 개추 박고 간다','ㄹㅇ ㅋㅋㅋㅋ','인정합니다','개추 누름','오늘은 인정해야지','이건 빨아야 한다','미쳤다 진짜','눈물 난다 ㅠㅠ','형 사랑해요','직관 간 사람 부럽다'],
+ bad:['비추 박고 간다','ㄹㅇ 혈압','할 말 없음','내일은 다르겠지…','그래도 믿는다','이건 쉴드 불가','눈 버렸다','ㅋㅋㅋㅋ 그만해','한숨만 나온다'],
+ ring:['우승 축하해!!!','올해 야구 끝 행복하다','이 맛에 야구 본다','눈물 난다 진짜','평생 응원한다','퍼레이드 가자']};
+function cmFill(s,gn){return s.replace(/\{g\}/g,gn).replace(/\{f\}/g,ME.name)}
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||!x)return out;const lv=cmLevel(tone,x);if(!lv)return out;const P=isP(),gn=giv(ME.name),fame=(S.rel&&S.rel.fame)||0;
+  const ipO=x.ipO||0,ra=x.ra||0,pa=x.gPA||0,h=x.gH||0,hr=x.gHR||0,rbi=x.gRBI||0,played=P?ipO>0:pa>0;if(!played&&lv<4)return out;
+  const good=P?((ipO>=15&&ra<=2)||(ipO>=3&&ra===0)||(x.gK||0)>=8):(h>=2||hr>=1||rbi>=2),bad=P?(ipO>=3&&ra>=4)||(ipO<9&&ra>=3):(pa>=4&&h===0&&rbi===0),hero=P?(ipO>=21&&ra<=1)||(ipO>=6&&ra===0&&lv>=3):(hr>=2||(h>=3&&rbi>=2)||rbi>=4);
+  const win=!!x.win,ring=lv===4&&win;
+  let n=[0,2,3,5,8][lv]+(fame>=60?2:fame>=30?1:0);const add=[],pick2=(L,k,re)=>{L.filter(s=>!seenHas(cmFill(s,gn))).sort(()=>R()-.5).slice(0,k).forEach(s=>{const t=cmFill(s,gn);seenAdd(t);add.push(mkC(t,R()<.55?[pick(re)]:[],{up:Math.round(ri(400,2600)*(1+lv*.6)*(1+fame/60)),must:1}))})};
+  const mine=P?{g:CMB.goodP,b:CMB.badP,h:CMB.ksHeroP}:{g:CMB.goodB,b:CMB.badB,h:CMB.ksHeroB};
+  if(ring){pick2(good||!played?CMB.ringA:CMB.ringPoor.concat(CMB.ringA),Math.ceil(n*.6),CMB_RE.ring);n-=Math.ceil(n*.6)}
+  if(good){if(hero&&lv>=3){pick2(mine.h,2,CMB_RE.good);n-=2}const k=Math.max(0,n);pick2(CMB.goodA,Math.ceil(k/2),CMB_RE.good);pick2(mine.g,Math.floor(k/2),CMB_RE.good);if(!win)pick2(CMB.loseGood,1,CMB_RE.good)}
+  else if(bad){const k=Math.max(0,Math.ceil(n*.7));if(win){pick2(CMB.winBad,Math.min(2,k),CMB_RE.good);pick2(mine.b,Math.max(0,k-2),CMB_RE.bad)}else{pick2(CMB.badA,Math.ceil(k/2),CMB_RE.bad);pick2(mine.b,Math.floor(k/2),CMB_RE.bad)}}
+  else if(!ring){const k=Math.max(1,Math.floor(n/2));pick2(win?CMB.goodA.slice(0,12):CMB.badA.slice(0,6),k,win?CMB_RE.good:CMB_RE.bad)}
+  /* 섞어서 끼우기: 맨 위 1~2개는 원래 댓글 유지 */
+  add.forEach((c,i)=>out.splice(Math.min(out.length,1+i*2),0,c))}catch(e){}return out}}
+/* 경기 끝 화면: 큰 경기일수록 댓글을 더 보여주기 */
+gameDone=(function(_g){return function(g){let h=_g(g);try{const ar=g.aid?S.arts.find(x=>x.id===g.aid):null;if(!ar)return h;const t=g.title||'',lv=(ar.tone==='ring'||ar.tone==='ws')?4:/한국시리즈|월드시리즈/.test(t)?3:/플레이오프|디비전|챔피언십/.test(t)&&!/준플레이오프/.test(t)?2:/와일드|준플레이오프|결승|준결승/.test(t)?1:0,n=[3,5,6,8,10][lv];
+  if(n>3){const i=h.indexOf('<div class="card"><div class="row"><span class="lbl sp">경기 후 반응</span>');if(i>=0)h=h.slice(0,i)+`<div class="card"><div class="row"><span class="lbl sp">경기 후 반응</span><span class="tiny press">${ar.press}</span></div><b>${esc(ar.head)}</b>${ar.cm.slice(0,n).map(cmHtml).join('')}${ar.cm.length>n?`<div class="tiny muted" style="text-align:center;padding-top:6px">댓글 ${ar.cm.length}개 · 기사 탭에서 전체 보기</div>`:''}</div>`}}catch(e){}return h}})(gameDone);
+/* 이름 뒤 조사 자동 교정 (태민는 → 태민은, 지성이다/태민다 …) */
+function josaFix(t){try{if(!t||!ME||!ME.name)return t;const names=[ME.name,giv(ME.name)].filter((v,i,a)=>v&&a.indexOf(v)===i).sort((a,b)=>b.length-a.length);
+  for(const n of names){const bc=((n.charCodeAt(n.length-1)-0xAC00)%28)!==0,e=n.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    t=t.replace(new RegExp(e+'(는|은)(?=[\\s,.!?…~ㅋㅠ]|$)','g'),n+(bc?'은':'는')).replace(new RegExp(e+'(를|을)(?=[\\s,.!?…~ㅋㅠ]|$)','g'),n+(bc?'을':'를'))
+     .replace(new RegExp(e+'(와|과)(?=[\\s,.!?…~ㅋㅠ]|$)','g'),n+(bc?'과':'와')).replace(new RegExp(e+'(가)(?=[\\s,.!?…~ㅋㅠ]|$)','g'),n+(bc?'이':'가'))
+     .replace(new RegExp(e+'다(?=[\\s,.!?…~ㅋㅠ]|$)','g'),n+(bc?'이다':'다'))}}catch(e){}return t}
+{const _cm=comments;comments=function(tone,x){const out=_cm(tone,x);try{out.forEach(c=>{if(c&&c.t)c.t=josaFix(c.t);if(c&&Array.isArray(c.re))c.re.forEach(r=>{if(r&&typeof r==='object'&&r.t)r.t=josaFix(r.t)})})}catch(e){}return out}}
 
 </script>
 
