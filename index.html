@@ -1140,6 +1140,14 @@ html[data-gt="light"]{--good:#08875a;--g6:#08875a}
 .fbm-box{background:var(--surface)!important;color:var(--ink)!important;border:0!important}
 .trcnt{font-size:.72rem;font-weight:600;color:var(--muted);margin-left:6px;letter-spacing:0}
 .crtop{display:flex;justify-content:flex-end;margin:-4px 0 6px}.crhome{background:var(--soft);color:var(--ink);border:0;border-radius:10px;padding:7px 12px;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer}
+.hof-open{all:unset;display:flex;flex-direction:column;gap:2px;cursor:pointer;min-width:0;width:100%}
+.hof-open:focus-visible{outline:2px solid var(--seam);outline-offset:2px;border-radius:6px}
+.hof-open>b{display:inline}.hof-go{display:inline-block;font-size:.7rem;font-weight:700;color:var(--seam-t);margin-left:6px;vertical-align:1px}
+.hv-head{display:flex;flex-direction:column;gap:3px;margin:10px 0 4px}
+.hv-card{display:block;width:100%;max-width:420px;margin:0 auto;border-radius:18px}
+.hv-rcp{position:relative;color:#fff;border-radius:18px;padding:34px 20px 24px;min-height:340px;display:flex;flex-direction:column;justify-content:center;gap:12px;overflow:hidden}
+.hv-rcp .rcp-big{font-size:2.1rem}.hv-rcp .rcp-nums b{font-size:1.7rem}
+.hv-bars{position:absolute;top:12px;left:14px;right:14px;display:flex;gap:4px}.hv-bars i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.3)}.hv-bars i.on,.hv-bars i.done{background:#fff}
 </style>
 </head>
 <body>
@@ -4372,8 +4380,8 @@ const BASES=[[150,214],[203,154],[150,101],[97,154],[150,214]];
   /* 내 주루는 runAnim(주자 이동)에서 한 번만 그림 — 중복 제거 */
   return h.replace('<g font-size="10" font-weight="800">',s+'<g font-size="10" font-weight="800">').replace(/(<\/svg><\/div>)$/,s.includes('<g font-size')?'$1':(h.includes('<g font-size="10"')?'$1':s+'$1'))}catch(err){return h}}}
 
-/* ===================== 저장 슬롯 (최대 5개 · 이름 변경 · 삭제 · 은퇴 기록 열람) ===================== */
-const SLOTK='bb_slots_v1',SLOT_MAX=5;
+/* ===================== 저장 슬롯 (최대 10개 · 이름 변경 · 삭제 · 은퇴 기록 열람) ===================== */
+const SLOTK='bb_slots_v1',SLOT_MAX=10;
 function slotsGet(){try{const m=JSON.parse(localStorage.getItem(SLOTK)||'null');if(m&&m.list)return m}catch(e){}return{active:null,list:[]}}
 function slotsSet(m){try{localStorage.setItem(SLOTK,JSON.stringify(m))}catch(e){}}
 function slotSum(){try{return{nm:ME.name,team:teamLabel(),st:S.stage==='ret'?'은퇴':turnName(),y:S.y,ovr:Math.round(DV(ovrE())),pos:POS[ME.pos],hof:!!(S.ended&&S.ended.hof),ret:S.stage==='ret'}}catch(e){return{}}}
@@ -7720,6 +7728,66 @@ function bestPitch(){try{let k=null,v=0;PITCHES.forEach(p=>{if(p==='FB'||!(ME.pt
 /* 7) 선수 만들기 화면에도 홈 버튼 → 첫 화면으로 */
 {const _vc=vCreate;vCreate=function(){const h=_vc();try{if(!S&&ui.cr)return`<div class="crtop"><button class="crhome" data-crhome="1" aria-label="홈 화면으로">🏠 홈</button></div>`+h}catch(e){}return h}}
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-crhome]');if(!b)return;e.stopPropagation();e.preventDefault();ui.cr=null;ui.screen='title';ui.ptsWarn=0;try{window.scrollTo(0,0)}catch(er){}render()},true);
+
+/* ===================== 명예의 전당: 다른 플레이어의 은퇴 카드 · 커리어 리캡 보기 · 슬롯 삭제해도 기록 남기기 ===================== */
+/* 남의 데이터는 글자만 저장 (HTML 태그 제거) → 보여줄 때 전부 esc */
+function hofSan(v,d){d=d||0;if(d>6)return null;if(typeof v==='string')return v.replace(/<[^>]*>/g,'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&').slice(0,240);
+  if(typeof v==='number')return isFinite(v)?v:0;if(typeof v==='boolean'||v==null)return v;if(Array.isArray(v))return v.slice(0,60).map(x=>hofSan(x,d+1));
+  if(typeof v==='object'){const o={};for(const k in v){if(k==='pre'||typeof v[k]==='function')continue;o[k]=hofSan(v[k],d+1)}return o}return null}
+function hofExtra(){const D=cardData();D.teams=(D.teams||[]).map(t=>({name:t.name,kind:t.kind,y1:t.y1,n:t.n}));let sl=[];try{sl=recapSlides().map(s=>hofSan(s))}catch(e){}
+  const L=ME.look||{};return{v:1,D:hofSan(D),look:{nh:L.nh!=null?L.nh:null,body:ME.body||'표준'},sl}}
+async function hofPost(rec){return hofReq('hof_records',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(rec)})}
+async function hofSend(rec){let r=await hofPost(rec);if(r.status===400&&rec.extra){const x=rec.extra;delete rec.extra;r=await hofPost(rec);rec.extra=x}return r}
+hofSubmit=async function(owner){const rec=hofRecord(owner);try{rec.extra=hofExtra()}catch(e){}save();const r=await hofSend(rec);
+  if(r.status===409){S.hofSent=S.cid;save();return'dup'}if(!r.ok)throw new Error('http '+r.status);S.hofSent=S.cid;save();return'ok'};
+/* 은퇴한 커리어 슬롯을 지우면: 아직 안 올렸으면 자동으로 명예의 전당에 올려서 남김 */
+function hofSubmitSnap(snap){if(!hofCfg())return;const kS=S,kM=ME;let rec=null;try{S=snap;ME=snap.me;rec=hofRecord(null);try{rec.extra=hofExtra()}catch(e){}}catch(e){rec=null}finally{S=kS;ME=kM}
+  if(rec)hofSend(rec).then(()=>{Object.keys(HOFD).forEach(x=>delete HOFD[x])}).catch(()=>{})}
+if(typeof window!=='undefined')window.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-sl="delok"]');if(!b||!hofCfg())return;
+  try{const raw=localStorage.getItem('bb_slot_'+b.dataset.id);if(!raw)return;const snap=migrate(JSON.parse(raw));if(!snap||snap.stage!=='ret'||!snap.ended)return;if(snap.hofSent&&snap.hofSent===snap.cid)return;hofSubmitSnap(snap)}catch(er){}},true);
+/* 불러오기 */
+function hofViewLoad(id){const key='v:'+id;if(HOFD[key]&&Date.now()-HOFD[key].t<120000)return HOFD[key];HOFD[key]={loading:1,t:Date.now()};const q=encodeURIComponent(id);
+  (async()=>{let r=await hofReq(`hof_records?select=${HOF_COLS},extra&career_id=eq.${q}`);if(r.status===400)r=await hofReq(`hof_records?select=${HOF_COLS}&career_id=eq.${q}`);if(!r.ok)throw new Error('http '+r.status);const d=await r.json();
+    const row=d[0];if(!row)throw new Error('none');HOFD[key]={row,t:Date.now()};render();hofCardMake(key)})().catch(e=>{HOFD[key]={err:1,t:Date.now()};render()});return HOFD[key]}
+function hofRowD(r){const P=r.kind==='P',sea=r.years||0;return{name:r.nick,pos:HOF_PN[P?r.prole:r.pos]||'',hand:'',y0:(r.end_y||0)-Math.max(0,sea-1),y1:r.end_y,peak:'-',mvp:r.mvps||0,seasons:sea,clubs:1,age:'-',ret:true,hof:!!r.hof,retNo:null,tro:[],pills:[],
+  big:P?[[r.g,'출전'],[r.w,'승'],[r.k,'탈삼진']]:[[r.g,'출전'],[r.h,'안타'],[r.hr,'홈런']],sub:P?[[r.era!=null?(+r.era).toFixed(2):'-','평균자책점'],[`${r.rings||0}회`,'우승'],[`${r.mvps||0}회`,'MVP']]:[[(+r.avg||0).toFixed(3).replace(/^0/,''),'통산 타율'],[`${r.rings||0}회`,'우승'],[`${r.mvps||0}회`,'MVP']],
+  teams:[{name:r.team||'',n:sea}],war:+r.war||0,av:{c1:'#3182f6',c2:'#1b64da',num:'',age:'-'},stage:r.team||''}}
+async function hofCardMake(key){const H=HOFD[key];if(!H||!H.row||H.card)return;const r=H.row,x=r.extra&&r.extra.D?r.extra:null;
+  try{const D=x?JSON.parse(JSON.stringify(x.D)):hofRowD(r);D.teams=D.teams||[];D.tro=D.tro||[];D.pills=D.pills||[];D.av=D.av||{c1:'#3182f6',c2:'#1b64da'};
+    if(!/^#[0-9a-fA-F]{3,8}$/.test(D.av.c1||''))D.av.c1='#3182f6';if(!/^#[0-9a-fA-F]{3,8}$/.test(D.av.c2||''))D.av.c2='#1b64da';
+    const lk=x&&x.look||{},nh=lk.nh!=null&&lk.nh>=0&&lk.nh<8?lk.nh|0:(_h32(String(r.career_id))%8),body=['마른','표준','거구'].includes(lk.body)?lk.body:'표준';
+    try{await Promise.all(['400 80px "Black Han Sans"','800 80px "Barlow Condensed"','800 30px "Noto Sans KR"','700 30px "Noto Sans KR"'].map(f=>document.fonts.load(f)))}catch(e){}
+    const fake={name:D.name,body,look:{nh},pos:'SS',type:r.kind};const url=nsURL(nsKey(fake),{team:D.av.c1});
+    const im=await new Promise(res=>{const i=new Image();i.onload=i.onerror=()=>res(i);i.src=url});
+    const kM=ME,kC=_spCard;let cv;try{ME=fake;_spCard=im;cv=drawCard(D)}finally{ME=kM;_spCard=kC}
+    H.card=cv.toDataURL('image/jpeg',.9)}catch(e){H.card='err'}render()}
+/* 화면 */
+const HV_BG=/^linear-gradient\(\d+deg,\s*#[0-9a-fA-F]{3,8},\s*#[0-9a-fA-F]{3,8}\)$/;
+function vHofView(){const v=ui.hof.view,L=hofViewLoad(v.id);const back=`<button class="btn sm" data-hof="vback">‹ 순위로</button>`;
+  if(L.loading)return`${back}<div class="hof-msg">불러오는 중…</div>`;if(L.err)return`${back}<div class="hof-msg">기록을 불러오지 못했어요.</div>`;
+  const r=L.row,x=r.extra,sl=(x&&Array.isArray(x.sl)?x.sl:[]),mode=v.mode||'card';
+  let body;
+  if(mode==='card')body=!L.card?'<div class="hof-msg">카드 그리는 중…</div>':L.card==='err'?'<div class="hof-msg">카드를 그리지 못했어요.</div>':`<img class="hv-card" src="${L.card}" alt="${esc(r.nick)} 은퇴 카드">`;
+  else if(!sl.length)body='<div class="hof-msg">이 기록은 리캡 기능이 생기기 전에 올라와서 커리어 리캡이 없어요.</div>';
+  else{const i=cl(v.i||0,0,sl.length-1),s=sl[i]||{},T=a=>esc(String(a==null?'':a));
+    body=`<div class="hv-rcp" style="background:${HV_BG.test(s.bg||'')?s.bg:'linear-gradient(160deg,#3182f6,#1b1f4a)'}"><div class="hv-bars">${sl.map((_,j)=>`<i class="${j<i?'done':j===i?'on':''}"></i>`).join('')}</div>
+      <div class="rcp-ey">${T(s.ey)}</div>${s.big!=null&&s.big!==''?`<div class="rcp-big">${T(s.big)}</div>`:''}${s.sub?`<div class="rcp-sub">${T(s.sub).replace(/\n/g,'<br>')}</div>`:''}
+      ${Array.isArray(s.nums)?`<div class="rcp-nums">${s.nums.map(n=>`<div><b>${T(n&&n[0])}</b><span>${T(n&&n[1])}</span></div>`).join('')}</div>`:''}
+      ${Array.isArray(s.list)?`<div class="rcp-list">${s.list.map(z=>`<div>${T(z)}</div>`).join('')}</div>`:''}
+      ${Array.isArray(s.quotes)?`<div class="rcp-q">${s.quotes.map(q=>`<div><span>${T(q&&q[0])}</span>${T(q&&q[1])}</div>`).join('')}</div>`:''}</div>
+      <div class="row" style="gap:8px"><button class="btn" style="flex:1" data-hof="vstep" data-v="-1"${i===0?' disabled':''}>‹ 이전</button><span class="small muted">${i+1} / ${sl.length}</span><button class="btn pri" style="flex:1" data-hof="vstep" data-v="1"${i>=sl.length-1?' disabled':''}>다음 ›</button></div>`}
+  return`${back}<div class="hv-head">${hofWho0(r)}<span class="hof-ln">${HOF_PN[r.kind==='P'?r.prole:r.pos]||''} · ${hofLine(r)}</span><span class="hof-sub">명예의 전당 점수 ${(+(r.wwar??r.war)).toFixed(1)}${hofWarTxt(r)?' · '+hofWarTxt(r):''}</span></div>
+    <div class="seg"><button class="${mode==='card'?'on':''}" data-hof="vmode" data-v="card">은퇴 카드</button><button class="${mode==='recap'?'on':''}" data-hof="vmode" data-v="recap">커리어 리캡</button></div>${body}`}
+{const _vh=vHof;vHof=function(){let h=_vh();try{if(ui.hof&&ui.hof.view&&hofCfg()){const i=h.indexOf('<div class="seg">'),j=h.indexOf('<div class="row" style="gap:8px"><button class="btn sm" data-hof="refresh">');if(i>=0&&j>i)h=h.slice(0,i)+vHofView()+h.slice(j)}
+  else h=h.replace('<div class="hof-note">','<div class="hof-note">이름을 누르면 그 선수의 은퇴 카드와 커리어 리캡을 볼 수 있어요.<br>')}catch(e){}return h}}
+/* 행·슬롯에 아이디 달기: hofWho 출력에 career_id 표시용 버튼 */
+const hofWho0=hofWho;{const _hw=hofWho;hofWho=function(r){return`<button class="hof-open" data-hof="view" data-id="${esc(String(r.career_id||''))}" aria-label="${esc(r.nick)} 기록 보기">${_hw(r).replace(/^(<b>[^<]*<\/b>)/,'<span class="hof-nm">$1<span class="hof-go">카드·리캡 ›</span></span>')}</button>`}}
+if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-hof]');if(!b||!ui.hof)return;const k=b.getAttribute('data-hof');if(!['view','vback','vmode','vstep'].includes(k))return;
+  e.stopPropagation();e.preventDefault();
+  if(k==='view'){if(ui.hof.view)return;ui.hof.view={id:b.getAttribute('data-id'),mode:'card',i:0}}
+  else if(k==='vback')ui.hof.view=null;else if(k==='vmode'){ui.hof.view.mode=b.getAttribute('data-v');ui.hof.view.i=0}
+  else if(k==='vstep')ui.hof.view.i=(ui.hof.view.i||0)+(+b.getAttribute('data-v'));
+  try{haptic(6)}catch(er){}render();try{const sh=document.querySelector('.sheet.hof');if(sh&&(k==='view'||k==='vback'))sh.scrollTop=0}catch(er){}},true);
 
 </script>
 
