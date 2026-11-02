@@ -7686,7 +7686,11 @@ if(typeof document!=='undefined'){document.addEventListener('click',e=>{const b=
 /* 1) 앱/탭을 닫거나 내리면 배경음 정지, 돌아오면 다시 */
 if(typeof document!=='undefined'){const auOff=()=>{try{if(AU.timer)AU._wasOn=true;AU.stopMusic();if(AU.ctx&&AU.ctx.state==='running')AU.ctx.suspend();if(AU.el)AU.el.pause()}catch(e){}};
   const auOn=()=>{try{if(!AU.pref.music||!AU.ctx)return;AU.ctx.resume().then(()=>{if(!AU.timer)AU.startMusic()}).catch(()=>{});if(AU.el){const p=AU.el.play();if(p&&p.catch)p.catch(()=>{})}}catch(e){}};
-  document.addEventListener('visibilitychange',()=>{document.hidden?auOff():auOn()});window.addEventListener('pagehide',auOff);document.addEventListener('freeze',auOff)}
+  document.addEventListener('visibilitychange',()=>{document.hidden?auOff():auOn()});
+  /* 카톡 등 인앱 브라우저는 visibilitychange가 안 오는 경우가 있어서: 화면 그리기(rAF)가 멈추면 백그라운드로 보고 정지 */
+  let lastF=performance.now(),bgOff=false;const fr=t=>{const now=performance.now();if(bgOff&&now-lastF<400){}lastF=now;if(bgOff){bgOff=false;auOn()}requestAnimationFrame(fr)};requestAnimationFrame(fr);
+  setInterval(()=>{if(!bgOff&&AU.timer&&performance.now()-lastF>2000){bgOff=true;auOff()}},500);
+  window.addEventListener('blur',()=>{setTimeout(()=>{if(document.hidden||performance.now()-lastF>800){bgOff=true;auOff()}},900)});window.addEventListener('pagehide',auOff);document.addEventListener('freeze',auOff)}
 /* 2) '새로운 인연'처럼 이름이 선택지에만 있는 연애 이벤트도 그 사람 사진 */
 {const _sp=speakerOf;speakerOf=function(q){try{const c=(q&&q.ch||[]).find(c=>c.act==='gfstart'&&c.arg&&c.arg.n);if(c)return{k:'gf',seed:c.arg.n,name:c.arg.n}}catch(e){}return _sp(q)}}
 /* 3) 특성: 보유 · 남은 개수 */
