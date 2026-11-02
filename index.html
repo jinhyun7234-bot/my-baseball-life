@@ -11,12 +11,13 @@
 <meta property="og:title" content="나의 야구 인생">
 <meta property="og:description" content="고교 야구부에서 드래프트, KBO, 메이저리그까지. 매 시즌의 선택이 내 기록과 팬들의 반응을 바꿔요.">
 <meta property="og:image" content="icons/icon-512.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;font-family:system-ui,-apple-system,sans-serif;font-size:14px}
+body{margin:0;font-size:14px}
 img{max-width:100%}[hidden]{display:none!important}
 </style>
 <script>window.WEB_BUILD=true;window.APP_VER='1.0.0'</script>
@@ -993,6 +994,133 @@ html[data-gt="light"] .tm-btns button.on.sub{background:#2f6fd6;border-color:#1f
 .set-link{appearance:none;border:0;background:none;color:var(--ink);font:inherit;font-weight:700;text-align:left;width:100%;cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
 .set-link:last-child{border-bottom:0}.set-link .set-go{margin-left:auto;color:var(--muted)}
 .set-ver{text-align:center;font-size:.74rem;color:var(--muted)}
+
+/* ===================== TOSS 스타일 테마 (다크 기본 · 라이트) — 대비·간결함 우선 ===================== */
+:root,html[data-gt]{
+  --fb:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  --fd:var(--fb); --fn:var(--fb); --fm:var(--fb);
+}
+:root{
+  --bg:#17171c; --surface:#202027; --soft:#2c2c35; --line:#34343e; --ink:#ffffff; --ink2:#e4e4e7; --muted:#a1a1aa;
+  --seam:#3182f6; --seam-t:#64a8ff; --seam-ink:#ffffff; --blue-soft:#1b2a44;
+  --good:#3dd68c; --good-soft:#163428; --warn:#ffa940; --bad:#ff5c6a; --bad-soft:#3d1a20;
+  --g8:#b98cff; --g7:#ffb84d; --g6:#3dd68c; --g5:#64a8ff; --g4:#a1a1aa; --g3:#ff5c6a;
+  --board:#202027; --board-ink:#ffffff; --board-dim:#a1a1aa; --bar2:#34343e;
+  color-scheme:dark;
+}
+html[data-gt="light"]{
+  --bg:#f2f4f6; --surface:#ffffff; --soft:#f2f4f6; --line:#e5e8eb; --ink:#191f28; --ink2:#333d4b; --muted:#6b7684;
+  --seam:#3182f6; --seam-t:#1b64da; --seam-ink:#ffffff; --blue-soft:#e8f3ff;
+  --good:#0a9c63; --good-soft:#e3f6ed; --warn:#d46b08; --bad:#e42939; --bad-soft:#ffeeee;
+  --g8:#7b3fe4; --g7:#c27c00; --g6:#0a9c63; --g5:#1b64da; --g4:#6b7684; --g3:#e42939;
+  --bar2:#d1d6db;
+  color-scheme:light;
+}
+html body,html body.lp-on{background:var(--bg)!important;color:var(--ink);font-family:var(--fb);letter-spacing:-.02em}
+html h1,html h2,html h3{font-family:var(--fb);font-weight:700;letter-spacing:-.03em}
+html .num,html [class*="num"]{font-variant-numeric:tabular-nums}
+/* 카드: 테두리 없이 면 대비로 구분 */
+html .card,html[data-gt="light"] .card{background:var(--surface);border:0!important;box-shadow:none!important;border-radius:20px}
+html[data-gt="light"] .card{box-shadow:0 1px 2px rgba(0,0,0,.03)!important}
+html .lbl{color:var(--ink);font-weight:700}
+html .muted,html .small.muted,html .tiny.muted{color:var(--muted)!important}
+/* 버튼: 파란 바탕 + 흰 글씨 (대비 확실), 보조 버튼은 회색 면 */
+html .btn,html[data-gt="light"] .btn:not(.pri):not(.lp-start){background:var(--soft);color:var(--ink);border:0!important;border-radius:14px;font-weight:700}
+html .btn.pri,html .abar .btn.pri,html[data-gt="light"] .btn.pri{background:var(--seam)!important;color:#fff!important;border:0!important;box-shadow:none!important;text-shadow:none!important}
+html .btn.pri:active{filter:brightness(.92)}
+html .glow::after{display:none}
+html .abar.dark .btn:not(.pri),html[data-gt="light"] .abar.dark .btn:not(.pri){background:var(--soft);color:var(--ink);border:0}
+html .abar,html[data-gt="light"] .abar{background:linear-gradient(180deg,transparent,var(--bg) 38%)!important}
+html .nav,html[data-gt="light"] .nav{background:var(--surface);border-top:1px solid var(--line);backdrop-filter:none}
+html .tab,html[data-gt="light"] .tab{color:var(--muted)}
+html .tab.on{color:var(--ink)}
+html .tab.on svg{color:var(--ink)}
+/* 칩·세그먼트 */
+html .chip,html[data-gt="light"] .chip:not(.on):not(.up):not(.dn){background:var(--soft);color:var(--ink2);border:0}
+html .chip.on{background:var(--seam);color:#fff}
+html .seg,html[data-gt="light"] .seg{background:var(--soft);border:0}
+html .seg button{color:var(--muted)}
+html .seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.18)}
+html .choice,html[data-gt="light"] .choice{background:var(--soft);border:0;color:var(--ink)}
+html .choice small,html .choice .small{color:var(--muted)}
+html .sheet,html[data-gt="light"] .sheet{background:var(--surface);border:0;box-shadow:0 -8px 30px rgba(0,0,0,.35)}
+html .ey{color:var(--seam-t)!important}
+/* 플레이어 카드: 깔끔한 카드 + 팀 색은 배지에만 */
+html .pcard{background:var(--surface)!important;color:var(--ink);box-shadow:none!important;border:0!important}
+html .pcard::before,html .pcard::after{display:none}
+html .pcard .tpill{background:var(--soft);color:var(--ink)}
+html .pcard .ibtn,html .ibtn{color:var(--muted)}
+html .pcard .ibtn.on,html .ibtn.on{color:var(--ink)}
+html .pcard .nm{font-family:var(--fb);font-weight:800;text-shadow:none;letter-spacing:-.03em;color:var(--ink)}
+html .pcard .meta{color:var(--muted)}
+html .pcard .hbadge{border:0;color:#fff}
+html .pcard .ovr{background:var(--soft);border:0}
+html .pcard .ovr .v{font-family:var(--fb);color:var(--seam-t);letter-spacing:-.03em}
+html .pcard .ovr .w{color:var(--muted)}
+html .pcard .pfoot{border-top:1px solid var(--line)}
+html .pcard .stat .k,html .pcard .tipb,html .pcard [data-act="tip"]{color:var(--muted)}
+html .pcard .stat .v{color:var(--ink)}
+/* 진행 바 */
+html .bar,html[data-gt="light"] .bar{background:var(--soft)}
+/* 전체 화면 연출(결산·드래프트·시상·시뮬레이션)은 단색 다크로 통일, 글씨는 흰색 */
+html .srec{background:#17171c!important;color:#fff}
+html .srec-card{background:#202027;border:0}
+html .srec-k{color:#a1a1aa}
+html .simov{background:#17171c!important}
+html .simbar b{background:#3182f6}
+html .simh{color:#a1a1aa}
+html .board{background:var(--board)!important;border:0!important}
+html[data-gt="light"] .board{background:#202027!important}
+/* 첫 화면 */
+html .lp-card,html[data-gt="light"] .lp-card{background:var(--surface)!important;border:0!important;box-shadow:none!important}
+html .lp-brand,html .lp-hero h1,html .lp-slots .sl-h,html .lp-note-h,html .lp-ft b{color:var(--ink)!important}
+html .lp-tag,html .lp-hero p,html .lp-slots .sl-sum,html .lp-slots .sl-ago,html .lp-slots .sl-empty,html .lp-note p,html .lp-ft,html .lp-links button,html .lp-ft small,html .lp-warn{color:var(--muted)!important}
+html .lp-note-end{color:var(--seam-t)!important}
+html .lp-slots .slot{background:var(--soft)!important;border:0!important;color:var(--ink)!important}
+html .lp-slots .btn{background:var(--surface)!important;color:var(--ink)!important}
+html .lp-slots .btn.pri{background:var(--seam)!important;color:#fff!important}
+html .lp-ft{border-top:1px solid var(--line)!important}
+html .btn.lp-start{background:#3182f6!important;color:#fff!important;box-shadow:none!important;border-radius:16px}
+html .lp-mound{opacity:.9}
+html:not([data-gt="light"]) body.lp-on,html:not([data-gt="light"]) body.lp-on .abar{background:var(--bg)!important}
+html .lp-ib{color:var(--ink);font-size:1.15rem}
+/* 설정·명예의 전당·안내 */
+html .set-sec,html[data-gt="light"] .set-sec{background:var(--soft);border:0}
+html .set-row .set-ic,html[data-gt="light"] .set-row .set-ic,html .set-seg,html[data-gt="light"] .set-seg{background:var(--surface);border:0}
+html .set-sw.on{background:var(--seam)}
+html .set-seg button.on{background:var(--seam);color:#fff}
+html .gitem,html[data-gt="light"] .gitem{background:var(--soft);border:0}
+html .gnum{background:var(--seam);color:#fff!important}
+html .hof-slot,html .hof-row{background:var(--soft);border:0}
+html .hof-grp,html .hof-pos{color:var(--seam-t)}
+html .ptwarn{background:var(--blue-soft);border:0;color:var(--ink)}
+html .ptwarn b{color:var(--seam-t)}
+html .ptwarn.hot{background:var(--bad-soft)}
+html .ptwarn.hot b{color:var(--bad)}
+html .tm-btns button,html[data-gt="light"] .tm-btns button{background:var(--soft);border:0;color:var(--ink2)}
+html .tm-btns button.on,html[data-gt="light"] .tm-btns button.on{background:var(--seam);color:#fff!important;border:0}
+html .tm-btns button.on.sub,html[data-gt="light"] .tm-btns button.on.sub{background:#1b64da;color:#fff!important}
+html .pbx,html[data-gt="light"] .pbx{background:var(--soft);border:0}
+html .pbx-t,html[data-gt="light"] .pbx-t{background:var(--surface);border:0}
+html .avc,html .avb,html[data-gt="light"] .avc,html[data-gt="light"] .avb{background:var(--soft);border:2px solid transparent;box-shadow:none}
+html .avc span,html .avb small,html .avbody>span{color:var(--ink2)}
+html .avc.on,html .avb.on,html[data-gt="light"] .avc.on,html[data-gt="light"] .avb.on{border:2px solid var(--seam);background:var(--blue-soft);box-shadow:none}
+html .avc.on span,html[data-gt="light"] .avc.on span{color:var(--seam-t)}
+html .avname{color:var(--ink)}
+html .trsum-go{color:var(--seam-t)}
+html .gnow{background:var(--surface);border:0}
+html .gnow.up{background:var(--blue-soft);border:0}
+html .paper .muted,html .paper .small.muted,html .paper .tiny.muted{color:#5f5a50!important}
+html .paper .ibtn{color:#5f5a50}html .paper .ibtn.on{color:#1d1d1d}
+html .sigph,html[data-gt="light"] .sigph{color:#6e685c}
+html .btn[disabled],html .btn.pri[disabled],html .abar .btn.pri[disabled]{background:var(--soft)!important;color:var(--muted)!important;opacity:1!important}
+html .gd-seq .sq,html[data-gt="light"] .gd-seq .sq{background:rgba(0,0,0,.28)!important;color:#fff!important}
+html .gd-seq .sq.hr{background:rgba(255,255,255,.92)!important;color:#191f28!important}
+html .gd-seq i{color:rgba(255,255,255,.75)!important}
+html .myrow td,html[data-gt="light"] .myrow td,html .myrow .tmn,html .myrow .rr{color:var(--seam-t)!important}
+html .myrow{background:var(--blue-soft)}
+html[data-gt="light"]{--good:#08875a;--g6:#08875a}
+
 </style>
 </head>
 <body>
@@ -7251,7 +7379,7 @@ fbOpen=function(){fbModal(`<div class="fbm-h"><b>📝 건의하기</b><button cl
 function lpBench(){let spr='';try{if(typeof SP_READY!=='undefined'&&SP_READY)spr=spImg(spURL('p_bat',{kind:'body',team:(typeof TITLE_TEAMS!=='undefined'?TITLE_TEAMS[(new Date().getDate())%TITLE_TEAMS.length]:'#c30452'),hair:SP_HC[0][1]}),190,'lp-spr')}catch(e){}
 return`<div class="lp-scene"><div class="lp-mound"></div><div class="lp-player">${spr}</div></div>`}
 vTitle=(function(_v){return function(){const keep=S;S=null;let slots='';try{slots=vSlots()}finally{S=keep}
-  return`<div class="lp"><header class="lp-hd"><div><div class="lp-brand">나의 야구 인생</div><div class="lp-tag">⚾ 시즌 2026</div></div><div class="lp-ic"><button class="lp-ib" data-fb="open" aria-label="건의사항" title="건의사항">📝</button><button class="lp-ib" data-act="guide" aria-label="게임 가이드" title="게임 가이드">❔</button></div></header>
+  return`<div class="lp"><header class="lp-hd"><div><div class="lp-brand">나의 야구 인생</div><div class="lp-tag">⚾ 시즌 2026</div></div><div class="lp-ic"><button class="lp-ib" data-fb="open" aria-label="건의사항" title="건의사항">📝</button><button class="lp-ib" data-act="guide" aria-label="게임 가이드" title="게임 가이드" style="font-weight:800">?</button></div></header>
   <section class="lp-card lp-hero"><h1>나의 야구 인생</h1><p>고교 야구부에서 드래프트, KBO, 메이저리그까지.<br>매 시즌의 선택이 내 기록과 팬들의 반응을 바꿔요.</p></section>
   <section class="lp-card lp-ill">${lpBench()}</section>
   <section class="lp-card lp-slots">${slots}</section>
