@@ -1375,7 +1375,7 @@ function batPA(L,m,gl){const dv=x=>x>L?(x-L)*BATC:(x-L),dvp=x=>x>L?(x-L)*.85:(x-
   const k=cl(.205-dv(con)*.0042-dv(eff('eye'))*.0008-(sk('eyem')?.01:0)+(sk('kprone')?.03:0),.05,.42);
   const bb=cl(.082+dv(eff('eye'))*.0018+(sk('eyem')?.015:0),.02,.2);
   const r=R(),sp=eff('spd');m.PA++;if(risp&&S.rsp)S.rsp.pa++;
-  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=50&&R()<(E('spd')-45)*.006*(sk('thief')?1.4:1)){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.06:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
+  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<(E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)*(sk('thief')?1.4:1)){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.06:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
     if(R()<cl([0,.3,.48,.7][b]+dv(sp)*.006,.1,.9))m.R++};
   if(r<k){m.AB++;m.K++;return}
   if(r<k+bb+.01){m.BB++;gl.ob++;reach(1);if(on[0]&&on[1]&&on[2])m.RBI++;return}
