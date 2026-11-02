@@ -7108,7 +7108,7 @@ const TIPS={
  men:['멘탈','압박을 이겨내는 힘이에요.',['효과: 포스트시즌·국제대회 같은 큰 경기와 득점권 같은 중요한 순간에 활약↑. 컨디션도 좋은 쪽으로 기울어요.','올리는 법: 기본기 회복, 심리 상담(상점), 인터뷰에서 담담한 답변, 나이를 먹으며 조금씩.']],
  dur:['내구성','몸이 얼마나 튼튼한지예요.',['효과: 부상 빈도↓, 큰 부상 확률↓, 피로가 덜 쌓이고 더 빨리 회복, 30대 이후 신체 능력 하락 속도↓','올리는 법: 영양사 식단 관리(상점)가 서서히 올려줘요.']],
  fcast:['예상 피로','지금 훈련 계획대로 진행하면 이번 기간 피로가 어느 정도 쌓일지 예측한 값이에요.',['"높음"부터는 부상 위험이 커져요. 휴식 메뉴로 조절하세요.','시즌 중엔 경기 피로가 더해져서 캠프보다 높게 나와요.']],
- limit:['최대치 100','모든 능력치는 20~100 스케일이고 최대치는 100이에요.',['100에 가까울수록 훈련 성장치가 줄어요. 타고난 재능에 따라 크는 속도가 달라요 — 직접 키워보며 알아가세요.','30세부터는 최대치가 서서히 낮아져요(주력·파워·구속 같은 신체 능력이 더 빨리).','고교~프로 3년차까지는 성장 속도가 빨라요.','전성기에 100을 찍고 꾸준히 활약하면 리미트가 풀려 110까지 갈 수 있어요.','한 가지 훈련을 너무 오래 소홀히 하면 그 능력이 떨어질 수 있어요.']]};
+ limit:['최대치 100','모든 능력치는 20~100 스케일이고 최대치는 100이에요.',['100에 가까울수록 훈련 성장치가 줄어요. 타고난 재능에 따라 크는 속도가 달라요 — 직접 키워보며 알아가세요.','30세부터는 최대치가 서서히 낮아져요(주력·파워·구속 같은 신체 능력이 더 빨리).','고교~프로 3년차까지는 성장 속도가 빨라요.']]};
 const tipB=(k,inner)=>`<button class="tipb" data-act="tip" data-k="${k}" aria-label="${TIPS[k][0]} 설명">${inner}<span class="qi">?</span></button>`;
 function vTip(){const t=TIPS[ui.tip];if(!t)return'';return`<div class="scrim tipscrim" data-act="tipclose"><div class="tipcard" role="dialog" aria-modal="true"><div class="row"><b class="sp">${t[0]}</b><span class="tiny muted">탭해서 닫기</span></div><p class="small">${t[1]}</p>${t[2].map(x=>`<div class="tipli">${x}</div>`).join('')}</div></div>`}
 function vSheet(){
@@ -7788,6 +7788,17 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
   else if(k==='vback')ui.hof.view=null;else if(k==='vmode'){ui.hof.view.mode=b.getAttribute('data-v');ui.hof.view.i=0}
   else if(k==='vstep')ui.hof.view.i=(ui.hof.view.i||0)+(+b.getAttribute('data-v'));
   try{haptic(6)}catch(er){}render();try{const sh=document.querySelector('.sheet.hof');if(sh&&(k==='view'||k==='vback'))sh.scrollTop=0}catch(er){}},true);
+
+/* ===================== 훈련 안 하면 떨어지는 감각 저하 삭제 · 리미트 브레이크 삭제(최대 100) · 대신 능력치 대비 경기력 아주 살짝 하향 ===================== */
+neglect=function(rep){S.negl={};S.neglHit={}};
+limitBreak=function(){};
+function noLB(m){try{if(!m)return;const c=v=>Math.min(80,v);if(m.lb){delete m.lb}
+  for(const o of [m.r,m.pt,m.ceil])if(o)for(const k in o)if(typeof o[k]==='number'&&o[k]>80&&!['we','men','dur'].includes(k))o[k]=c(o[k])}catch(e){}}
+{const _mg=migrate;migrate=function(s){s=_mg(s);try{noLB(s&&s.me);if(s){s.negl={};s.at80={}}}catch(e){}return s}}
+{const _ny=newYear;newYear=function(){const r=_ny.apply(this,arguments);try{if(ME&&ME.lb)noLB(ME)}catch(e){}return r}}
+/* 경기력 보정: 감각 저하가 없어진 만큼 능력치 대비 결과를 아주 미세하게 낮춤 (내부 수치 PERF_ADJ, 표시 능력치는 그대로) */
+const PERF_ADJ={B:.3,P:0};
+{const _sb=spBonus;spBonus=function(k){let v=_sb(k);try{if(S&&S.me===ME&&!['we','men','dur'].includes(k))v-=PERF_ADJ[isP()?'P':'B']||0}catch(e){}return v}}
 
 </script>
 
