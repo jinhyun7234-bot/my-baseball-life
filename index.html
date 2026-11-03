@@ -7997,9 +7997,9 @@ function psAcc(x){try{const y=S.y;let A=S._psAcc;if(!A||A.y!==y)A=S._psAcc={y,G:
   if(x.intl){if(add.length)out.splice(0,0,...add);return out}
   const good=P?((ipO>=15&&ra<=2)||(ipO>=3&&ra===0&&ipO<9)):(h>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2),bad=P?(ipO>=3&&ra>=4):(pa>=4&&h===0&&!(x.gRBI>0));
   /* ○○ 호감이면 개추 / MVP면 개추 (잘한 날, 대댓글 "개추 ㅋㅋㅋ") */
-  if(good&&R()<(x.ps?.6:.25))put(pick([`${gn} 호감이면 개추 ㅋㅋㅋㅋ`,`${jo(gn,'이','가')} MVP면 개추 ㅋㅋㅋㅋㅋ`,`오늘 ${gn} 미쳤으면 개추 ㅋㅋㅋㅋ`]),['개추 ㅋㅋㅋ','개추 ㅋㅋㅋㅋ'].slice(0,ri(1,2)));
+  if(good&&R()<(x.ps?.6:.25))put(pick([`${gn} 호감이면 개추 ㅋㅋㅋㅋ`,`${jo(gn,'이','가')} MVP면 개추 ㅋㅋㅋㅋㅋ`,`오늘 ${gn} 미쳤으면 개추 ㅋㅋㅋㅋ`]),['개추 ㅋㅋㅋ','개추 ㅋㅋㅋㅋ','개추 박고 감 ㅋㅋ','ㅇㅈ 개추','개추 누르고 간다 ㅋㅋㅋ','개추 ㅋㅋㅋㅋㅋ','이건 개추지'].sort(()=>R()-.5).slice(0,ri(1,2)));
   /* 역시 ○○ 타자(투수) GOAT ㅋㅋㅋ + 팀 동료 이름 다답글 */
-  if(good&&x.win&&seasonGood()&&nick&&R()<(x.ps?.55:.3)){const ms=mateNames(ri(3,5),P?'P':'B');put(`역시 ${nick} ${P?'투수':'타자'} GOAT ㅋㅋㅋ`,ms.map(m=>`${m} ㅋㅋㅋ`),ri(2000,7000))}
+  if(good&&x.win&&seasonGood()&&nick&&R()<(x.ps?.55:.3)){const ms=mateNames(ri(3,5),P?'P':'B');put(`역시 ${nick} ${P?'투수':'타자'} GOAT ㅋㅋㅋ`,ms.map(m=>`${m} ${pick(['ㅋㅋㅋ','ㅋㅋㅋ','ㅋㅋㅋㅋ','ㅋㅋㅋㅋㅋ'])}`),ri(2000,7000))}
   /* 궁네체고: 주무기 구종이 아주 좋으면 */
   if(P&&good){try{const bp=bestPitch();if(bp&&bp.v>=80&&R()<(x.ps?.5:.25)){const pn=bp.k==='SK'?'씽카볼':bp.k==='FB'?'직구':LBL[bp.k].replace(/^포크$/,'포크볼');put(pick([`궁네체고의 ${pn} 투수죠? ㅋㅋㅋ`,`궁내 체고의 ${pn} 투수 ${gn} ㅋㅋㅋㅋ`]),[pick(['궁네체고 ㅋㅋㅋㅋ','발음 무엇 ㅋㅋㅋ','국내 최고 맞음 ㅇㅈ'])])}}catch(e){}}
   /* 퀄리티스타트 1실점(이하) 패전 */
@@ -8062,7 +8062,7 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
   if(!loveWin()){out=out.filter(c=>!(c&&MAT.test(c.t)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!MAT.test(typeof r==='string'?r:r&&r.t))});return out}
   if(!x||tone==='love'||tone==='wedding')return out;const P=isP(),bad=P?((x.ipO||0)>=3&&(x.ra||0)>=4):((x.gPA||0)>=4&&(x.gH||0)===0&&!(x.gRBI>0));if(!bad||R()>=.45)return out;
   const who=S.married&&S.y-S.married.y<=1?'결혼':'연애',T=who==='결혼'?[`결혼하더니 맛이 갔네`,`신혼이라 정신이 딴 데 가 있나 ${gn}`,`${gn} 신혼 버프가 아니라 신혼 디버프네`]:[`연애 맛보더니 못하네`,`연애하더니 맛이 갔네`,`${gn} 요즘 경기보다 폰이 더 중요한 듯 ㅋㅋ`];
-  const t=josaFix(pick(T));if(seenHas(t))return out;seenAdd(t);out.splice(0,0,mkC(t,[{nk:pick(NICKS),t:`맛${gn}${((gn.charCodeAt(gn.length-1)-0xAC00)%28)?'이네':'네'} 그럼 ㅋㅋ`,up:ri(200,1500)},{nk:pick(NICKS),t:pick(['사생활은 건드리지 말자','폼 돌아오면 다 조용해짐','ㅋㅋㅋㅋㅋ 맛'+gn]),up:ri(50,600)}],{up:ri(1500,6000),must:1}))}catch(e){}return out}}
+  const t=josaFix(pick(T));if(seenHas(t))return out;seenAdd(t);out.splice(0,0,mkC(t,[{nk:pick(NICKS),t:(()=>{const bc=((gn.charCodeAt(gn.length-1)-0xAC00)%28)!==0,m='맛'+gn;return pick([`${m}${bc?'이네':'네'} 그럼 ㅋㅋ`,`${m} 확정 ㅋㅋㅋ`,`오늘부로 ${m} ㅋㅋ`,`${m} 입갤 ㅋㅋㅋㅋ`,`아 ${m} 나왔다 ㅋㅋ`,`그럼 이제 ${m}${bc?'으로':'로'} 부르면 됨 ㅋㅋ`,`${m} 시즌 2 개봉 ㅋㅋㅋ`])})(),up:ri(200,1500)},{nk:pick(NICKS),t:pick(['사생활은 건드리지 말자','폼 돌아오면 다 조용해짐','ㅋㅋㅋㅋㅋ 맛'+gn]),up:ri(50,600)}],{up:ri(1500,6000),must:1}))}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
