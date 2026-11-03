@@ -1186,6 +1186,8 @@ html[data-gt="light"]{--good:#08875a;--g6:#08875a}
 .wr .rcp-l,.wr .rcp-r{position:absolute;top:0;bottom:0;width:50%;background:none;border:0;z-index:3;cursor:pointer}.wr .rcp-l{left:0}.wr .rcp-r{right:0}
 .wr-end,.wr-x{position:relative;z-index:4}.wr-x{position:absolute}
 @media (prefers-reduced-motion:reduce){.wr-blob,.wr-in,.wr-bar,.wr-line{animation:none!important;stroke-dashoffset:0}}
+.wr-letter{font-size:1rem;line-height:1.75;font-weight:600;background:color-mix(in srgb,var(--wf) 8%,transparent);border-radius:16px;padding:16px 16px 14px;border-left:3px solid var(--w1)}
+.wr-sig{font-size:.78rem;font-weight:700;opacity:.75;text-align:right}
 </style>
 </head>
 <body>
@@ -8059,6 +8061,32 @@ function wrCount(){try{document.querySelectorAll('.wr-cnt').forEach(el=>{if(el.d
 {const _rs=recapSlides;recapSlides=function(){const sl=_rs();try{const kb=(S.faList||[]).map(f=>({...f,nm:TEAMS[f.team]?TEAMS[f.team].city+' '+TEAMS[f.team].nick:'',lg:'KBO'})),ab=(S.abList||[]).map(f=>({...f,nm:String(f.tname||'').replace(/\s*\((MLB|NPB)\)/,'')}));
   const best=kb.concat(ab).sort((a,b)=>b.tot-a.tot)[0];const i=sl.findIndex(s=>s.ey==='인생 계약');
   if(best){const s={th:'teal',ey:'인생 계약',big:`${best.yrs}년 ${money(best.tot)}`,sub:`${best.y}년, ${best.nm}${best.lg!=='KBO'?` (${best.lg})`:''}.${best.lg==='MLB'?`\n총액 ${usd2(best.tot/USDM)}.`:''}\n그 가치를 증명하는 한 해였다.`};if(i>=0)sl[i]=s;else{const j=sl.findIndex(x=>x.ey==='영구결번'||x.ey==='팬들의 한마디'||x.last);sl.splice(j<0?sl.length-1:j,0,s)}}}catch(e){}return sl}}
+/* 마지막 장: 팬들이 보내는 편지 (선수 유형에 맞춰 3~4줄) */
+function wrLetter(){const P=isP(),t=careerTot(PRO),b=t.b,p=t.p,e=S.ended||{},gn=giv(ME.name),nm=ME.name,L=[],pk=a=>a[Math.floor(R()*a.length)];
+  const team=(()=>{try{const st=stints().filter(s=>PRO.includes(s.kind)&&s.kind==='KBO');const m={};st.forEach(s=>m[s.name]=(m[s.name]||0)+(s.y2-s.y1+1));return Object.entries(m).sort((a,b)=>b[1]-a[1])[0]?.[0]||teamLabel()}catch(x){return teamLabel()}})();
+  const mlb=S.rows.some(r=>r.lv==='MLB'),rings=(S.hist&&S.hist.rings)||0,one=!!S.retNo;
+  /* 1줄: 선수의 색깔 */
+  if(P){const sv=p.SV||0,hld=p.HLD||0,w=p.W||0;
+    if(sv>=120)L.push(pk([`9회, 당신이 마운드에 오르면 우리는 비로소 숨을 쉴 수 있었습니다.`,`경기의 마지막 아웃은 언제나 당신의 몫이었고, 우리는 그 순간을 믿고 기다렸습니다.`]),`${sv}번의 세이브, 그 하나하나가 누군가에겐 잊지 못할 밤이었습니다.`);
+    else if(hld>=100)L.push(`가장 뜨거운 순간마다 묵묵히 불을 끄고 내려가던 당신을 기억합니다.`,`${hld}개의 홀드, 화려한 조명은 없었어도 그 이닝들이 우리의 승리를 지켰습니다.`);
+    else if(w>=80)L.push(pk([`당신이 선발로 예고된 날이면, 그날은 이길 것 같은 하루였습니다.`,`마운드 위에서 긴 이닝을 홀로 버티던 당신의 뒷모습을 오래 기억하겠습니다.`]),`${w}승과 ${(p.K||0).toLocaleString()}개의 삼진, 숫자보다 더 큰 믿음을 주었습니다.`);
+    else L.push(`누군가는 기록을 보겠지만, 우리는 마운드에서 끝까지 버티던 당신의 눈빛을 기억합니다.`,`${p.G}경기, 공 하나에 담긴 진심이 언제나 전해졌습니다.`)}
+  else{const hr=b.HR||0,h=b.H||0,sb=b.SB||0,av=b.AB?b.H/b.AB:0;
+    if(hr>=250)L.push(pk([`당신의 타구가 밤하늘을 가를 때마다, 우리는 자리에서 일어나 함성을 질렀습니다.`,`담장 너머로 사라지던 그 공들처럼, 당신은 우리 마음속 가장 먼 곳까지 날아왔습니다.`]),`${hr}개의 홈런, 그중 단 하나도 그냥 지나간 적이 없었습니다.`);
+    else if(h>=1800||av>=.300)L.push(`어떤 공이 와도 기어이 안타를 만들어내던 당신의 방망이를 잊지 못할 겁니다.`,`${h.toLocaleString()}개의 안타, 그 하나하나가 우리에게는 희망이었습니다.`);
+    else if(sb>=250)L.push(`당신이 1루에 서면 경기장의 공기가 달라졌습니다.`,`${sb}번의 질주, 흙먼지 속에서 일어나던 당신이 우리 팀의 심장이었습니다.`);
+    else L.push(`화려한 숫자보다 늘 팀을 먼저 생각하던 당신의 플레이를 우리는 알고 있습니다.`,`${b.G}경기, 그라운드 위의 모든 순간이 진심이었습니다.`)}
+  /* 3줄: 함께한 시간 */
+  if(one)L.push(`평생 ${team} 한 유니폼만 입어준 당신, 그 번호 ${S.retNo.num}번은 이제 영원히 우리 곁에 남습니다.`);
+  else if(mlb)L.push(`바다 건너 큰 무대에서도, 다시 돌아와서도 당신은 언제나 우리의 자랑이었습니다.`);
+  else if(rings)L.push(`${rings>1?`${rings}번의 우승`:'그해 가을의 우승'}, 마지막 아웃 순간 함께 울던 그 밤을 평생 간직하겠습니다.`);
+  else L.push(`우승 반지가 없어도 괜찮습니다. 당신과 함께한 모든 시즌이 우리에겐 우승이었습니다.`);
+  /* 4줄: 작별 */
+  L.push(pk([`이제 그라운드 대신 관중석에서 같은 이름을 부르겠습니다. 고마웠어요, ${gn}.`,`당신의 야구는 끝났지만, 우리의 기억 속 ${nm}은(는) 영원히 현역입니다. 고마웠어요.`.replace(`${nm}은(는)`,jo(nm,'은','는')),`수고 많았습니다, ${gn}. 이제는 당신이 받은 함성만큼 행복하기를.`]));
+  return L.slice(0,4).join('\n')}
+{const _rs=recapSlides;recapSlides=function(){const sl=_rs();try{const s=sl.find(x=>x.last);if(s){const e=S.ended||{};if(!S._letter||S._letter.y!==(e.y||S.y))S._letter={y:e.y||S.y,t:wrLetter()};
+  s.sub=S._letter.t;s.sig=`— ${ME.name}을(를) 사랑한 팬들이 · ${e.age||age()}세 은퇴 · 커리어 점수 ${e.score??'-'}`.replace(`${ME.name}을(를)`,jo(ME.name,'을','를'))}}catch(e){}return sl}}
+{const _ws=wrSlide;wrSlide=function(s,i,n,o){let h=_ws(s,i,n,o);try{if(s&&s.last&&s.sig){h=h.replace('<div class="wr-sub">','<div class="wr-sub wr-letter">');const k=h.indexOf('<button class="wr-end"');const sig=`<div class="wr-sig">${esc(String(s.sig))}</div>`;h=k>=0?h.slice(0,k)+sig+h.slice(k):h.replace('</div>\n  <button class="rcp-l"',sig+'</div>\n  <button class="rcp-l"')}}catch(e){}return h}}
 
 </script>
 
