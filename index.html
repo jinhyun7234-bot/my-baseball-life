@@ -1815,13 +1815,13 @@ function resolve(t,b,outs){b=b.slice();let runs=0;
   const o=outs+1;if(o<3&&b[2]&&R()<.5){runs++;b[2]=0}return{b,outs:o,runs}}
 function followGame(o){
   const my=o.home?1:0,A=o.home?o.op:o.me,H=o.home?o.me:o.op,name=ME.name;
-  const G={title:o.title,sub:o.sub,ab:[A.ab,H.ab],c:[A.c,H.c],line:[[],[]],R:[0,0],Hh:[0,0],ev:[],idx:0,my};
+  const G={title:o.title,sub:o.sub,ab:[A.ab,H.ab],c:[A.c,H.c],line:[[],[]],R:[0,0],Hh:[0,0],BBt:[0,0],Et:[0,0],ev:[],idx:0,my};
   const T=[A,H],idx=[0,0],star=ovrE()>=o.L+5,spot=o.role==='start'&&S.order?S.order-1:star?ri(2,3):ri(4,6);
   const mb=blankB(),mp=blankP();let pitching=false,pc=0,used=false,phUsed=false,ra=0;
   const lim=68+E('sta')*.55+(sk('eater')?10:0),role=o.role,isB=!isP();S._pRole=(role==='SP'||role==='ace')?'SP':'RP';let relInn=0;const bigPS=!o.intl&&/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'');const multiG=role==='CL'?R()<cl(.22+(E('sta')-50)*.006,.12,.42):bigPS&&(role==='SU'||role==='MR')&&R()<cl((role==='MR'?.3:.24)+(E('sta')-50)*.006,.12,.45);
   const psEnt=role==='MR'?ri(5,7):role==='SU'?(R()<.45?7:8):9;let relLead=null;
   const st={b:[0,0,0],outs:0,inn:1,half:0,last:null};
-  const snap=(t,cls)=>{G.ev.push({t,c:cls||'',line:G.line.map(l=>l.slice()),R:G.R.slice(),Hh:G.Hh.slice(),b:st.b.slice(),outs:st.outs,inn:st.inn,half:st.half,last:st.last,pc,mk:mp.K,mo:mp.outs});st.last=null};
+  const snap=(t,cls)=>{G.ev.push({t,c:cls||'',line:G.line.map(l=>l.slice()),R:G.R.slice(),Hh:G.Hh.slice(),BBt:G.BBt.slice(),Et:G.Et.slice(),b:st.b.slice(),outs:st.outs,inn:st.inn,half:st.half,last:st.last,pc,mk:mp.K,mo:mp.outs});st.last=null};
   snap(`플레이볼! ${o.sub}`+(role==='none'?` · ${name}는 벤치에서 지켜본다`:isB?(role==='bench'?` · ${name} 대타 대기`:` · ${name} ${spot+1}번 ${POS[ME.pos]}`):role==='SP'?` · 선발 투수 ${name}`:` · ${name} 불펜 대기`));
   let inn=1;
   for(;inn<=15;inn++){
@@ -1830,7 +1830,7 @@ function followGame(o){
       const bat=half,fld=1-half;G.line[bat].push(0);let outs=0,b=[0,0,0],ran=0,meIn=false;const it=`${inn}회${half?'말':'초'}`;st.b=[0,0,0];st.outs=0;st.inn=inn;st.half=half;
       if(fld===my&&isB&&role==='start'){G.def=G.def||{g:0,e:0};const pg=cl((E('rng')-55)*.005,0,.07)*(['SS','2B','CF','3B'].includes(ME.pos)?1.2:.8),pe=cl((50-E('fld'))*.003+.012,.004,.07);
         if(R()<pg){G.def.g++;snap(`${it} ${name}, 몸을 날리는 다이빙 캐치! 안타를 지웠다`,'me def')}
-        else if(R()<pe){G.def.e++;const rr=R()<.5?1:0;G.R[bat]+=rr;G.line[bat][inn-1]+=rr;snap(`${it} ${name} 포구 실책…${rr?' 그 사이 1점을 내줬다':' 주자 출루'}`,'me bad')}}
+        else if(R()<pe){G.def.e++;G.Et[my]++;const rr=R()<.5?1:0;G.R[bat]+=rr;G.line[bat][inn-1]+=rr;snap(`${it} ${name} 포구 실책…${rr?' 그 사이 1점을 내줬다':' 주자 출루'}`,'me bad')}}
       if(fld===my&&!isB&&role!=='none'){const lead=G.R[my]-G.R[1-my];
         if(role==='SP'){if(inn===1&&!used){pitching=true;used=true}else if(pitching&&(pc>lim||(ra>=(o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'')?4:5)&&inn>=3)||inn>9)){pitching=false;snap(`${it} — ${name} 마운드를 내려간다 (${ip(mp.outs)}이닝 ${ra}실점, 투구수 ${pc})`,'sub')}}
         else if(!used&&((role==='CL'&&inn>=9&&lead>=1&&lead<=3)||(multiG&&inn===8&&lead>=0&&lead<=3)||(multiG&&inn>=9&&lead===0)||(role==='SU'&&inn===8&&lead>=0&&lead<=3)||(role==='MR'&&inn===6)||(o.intl&&role==='CL'&&inn>=9&&lead>=0&&lead<=4)||(bigPS&&role!=='CL'&&inn===psEnt&&lead>=-3&&lead<=4)||(bigPS&&role==='CL'&&inn>=9&&lead>=-1&&lead<=4)||(bigPS&&inn===9&&(role==='SU'||role==='MR')&&R()<.6)||(bigPS&&role==='CL'&&inn===9&&R()<.35))){pitching=true;used=true;relInn=1;relLead=lead;snap(`${it} — ${name} 마운드에 오른다 (${lead>0?`${lead}점 리드`:lead===0?'동점':`${-lead}점 차`})${multiG&&inn<9?' — 멀티이닝 대기':multiG&&lead===0?' — 연장 승부':''}`,'sub')}
@@ -1840,9 +1840,10 @@ function followGame(o){
         if(bat===my&&isB&&((role==='start'&&idx[bat]%9===spot)||(role==='bench'&&inn>=7&&!phUsed&&idx[bat]%9===spot))){me=true;st.b=b.slice();st.outs=outs;snap(`${it} ${outs}아웃${b[0]||b[1]||b[2]?` · 주자 ${[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')}루`:''} — ${name} 타석에 들어선다${risp?' (득점권!)':''}`,'meup');if(role==='bench')phUsed=true;S.big=true;S._bctx={outs,inn,my:G.R[bat],op:G.R[fld],b:b.slice()};t=meBatPA(T[fld].pR,risp)}
         else if(fld===my&&pitching){me=true;S.big=true;const tired=Math.max(0,pc-lim*.85)*.35;S._pInn=inn;S._pctx={outs,inn,my:G.R[fld],op:G.R[bat],b:b.slice(),pc};t=mePitPA(T[bat].bR,risp,tired);pc+=t==='K'?ri(4,6):t==='BB'?ri(4,7):ri(1,5)}
         else t=genPA(T[bat].bR,T[fld].pR);
+        let errPA=false;if(!me&&t==='GO'&&outs<2&&R()<.05){t='1B';errPA=true}
         S.big=false;idx[bat]++;
         const pb=b.slice();const r=resolve(t,b,outs);if(r.t2)t=r.t2;const dOuts=r.outs-outs;b=r.b;outs=r.outs;st.b=b.slice();st.outs=Math.min(3,outs);st.last={t,me,runs:r.runs,pb};
-        if(['1B','2B','3B','HR'].includes(t))G.Hh[bat]++;if(t==='HR'){G.HRt=G.HRt||[0,0];G.HRt[bat]++}
+        if(errPA)G.Et[fld]++;else if(['1B','2B','3B','HR'].includes(t))G.Hh[bat]++;if(t==='BB')G.BBt[bat]++;if(t==='HR'){G.HRt=G.HRt||[0,0];G.HRt[bat]++}
         G.R[bat]+=r.runs;G.line[bat][inn-1]+=r.runs;ran+=r.runs;if(t==='HR')(G.hrLog=G.hrLog||[]).push({i:inn,me:bat===my,mine:!!(me&&isB&&bat===my),r:r.runs,my:G.R[my],op:G.R[1-my]});
         const sc=r.runs?` — ${r.runs}점!`:'';
         if(me&&isB){(G.seq=G.seq||[]).push(seqLbl(t,dOuts,r.runs));(G.pl=G.pl||[]).push({i:inn,t,r:r.runs,dp:t==='GO'&&dOuts===2,my:G.R[my],op:G.R[1-my],o:outs});mb.PA++;if(t!=='BB')mb.AB++;if(['1B','2B','3B','HR'].includes(t))mb.H++;if(t==='2B')mb.D++;if(t==='3B')mb.T++;if(t==='HR'){mb.HR++;mb.R++}if(t==='BB')mb.BB++;if(t==='K')mb.K++;mb.RBI+=r.runs;
@@ -1852,7 +1853,7 @@ function followGame(o){
         if(me&&!isB&&pitching&&outs<3){if(G.ibInn!==inn){G.ibInn=inn;G.ib=0;G.hs=0;G.ir=0}const hit=['1B','2B','3B','HR'].includes(t);G.hs=hit?(G.hs||0)+1:t==='BB'?(G.hs||0):0;G.ib+=t==='BB'?1:0;G.ir+=r.runs;const big=!!(o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||''));
           const why=ra>=(big?5:6)?`${ra}실점`:G.ir>=4?'한 이닝 대량 실점':G.hs>=4?`${G.hs}연속 안타`:G.ib>=3?'제구 난조, 볼넷 남발':role!=='SP'&&ra>=3?`${ra}실점`:'';
           if(why){pitching=false;snap(`${it} ${name}, ${why}… 감독이 직접 마운드에 올라 공을 건네받는다 (${ip(mp.outs)}이닝 ${ra}실점)`,'sub')}}
-        else if(r.runs)snap(`${it} ${G.ab[bat]} ${pick(HTXT[t]).replace('!','')}${sc}`,'sc');
+        else if(r.runs)snap(`${it} ${G.ab[bat]} ${errPA?'상대 실책으로':pick(HTXT[t]).replace('!','')}${sc}`,'sc');
         if(half===1&&inn>=9&&G.R[1]>G.R[0])break}
       if(fld===my&&pitching&&!meIn)snap(`${it} ${name}, 삼자범퇴로 막아낸다`,'me');
       if(fld===my&&pitching&&role!=='SP'&&!(multiG&&relInn<2&&ra<=1)){pitching=false}
@@ -3898,7 +3899,7 @@ const seqCls=s=>/홈런/.test(s)?'hr':/안타|루타|볼넷|밀어내기/.test(s
 function mySeqTo(g,idx){const out=[];for(let i=0;i<=idx;i++){const e=g.ev[i],L=e.last;if(!L||!L.me)continue;if(!isP())out.push(seqLbl(L.t,/병살/.test(e.t)?2:1,L.runs));else out.push(L.t==='K'?'K':L.t==='HR'?'피홈런':/1B|2B|3B/.test(L.t)?'피안타':L.t==='BB'?'볼넷':'')}return out.filter(Boolean)}
 const PLAYN={'1B':'안타','2B':'2루타','3B':'3루타','HR':'홈런','K':'삼진','BB':'볼넷','GO':'땅볼','FO':'뜬공','LO':'직선타'};
 vFollow=function(g){const e=g.ev[Math.min(g.idx,g.ev.length-1)],n=Math.max(9,e.line[0].length,e.line[1].length),done=g.idx>=g.ev.length-1,P=isP();
-  const row=i=>`<tr class="${i===g.my?'myrow':''}"><td class="tm">${crest(g.ab[i],18,g.c[i])}<span class="tmn">${g.ab[i]}</span><span class="tms">${String(g.ab[i]).slice(0,2)}</span>${i===g.my?' <span class="mytag">MY</span>':''}</td>${[...Array(n)].map((_,k)=>`<td>${e.line[i][k]??''}</td>`).join('')}<td class="rr">${e.R[i]}</td><td>${e.Hh[i]}</td></tr>`;
+  const row=i=>`<tr class="${i===g.my?'myrow':''}"><td class="tm">${crest(g.ab[i],18,g.c[i])}<span class="tmn">${g.ab[i]}</span><span class="tms">${String(g.ab[i]).slice(0,2)}</span>${i===g.my?' <span class="mytag">MY</span>':''}</td>${[...Array(n)].map((_,k)=>`<td>${e.line[i][k]??''}</td>`).join('')}<td class="rr">${e.R[i]}</td><td>${e.Hh[i]}</td><td>${(e.Et||[0,0])[i]}</td><td>${(e.BBt||[0,0])[i]}</td></tr>`;
   const seq=mySeqTo(g,g.idx);
   const sit=e.inn?`<div class="gsit"><span class="gs-inn">${e.inn}회${e.half?'말':'초'}</span><span class="gs-out">${[0,1,2].map(i=>`<i class="${i<e.outs?'on':''}"></i>`).join('')}</span><span class="gs-base"><i class="b2 ${e.b&&e.b[1]?'on':''}"></i><i class="b3 ${e.b&&e.b[2]?'on':''}"></i><i class="b1 ${e.b&&e.b[0]?'on':''}"></i></span>
     ${P?`<span class="gs-k" key="k${e.mk}">K <b>${e.mk||0}</b></span><span class="gs-pc">${e.pc||0}구 · ${ip(e.mo||0)}이닝</span>`:`<span class="gs-me">${seq.length?seq.map(s=>`<em class="sq ${seqCls(s)}">${s}</em>`).join(''):'<span class="muted">아직 타석 전</span>'}</span>`}</div>`:'';
@@ -3908,7 +3909,7 @@ vFollow=function(g){const e=g.ev[Math.min(g.idx,g.ev.length-1)],n=Math.max(9,e.l
   const L=e.last,big=L&&L.me&&!P?{HR:['홈런!!','HR','#e23b3b'],'3B':['3루타!','3B','#f59f00'],'2B':['2루타!','2B','#f59f00']}[L.t]:null;
   const fx=big?`<div class="fxbig" style="--fx:${big[2]}" key="${g.idx}"><b>${big[0]}</b><span>${big[1]}</span></div>${ui.fxShown!==g.idx&&L.t==='HR'?`<div class="fxfull hr" key="f${g.idx}"><div class="fxburst"></div><div class="fxtxt">HOME RUN!</div><div class="fxsub">${L.runs>=4?'만루 홈런!!':L.runs>=2?`${L.runs}점 홈런!`:'솔로 홈런!'}</div><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>`:''}`:'';
   return`<div class="row"><span class="lbl sp">${esc(g.sub)}</span><span class="tiny muted">${g.idx+1}/${g.ev.length}</span></div><h2>${esc(g.title)}</h2>
-  <div class="board"><div class="lscore${n>9?' ext':''}${n>12?' ext2':''}"><table><thead><tr><th></th>${[...Array(n)].map((_,i)=>`<th>${i+1}</th>`).join('')}<th class="rr">R</th><th>H</th></tr></thead><tbody>${row(0)}${row(1)}</tbody></table></div>${done?'':sit}</div>
+  <div class="board"><div class="lscore${n>9?' ext':''}${n>12?' ext2':''}"><table><thead><tr><th></th>${[...Array(n)].map((_,i)=>`<th>${i+1}</th>`).join('')}<th class="rr">R</th><th>H</th><th>E</th><th>B</th></tr></thead><tbody>${row(0)}${row(1)}</tbody></table></div>${done?'':sit}</div>
   ${done?gameDone(g):`${now}${e.b?field(g,e):''}${fx}${prev?`<div class="gprev">${prev}</div>`:''}`}`};
 {const _gd=gameDone;gameDone=function(g){let h=_gd(g);if(!isP()&&g.seq&&g.seq.length)h=h.replace('<div class="gd-me">',`<div class="gd-seq">${g.seq.map(s=>`<em class="sq ${seqCls(s)}">${s}</em>`).join('<i>-</i>')}</div><div class="gd-me">`);return h}}
 {const _fd2=field;field=function(g,e){return _fd2(g,e).replace(/<g font-size="10" font-weight="800"><rect x="6" y="6"[\s\S]*?<\/g>/,'')}}
@@ -6521,11 +6522,11 @@ sweep:[["{sw}연승 실화냐 ㅋㅋㅋㅋ 이게 우리 팀이라고?",["시즌
   if(win&&(x.inns||9)>9)sits.push('extra');
   if(good&&(ME.fat||0)>=75)sits.push('grit');
   if(!win&&opener&&diff>=5&&(S._psSeed||9)<=2)sits.push('firstBlow');
-  if(win&&x.clinch&&l0===0&&w0>=1)sits.push('sweep');
+  const wcAdv=/와일드카드/.test(t)&&(S._psSeed===4||/1승 (어드밴티지|안고)/.test(x.sub||''))?1:0,w0r=Math.max(0,w0-wcAdv);if(win&&x.clinch&&l0===0&&w0r>=1)sits.push('sweep');
   if(win&&x.clinch&&(S._psSeed||0)>=3&&!/한국시리즈|월드시리즈/.test(t))sits.push('upset');
   if(!sits.length)return out;
   S.pmY=S.pmY&&S.pmY.y===S.y?S.pmY:{y:S.y,u:{}};const use=sits.slice(0,2),add=[];
-  const fill=s=>s.replace(/\{n\}(이|가|은|는|을|를|과|와)?(?=[\s,.!?ㅋㅠ]|$)/g,(m,j)=>j?jo(gn,{이:'이',가:'이',은:'은',는:'은',을:'을',를:'을',과:'과',와:'과'}[j],{이:'가',가:'가',은:'는',는:'는',을:'를',를:'를',과:'와',와:'와'}[j]):gn).replace(/\{n\}/g,gn).replace(/\{k\}/g,x.gK||0).replace(/\{ip\}/g,Math.floor(ipO/3)).replace(/\{inn\}/g,x.inns||10).replace(/\{sw\}/g,w0+1);
+  const fill=s=>s.replace(/\{n\}(이|가|은|는|을|를|과|와)?(?=[\s,.!?ㅋㅠ]|$)/g,(m,j)=>j?jo(gn,{이:'이',가:'이',은:'은',는:'은',을:'을',를:'을',과:'과',와:'과'}[j],{이:'가',가:'가',은:'는',는:'는',을:'를',를:'를',과:'와',와:'와'}[j]):gn).replace(/\{n\}/g,gn).replace(/\{k\}/g,x.gK||0).replace(/\{ip\}/g,Math.floor(ipO/3)).replace(/\{inn\}/g,x.inns||10).replace(/\{sw\}/g,(typeof w0r!=='undefined'?w0r:w0)+1);
   use.forEach((k,ii)=>{const pool=(PSIT[k]||[]).filter(c=>!S.pmY.u[c[0]]);const n=ii===0?3:2;pool.sort(()=>R()-.5).slice(0,n).forEach(c=>{S.pmY.u[c[0]]=1;const rr=c[1].slice().sort(()=>R()-.5).slice(0,R()<.5?1:2).map(fill);add.push(mkC(fill(c[0]),rr,{up:ri(300,5000),must:1}))})});
   /* 같은 활약이라도 이전 기록에 따라 한 줄 */
   if(!P&&good&&hr>=1&&cmX('ctx'+S.y+t)){let c=null;if(sAvg!=null&&sAvg>=.32)c='역시 클래스는 영원하다';else if(sAvg!=null&&sAvg<.22)c='정규시즌에 잠수 타더니 가을에 갑자기 사람이 바뀌었네';else if(fa!=null&&fa<.15)c='드디어 사람 구실 하네 ㅋㅋㅋㅋ';else if(S.postY&&S.postY[S.y-1]&&S.postY[S.y-1].b.AB>=12&&S.postY[S.y-1].b.H/S.postY[S.y-1].b.AB>=.3)c='작년에 이어 올해도 가을의 남자 입증';else if(S.pro.years<=1&&S.pro.league==='KBO')c='FA 앞두고 이러면 이제 돈 받을 일만 남았네';if(c&&!S.pmY.u[c]){S.pmY.u[c]=1;add.push(mkC(c,[],{up:ri(500,3000),must:1}))}}
