@@ -7900,7 +7900,12 @@ function psAcc(x){try{const y=S.y;let A=S._psAcc;if(!A||A.y!==y)A=S._psAcc={y,G:
     if(slump)put(pick([`맛${gn} 연애기사 띄우고 더 잘해보자 ㅋㅋㅋ`,`맛${gn} 입갤 ㅋㅋㅋㅋ 연애하더니 맛갔냐`,`맛${gn} 탈출하려면 연애 버프 받아야 함 ㅋㅋ`]),[pick(['ㅋㅋㅋㅋㅋ 맛'+gn,'연애가 문제가 아니라 폼이 문제임','이번엔 갓'+gn+' 돌아오자'])]);
     else put(pick([`연애하고 더 잘하네 맛${gn} 아니고 갓${gn} ㅋㅋ`,`${gn} 연애 버프 미쳤다 ㅋㅋㅋ 계속 만나라`,`이 기세면 ${gn} 연애 응원한다 진심`]),[pick(['ㄹㅇ 연애 버프 ㅋㅋ','결혼까지 가자','경기력만 유지해라'])]);
     out.splice(0,0,...add);return out}
-  if(!x||x.intl)return out;const ipO=x.ipO||0,ra=x.ra||0,pa=x.gPA||0,h=x.gH||0;const played=P?ipO>0:pa>0;if(!played)return out;
+  if(!x)return out;const ipO=x.ipO||0,ra=x.ra||0,pa=x.gPA||0,h=x.gH||0;const played=P?ipO>0:pa>0;if(!played)return out;
+  /* 젊은 선수(24세 이하)가 큰 경기(가을야구·국제대회)에서 3경기 연속 부진 → "더 울어라 젊은 인생아" */
+  if(x.ps||x.intl){try{const bd=P?(ipO>=3&&ra>=3)||(ipO<9&&ra>=2):(pa>=3&&h===0),gk=(x.title||'')+'|'+(x.sub||'')+'|'+ipO+'|'+pa,B=S._bigBad||(S._bigBad={n:0,k:''});
+    if(B.k!==gk){B.k=gk;B.n=bd?B.n+1:0}
+    if(bd&&B.n>=3&&age()<=24)put(pick(['더 울어라 젊은 인생아',`더 울어라 젊은 인생아 ${gn}아`.replace(gn+'아',vocA(gn)),'더 울어라 젊은 인생아… 이것도 다 경험이다']),[pick(['ㅋㅋㅋㅋㅋㅋ 아 이건 못 참지','큰 경기 '+B.n+'연속이면 울어야지 ㅠ','그래도 젊으니까 내년이 있다','이 댓글 나올 줄 알았다 ㅋㅋㅋ'])],ri(1500,5000))}catch(e){}}
+  if(x.intl){if(add.length)out.splice(0,0,...add);return out}
   const good=P?((ipO>=15&&ra<=2)||(ipO>=3&&ra===0&&ipO<9)):(h>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2),bad=P?(ipO>=3&&ra>=4):(pa>=4&&h===0&&!(x.gRBI>0));
   /* ○○ 호감이면 개추 / MVP면 개추 (잘한 날, 대댓글 "개추 ㅋㅋㅋ") */
   if(good&&R()<(x.ps?.6:.25))put(pick([`${gn} 호감이면 개추 ㅋㅋㅋㅋ`,`${jo(gn,'이','가')} MVP면 개추 ㅋㅋㅋㅋㅋ`,`오늘 ${gn} 미쳤으면 개추 ㅋㅋㅋㅋ`]),['개추 ㅋㅋㅋ','개추 ㅋㅋㅋㅋ'].slice(0,ri(1,2)));
@@ -7912,7 +7917,7 @@ function psAcc(x){try{const y=S.y;let A=S._psAcc;if(!A||A.y!==y)A=S._psAcc={y,G:
   if(P&&ipO>=18&&ra<=1&&x.win===false)put(ra===1?pick([`${vocA(gn)} 니가 1실점 하면 우리 타자들이 도와줄 수 없어...`,`${gn} ${Math.floor(ipO/3)}이닝 1실점 패전 실화냐 타자들 뭐 하냐`]):`${gn} 무실점인데 타선이 한 점을 못 내주네…`,[pick(['타선 응답하라','투수 혼자 야구함','이게 우리 팀 타선이다…'])]);
   /* 가을야구 3경기 이상 · 누가 봐도 부진 */
   if(x.ps){const A=psAcc(x);if(A&&A.G>=3&&bad){const poor=P?(A.outs>=9&&A.R*27/A.outs>=6):((A.AB>=8&&A.H/A.AB<=.27)||A.E>=3);
-    if(poor)put(pick([`${vocA(gn)} 내년에 니 자리는 없다 꺼지라`,`${vocA(gn)} 가을에 이러면 내년엔 니 자리 없다`,`${gn} 이번 가을 ${P?`ERA ${(A.R*27/A.outs).toFixed(2)}`:`타율 ${(A.H/Math.max(1,A.AB)).toFixed(3).replace(/^0/,'')}`}… 내년엔 다른 사람 쓰자`]),[pick(['ㄹㅇ 할 말 없음','그래도 너무하다 ㅋㅋ','비시즌에 정신 차려라'])])}}
+    if(poor)put(pick([`${vocA(gn)} 내년에 니 자리는 없다 끄지라`,`${vocA(gn)} 가을에 이러면 내년엔 니 자리 없다`,`${gn} 이번 가을 ${P?`ERA ${(A.R*27/A.outs).toFixed(2)}`:`타율 ${(A.H/Math.max(1,A.AB)).toFixed(3).replace(/^0/,'')}`}… 내년엔 다른 사람 쓰자`]),[pick(['ㄹㅇ 할 말 없음','그래도 너무하다 ㅋㅋ','비시즌에 정신 차려라'])])}}
   if(add.length)add.forEach((c,i)=>out.splice(Math.min(out.length,i*2),0,c))}catch(e){}return out}}
 /* 투수·타자 구분 최종 필터: 모든 댓글·대댓글에 적용 */
 const PIT_X2=/홈런(?! ?(맞|허용|내줬|안 맞|억제|군단))|안타 (쳐|치)|장타|볼넷 골라/;
