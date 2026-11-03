@@ -8138,6 +8138,10 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
     if(mlb)L.push(`한국인 선수가 월드시리즈에서 이 정도로 하드캐리하다니`,`월드시리즈 우승 반지 낀 한국인 ${P?'투수':'타자'} ${gn} 국뽕 MAX`,`메이저 우승팀 핵심이 한국인이라니 꿈인가 싶다`);
     L.sort(()=>R()-.5).slice(0,3).forEach(tt=>put(tt,[pick(['반박 불가','ㄹㅇ 우승 청부사','이건 역사다','개추 박고 간다','눈물 난다 진짜'])]))}
   out.splice(0,0,...add)}catch(e){}return out}}
+/* 나이에 맞는 댓글: 35세 미만이면 노장·베테랑 취급 금지 · 25세 이상이면 '어린 선수' 취급 금지 */
+{const OLD=/이 나이에|저 나이에|노장|베테랑|나이를 잊|회춘|불혹|녹슬지|경험은 무시 못|자기 관리가 얼마나|자기관리가 베테랑|에이징 커브|노익장|은퇴 전에|마지막 불꽃|아직 죽지 않|살에 이게/,YOUNG=/어린 선수|어린 나이|고졸 신인|애기|막내가|신인이 벌써|신인이 이|이제 막 데뷔|아기/;
+ const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME)return out;const a=age();const bad=t=>(a<35&&OLD.test(t))||(a>=25&&YOUNG.test(t));
+  out=out.filter(c=>!(c&&bad(c.t)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!bad(typeof r==='string'?r:r&&r.t))})}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
