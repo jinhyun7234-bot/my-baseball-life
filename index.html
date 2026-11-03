@@ -1171,6 +1171,8 @@ html[data-gt="light"]{--good:#08875a;--g6:#08875a}
 .wr-bar{animation:wrGrow .7s cubic-bezier(.2,.8,.2,1) both}@keyframes wrGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
 .wr-line{stroke-dasharray:1200;stroke-dashoffset:1200;animation:wrDraw 1.4s ease forwards}@keyframes wrDraw{to{stroke-dashoffset:0}}
 .wr-leg{display:flex;gap:12px;font-size:.75rem;font-weight:700;opacity:.85}.wr-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.wr-hit{fill:transparent;cursor:pointer}.wr-hit.sel{fill:color-mix(in srgb,var(--wf) 14%,transparent)}
+.wr-tip{margin-top:-6px;text-align:center;font-size:.82rem;font-weight:700;opacity:.6;min-height:1.2em}.wr-tip.on{opacity:1}
 .wr-tbl{overflow-x:auto;border-radius:14px;background:color-mix(in srgb,var(--wf) 8%,transparent)}
 .wr-tbl table{width:100%;border-collapse:collapse;font-size:.74rem;font-variant-numeric:tabular-nums;white-space:nowrap}
 .wr-tbl th{font-size:.7rem;font-weight:800;opacity:.7;text-align:right;padding:8px 5px;border-bottom:1px solid color-mix(in srgb,var(--wf) 25%,transparent)}.wr-tbl td{text-align:right;padding:9px 5px;font-weight:700}
@@ -8249,10 +8251,17 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
     put(pick(L),[pick(['볼배합은 안 늙는다','공 빠르기보다 수 싸움','타자들이 알고도 당함 ㅋㅋ','이래서 경험이 무섭다'])])}}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
-/* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
+/* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 9시즌 이상 뛰었고, 그 팀 WAR 60 이상이면 그 팀이 영구결번
+   · 그 팀 주전으로 우승할 때마다 기준 −2 · KBO는 MLB 통산 WAR의 10%만큼 기준이 더 내려감 (계산에만 쓰고 표시는 안 함)
    (예: 롯데 → MLB → 롯데 복귀 = KBO에선 롯데 한 팀이라 OK · KBO에서 두 팀 이상 뛰었으면 KBO 영구결번은 없음) */
-retireNo=function(){let best=null;for(const lv of PRO){const rs=S.rows.filter(r=>r.lv===lv);if(!rs.length)continue;const teams=new Set(rs.map(r=>r.team));if(teams.size!==1)continue;
-  let w=0;rs.forEach(r=>{try{w+=rowWAR(r)}catch(e){}});if(w>=55&&(!best||w>best.w))best={team:[...teams][0],w,lv}}return best};
+retireNo=function(){let best=null;const W=rs=>{let w=0;rs.forEach(r=>{try{w+=rowWAR(r)}catch(e){}});return w};
+  const mlbW=W(S.rows.filter(r=>r.lv==='MLB')),SER={KBO:/한국시리즈 우승/,MLB:/월드시리즈 우승/,NPB:/일본시리즈 우승/};
+  for(const lv of PRO){const rs=S.rows.filter(r=>r.lv===lv);if(!rs.length)continue;const teams=new Set(rs.map(r=>r.team));if(teams.size!==1)continue;
+    const team=[...teams][0],seasons=new Set(rs.filter(r=>(r.b.G||0)+(r.p.G||0)>0).map(r=>r.y));if(seasons.size<9)continue;
+    const starter=y=>rs.some(r=>r.y===y&&((r.b.PA||0)>=300||(r.p.outs||0)>=180));
+    const rings=(S.awards||[]).filter(a=>a&&SER[lv]&&SER[lv].test(a.n)&&seasons.has(a.y)&&starter(a.y)).length;
+    const need=60-2*rings-(lv==='KBO'?Math.max(0,mlbW)*.1:0),w=W(rs);
+    if(w>=need&&(!best||w>best.w))best={team,w,lv}}return best};
 
 /* ---------- 리캡 데이터 ---------- */
 const WR_TH={green:['#0d0d0d','#ffffff','#1ed760','#169c46'],pink:['#ff3ea5','#120010','#ffe14d','#6b1fff'],blue:['#2d1bff','#ffffff','#ff6ad5','#00e5ff'],sun:['#ff6a1a','#140800','#ffd400','#c4001a'],
@@ -8277,9 +8286,9 @@ recapSlides=function(){const e=S.ended||{},P=isP(),t=careerTot(PRO),b=t.b,p=t.p,
   sl.push({th:'green',ey:'YOUR CAREER WRAPPED',big:ME.name,sub:`${first}–${e.y||S.y} · ${yrs}년의 야구 인생`,av:1,foot:'화면을 눌러 넘겨보세요'});
   sl.push({th:'pink',ey:'시작',big:SCHOOLS[S.school]?SCHOOLS[S.school].n:'',sub:`${first}년, 16살 고교 1학년.\n${dr?`${dr.y+1} 드래프트 ${dr.rd}라운드 전체 ${dr.pick}순위.`:S.pro&&S.pro.dev?'아무도 부르지 않았지만, 육성선수로 다시 시작했다.':S.univ?`${S.univ}를 거쳐 프로에 왔다.`:'프로의 문은 끝내 열리지 않았다.'}`});
   sl.push({th:'blue',ey:'숫자로 보는 커리어',nums:P?[[p.G,'경기'],[p.W,'승'],[p.K,'탈삼진'],[p.SV,'세이브'],[p.outs?+(p.R*27/p.outs).toFixed(2):0,'평균자책'],[+t.w.toFixed(1),'WAR']]:[[b.G,'경기'],[b.H,'안타'],[b.HR,'홈런'],[b.RBI,'타점'],[b.AB?+(b.H/b.AB).toFixed(3):0,'타율'],[+t.w.toFixed(1),'WAR']]});
-  if(ys.length>=2)sl.push({th:'ink',ey:'시즌별 WAR',sub:`${ys.length}시즌의 기록 · 가장 높은 막대가 커리어 하이`,chart:{type:'bar',pts:ys.map(s=>[String(s.y).slice(2),s.w,s.lv]),hi:best?String(best.y).slice(2):''}});
-  const ln=ys.filter(s=>P?s.era!=null:s.ops!=null);if(ln.length>=3)sl.push({th:'teal',ey:P?'시즌별 평균자책':'시즌별 OPS',sub:P?'낮을수록 좋아요':'높을수록 좋아요',chart:{type:'line',inv:P?1:0,pts:ln.map(s=>[String(s.y).slice(2),P?s.era:s.ops])}});
-  if(best&&best.w>0)sl.push({th:'sun',ey:'커리어 하이',big:`${best.y}`,sub:`${lineFor(S.rows.filter(r=>r.y===best.y&&PRO.includes(r.lv)))}\n그해, 리그는 당신의 것이었다.`});
+  if(ys.length>=2)sl.push({th:'ink',ey:'시즌별 WAR',sub:`${ys.length}시즌의 기록 · 가장 높은 막대가 커리어 하이`,chart:{type:'bar',pts:ys.map(s=>[String(s.y).slice(2),s.w,s.lv,s.y,P?(s.era!=null?'ERA '+s.era.toFixed(2):''):(s.ops!=null?'OPS '+s.ops.toFixed(3).replace(/^0/,''):'')]),hi:best?String(best.y).slice(2):''}});
+  const ln=ys.filter(s=>P?s.era!=null:s.ops!=null);if(ln.length>=3)sl.push({th:'teal',ey:P?'시즌별 평균자책':'시즌별 OPS',sub:P?'낮을수록 좋아요':'높을수록 좋아요',chart:{type:'line',inv:P?1:0,lbl:P?'ERA':'OPS',pts:ln.map(s=>[String(s.y).slice(2),P?s.era:s.ops,s.lv,s.y,s.w])}});
+  if(best&&best.w>0)sl.push({th:'sun',ey:'커리어 하이',big:`${best.y}`,sub:`${[...new Set(S.rows.filter(r=>r.y===best.y&&PRO.includes(r.lv)).map(r=>r.team))].join(' · ')}\n${lineFor(S.rows.filter(r=>r.y===best.y&&PRO.includes(r.lv)))}\n그해, 리그는 당신의 것이었다.`});
   const lgRows=PRO.map(lv=>{const rs=S.rows.filter(r=>r.lv===lv);if(!rs.length)return null;const B=blankB(),Pp=blankP();let w=0;rs.forEach(r=>{addTo(B,r.b);addTo(Pp,r.p);try{w+=rowWAR(r)}catch(e){}});const n=new Set(rs.map(r=>r.y)).size;
     return P?[lv,n,Pp.G,`${Pp.W}-${Pp.L}`,Pp.SV,Pp.outs?(Pp.R*27/Pp.outs).toFixed(2):'-',Pp.K,w.toFixed(1)]:[lv,n,B.G,B.AB?(B.H/B.AB).toFixed(3).replace(/^0/,''):'-',B.HR,B.H,B.PA?opsN(B).toFixed(3).replace(/^0/,''):'-',w.toFixed(1)]}).filter(Boolean);
   if(lgRows.length)sl.push({th:'lime',ey:'리그별 통산 기록',table:{head:P?['리그','시즌','경기','승-패','세이브','ERA','K','WAR']:['리그','시즌','경기','타율','홈런','안타','OPS','WAR'],rows:lgRows}});
@@ -8297,11 +8306,12 @@ function wrChart(c,th){const W=320,H=170,pad=20,pts=c.pts||[];if(!pts.length)ret
   if(c.type==='bar'){const vs=pts.map(p=>+p[1]||0),mx=Math.max(1,...vs),mn=Math.min(0,...vs),rng=mx-mn,bw=(W-pad*2)/pts.length,zero=H-pad-(0-mn)/rng*(H-pad*2);
     const lvC={KBO:th[2],MLB:th[3],NPB:th[1]};
     return`<svg class="wr-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="시즌별 WAR 막대 그래프"><line x1="${pad}" x2="${W-pad}" y1="${zero}" y2="${zero}" stroke="${th[1]}" stroke-opacity=".3"/>${pts.map((p,i)=>{const v=+p[1]||0,h=Math.abs(v)/rng*(H-pad*2),x=pad+i*bw+bw*.15,y=v>=0?zero-h:zero,hi=String(p[0])===String(c.hi);
-      return`<g><rect class="wr-bar" style="animation-delay:${(i*.05).toFixed(2)}s;transform-origin:${x}px ${zero}px" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*.7).toFixed(1)}" height="${Math.max(1,h).toFixed(1)}" rx="2" fill="${lvC[p[2]]||th[2]}" ${hi?`stroke="${th[1]}" stroke-width="2"`:''}/>${hi?`<text x="${(x+bw*.35).toFixed(1)}" y="${(y-5).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="800" fill="${th[1]}">${T(v)}</text>`:''}${pts.length<=16||i%2===0?`<text x="${(x+bw*.35).toFixed(1)}" y="${H-4}" text-anchor="middle" font-size="9" fill="${th[1]}" fill-opacity=".7">'${T(p[0])}</text>`:''}</g>`}).join('')}</svg>
+      return`<g><rect class="wr-bar" style="animation-delay:${(i*.05).toFixed(2)}s;transform-origin:${x}px ${zero}px" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*.7).toFixed(1)}" height="${Math.max(1,h).toFixed(1)}" rx="2" fill="${lvC[p[2]]||th[2]}" ${hi?`stroke="${th[1]}" stroke-width="2"`:''}/>${hi?`<text x="${(x+bw*.35).toFixed(1)}" y="${(y-5).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="800" fill="${th[1]}">${T(v)}</text>`:''}${pts.length<=16||i%2===0?`<text x="${(x+bw*.35).toFixed(1)}" y="${H-4}" text-anchor="middle" font-size="9" fill="${th[1]}" fill-opacity=".7">'${T(p[0])}</text>`:''}<rect class="wr-hit" data-tip="${T(`${p[3]||"'"+p[0]} · WAR ${v}${p[4]?' · '+p[4]:''}`)}" x="${(pad+i*bw).toFixed(1)}" y="0" width="${bw.toFixed(1)}" height="${H}" rx="3"/></g>`}).join('')}</svg>
+      <div class="wr-tip">막대를 누르면 그 해 기록이 보여요</div>
       <div class="wr-leg">${[...new Set(pts.map(p=>p[2]))].map(l=>`<span><i style="background:${lvC[l]||th[2]}"></i>${T(l)}</span>`).join('')}</div>`}
   const vs=pts.map(p=>+p[1]||0),mx=Math.max(...vs),mn=Math.min(...vs),rng=(mx-mn)||1,X=i=>pad+i*(W-pad*2)/Math.max(1,pts.length-1),Y=v=>{const k=(v-mn)/rng;return pad+(c.inv?k:1-k)*(H-pad*2-10)};
   const d=pts.map((p,i)=>`${i?'L':'M'}${X(i).toFixed(1)} ${Y(+p[1]).toFixed(1)}`).join(' ');const bi=c.inv?vs.indexOf(mn):vs.indexOf(mx);
-  return`<svg class="wr-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="시즌별 추이 그래프"><path class="wr-line" d="${d}" fill="none" stroke="${th[2]}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${pts.map((p,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(+p[1]).toFixed(1)}" r="${i===bi?5:3}" fill="${i===bi?th[3]:th[2]}"/>${i===bi?`<text x="${X(i).toFixed(1)}" y="${(Y(+p[1])-9).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="800" fill="${th[1]}">${T(p[1])}</text>`:''}${pts.length<=14||i%2===0?`<text x="${X(i).toFixed(1)}" y="${H-2}" text-anchor="middle" font-size="9" fill="${th[1]}" fill-opacity=".7">'${T(p[0])}</text>`:''}`).join('')}</svg>`}
+  return`<svg class="wr-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="시즌별 추이 그래프"><path class="wr-line" d="${d}" fill="none" stroke="${th[2]}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${pts.map((p,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(+p[1]).toFixed(1)}" r="${i===bi?5:3}" fill="${i===bi?th[3]:th[2]}"/>${i===bi?`<text x="${X(i).toFixed(1)}" y="${(Y(+p[1])-9).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="800" fill="${th[1]}">${T(p[1])}</text>`:''}${pts.length<=14||i%2===0?`<text x="${X(i).toFixed(1)}" y="${H-2}" text-anchor="middle" font-size="9" fill="${th[1]}" fill-opacity=".7">'${T(p[0])}</text>`:''}<rect class="wr-hit" data-tip="${T(`${p[3]||"'"+p[0]} · ${c.lbl||''} ${c.lbl==='OPS'?(+p[1]).toFixed(3).replace(/^0/,''):p[1]}${p[4]!=null?' · WAR '+p[4]:''}`)}" x="${(X(i)-(W-pad*2)/Math.max(1,pts.length-1)/2).toFixed(1)}" y="0" width="${((W-pad*2)/Math.max(1,pts.length-1)).toFixed(1)}" height="${H}"/>`).join('')}</svg><div class="wr-tip">점을 누르면 그 해 기록이 보여요</div>`}
 function wrSlide(s,i,n,o){o=o||{};const th=WR_TH[s.th]||WR_TH.green,T=v=>esc(String(v==null?'':v));const num=v=>{const x=+v;if(!isFinite(x))return T(v);const dec=String(v).includes('.')?String(v).split('.')[1].length:0;return`<b class="wr-cnt" data-v="${x}" data-d="${dec}">${dec?x.toFixed(dec):x.toLocaleString()}</b>`};
   return`<div class="wr${o.embed?' embed':''}" style="--wb:${th[0]};--wf:${th[1]};--w1:${th[2]};--w2:${th[3]}"><i class="wr-blob a"></i><i class="wr-blob b"></i>
   <div class="wr-bars">${Array.from({length:n},(_,j)=>`<i class="${j<i?'done':j===i?'on':''}"></i>`).join('')}</div>${o.embed?'':`<button class="wr-x" data-act="rcpx" aria-label="닫기">✕</button>`}
@@ -8356,6 +8366,11 @@ function wrLetter(){const P=isP(),t=careerTot(PRO),b=t.b,p=t.p,e=S.ended||{},gn=
 {const _rs=recapSlides;recapSlides=function(){const sl=_rs();try{const s=sl.find(x=>x.last);if(s){const e=S.ended||{};if(!S._letter||S._letter.y!==(e.y||S.y))S._letter={y:e.y||S.y,t:wrLetter()};
   s.sub=S._letter.t;s.sig=`— ${ME.name}을(를) 사랑한 팬들이 · ${e.age||age()}세 은퇴 · 커리어 점수 ${e.score??'-'}`.replace(`${ME.name}을(를)`,jo(ME.name,'을','를'))}}catch(e){}return sl}}
 {const _ws=wrSlide;wrSlide=function(s,i,n,o){let h=_ws(s,i,n,o);try{if(s&&s.last&&s.sig){h=h.replace('<div class="wr-sub">','<div class="wr-sub wr-letter">');const k=h.indexOf('<button class="wr-end"');const sig=`<div class="wr-sig">${esc(String(s.sig))}</div>`;h=k>=0?h.slice(0,k)+sig+h.slice(k):h.replace('</div>\n  <button class="rcp-l"',sig+'</div>\n  <button class="rcp-l"')}}catch(e){}return h}}
+
+/* 그래프 막대·점 누르면 그 해 수치 표시 (리캡 넘김 버튼보다 먼저 잡음) */
+if(typeof window!=='undefined')window.addEventListener('click',e=>{try{let h=e.target&&e.target.closest&&e.target.closest('.wr-hit');if(!h&&e.target&&e.target.closest&&e.target.closest('.rcp-l,.rcp-r')&&document.elementsFromPoint)h=document.elementsFromPoint(e.clientX,e.clientY).find(x=>x.classList&&x.classList.contains('wr-hit'));if(!h)return;e.stopImmediatePropagation();e.stopPropagation();e.preventDefault();
+  const box=h.closest('.wr-in')||document;box.querySelectorAll('.wr-hit.sel').forEach(x=>x.classList.remove('sel'));h.classList.add('sel');
+  const svg=h.closest('svg');let tip=svg&&svg.nextElementSibling;if(!(tip&&tip.classList.contains('wr-tip')))tip=box.querySelector('.wr-tip');if(tip){tip.textContent=h.dataset.tip||'';tip.classList.add('on')}}catch(x){}},true);
 
 /* ===================== 트레이드 발표 화면: 옛 팀 → 새 팀, 새 유니폼, OFFICIAL 도장 ===================== */
 {const _tg=ACT.tradeGo;ACT.tradeGo=function(a){let from=null;try{from={n:teamLabel(),c:teamColor()}}catch(e){}const r=_tg(a);try{const to={n:teamLabel(),c:teamColor()};const yrs=(()=>{try{return proYears()}catch(e){return 0}})();
