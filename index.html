@@ -1765,23 +1765,30 @@ function natForm(){const cur=yearTot(S.y,['KBO']),prv=yearTot(S.y-1,['KBO']);
 function intl(rep,cy){
   const m=S.m;if(!(S.stage==='pro'&&!S.pro.dev&&S.pro.debut<=S.y&&S.pro.league==='KBO'))return;
   const o=ovrE(),nf=natForm(),good=(nf&&nf.ok)||o>=62;let ev=null;
-  if(m===8&&(cy===2028||cy===2032)&&good)ev={n:`${cy} 올림픽`,opp:['일본','미국','도미니카']};
-  if(m===9&&(cy===2030||cy===2034||cy===2038)&&good)ev={n:`${cy} 아시안게임`,opp:['대만','일본']};
-  if(m===11&&(cy===2027||cy===2031||cy===2035)&&good)ev={n:`${cy} 프리미어12`,opp:['일본','대만','미국','멕시코']};
-  if(m===3&&(cy===2030||cy===2034)&&good)ev={n:`${cy} WBC`,opp:['일본','미국','도미니카']};
+  if(m===8&&cy>=2028&&(cy-2028)%4===0&&good)ev={n:`${cy} 올림픽`,opp:['일본','미국','도미니카']};
+  if(m===9&&cy>=2026&&(cy-2026)%4===0&&good)ev={n:`${cy} 아시안게임`,opp:['대만','일본']};
+  if(m===11&&cy>=2027&&(cy-2027)%4===0&&good)ev={n:`${cy} 프리미어12`,opp:['일본','대만','미국','멕시코']};
+  if(m===3&&cy>=2026&&(cy-2026)%4===0&&good)ev={n:`${cy} WBC`,opp:['일본','미국','도미니카']};
   if(!ev)return;
   S.hist.nat++;S.ach.nat=S.ach.nat||cy;S.rel.fame+=5;ME.xp+=4;rep.lines.push(`${ev.n} 국가대표 발탁! (성장 포인트 +4)`);
-  const OD=ev.n.includes('아시안게임')?{w:.66,f:.65,br:0}:ev.n.includes('올림픽')?{w:.28,f:.38,br:1}:ev.n.includes('프리미어12')?{w:.25,f:.35,br:1}:{w:.08,f:.25,br:0};
-  const winP=Math.min(.85,OD.w+(nf?nf.bonus*.8:0)),r=R();let stage,want;
-  if(r<winP){stage='final';want=true}else if(R()<OD.f+(nf?nf.bonus*.5:0)){stage='final';want=false}else if(OD.br){stage='bronze';want=R()<.5}else{stage='semi';want=false}
+  const bn=nf?nf.bonus:0;let stage,want,force=null;
+  /* 결승 진출·우승 확률 (내 성적이 좋을수록 bonus 0~0.2만큼 올라감)
+     아시안게임: 결승 90%(+최대 7%) · 결승 승리 70%(+최대 18%)
+     올림픽: 결승 40% · 결승 승리 45% · 결승 못 가면 동메달 결정전 70% · 동메달 55% → 3위 이상 약 60%
+     프리미어12: 우승 20% · 준우승 22% / WBC: 우승 6% · 준우승 13% (난이도 높음) */
+  if(ev.n.includes('아시안게임')){if(R()<Math.min(.97,.9+bn*.35)){stage='final';want=R()<Math.min(.88,.7+bn*.9);force=want}else{stage='semi';want=false}}
+  else if(ev.n.includes('올림픽')){if(R()<Math.min(.55,.4+bn*.6)){stage='final';want=R()<Math.min(.6,.45+bn)}else if(R()<.7){stage='bronze';want=R()<Math.min(.7,.55+bn*.5)}else{stage='semi';want=false}if(stage!=='semi')force=want}
+  else{const OD=ev.n.includes('프리미어12')?{w:.2,f:.28,br:1}:{w:.06,f:.14,br:0};const winP=Math.min(.6,OD.w+bn*.6),r=R();
+    if(r<winP){stage='final';want=true}else if(R()<OD.f+bn*.4){stage='final';want=false}else if(OD.br){stage='bronze';want=R()<.5}else{stage='semi';want=false}}
   const toFinal=stage==='final',milB=(S.mil&&S.mil.status==='none'&&/아시안게임|올림픽/.test(ev.n))?1.5+(nf?nf.bonus*25:0)+Math.max(0,(o-58)*.35):0,KOR={ab:'한국',c:'#c60c30',bR:56+milB,pR:56+milB},on=pick(ev.opp),O=NATS[on];
   const role=isP()?(ME.pos==='SP'?'SP':'CL'):'start';
-  const g=followGame({title:`${ev.n} ${toFinal?'결승전':stage==='semi'?'준결승':'동메달 결정전'}`,sub:`대한민국 vs ${on}`,me:KOR,op:{ab:O.ab,c:O.c,bR:O.r-(toFinal?0:3)+(stage==='semi'?10:want===true?-3:want===false?3:0),pR:O.r-(toFinal?0:3)+(stage==='semi'?10:want===true?-3:want===false?3:0)},home:R()<.5,role,lvk:'KBO',L:58,intl:true,forceWin:stage==='semi'?false:null});
+  const g=followGame({title:`${ev.n} ${toFinal?'결승전':stage==='semi'?'준결승':'동메달 결정전'}`,sub:`대한민국 vs ${on}`,me:KOR,op:{ab:O.ab,c:O.c,bR:O.r-(toFinal?0:3)+(stage==='semi'?10:want===true?-3:want===false?3:0),pR:O.r-(toFinal?0:3)+(stage==='semi'?10:want===true?-3:want===false?3:0)},home:R()<.5,role,lvk:'KBO',L:58,intl:true,forceWin:stage==='semi'?false:force});
   S.queue.push({type:'game',g});
   const isMedal=!ev.n.includes('WBC')&&!ev.n.includes('프리미어12'),res=toFinal?(g.win?(isMedal?'금메달':'우승'):(isMedal?'은메달':'준우승')):stage==='semi'?'4강 탈락':(g.win?(isMedal?'동메달':'3위'):'메달 획득 실패');
   rep.lines.push(`${ev.n}: 대한민국 ${res}`);news(`${ev.n} 대표팀 ${res}.`);
   if(res==='우승'){S.awards.push({y:S.y,n:`${ev.n} 우승`});S.rel.fame+=8;celebrate('trophy',`${ev.n} 우승`,`대한민국 국가대표 · 세계 정상`,[]);article(`대한민국, ${ev.n} 우승! 세계 정상에 서다`,`${on}를 꺾고 우승했다. ${ME.name} ${g.mvp?'결승 히어로':'맹활약'}.`,'gold')}
   if(res==='금메달'||res==='은메달'||res==='동메달')celebrate('medal',`${ev.n} ${res}`,`대한민국 국가대표 · 등번호 ${ME.num||'-'}`,exemptLabel(ev,res));
+  if(res==='은메달'||res==='동메달'){S.awards.push({y:S.y,n:`${ev.n} ${res}`});S.rel.fame+=res==='은메달'?5:3}
   if(res==='금메달'){S.ach.gold=S.ach.gold||cy;S.awards.push({y:S.y,n:`${ev.n} 금메달`});S.rel.fame+=8;article(`대한민국, ${ev.n} 금메달! ${ME.name} ${g.mvp?'결승 히어로':'맹활약'}`,`${on}를 꺾고 정상에 올랐다.`,'gold')}
   const exempt=(ev.n.includes('아시안게임')&&res==='금메달')||(ev.n.includes('올림픽')&&res!=='메달 획득 실패');
   if(exempt&&S.mil.status==='none'){S.mil.status='exempt';rep.lines.push('병역 특례 대상이 됐다!');news('국제대회 성적으로 병역 특례.')}}
@@ -4555,15 +4562,15 @@ const INTL_OFF=/구단|프런트|대체자|돈도|돈 없|계약|단장|감독 �
 const toIntl=t=>t.replace(/가을야구/g,'국대 경기').replace(/가을에/g,'국대에서').replace(/가을만 되면/g,'큰 대회만 되면').replace(/가을/g,'국대').replace(/정규리그에서만/g,'리그에서만').replace(/포스트시즌/g,'국제대회');
 {const _c12=comments;comments=function(tone,x){let out=_c12(tone,x);try{if(x&&x.intl){out.forEach(c=>{if(c.nar||/국대|국제|대표|태극|대한민국|한국|일본|대만|미국|병역|금메달|은메달|동메달/.test(c.t))c.t=toIntl(c.t)});out=out.filter(c=>c.nar||!INTL_OFF.test(c.t));out.forEach(c=>{c.fl=null;if(c.re)c.re=c.re.filter(r=>!INTL_OFF.test(r.t))})}}catch(e){}return out}}
 /* 병역 특례 후엔 아시안게임·올림픽 미선발 · WBC/프리미어12는 시즌 전 참가 여부 선택 (참가 시 피로↑) */
-function intlUpcoming(y){const L=[];if([2030,2034].includes(y))L.push(['wbc',`${y} WBC`,'3월','시즌 개막 직전이라 몸을 일찍 끌어올려야 해요 · 피로도↑']);if([2027,2031,2035].includes(y))L.push(['p12',`${y} 프리미어12`,'11월','시즌 끝나고 쉬지 못하고 바로 떠나요 · 피로도↑']);return L}
+function intlUpcoming(y){const L=[];if(y>=2026&&(y-2026)%4===0)L.push(['wbc',`${y} WBC`,'3월','시즌 개막 직전이라 몸을 일찍 끌어올려야 해요 · 피로도↑']);if(y>=2027&&(y-2027)%4===0)L.push(['p12',`${y} 프리미어12`,'11월','시즌 끝나고 쉬지 못하고 바로 떠나요 · 피로도↑']);return L}
 {const _ny6=newYear;newYear=function(){const r=_ny6();try{if(S.stage==='pro'&&S.pro&&!S.pro.dev&&S.pro.league==='KBO'){const nf=natForm(),good=(nf&&nf.ok)||ovrE()>=62;
   if(good)for(const [k,n,mo,s] of intlUpcoming(S.y)){S.intlPick=S.intlPick||{};if(S.intlPick[n]!=null)continue;
     S.queue.push({title:`🇰🇷 ${n} 대표팀 예비 명단`,text:`대표팀 감독이 연락했다. "${mo}에 열리는 ${n}, 함께 가자." 국가대표로 뛰면 이름값이 오르지만 몸은 더 지친다.`,ch:[{t:'태극마크 단다',s:`인기·성장↑ · ${s}`,act:'intlp',arg:{n,go:1}},{t:'이번엔 고사한다',s:'시즌에 집중 · 대표팀 감독 서운함',act:'intlp',arg:{n,go:0}}]})}}}catch(e){}return r}}
 ACT.intlp=function(a){S.intlPick=S.intlPick||{};S.intlPick[a.n]=!!a.go;if(a.go)return`${a.n} 최종 명단에 이름을 올렸다. 태극마크의 무게를 느낀다.`;S.rel.fame=Math.max(0,S.rel.fame-1);return`${a.n}은 고사했다. 이번 시즌은 소속팀에만 집중한다.`};
 CRIT.add('intlp');
 {const _in=intl;intl=function(rep,cy){try{const m=S.m;
-  const ag=(m===8&&[2028,2032].includes(cy))||(m===9&&[2030,2034,2038].includes(cy));if(ag&&S.mil&&S.mil.status==='exempt')return;
-  const n=m===3&&[2030,2034].includes(cy)?`${cy} WBC`:m===11&&[2027,2031,2035].includes(cy)?`${cy} 프리미어12`:null;
+  const ag=(m===8&&cy>=2028&&(cy-2028)%4===0)||(m===9&&cy>=2026&&(cy-2026)%4===0);if(ag&&S.mil&&S.mil.status==='exempt')return;
+  const n=m===3&&cy>=2026&&(cy-2026)%4===0?`${cy} WBC`:m===11&&cy>=2027&&(cy-2027)%4===0?`${cy} 프리미어12`:null;
   if(n&&S.intlPick&&S.intlPick[n]===false)return;
   const before=S.hist.nat;_in(rep,cy);
   if(n&&S.hist.nat>before){const add=n.includes('WBC')?14:11;ME.fat=cl(ME.fat+add,0,100);rep.lines.push(`대표팀 일정으로 몸이 지쳤다. (피로도 +${add})`)}}catch(e){}}}
