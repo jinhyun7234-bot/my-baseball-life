@@ -7939,6 +7939,7 @@ const CMB={
  badP:['{g} 오늘 배팅볼 투수였냐','{g} 공 한가운데로만 들어가네','{g} 오늘 제구 어디 갔냐','{g} 볼넷 남발 진짜 답답하다','{g} 오늘 불 지르러 나왔냐 🔥','{g} 마운드에서 표정부터 졌다','{g} 오늘 맞는 공만 던짐','{g} 위기만 되면 한가운데 꽂네','{g} 오늘은 빨리 내려간 게 다행','{g} 공이 너무 밋밋하다 오늘'],
  /* 팀 승리했는데 나는 부진 / 나는 잘했는데 팀 패배 */
  winBad:['{g}는 못했는데 이겼으니 됐다 ㅋㅋ','{g} 오늘 버스 탑승 감사합니다','이긴 날엔 {g}도 용서한다','팀이 {g} 멱살 잡고 끌고 갔다','{g} 다음 경기엔 갚아라 이번엔 넘어간다'],
+ loseOk:['{g}는 할 만큼 했다 나머지가 문제','{g} 혼자 힘으로는 안 되네','{g} 안타 쳐도 뒤에서 안 불러들이면 소용없다','{g}만 쳤지 타선 전체가 답답했다','{g} 나쁘진 않았는데 오늘은 팀이 졌다','{g} 이 정도 해줬으면 할 일은 한 거지','{g} 더 해줄 수도 있었는데 아쉽다'],
  loseGood:['{g} 혼자 야구했는데 졌다 ㅠㅠ','{g}만 잘했다 진짜 나머지 뭐함','{g} 오늘 원맨쇼였는데 아깝다','{g} 고생했다 너 탓 아니다','{g} 오늘 같은 날 이겼어야 했는데'],
  /* 시리즈 결정·우승 */
  ringA:['우승이다!!!!!! {g} 사랑한다','{g} 우승 반지 축하한다 ㅠㅠ','{g} 너 덕분에 올해 행복했다','우승 확정 순간 {g} 표정 보고 울었다','{g} 이 우승은 평생 기억한다','{g} 반지 끼고 은퇴까지 가자','{g} 우승 세리머니 무한 반복 중','오늘 {g} 사랑하는 사람 다 개추','{g} 동상 세워라 구장 앞에','대{g} 우승 기념 호감 ㅋㅋㅋㅋ','{g} 오늘 밤 술은 내가 산다','우승 퍼레이드 때 {g} 이름 제일 크게 부른다','{g} 가을의 전설 확정','{g} 올해 고생 많았다 진짜','{g} 우승 반지 손가락 다 채우자'],
@@ -7957,7 +7958,8 @@ function cmFill(s,gn){return s.replace(/\{g\}/g,gn).replace(/\{f\}/g,ME.name)}
   let n=[0,2,3,5,8][lv]+(fame>=60?2:fame>=30?1:0);const add=[],pick2=(L,k,re)=>{L.filter(s=>!seenHas(cmFill(s,gn))).sort(()=>R()-.5).slice(0,k).forEach(s=>{const t=cmFill(s,gn);seenAdd(t);add.push(mkC(t,R()<.55?[pick(re)]:[],{up:Math.round(ri(400,2600)*(1+lv*.6)*(1+fame/60)),must:1}))})};
   const mine=P?{g:CMB.goodP,b:CMB.badP,h:CMB.ksHeroP}:{g:CMB.goodB,b:CMB.badB,h:CMB.ksHeroB};
   if(ring){pick2(good||!played?CMB.ringA:CMB.ringPoor.concat(CMB.ringA),Math.ceil(n*.6),CMB_RE.ring);n-=Math.ceil(n*.6)}
-  if(good){if(hero&&lv>=3){pick2(mine.h,2,CMB_RE.good);n-=2}const k=Math.max(0,n);pick2(CMB.goodA,Math.ceil(k/2),CMB_RE.good);pick2(mine.g,Math.floor(k/2),CMB_RE.good);if(!win)pick2(CMB.loseGood,1,CMB_RE.good)}
+  if(good&&!win&&!hero){pick2(CMB.loseGood.filter(t=>!/원맨쇼|혼자 야구/.test(t)),2,['고생했다','할 만큼 했다','팀이 문제다 오늘은']);pick2(CMB.loseOk,Math.max(1,Math.ceil(n/2)),CMB_RE.bad)}
+  else if(good){if(hero&&lv>=3){pick2(mine.h,2,CMB_RE.good);n-=2}const k=Math.max(0,n);pick2(CMB.goodA,Math.ceil(k/2),CMB_RE.good);pick2(mine.g,Math.floor(k/2),CMB_RE.good);if(!win)pick2(CMB.loseGood,1,CMB_RE.good)}
   else if(bad){const k=Math.max(0,Math.ceil(n*.7));if(win){pick2(CMB.winBad,Math.min(2,k),CMB_RE.good);pick2(mine.b,Math.max(0,k-2),CMB_RE.bad)}else{pick2(CMB.badA,Math.ceil(k/2),CMB_RE.bad);pick2(mine.b,Math.floor(k/2),CMB_RE.bad)}}
   else if(!ring){const k=Math.max(1,Math.floor(n/2));pick2(win?CMB.goodA.slice(0,12):CMB.badA.slice(0,6),k,win?CMB_RE.good:CMB_RE.bad)}
   /* 섞어서 끼우기: 맨 위 1~2개는 원래 댓글 유지 */
@@ -8038,6 +8040,11 @@ function roleBad2(t){try{if(!t)return false;if(roleBad(t))return true;if(isP()&&
 /* 진 경기에는 이긴 경기 전용 표현(승요 등) 빼기, 이긴 경기에는 진 경기 전용 표현 빼기 */
 {const WIN_ONLY=/승요|승리요정|이겼으니|이긴 날|이겨서 다행|승리 축하|오늘 이겼|위닝|버스 탑승 감사/,LOSE_ONLY=/졌지만|패배|아깝게 졌|졌다 ㅠ|석패|혼자 야구했는데 졌/;
  const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||x.win==null)return out;const bad=x.win?LOSE_ONLY:WIN_ONLY;out=out.filter(c=>!(c&&bad.test(c.t)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!bad.test(typeof r==='string'?r:r&&r.t))})}catch(e){}return out}}
+/* 진 경기: 크게 활약한 게 아니면 들뜬 칭찬은 빼기 · 남은 {G}/{n} 자리표시 채우기 */
+{const EUPH=/미안했다|소리 질렀|유니폼 산다|업고|사랑하면|사랑한다|MVP|시대 개막|호감|폼 미쳤|갓|평생 소장|국밥|우리 형|승요|지렸|하이라이트만|비판하는 놈은 적/;
+ const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME)return out;const gn=giv(ME.name),fx=t=>typeof t==='string'?t.replace(/\{G\}(아|야)/g,vocA(gn)).replace(/\{G\}/g,gn).replace(/\{n\}/g,gn).replace(/\{N\}/g,ME.name):t;
+  out.forEach(c=>{if(!c)return;c.t=josaFix(fx(c.t));if(Array.isArray(c.re))c.re.forEach(r=>{if(r&&typeof r==='object')r.t=josaFix(fx(r.t))})});
+  if(x&&x.win===false){const P=isP(),hero=P?((x.ipO||0)>=21&&(x.ra||0)<=1):((x.gHR||0)>=2||((x.gH||0)>=3&&(x.gRBI||0)>=2)||(x.gRBI||0)>=4);if(!hero){let keep=0;out=out.filter(c=>{if(!c||!EUPH.test(c.t))return true;return keep++<1&&!/승요|사랑하면|MVP|미안했다/.test(c.t)})}}}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
