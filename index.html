@@ -8045,6 +8045,17 @@ function roleBad2(t){try{if(!t)return false;if(roleBad(t))return true;if(isP()&&
  const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME)return out;const gn=giv(ME.name),fx=t=>typeof t==='string'?t.replace(/\{G\}(아|야)/g,vocA(gn)).replace(/\{G\}/g,gn).replace(/\{n\}/g,gn).replace(/\{N\}/g,ME.name):t;
   out.forEach(c=>{if(!c)return;c.t=josaFix(fx(c.t));if(Array.isArray(c.re))c.re.forEach(r=>{if(r&&typeof r==='object')r.t=josaFix(fx(r.t))})});
   if(x&&x.win===false){const P=isP(),hero=P?((x.ipO||0)>=21&&(x.ra||0)<=1):((x.gHR||0)>=2||((x.gH||0)>=3&&(x.gRBI||0)>=2)||(x.gRBI||0)>=4);if(!hero){let keep=0;out=out.filter(c=>{if(!c||!EUPH.test(c.t))return true;return keep++<1&&!/승요|사랑하면|MVP|미안했다/.test(c.t)})}}}catch(e){}return out}}
+/* OPS 평가: 리그 수준 반영 (MLB는 같은 OPS라도 더 높게 평가) */
+{const _ot=opsTier;opsTier=function(o,pos){let b=0;try{const lg=S&&S.pro&&S.pro.league;b=lg==='MLB'?.07:lg==='NPB'?.04:0}catch(e){}return _ot(o+b,pos)}}
+/* 잘 나가는 시즌 댓글: 잘한다 잘한다 하니까 · 메이저에서도 통하네 · ○추강대엽 */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||S.stage!=='pro'||!x||x.intl)return out;const lg=S.pro.league,{b}=yearTot(S.y,[lg]);if((b.PA||0)<150)return out;const o=opsN(b),gn=giv(ME.name),sur=ME.name[0];
+  const good=(x.gH||0)>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2;if(!good)return out;const add=[];
+  const put=(t,re)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,(re||[]).map(r=>({nk:pick(NICKS),t:r,up:ri(60,900)})),{up:ri(1200,6000),must:1}))};
+  const ot=o.toFixed(3).replace(/^0/,'');
+  if(lg==='MLB'&&o>=.82&&R()<.6){const L=[`잘한다 잘한다 하니까 계속 잘하네 ㅋㅋㅋ`,`${gn} 메이저에서도 통하네`,`메이저 OPS ${ot} 실화냐`,`${sur}추강대엽 인정?`,`추${sur}강대엽 가즈아 ㅋㅋㅋ`,`KBO 출신이 메이저에서 이 정도면 국위선양이지`,`이제 ${gn} 보려고 새벽에 일어난다`];
+    const k=o>=.9?2:1;L.sort(()=>R()-.5).slice(0,k).forEach(t=>put(t,[pick(/강대엽/.test(t)?['아직 강은 못 넘었다 ㅋㅋ','추는 넘은 듯','이 페이스면 진짜 넘는다','ㅇㅈ 개추']:['ㅇㅈ','새벽 야구 맛집','메이저 적응 끝났다','국뽕 차오른다'])]))}
+  else if(o>=.9&&R()<.35)put(pick([`잘한다 잘한다 하니까 계속 잘하네 ㅋㅋㅋ`,`${gn} 요즘 OPS ${ot} 폼 미쳤다`,`${gn} 이 페이스 시즌 끝까지만 가자`]),[pick(['칭찬은 고래도 춤추게 한다','부정 탄다 말 아껴라 ㅋㅋ','ㄹㅇ 질리지가 않네'])]);
+  if(add.length)out.splice(1,0,...add)}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
