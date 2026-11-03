@@ -1667,7 +1667,7 @@ function phaseEnd(rep,tot0){
   const gs=Object.values(rep.games),main=gs.find(g=>PRO.includes(g.lvk))||gs[0];
   const ps=main?perfScore(main):0;
   if(main&&(S.stage==='pro'||S.stage==='mil'||R()<.5))phaseArticle(main,ps);
-  const bigF=S.phFeats.filter(f=>f.big);if(bigF.length)article(`[${S.y} ${PHASE[S.phase]}] ${ME.name}, ${bigF[0].t.replace(/^\d+월 /,'')}`,`${shortTeam()}의 ${jo(ME.name,'이','가')} ${bigF.length>1?`이번 기간에만 특별한 기록을 ${bigF.length}개나 쏟아냈다.`:'팬들의 탄성을 자아냈다.'}`,bigF[0].t.includes('신기록')?'record':'feat');
+  const bigF=S.phFeats.filter(f=>f.big&&!/차전|결승|시리즈|와일드카드|준PO|플레이오프|올림픽|아시안게임|WBC|프리미어/.test(f.t));if(bigF.length)article(`[${S.y} ${PHASE[S.phase]}] ${ME.name}, ${bigF[0].t.replace(/^\d+월 /,'')}`,`${shortTeam()}의 ${jo(ME.name,'이','가')} ${bigF.length>1?`이번 기간에만 특별한 기록을 ${bigF.length}개나 쏟아냈다.`:'팬들의 탄성을 자아냈다.'}`,bigF[0].t.includes('신기록')?'record':'feat');
   // bold interview follow-up
   if(S.mood&&S.mood.bold&&main){if(ps<0){S.rel.fame-=6;news('"큰소리치더니…" 지난 인터뷰가 역풍을 맞았다.')}else S.rel.fame+=3;S.mood.bold=0}
   // one event per phase at most
@@ -1955,10 +1955,10 @@ function contractDec(rep){
     ...(p.service>=3?[{t:'연봉조정을 신청한다',s:'이기면 시장가 · 지면 감액, 신뢰 크게↓',act:'sal',arg:{v:prop,f,k:'arb'}}]:[])]})}
 function faValue(o,w){const a=age(),aw=S.awards.filter(x=>x.y>=S.y-1),bonus=(aw.some(x=>x.n.includes('정규시즌 MVP'))?6:0)+aw.filter(x=>/왕|최다|골든/.test(x.n)).length*1.5,s=o+Math.max(-2,w)*2+bonus;let v=(s>62?80000+(s-62)*10500:80000*Math.exp((s-62)*.1))*(1+S.rel.fame/250);if(a>=36)v*=.6;else if(a>=34)v*=.8;return Math.min(v,450000)}
 function faEvent(o,w,f){
-  const a=age(),yrs=a<=29&&faValue(o,w)>=220000?6:a<=30?4:a<=33?3:a<=35?2:1,offers=[],teams=shuffle(TEAMS.map((t,i)=>i));
+  const a=age(),yrs=a<=29&&faValue(o,w)>=220000?6:a<=31?(faValue(o,w)>=150000?5:4):a<=34?4:a<=39?(R()<.5?3:2):1,offers=[],teams=shuffle(TEAMS.map((t,i)=>i));
   const n=Math.max(0,(o>=56?ri(3,5):o>=50?ri(1,3):R()<.5?1:0)-(a>=37?2:a>=34?1:0));
   const cur=S.pro.team,list=(o>=46+(a>=37?4:0)?[cur]:[]).concat(teams.filter(i=>i!==cur).slice(0,n));
-  const fv=faValue(o,w);list.forEach(t=>{const y=t===cur?yrs:Math.max(1,yrs+(R()<.3?1:R()<.3?-1:0)),tot=Math.max(10000,Math.round(fv*y*rn(1,.1)*(t===cur?.95:1)/10000)*10000);offers.push({t:`${TEAMS[t].city} ${TEAMS[t].nick}${t===cur?' (잔류)':''}`,s:`${y}년 최대 ${money(tot)}`,d:`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/y)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상 시 연 ${money(tot*.15/y)})`,act:'fa',arg:{team:t,yrs:y,tot}})});offers.sort((x,y)=>y.arg.tot-x.arg.tot);
+  const fv=faValue(o,w);list.forEach(t=>{const y=t===cur?yrs:Math.max(a>=40?1:2,yrs+(R()<.3?1:R()<.3?-1:0)),tot=Math.max(10000,Math.round(fv*y*rn(1,.1)*(t===cur?.95:1)/10000)*10000);offers.push({t:`${TEAMS[t].city} ${TEAMS[t].nick}${t===cur?' (잔류)':''}`,s:`${y}년 최대 ${money(tot)}`,d:`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/y)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상 시 연 ${money(tot*.15/y)})`,act:'fa',arg:{team:t,yrs:y,tot}})});offers.sort((x,y)=>y.arg.tot-x.arg.tot);
   const ch=offers.slice(0,5);
   if(o>=57)ch.push({t:'해외 진출에 도전한다',s:'MLB·NPB 구단의 제안을 기다린다',act:'abroadTry'});
   if(!ch.length)ch.push({t:'원하는 구단이 없다… 은퇴한다',act:'retire'},{t:'입단 테스트를 받는다',s:'성공 확률 낮음',act:'tryout'});
@@ -2623,7 +2623,7 @@ function lifeEvents(){const out=[];if(S.stage==='ret')return out;S.gfCool=Math.m
       if(kind==='fight')out.push({title:'😤 다툼',text:`사소한 일로 ${jo(g.n,'과','와')} 크게 다퉜다. 분위기가 냉랭하다.`,ch:[{t:'먼저 사과한다',s:'호감 회복 · 피로↑',act:'lv',arg:{d:7,f:3}},{t:'꽃 한 다발 사 들고 간다',s:'−10만원 · 호감 회복↑',act:'lv',arg:{d:10,c:10}},{t:'내가 뭘 잘못했는데?',s:'호감 크게↓ · 신경 끄고 야구에 집중 (컨디션↑)',act:'lv',arg:{d:-14,fm:1}}]});
       if(kind==='date')out.push({title:'🎬 데이트',text:`모처럼 쉬는 날. ${jo(g.n,'과','와')} 뭘 할까?`,ch:[{t:'한강 피크닉',s:'호감↑ · 기분 전환 · 피로 조금↑',act:'lv',arg:{d:6,fm:1,f:2}},{t:'영화 보고 맛집',s:'−15만원 · 호감↑',act:'lv',arg:{d:7,c:15}},{t:'집에서 같이 하이라이트 복기',s:'호감 조금↑ · 피로↓',act:'lv',arg:{d:3,f:-3}}]});
       if(kind==='park'&&S.stage==='pro')out.push({title:'🏟️ 직관 온대',text:`${nm} 다음 홈경기에 직관 온대!`,ch:[{t:'"오늘 홈런 하나 칠게"',s:'호감↑ · 컨디션↑ · 부담 (멘탈 조금↓)',act:'lv',arg:{d:6,fm:1.5,m:-1}},{t:'"편하게 보고 가"',s:'호감 조금↑',act:'lv',arg:{d:3}}]})}}
-  else if(S.married&&!S.kids&&S.y-S.married.y>=2&&R()<.35){S.kids=1;ME.hid.men=cl(ME.hid.men+3,20,80);news('첫 아이 출생.');out.push({title:'👶 아빠가 됐다',text:`${S.married.n} 씨가 건강한 아이를 낳았다. 작은 손을 잡는 순간 모든 게 달라 보인다.`,ch:[{t:'이 아이를 위해 더 열심히!',s:'멘탈 +3 · 생활비↑',act:'lifeok'}]});if(S.rel.fame>=20)article(`${ME.name}, 득남 소식… "분유 버프 기대하세요"`,`${jo(ME.name,'이','가')} 아빠가 됐다.`,'baby',{})}
+  else if(S.married&&!S.kids&&S.y-S.married.y>=2&&R()<.35){S.kids=1;ME.hid.men=cl(ME.hid.men+3,20,80);out.push({title:'👶 아빠가 됐다',text:`${S.married.n} 씨가 건강한 아이를 낳았다. 작은 손을 잡는 순간 모든 게 달라 보인다.`,ch:[{t:'이 아이를 위해 더 열심히!',s:'멘탈 +3 · 생활비↑',act:'lifeok'}]})}
   else if(!S.married&&!S.gfCool&&age()>=19&&(S.stage==='pro'||S.stage==='univ')&&R()<.16){const n=pick(GFN),how=pick(GFM);
     out.push({title:'💘 새로운 인연',text:`${how} ${n}. 몇 번 만나다 보니 자꾸 생각이 난다.\n${n}도 싫지 않은 눈치다.`,ch:[{t:'사귀자고 한다',s:'연애 시작 · 호감 관리 필요 (선물·여유)',act:'gfstart',arg:{n}},{t:'지금은 야구에 집중한다',s:'감독 신뢰 +2',act:'gfno'}]})}
   return out}
@@ -2954,7 +2954,7 @@ const lastLgWAR=lg=>{const ys=[...new Set(S.rows.filter(r=>r.lv===lg).map(r=>r.y
 function mlbUSD(o,w,proven){if(proven)return cl(.78+Math.max(0,w)*7.6,.78,60);const proj=Math.max(0,(o-60)/2.5);return cl(1.5+proj*6,1.2,32)}
 function npbPer(o){return Math.round(cl(40000+Math.max(0,o-52)**2*1500,40000,700000)/1000)*1000}
 function mlbYears(usd,proven){const a=age();if(a>=35)return 1;if(a>=33)return ri(1,2);if(!proven)return usd>=20?ri(5,6):usd>=8?ri(3,4):ri(1,2);return usd>=40?(a<=29?ri(8,10):ri(5,7)):usd>=20?ri(4,6):usd>=8?ri(2,4):1}
-function kboReturnPer(o,w){const mw=mlbW(),lw=lastLgWAR('MLB')||0,base=faValue(o,w);if(mw<3&&lw<2.5)return base;return Math.min(650000,Math.max(base,250000+mw*9000+Math.max(0,lw)*14000))}
+function kboReturnPer(o,w){const mw=mlbW(),lw=lastLgWAR('MLB')||0,base=faValue(o,w);if(mw<3&&lw<2.5)return base;return Math.min(300000,Math.max(base,180000+mw*5000+Math.max(0,lw)*8000))}
 function optOf(tot,yrs,lg){return Math.round(tot*.12/yrs/1000)*1000}
 /* 해외 제안 (포스팅/해외 FA) */
 abroadOffers=function(o){const out=[],proven=S.rows.some(r=>r.lv==='MLB'),w=lastLgWAR('MLB')??lastWAR();
@@ -2966,7 +2966,7 @@ abroadExpire=function(o,w){const p=S.pro,L=LV[p.league],ch=[],lw=lastLgWAR(p.lea
   if(o>=L-3){if(proven){const usd=+mlbUSD(o,lw,true).toFixed(1),yrs=mlbYears(usd,true),per=Math.round(usd*.95*USDM/1000)*1000;ch.push({t:`${p.tname} 재계약`,s:`${yrs}년 총액 ${usd2(usd*.95*yrs)} (연 ${usd2(usd*.95)})`,d:`옵션 연 ${usd2(usd*.95*.12)} · 마이너 거부권 ${usd>=8?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs,per,stay:true,noMinor:usd>=8,opt:optOf(per*yrs,yrs)}})}
     else{const per=npbPer(o),yrs=o>=L+3?3:1;ch.push({t:`${p.tname} 재계약`,s:`${yrs}년 연평균 ${money(per)}`,d:`옵션 연 ${money(per*.12)}`,act:'abroad',arg:{lg:p.league,yrs,per,stay:true,opt:optOf(per*yrs,yrs)}})}}
   abroadOffers(o).filter(x=>!(x.arg.lg===p.league&&x.t.startsWith(p.tname))).slice(0,3).forEach(x=>ch.push(x));
-  if(o>=46){const per=kboReturnPer(o,lw),teams=shuffle(TEAMS.map((t,i)=>i)).slice(0,per>=250000?3:1);teams.forEach(t=>{const yrs=age()<=31?4:age()<=34?3:age()<=37?2:1,tot=Math.round(per*yrs*rn(1,.06)/10000)*10000;ch.push({t:`KBO 복귀: ${TEAMS[t].city} ${TEAMS[t].nick}`,s:`${yrs}년 최대 ${money(tot)}`,d:`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/yrs)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상)`,act:'fa',arg:{team:t,yrs,tot,ret:1}})})}
+  if(o>=46){const per=kboReturnPer(o,lw),teams=shuffle(TEAMS.map((t,i)=>i)).slice(0,per>=250000?3:1);teams.forEach(t=>{const yrs=age()<=33?4:age()<=36?3:age()<=39?(R()<.5?3:2):1,tot=Math.round(per*yrs*rn(1,.06)/10000)*10000;ch.push({t:`KBO 복귀: ${TEAMS[t].city} ${TEAMS[t].nick}`,s:`${yrs}년 최대 ${money(tot)}`,d:`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/yrs)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상)`,act:'fa',arg:{team:t,yrs,tot,ret:1}})})}
   ch.push({t:'은퇴한다',s:'커리어 종료',act:'retire'});
   return{title:`${p.league} FA 자격 획득`,text:`${p.tname}와의 계약이 끝나 FA가 됐다. 올해 ${p.league} WAR ${(+lw).toFixed(1)}${proven?` · MLB 통산 WAR ${mlbW().toFixed(1)}`:''}.\n여러 구단의 제안이 도착했다.`,ch}};
 /* abroad 계약: 옵션·마이너 거부권 저장 + 대형 계약 연출 */
@@ -4386,7 +4386,7 @@ const PSTYLE=[['적극 육아','아이와 시간을 많이 보낸다 · 피로�
     S.money-=ks.reduce((a,k)=>a+(kidAge(k)>=7?60:30),0)}}catch(e){}}}
 /* 생활 이벤트 확장 */
 {const _le=lifeEvents;lifeEvents=function(){let out=_le();try{
-  const bi=out.findIndex(q=>q.title==='👶 아빠가 됐다');if(bi>=0){out.splice(bi,1);S.kids=(S.children||[]).length}
+  const bi=out.findIndex(q=>q.title==='👶 아빠가 됐다');if(bi>=0){out.splice(bi,1);ME.hid.men=cl(ME.hid.men-3,20,80);S.kids=(S.children||[]).length}
   if(out.length)return out;if(S.stage==='ret')return out;const g=S.gf;
   /* 프러포즈: 호감 유지가 관건 */
   if(g&&!S.married&&g.aff>=65&&S.y-g.since>=2&&age()>=24&&(S.propY||0)<S.y&&R()<.45){S.propY=S.y;const cost=Math.max(2000,Math.round((S.pro?S.pro.salary:5000)*.1/100)*100),p=cl((g.aff-45)/40,.15,.95);
@@ -7902,6 +7902,37 @@ const PERF_ADJ={B:.3,P:0};
   if(it.id==='lab'){it.eff=.12;it.pw=.2;it.d='1년간 모든 능력치 훈련 효과 +12%, 파워·구속 훈련 +20%'}})})();
 /* 특성 '눈야구 리듬': 볼넷 +3% → 출루 +3% (볼넷 +1.5% · 안타 +1.5%) */
 (function(){[typeof TR!=='undefined'?TR:[],typeof SKILLS!=='undefined'?SKILLS:[]].forEach(L=>L.forEach(t=>{if(t&&t.id==='b_bbchain'){t.a={bb:.015,hit:.015};t.d='직전 타석 볼넷이면 다음 타석 출루 확률 +3% (볼넷 +1.5% · 안타 +1.5%)'}}))})();
+/* KBO FA 연평균 상한: 약 32억 (KBO 현실 수준) */
+{const _fv=faValue;faValue=function(o,w){return Math.min(320000,_fv(o,w))}}
+/* 35~39세 FA: 2+2년 옵션 제안도 섞어서 (1년 계약은 40세 이후에만) */
+{const _fe=faEvent;faEvent=function(o,w,f){const q=_fe(o,w,f);try{const a=age();if(a>=35&&a<=39&&!q.ch.some(c=>c.arg&&c.arg.optY)){const c=q.ch.find(c=>c.act==='fa'&&c.arg&&!c.arg.cheap&&c.arg.yrs>=2&&c.arg.yrs<=3);
+  if(c&&R()<.65){const per=c.arg.tot/c.arg.yrs*1.04,tot=Math.round(per*2/10000)*10000,full=Math.round(per*4/10000)*10000;
+    q.ch.splice(q.ch.indexOf(c)+1,0,{...c,t:c.t.replace(' (잔류)','')+(c.t.includes('(잔류)')?' (잔류)':'')+' · 2+2년',s:`2+2년 최대 ${money(full)}`,d:`보장 2년 ${money(tot)} · 이후 2년은 선수 옵션 (실행하면 같은 연봉으로 연장, 거절하면 FA)`,arg:{...c.arg,yrs:2,tot,optY:2}})}}}catch(e){}return q}}
+/* KBO FA·KBO 복귀 계약 규모 현실화
+   - 연평균 상한: 31세 이하 25억 · 34세 22억 · 37세 17억 · 39세 13억 · 40세+ 10억, 전체적으로 ×0.8
+   - 계약 기간 최대 6년, 1년 계약은 40세 이후만 */
+function faScaleOffer(c,a){try{if(!c||c.act!=='fa'||!c.arg||!c.arg.tot)return c;const A=c.arg;let y=A.yrs||1,f=1;
+  if(y>6){f*=6/y;c.s=c.s.replace(new RegExp('^'+y+'년'),'6년');y=6;A.yrs=6}
+  if(a<40&&y<2&&!A.cheap){f*=2;c.s=c.s.replace(/^1년/,'2년');y=2;A.yrs=2}
+  if(a>=35&&a<=39&&y>3&&!A.optY){f*=3/y;c.s=c.s.replace(new RegExp('^'+y+'년'),'3년');y=3;A.yrs=3}
+  const cap=(a<=31?250000:a<=34?220000:a<=37?170000:a<=39?130000:100000)*(.86+R()*.14),per=A.tot*f/y,np=Math.min(cap,per*.8);f*=np/per;
+  if(Math.abs(f-1)<.01)return c;const sc=t=>t&&t.replace(/(\d+(?:\.\d+)?)억|([\d,]+)만원/g,(m,e,w)=>money(Math.max(100,Math.round((e?+e*10000:+w.replace(/,/g,''))*f/100)*100)));
+  A.tot=Math.max(10000,Math.round(A.tot*f/1000)*1000);c.s=sc(c.s);c.d=sc(c.d);return c}catch(e){return c}}
+{const _fe=faEvent;faEvent=function(o,w,f){const q=_fe(o,w,f);try{const a=age();q.ch.forEach(c=>faScaleOffer(c,a))}catch(e){}return q}}
+{const _ax=abroadExpire;abroadExpire=function(o,w){const q=_ax(o,w);try{const a=age();q.ch.forEach(c=>{if(c.arg&&c.arg.ret)faScaleOffer(c,a)})}catch(e){}return q}}
+/* 에이징: 선구안(타자)·볼배합(투수)이 좋을수록 나이 들어도 덜 떨어짐
+   - 선구안: 표시 60부터 보호 시작, 90 이상이면 하락폭 70% 감소 · 선구안 좋은 타자는 컨택 하락도 최대 30% 감소
+   - 볼배합: 원래 안 떨어지는 대신, 좋은 투수는 제구 하락 최대 50% · 구위 하락 최대 25% 감소 */
+{const _ag=agingTick;agingTick=function(){const b={...ME.r};_ag();try{const sh=v=>Math.max(0,Math.min(1,(DV(v)-60)/30));const keep=(k,f)=>{if(k in ME.r&&b[k]!=null&&ME.r[k]<b[k])ME.r[k]+=(b[k]-ME.r[k])*f};
+  if(isP()){const s=sh(b.pcl||45);keep('ctl',.5*s);keep('stf',.25*s)}else{const s=sh(b.eye);keep('eye',.7*s);keep('con',.3*s)}}catch(e){}}}
+/* 피로 이벤트: 선배 심부름·고참 군기는 저연차(28세 이하·프로 6년차 이하)만
+   31세 이상 고참은 반대로 '후배에게 시킬까' 이벤트 (시키면 피로↓ 팀 분위기↓ / 직접 하면 피로↑ 분위기↑) */
+FEV.forEach(e=>{if(e.t==='선배의 심부름'||e.t==='라커룸 군기')e.jr=1});
+FEV.push({sr:1,t:'후배에게 심부름?',x:'원정 숙소. 피곤해 죽겠는데 편의점도 가야 하고 장비 정리도 남았다. 마침 막내 후배가 복도를 지나간다.',ok:['"야, 이것 좀 부탁하자"',{fat:-9,chem:-4},'후배가 군말 없이 다녀왔다. 몸은 편한데, 라커룸에서 "요즘 저 선배 좀 그렇다"는 말이 돈다.'],no:['그냥 직접 다녀온다',{fat:7,chem:3},'"선배님이 직접 가세요?" 후배들이 놀라더니 장비 정리를 같이 거들었다.']},
+ {sr:1,t:'후배들 군기 잡기',x:'연패가 길어지자 몇몇 고참이 "애들 정신 좀 차리게 하자"며 저연차 선수들을 불러 모으자고 한다. 고참인 내 한마디가 필요하다.',ok:['"한번 제대로 잡자"',{coach:3,chem:-6,fat:4},'감독은 고참들이 나섰다며 만족했지만, 후배들 표정이 굳었다.'],no:['"애들 탓 아니다, 우리부터 잘하자"',{chem:5,coach:-2,fat:3},'후배들이 고개를 숙였다. 대신 고참들끼리 남아 추가 훈련을 했다. 코치진은 "너무 물러졌다"며 한숨이다.']},
+ {sr:1,t:'후배의 짐 들기',x:'원정 이동 날. 짐이 많아 버스까지 가는 길이 멀다. 신인 후배가 "선배님 짐 제가 들게요!" 하며 손을 내민다.',ok:['고맙다며 맡긴다',{fat:-5,chem:-2},'편하게 버스에 올랐다. 몇몇 동료가 "고참 다 됐네" 하며 웃었다.'],no:['"됐어, 네 것이나 챙겨"',{fat:3,chem:3},'후배가 더 열심히 따라다닌다. 라커룸 분위기가 훈훈하다.']});
+{const _pf=pickFev;pickFev=function(){const a=age(),py=(typeof proYears==='function'?proYears():0),jr=a<=28&&py<=6,sr=a>=31;const keep=FEV.slice();try{
+  const L=FEV.filter(e=>!(e.jr&&!jr)&&!(e.sr&&!sr));FEV.length=0;L.forEach(e=>FEV.push(e));return _pf()}finally{FEV.length=0;keep.forEach(e=>FEV.push(e))}}}
 
 /* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
 /* 방망이 점수(수비 제외)와 수비 적합도 */
@@ -8189,6 +8220,16 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
   if(opR===0)put(pick([`${nick} 투수진 오늘 미쳤다 영봉승`,`${myR}:0 영봉승 투수들한테 밥 사라`,`가을에 영봉승이면 투수진 클래스 인정`]),pick(['선발 불펜 다 완벽','마운드가 철벽','타자들은 투수들한테 감사해라 ㅋㅋ',null]));
   if(!big&&gno>=2)put(pick([`${gno}차전 잡고 기세 가져왔다`,`${ser} ${gno}차전 승리 이 흐름 그대로 가자`,`이 기세면 시리즈 금방 끝난다`]),pick(['분위기 최고','다음 경기도 이대로',null]));
   if(add.length)out.splice(0,0,...add)}catch(e){}return out}}
+/* 35세 이상 + 선구안(타자)/볼배합(투수)이 좋은 선수: 나이 들어도 잘하는 이유를 짚는 댓글 (에이징 완화 힌트) */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||!x||S.stage!=='pro'||age()<35||!Array.isArray(out))return out;if(x.gH==null&&x.ipO==null)return out;
+  const gn=giv(ME.name),put=(t,re)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);out.splice(Math.min(2,out.length),0,mkC(t,re.map(r=>({nk:pick(NICKS),t:r,up:ri(40,700)})),{up:ri(900,4200),must:1}))};
+  if(!isP()){if(DV(eff('eye'))<70)return out;const good=(x.gH||0)>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2||(x.gBB||0)>=2;if(!good||R()>=.45)return out;
+    const L=[`선구안 좋은 타자는 나이 먹어도 안 죽는다니까`,`${gn} 눈은 안 늙는 듯 공 보는 거 봐라`,`배트 스피드는 떨어져도 볼 고르는 눈은 그대로네`,`이래서 선구안 좋은 타자가 오래 간다`,`나쁜 공에 절대 안 속네 이 나이에 이게 되냐`];
+    if((x.gBB||0)>=2)L.push(`볼넷 ${x.gBB}개 골라내는 거 보소 눈야구는 에이징 커브가 없다`);
+    put(pick(L),[pick(['눈은 거짓말 안 함','ㄹㅇ 존 판단이 심판급','에이징 커브 비켜가는 중 ㅋㅋ','그래서 아직 주전이지'])])}
+  else{if(DV(eff('pcl'))<70)return out;const ip=x.ipO||0,ra=x.ra||0,good=(ip>=15&&ra<=2)||(ip>=3&&ip<15&&ra===0);if(!good||R()>=.45)return out;
+    const L=[`구속 떨어져도 볼배합으로 잡아내네 노련함 미쳤다`,`머리로 던지는 투수는 오래 간다니까`,`${gn} 타자 수 싸움은 지금이 전성기인 듯`,`힘으로 안 되면 머리로 잡는다 이게 베테랑이지`,`타자 노림수 다 읽고 던지네 이 나이에 이게 노련함이다`];
+    put(pick(L),[pick(['볼배합은 안 늙는다','공 빠르기보다 수 싸움','타자들이 알고도 당함 ㅋㅋ','이래서 경험이 무섭다'])])}}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
