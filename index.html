@@ -6765,9 +6765,9 @@ function f3m(v){return v.toFixed(3).replace(/^0/,"")}
       else{M.p.G++;M.p.outs+=x.ipO||0;M.p.R+=x.ra||0;M.p.K+=x.gK||0;sr.outs+=x.ipO||0;sr.R+=x.ra||0;sr.K+=x.gK||0}}
     const sr=M.ser[ser]||{};const cb=S.post&&S.post.b||{},cp=S.post&&S.post.p||{};
     if(!P){const b=M.b,avg=b.AB?b.H/b.AB:0,sAvg=sr.AB?sr.H/sr.AB:0,cHR=(cb.HR||0)+b.HR,cH=(cb.H||0)+b.H,cAB=(cb.AB||0)+b.AB;
-      A(b.AB>=10&&avg>=.35,`이번 가을 타율 ${f3m(avg)}… 가을만 되면 눈 돌아감`,['이 페이스면 시리즈 MVP 각']);
-      A(b.HR>=3,`가을에만 벌써 ${b.HR}홈런 ㄷㄷ`,['담장이 장식이냐 ㅋㅋ']);
-      A(b.RBI>=7,`이번 가을 ${b.RBI}타점 해결사 그 자체`,[]);
+      A(b.AB>=10&&avg>=.35&&(x.gH||0)>=1,`이번 가을 타율 ${f3m(avg)}… 가을만 되면 눈 돌아감`,['이 페이스면 시리즈 MVP 각']);
+      A(b.HR>=3&&(x.gHR||0)>=1,`가을에만 벌써 ${b.HR}홈런 ㄷㄷ`,['담장이 장식이냐 ㅋㅋ']);
+      A(b.RBI>=7&&(x.gRBI||0)>=1,`이번 가을 ${b.RBI}타점 해결사 그 자체`,[]);
       A(sr.AB>=8&&sAvg>=.4,`이번 시리즈 타율 ${f3m(sAvg)}… 상대 팀 전력분석팀 퇴근 못 한다`,[]);
       A(sr.HR>=2,`이번 시리즈에서만 ${sr.HR}홈런`,['시리즈 MVP 줘라']);
       A(b.AB>=12&&avg<.15,`이번 가을 타율 ${f3m(avg)} 실화냐`,['그래도 한 방은 있다 믿어보자','가을 체질은 아닌 듯']);
@@ -8125,6 +8125,19 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
 /* 같은 유형 반복 방지: 대○○ 연호 · 도파민 · 국뽕 · 개추 · 눈물 · 벽 침 같은 드립은 한 기사에 한 번씩만 */
 {const KINDS=[/^대(\S+) 대\1/,/도파민/,/국뽕/,/개추/,/눈물|울컥|울었/,/벽 침|소리 질/,/MVP/,/레전드/,/소름/,/실책/,/속죄/];
  const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{const seen=new Set();out=out.filter(c=>{if(!c||!c.t)return true;const k=KINDS.findIndex(r=>r.test(c.t));if(k<0)return true;if(seen.has(k))return false;seen.add(k);return true})}catch(e){}return out}}
+/* 우승 확정 경기: 비아냥·개인 부진 언급 없이 축하 위주 · 가을에 하드캐리했으면 확실히 빨기 */
+{const NEG=/무안타|돈값|부진|고생했다|여기까지|전력 차이|아쉽|못하네|실망|못 쳤|침묵|반성|비판|욕/;
+ const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||!x||!x.win)return out;const t=String(x.title||'');const ring=tone==='ring'||tone==='ws'||(x.clinch&&/한국시리즈|월드시리즈/.test(t));if(!ring)return out;
+  const P=isP(),M=S.psMe&&S.psMe.y===S.y?S.psMe:null,b=M&&M.b||{},pp=M&&M.p||{},avg=b.AB?b.H/b.AB:0,era=pp.outs?pp.R*27/pp.outs:9;
+  const strong=P?(pp.outs>=27&&era<=2.5):((b.AB>=15&&avg>=.3)||(b.HR||0)>=3||(b.RBI||0)>=8),poor=P?(pp.outs>=9&&era>=6):(b.AB>=15&&avg<.2);
+  out=out.filter(c=>!(c&&NEG.test(c.t)&&!(poor&&/버스/.test(c.t))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!NEG.test(typeof r==='string'?r:r&&r.t))});
+  if(!poor)out=out.filter(c=>!(c&&/버스|조용했지만|못 쳐도|감사해라|업혀|묻어|무임승차/.test(c.t)));
+  const gn=giv(ME.name),mlb=S.pro&&S.pro.league==='MLB',ser=t.replace(/\s*\d+차전.*$/,''),add=[];const put=(tt,re,up)=>{tt=josaFix(tt);if(seenHas(tt))return;seenAdd(tt);add.push(mkC(tt,re.map(r=>({nk:pick(NICKS),t:r,up:ri(100,1500)})),{up:up||ri(6000,16000),must:1}))};
+  if(strong){const line=P?`가을 평균자책 ${era.toFixed(2)}`:`가을 타율 ${avg.toFixed(3).replace(/^0/,'')} ${b.HR||0}홈런 ${b.RBI||0}타점`;
+    const L=[`이번 가을 MVP는 무조건 ${gn}`,`${line}… 이 우승은 ${gn}가 하드캐리했다`,`${gn} 없었으면 이 반지 없다`,`${ser} 우승의 주인공은 ${gn}`];
+    if(mlb)L.push(`한국인 선수가 월드시리즈에서 이 정도로 하드캐리하다니`,`월드시리즈 우승 반지 낀 한국인 ${P?'투수':'타자'} ${gn} 국뽕 MAX`,`메이저 우승팀 핵심이 한국인이라니 꿈인가 싶다`);
+    L.sort(()=>R()-.5).slice(0,3).forEach(tt=>put(tt,[pick(['반박 불가','ㄹㅇ 우승 청부사','이건 역사다','개추 박고 간다','눈물 난다 진짜'])]))}
+  out.splice(0,0,...add)}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
