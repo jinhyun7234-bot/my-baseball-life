@@ -1945,7 +1945,7 @@ function contractDec(rep){
   if(a>=45)return S.queue.push({title:'세월은 이길 수 없다',text:'만 45세. 더 이상 몸이 따라주지 않는다.',ch:[{t:'은퇴를 선언한다',act:'retire'}]});
   const faOK=p.service-(p.lastFA||0)>=(p.lastFA?4:p.faReq);
   if(faOK)return S.queue.push(faEvent(o,w,f));
-  const L=LV.KBO,cut=(a>=31&&o<L-6)||(a>=34&&o<L-2)||(a>=27&&o<L-11)||(a>=38&&o<L+2);
+  const L=LV.KBO,cut=releaseCut(o,w,a,L);
   if(cut)return S.queue.push(releaseEvent(o));
   if(p.service>=7&&o>=58&&!p.posted&&S.mil.status!=='none')S.queue.push({title:'포스팅 도전?',text:'7시즌을 채워 구단 동의가 있으면 해외 구단의 포스팅 입찰을 받을 수 있다.',ch:[{t:'구단에 포스팅을 요청한다',s:'감독·구단 신뢰가 높을수록 허락받기 쉬움',act:'posting'},{t:'팀에 남는다',s:`구단 신뢰↑ · 현재 연봉 ${money(p.salary)} · 이어서 ${S.y+1} 연봉 협상 (구단 예상 제시액 ${money(Math.round(cl(f,p.salary*.75,p.salary*2.2)/100)*100)})`,fx:{coach:4,chem:3},r:'팬들은 프랜차이즈 스타의 잔류를 반겼다. 곧 연봉 협상이 시작된다.'}]});
   const prop=Math.round(cl(f,p.salary*.75,p.salary*2.2)/100)*100;
@@ -1964,6 +1964,16 @@ function faEvent(o,w,f){
   if(!ch.length)ch.push({t:'원하는 구단이 없다… 은퇴한다',act:'retire'},{t:'입단 테스트를 받는다',s:'성공 확률 낮음',act:'tryout'});
   else ch.push({t:'은퇴를 선언한다',s:'커리어 종료',act:'retire'});
   return{title:'FA 자격 획득',text:`드디어 FA다. 올해 WAR ${w.toFixed(1)}, 나이 ${a}세. 구단들의 제안이 도착했다.`,ch}}
+/* 방출 판정: 전년도 성적 80% + 능력치 20%
+   - 올해 또는 작년에 MVP·개인 타이틀·골든글러브 등 수상하면 절대 방출 안 됨
+   - 기준 WAR: 38세+ 1.5 · 34세+ 1.0 · 31세+ 0.5 · 27세+ 0 (1 WAR ≈ 능력치 4)
+   - 부상 등으로 출전이 적었으면 최근 2년 평균 WAR로 판단 */
+function releaseCut(o,w,a,L){try{if(a<27)return false;
+  const AW=/MVP|최우수|골든글러브|왕|다승|구원|탈삼진|평균자책|세이브|타점|도루|올스타/;if((S.awards||[]).some(x=>x&&x.y>=S.y-1&&AW.test(x.n)&&!/우승$/.test(x.n)))return false;
+  const thr=a>=38?L+2:a>=34?L-2:a>=31?L-6:L-11,needW=a>=38?1.5:a>=34?1:a>=31?.5:0;
+  let ww=w;const cur=S.rows.filter(x=>x.y===S.y&&x.lv===S.pro.league),pa=cur.reduce((s,x)=>s+((x.b&&x.b.PA)||0)+((x.p&&x.p.O)||0)/2,0);
+  if(pa<200){const prev=S.rows.filter(x=>x.y===S.y-1&&PRO.includes(x.lv)).reduce((s,x)=>s+rowWAR(x),0);ww=Math.max(w,(w+prev)/2)}
+  return .8*(ww-needW)*4+.2*(o-thr)<0}catch(e){return(a>=31&&o<L-6)||(a>=34&&o<L-2)||(a>=27&&o<L-11)||(a>=38&&o<L+2)}}
 function releaseEvent(o){
   const offers=[];TEAMS.forEach((t,i)=>{if(i!==S.pro.team&&R()<cl((o-(LV.KBO-9))/12,0,.5)*(age()>=37?.25:age()>=34?.6:1))offers.push(i)});
   const ch=offers.slice(0,3).map(t=>({t:`${TEAMS[t].city} ${TEAMS[t].nick}와 계약`,s:'1년 · 최저 수준 연봉',act:'fa',arg:{team:t,yrs:1,tot:Math.max(3000,Math.round(S.pro.salary*.5/100)*100),cheap:true}}));
