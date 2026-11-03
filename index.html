@@ -7932,7 +7932,7 @@ function cmLevel(tone,x){if(!x)return 0;const t=String(x.title||'');if(tone==='r
   if(/한국시리즈|월드시리즈|챔피언십/.test(t))return 3;if(/플레이오프|디비전/.test(t)&&!/준플레이오프/.test(t))return 2;return 1}
 const CMB={
  /* 공통(투수·타자 모두): 잘한 날 */
- goodA:['대{g} 호감 ㅋㅋㅋㅋ','대{g} 시대 개막이다','{g} 사랑하면 개추','오늘 {g} 잘했다 생각하면 개추','{g} 오늘 MVP 인정하면 개추','{g} 연봉 두 배 찬성하면 개추','{g} 영구결번 찬성하면 개추 ㅋㅋ','갓{g} 갓{g} 갓{g}','{g} 폼 미쳤다 진짜','{g} 업고 튀어야 된다','{g} 없었으면 오늘 어쩔 뻔했냐','이게 {g}야 이게','{g} 오늘 유니폼 산다 지금 주문함','오늘부터 {g} 비판하는 놈은 적이다','{g}아 형이 미안했다 그동안 욕해서','{g} 까던 놈들 다 어디 갔냐 ㅋㅋㅋ','{g} 보려고 야구 본다','{g} 국밥이다 국밥 든든하다','{g} 오늘 지렸다 ㄹㅇ','{g} 큰 경기 체질 맞네','오늘 {g} 하이라이트만 10번 봄','회사에서 {g} 보다가 소리 질렀다 ㅋㅋ','{g} 오늘 클라스 증명했다','{g} 이 정도면 국대 가야지','{g} 이름 석 자 오늘 확실히 박았다','{f} 이 이름 기억해라 다들','{g} 응원가 부르다 목 나감','직관 갔는데 {g} 때문에 승요 됐다 ㅋㅋ','{g} 오늘 경기 평생 소장각','{g} 오늘은 진짜 우리 형이다'],
+ goodA:['대{g} 호감 ㅋㅋㅋㅋ','대{g} 시대 개막이다','{g} 사랑하면 개추','오늘 {g} 잘했다 생각하면 개추','{g} 오늘 MVP 인정하면 개추','{g} 연봉 두 배 찬성하면 개추','{g} 영구결번 찬성하면 개추 ㅋㅋ','갓{g} 갓{g} 갓{g}','{g} 폼 미쳤다 진짜','{g} 업고 튀어야 된다','{g} 없었으면 오늘 어쩔 뻔했냐','이게 {g}다 이게','{g} 오늘 유니폼 산다 지금 주문함','오늘부터 {g} 비판하는 놈은 적이다','{g}아 형이 미안했다 그동안 욕해서','{g} 까던 놈들 다 어디 갔냐 ㅋㅋㅋ','{g} 보려고 야구 본다','{g} 국밥이다 국밥 든든하다','{g} 오늘 지렸다 ㄹㅇ','{g} 큰 경기 체질 맞네','오늘 {g} 하이라이트만 10번 봄','회사에서 {g} 보다가 소리 질렀다 ㅋㅋ','{g} 오늘 클라스 증명했다','{g} 이 정도면 국대 가야지','{g} 이름 석 자 오늘 확실히 박았다','{f} 이 이름 기억해라 다들','{g} 응원가 부르다 목 나감','직관 갔는데 {g} 때문에 승요 됐다 ㅋㅋ','{g} 오늘 경기 평생 소장각','{g} 오늘은 진짜 우리 형이다'],
  /* 공통: 못한 날 */
  badA:['대{g} 비호감 전환…','{g} 오늘 보고 혈압 오른 사람 개추','오늘 {g} 때문에 TV 끈 사람 개추','{g} 오늘은 진짜 할 말이 없다','{g}아 제발 정신 차려라','{g} 큰 경기만 되면 작아지네','{g} 오늘 출근 안 함 ㅋㅋ','{g} 폼 어디 갔냐 찾습니다','{g} 오늘 유니폼 환불하고 싶다','{g} 믿은 내가 바보지','오늘 {g} 보고 소주 한 병 깠다','{g} 오늘은 쉬는 날이었냐','{g}아 내일은 제발…','{g} 오늘 경기는 없던 걸로 하자','{g} 실드 치던 사람들 오늘은 조용하네','맛{g} 입갤 ㅋㅋㅋㅋ','오늘은 갓{g} 아니고 맛{g}이다','맛{g} 또 나왔다 ㅋㅋㅋ 제발 들어가'],
  /* 타자 전용 */
@@ -8160,6 +8160,17 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
   if(S.m>=9)L.push(`정규시즌에 기운 다 썼나 보네`);
   L.sort(()=>R()-.5).slice(0,3).forEach(t=>put(t,pick(['ㄹㅇ 건강이 최고','쾌유 기원','기다릴게','복귀하면 다시 잘할 거다',null])));
   out.splice(0,0,...add)}catch(e){}return out}}
+/* 잘 치고 있는 선수에게 '이제부터라도 감 잡아라'류 금지 · 무난한 날엔 팀 얘기 (영봉승 투수진 · 시리즈 기세) */
+{const SLUMP=/이제부터라도|감 잡았으면|감 잡아라|평소에는 그렇게 못|그동안 못 치|드디어 쳤|드디어 터졌|살아나라|부진 탈출|오랜만에 (쳤|안타|밥값)|앞에 못 친|이제야/,LOWAVG=/타율은 낮아도|타율 낮아도/;
+ const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||!x||isP())return out;const lg=S.pro&&S.pro.league;let sAvg=0,sOps=0;try{const {b}=yearTot(S.y,[lg]);if(b.AB>=80){sAvg=b.H/b.AB;sOps=opsN(b)}}catch(e){}
+  const M=S.psMe&&S.psMe.y===S.y?S.psMe.b:null,pAvg=M&&M.AB>=8?M.H/M.AB:null;const hot=(pAvg!=null&&pAvg>=.3)||(x.ps?false:sOps>=.85)||(pAvg==null&&sOps>=.85),lowAvg=(pAvg!=null?pAvg:sAvg)<.25;
+  const bad=t=>(hot&&SLUMP.test(t))||(!lowAvg&&LOWAVG.test(t));out=out.filter(c=>!(c&&bad(c.t)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!bad(typeof r==='string'?r:r&&r.t))});
+  if(!(x.ps||x.intl)||!x.win||!Array.isArray(x.lsc)||x.mySide==null)return out;const sum=a=>a.reduce((s,v)=>s+(+v||0),0),opR=sum(x.lsc[1-x.mySide]),myR=sum(x.lsc[x.mySide]);
+  const big=(x.gHR||0)>=1||(x.gH||0)>=3||(x.gRBI||0)>=3,add=[];const put=(t,re)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,re?[{nk:pick(NICKS),t:re,up:ri(40,700)}]:[],{up:ri(1200,5000),must:1}))};
+  const nick=(typeof myNick==='function'&&myNick())||'우리',gn=String(x.title||'').match(/(\d+)차전/),gno=gn?+gn[1]:0,ser=String(x.title||'').replace(/\s*\d+차전.*$/,'');
+  if(opR===0)put(pick([`${nick} 투수진 오늘 미쳤다 영봉승`,`${myR}:0 영봉승 투수들한테 밥 사라`,`가을에 영봉승이면 투수진 클래스 인정`]),pick(['선발 불펜 다 완벽','마운드가 철벽','타자들은 투수들한테 감사해라 ㅋㅋ',null]));
+  if(!big&&gno>=2)put(pick([`${gno}차전 잡고 기세 가져왔다`,`${ser} ${gno}차전 승리 이 흐름 그대로 가자`,`이 기세면 시리즈 금방 끝난다`]),pick(['분위기 최고','다음 경기도 이대로',null]));
+  if(add.length)out.splice(0,0,...add)}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
