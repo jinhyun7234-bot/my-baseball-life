@@ -8035,6 +8035,9 @@ function roleBad2(t){try{if(!t)return false;if(roleBad(t))return true;if(isP()&&
   if(AG&&S.mil&&S.mil.status==='none'&&!P)put(pick([`병역 특례 날아갔네… ${gn} 군대 각`,`${gn} 이제 군대 걱정해야겠네`]),[pick(['상무 가면 되지','타이밍 아깝다'])]);
   if(!hero){const PR=/개추|호감|클래스|혼자|유니폼 산다|비판하는 놈은 적|제 역할|위안|MVP|업고|갓|폼 미쳤|시대 개막|사랑|영웅|레전드|없었으면|믿고 기다린다/;out=out.filter(c=>!PR.test(c.t))}
   out.splice(0,0,...add)}catch(e){}return out}}
+/* 진 경기에는 이긴 경기 전용 표현(승요 등) 빼기, 이긴 경기에는 진 경기 전용 표현 빼기 */
+{const WIN_ONLY=/승요|승리요정|이겼으니|이긴 날|이겨서 다행|승리 축하|오늘 이겼|위닝|버스 탑승 감사/,LOSE_ONLY=/졌지만|패배|아깝게 졌|졌다 ㅠ|석패|혼자 야구했는데 졌/;
+ const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||x.win==null)return out;const bad=x.win?LOSE_ONLY:WIN_ONLY;out=out.filter(c=>!(c&&bad.test(c.t)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!bad.test(typeof r==='string'?r:r&&r.t))})}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
