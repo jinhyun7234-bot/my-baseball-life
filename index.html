@@ -7818,6 +7818,8 @@ ACT.tmppos=function(){let d=50;try{d=(DV(E('rng'))+DV(E('fld'))+DV(E('arm')))/3}
   if(d>=60){return'어색했지만 몸을 날렸다. 감독이 엄지를 들었다.'}
   if(d>=48){ME.form=cl(ME.form-1,-6,6);return'몇 번 아찔한 장면이 있었지만 큰 실수 없이 버텼다.'}
   ME.form=cl(ME.form-2,-6,6);S.rel.coach=cl(S.rel.coach-3,0,100);try{const r=getRow(S.pro?S.pro.league:'KBO');if(r&&r.b)r.b.E=(r.b.E||0)+ri(1,2)}catch(e){}return'익숙하지 않은 자리에서 실책이 나왔다. 감독도 고개를 저었다.'};
+/* 능력치 옆 '최대' 버튼 제거 */
+{const _vs=vStats;vStats=function(){let h=_vs();try{h=h.replace(/<button class="btn xs" data-act="tip" data-k="limit">최대<\/button>/g,'')}catch(e){}return h}}
 
 /* ===================== 명예의 전당: 다른 플레이어의 은퇴 카드 · 커리어 리캡 보기 · 슬롯 삭제해도 기록 남기기 ===================== */
 /* 남의 데이터는 글자만 저장 (HTML 태그 제거) → 보여줄 때 전부 esc */
