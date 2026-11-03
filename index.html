@@ -1188,6 +1188,25 @@ html[data-gt="light"]{--good:#08875a;--g6:#08875a}
 @media (prefers-reduced-motion:reduce){.wr-blob,.wr-in,.wr-bar,.wr-line{animation:none!important;stroke-dashoffset:0}}
 .wr-letter{font-size:1rem;line-height:1.75;font-weight:600;background:color-mix(in srgb,var(--wf) 8%,transparent);border-radius:16px;padding:16px 16px 14px;border-left:3px solid var(--w1)}
 .wr-sig{font-size:.78rem;font-weight:700;opacity:.75;text-align:right}
+.trd{position:relative;min-height:calc(100vh - 120px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:28px 18px;overflow:hidden;color:#fff;text-align:center}
+.trd-bg{position:absolute;inset:-20%;background:linear-gradient(120deg,var(--fc) 0%,var(--fc) 38%,#0b0b10 50%,var(--tc) 62%,var(--tc) 100%);opacity:.55;animation:trdSlide 1.1s cubic-bezier(.2,.8,.2,1) both;z-index:0}
+@keyframes trdSlide{from{transform:translateX(-30%)}to{transform:none}}
+.trd-flash{position:absolute;inset:0;background:#fff;animation:trdFlash .6s ease-out both;z-index:5;pointer-events:none}@keyframes trdFlash{from{opacity:.85}to{opacity:0}}
+.trd>*:not(.trd-bg):not(.trd-flash){position:relative;z-index:2}
+.trd-ey{font-size:.78rem;font-weight:900;letter-spacing:.24em;background:#fff;color:#0b0b10;padding:5px 12px;border-radius:999px;animation:trdUp .5s .2s both}
+.trd-big{font-size:clamp(2.2rem,10vw,3.4rem);font-weight:900;letter-spacing:-.04em;line-height:1.05;text-shadow:0 6px 24px rgba(0,0,0,.4);animation:trdPop .6s .3s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes trdUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}@keyframes trdPop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+.trd-row{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;max-width:420px}
+.trd-team{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;min-width:0}.trd-team span{font-size:.82rem;font-weight:800;word-break:keep-all}
+.trd-team.old{opacity:.55;filter:grayscale(.6);animation:trdUp .5s .45s both}.trd-team.new{animation:trdPop .6s .8s cubic-bezier(.2,1.4,.4,1) both}.trd-team.new span{font-size:.95rem}
+.trd-arrow{display:flex;gap:4px}.trd-arrow i{width:10px;height:10px;border-top:3px solid #fff;border-right:3px solid #fff;transform:rotate(45deg);opacity:.2;animation:trdArr 1.2s infinite}
+.trd-arrow i:nth-child(2){animation-delay:.15s}.trd-arrow i:nth-child(3){animation-delay:.3s}@keyframes trdArr{0%,100%{opacity:.2}50%{opacity:1}}
+.trd-player{position:relative;animation:trdUp .6s 1s both;filter:drop-shadow(0 14px 30px rgba(0,0,0,.45))}
+.trd-stamp{position:absolute;right:-34px;bottom:34px;border:3px solid #ff3b30;color:#ff3b30;font-weight:900;font-size:.95rem;letter-spacing:.12em;padding:4px 10px;border-radius:8px;transform:rotate(-14deg);background:rgba(255,255,255,.9);animation:trdStamp .4s 1.5s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes trdStamp{from{opacity:0;transform:rotate(-14deg) scale(2.4)}to{opacity:1;transform:rotate(-14deg) scale(1)}}
+.trd-name{font-size:1.6rem;font-weight:900;display:flex;flex-direction:column;gap:2px;animation:trdUp .5s 1.2s both}.trd-name small{font-size:.8rem;font-weight:700;opacity:.8}
+.trd-sub{font-size:.95rem;line-height:1.6;opacity:.9;animation:trdUp .5s 1.35s both}
+@media (prefers-reduced-motion:reduce){.trd *{animation:none!important}}
 </style>
 </head>
 <body>
@@ -8108,6 +8127,21 @@ function wrLetter(){const P=isP(),t=careerTot(PRO),b=t.b,p=t.p,e=S.ended||{},gn=
 {const _rs=recapSlides;recapSlides=function(){const sl=_rs();try{const s=sl.find(x=>x.last);if(s){const e=S.ended||{};if(!S._letter||S._letter.y!==(e.y||S.y))S._letter={y:e.y||S.y,t:wrLetter()};
   s.sub=S._letter.t;s.sig=`— ${ME.name}을(를) 사랑한 팬들이 · ${e.age||age()}세 은퇴 · 커리어 점수 ${e.score??'-'}`.replace(`${ME.name}을(를)`,jo(ME.name,'을','를'))}}catch(e){}return sl}}
 {const _ws=wrSlide;wrSlide=function(s,i,n,o){let h=_ws(s,i,n,o);try{if(s&&s.last&&s.sig){h=h.replace('<div class="wr-sub">','<div class="wr-sub wr-letter">');const k=h.indexOf('<button class="wr-end"');const sig=`<div class="wr-sig">${esc(String(s.sig))}</div>`;h=k>=0?h.slice(0,k)+sig+h.slice(k):h.replace('</div>\n  <button class="rcp-l"',sig+'</div>\n  <button class="rcp-l"')}}catch(e){}return h}}
+
+/* ===================== 트레이드 발표 화면: 옛 팀 → 새 팀, 새 유니폼, OFFICIAL 도장 ===================== */
+{const _tg=ACT.tradeGo;ACT.tradeGo=function(a){let from=null;try{from={n:teamLabel(),c:teamColor()}}catch(e){}const r=_tg(a);try{const to={n:teamLabel(),c:teamColor()};const yrs=(()=>{try{return proYears()}catch(e){return 0}})();
+  S.queue.unshift({type:'tradeshow',from,to,big:!!a.big,mlb:S.pro&&S.pro.league==='MLB',y:S.y,num:ME.num||''})}catch(e){}return r}}
+function tcol(c){return/^#[0-9a-fA-F]{6}$/.test(c||'')?c:'#3182f6'}
+function vTradeShow(q){const f=q.from||{n:'',c:'#555'},t=q.to||{n:'',c:'#3182f6'},fc=tcol(f.c),tc=tcol(t.c);let spr='';try{spr=spBody(ME,200,crestData(t.n,tc).c1||tc)}catch(e){}
+  return`<div class="trd" style="--fc:${fc};--tc:${tc}"><div class="trd-bg"></div><div class="trd-flash"></div>
+  <div class="trd-ey">${q.big?'BLOCKBUSTER TRADE':'TRADE'} · ${q.y}</div>
+  <div class="trd-big">${q.big?'초대형 트레이드':'트레이드 확정'}</div>
+  <div class="trd-row"><div class="trd-team old">${crest(f.n,64,fc)}<span>${esc(f.n)}</span></div><div class="trd-arrow" aria-hidden="true"><i></i><i></i><i></i></div><div class="trd-team new">${crest(t.n,84,tc)}<span>${esc(t.n)}</span></div></div>
+  <div class="trd-player">${spr}<div class="trd-stamp">OFFICIAL</div></div>
+  <div class="trd-name">${esc(ME.name)}<small>${esc(POS[ME.pos]||'')}${q.num?` · No.${esc(String(q.num))}`:''}</small></div>
+  <div class="trd-sub">${esc(t.n)} 유니폼을 입는다.<br>${q.big?'리그 전체가 이 트레이드를 이야기하고 있다.':'새 팀, 새 동료, 새 출발.'}</div></div>`}
+{const _rd=_render;_render=function(app,nav,bar,ov){try{if(S&&!ui.simming&&ui.screen!=='title'&&ui.recap==null){const q=nextQ();if(q&&q.type==='tradeshow'){ME=S.me;ui.sheet=null;full(app,nav,bar,ov,vTradeShow(q),' dark');bar.innerHTML='<button class="btn pri glow" data-act="tradeok">새 팀으로 ▶</button>';ov.innerHTML='';try{haptic([20,60,30])}catch(e){}return}}}catch(e){}return _rd(app,nav,bar,ov)}}
+if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="tradeok"]');if(!b||!S)return;e.stopPropagation();const q=nextQ();if(q&&q.type==='tradeshow'){S.queue.splice(S.queue.indexOf(q),1);save();afterQueue();ui.anim=true;render();window.scrollTo(0,0)}},true);
 
 </script>
 
