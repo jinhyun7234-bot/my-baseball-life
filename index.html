@@ -7728,6 +7728,8 @@ function bestPitch(){try{let k=null,v=0;PITCHES.forEach(p=>{if(p==='FB'||!(ME.pt
 /* 7) 선수 만들기 화면에도 홈 버튼 → 첫 화면으로 */
 {const _vc=vCreate;vCreate=function(){const h=_vc();try{if(!S&&ui.cr)return`<div class="crtop"><button class="crhome" data-crhome="1" aria-label="홈 화면으로">🏠 홈</button></div>`+h}catch(e){}return h}}
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-crhome]');if(!b)return;e.stopPropagation();e.preventDefault();ui.cr=null;ui.screen='title';ui.ptsWarn=0;try{window.scrollTo(0,0)}catch(er){}render()},true);
+/* 투수: 내가 삼진 잡으면 약한 진동 */
+{const _sg=stepGame;stepGame=function(g){const r=_sg(g);try{const e=g&&g.ev&&g.ev[g.idx];if(isP()&&e&&e.last&&e.last.me&&e.last.t==='K')setTimeout(()=>haptic(14),0)}catch(er){}return r}}
 
 /* ===================== 명예의 전당: 다른 플레이어의 은퇴 카드 · 커리어 리캡 보기 · 슬롯 삭제해도 기록 남기기 ===================== */
 /* 남의 데이터는 글자만 저장 (HTML 태그 제거) → 보여줄 때 전부 esc */
