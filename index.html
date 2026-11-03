@@ -8048,7 +8048,8 @@ function roleBad2(t){try{if(!t)return false;if(roleBad(t))return true;if(isP()&&
 /* OPS 평가: 리그 수준 반영 (MLB는 같은 OPS라도 더 높게 평가) */
 {const _ot=opsTier;opsTier=function(o,pos){let b=0;try{const lg=S&&S.pro&&S.pro.league;b=lg==='MLB'?.07:lg==='NPB'?.04:0}catch(e){}return _ot(o+b,pos)}}
 /* 잘 나가는 시즌 댓글: 잘한다 잘한다 하니까 · 메이저에서도 통하네 · ○추강대엽 */
-{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||S.stage!=='pro'||!x||x.intl)return out;const lg=S.pro.league,{b}=yearTot(S.y,[lg]);if((b.PA||0)<150)return out;const o=opsN(b),gn=giv(ME.name),sur=ME.name[0];
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||S.stage!=='pro'||!x||x.intl)return out;const lg=S.pro.league,{b}=yearTot(S.y,[lg]);if((b.PA||0)<150)return out;
+  if(x.ps){const gd=(x.gH||0)>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2;if(gd&&opsN(b)>=.85&&R()<.5){const t=josaFix(pick([`정규시즌도 잘하고 가을야구는 더 잘하네`,`${giv(ME.name)} 시즌 내내 잘하더니 가을에도 그대로네`,`정규시즌 폼 그대로 가을까지 가져왔다`]));if(!seenHas(t)){seenAdd(t);out.splice(1,0,mkC(t,[{nk:pick(NICKS),t:pick(['ㅇㅈ 이게 진짜 에이스 타자','큰 경기 체질','가을 남자 인정']),up:ri(60,900)}],{up:ri(1500,6000),must:1}))}}return out}const o=opsN(b),gn=giv(ME.name),sur=ME.name[0];
   const good=(x.gH||0)>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2;if(!good)return out;const add=[];
   const put=(t,re)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,(re||[]).map(r=>({nk:pick(NICKS),t:r,up:ri(60,900)})),{up:ri(1200,6000),must:1}))};
   const ot=o.toFixed(3).replace(/^0/,'');
@@ -8074,6 +8075,15 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
     P.filter(t=>big||!/가을야구/.test(t)).sort(()=>R()-.5).slice(0,big?(extra?4:3):2).forEach(t=>put(t,[pick(RE)]))}
   else{put(pick([extra?`${inn}회 연장까지 가서 끝내기로 지는 게 제일 아프다`:`끝내기로 지는 게 제일 아프다`,`다 잡은 경기였는데 끝내기 맞고 끝나네…`,`끝내기 맞는 순간 TV 껐다`]),[pick(['잠이 안 온다','오늘 진 건 오래 남겠다','그래도 끝까지 잘 싸웠다'])]);
     if(big&&extra)put(`그래도 ${inn}회까지 간 혈투, 수준은 진짜 높았다`,[pick(['인정','져도 박수 쳐줄 경기'])])}
+  out.splice(0,0,...add)}catch(e){}return out}}
+/* 큰 경기 결정적 홈런: 3점 차 이내 승리 · 7회 이후 2타점 이상 홈런 (또는 6회 이후 역전·동점 홈런) → 레전드 빨기 */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||!x||!x.win||!(x.ps||x.intl)||!Array.isArray(x.pl))return out;
+  const sum=a=>Array.isArray(a)?a.reduce((s,v)=>s+(+v||0),0):0,mg=Array.isArray(x.lsc)&&x.mySide!=null?sum(x.lsc[x.mySide])-sum(x.lsc[1-x.mySide]):1;if(mg>3)return out;
+  const hr=x.pl.find(p=>p&&p.t==='HR'&&((p.i>=7&&p.r>=2)||(p.i>=6&&p.my>=p.op&&p.my-p.r<=p.op)));if(!hr)return out;
+  const gn=giv(ME.name),mlb=S.pro&&S.pro.league==='MLB',add=[];const put=(t,re,up)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,(re||[]).map(r=>({nk:pick(NICKS),t:r,up:ri(100,1500)})),{up:up||ri(5000,15000),must:1}))};
+  const L=[`${gn} ${hr.i}회 ${hr.r}점 홈런 이거 레전드다 진짜`,`${gn} 도파민에 샤워한 놈 ㅋㅋㅋㅋ`,`대${gn} 대${gn} 대${gn}`,`${gn} 이 홈런 평생 돌려본다`,`${hr.i}회에 저걸 넘기는 게 사람이냐`,`홈런 맞는 순간 상대 투수 표정 봐라 ㅋㅋㅋ`,`${gn} 배트 던지는 거 실화냐 간지 미쳤다`,`이 홈런 하나로 시리즈 분위기 끝났다`];
+  if(mlb)L.push(`한국인이 메이저 가을에 이걸 해내네 국뽕 차오른다`,`새벽에 소리 질렀다 ${gn} 국뽕 MAX`,`대한민국 ${gn} 메이저 가을을 찢었다`);else if(x.intl)L.push(`${gn} 국뽕 그 자체 태극마크 단 보람 있다`,`대한민국 ${gn}!!! 국뽕 차오른다`);
+  L.sort(()=>R()-.5).slice(0,4).forEach(t=>put(t,[pick(['ㄹㅇ 소름','이건 진짜 빨아야 됨','하이라이트 100번 봄','도파민 과다 복용 ㅋㅋ','심장 터지는 줄','개추 박고 간다'])]));
   out.splice(0,0,...add)}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
