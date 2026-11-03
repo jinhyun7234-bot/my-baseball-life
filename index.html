@@ -1148,6 +1148,44 @@ html[data-gt="light"]{--good:#08875a;--g6:#08875a}
 .hv-rcp{position:relative;color:#fff;border-radius:18px;padding:34px 20px 24px;min-height:340px;display:flex;flex-direction:column;justify-content:center;gap:12px;overflow:hidden}
 .hv-rcp .rcp-big{font-size:2.1rem}.hv-rcp .rcp-nums b{font-size:1.7rem}
 .hv-bars{position:absolute;top:12px;left:14px;right:14px;display:flex;gap:4px}.hv-bars i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.3)}.hv-bars i.on,.hv-bars i.done{background:#fff}
+.wr{position:fixed;inset:0;z-index:60;background:var(--wb);color:var(--wf);display:flex;flex-direction:column;justify-content:center;padding:64px max(22px,env(safe-area-inset-left,0px)) 44px;overflow:hidden;font-family:Pretendard,"Pretendard Variable",system-ui,sans-serif}
+.wr.embed{position:relative;inset:auto;z-index:auto;min-height:480px;border-radius:20px;padding:40px 18px 26px}
+.wr-blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.9;pointer-events:none}
+.wr-blob.a{width:62vmax;height:62vmax;max-width:520px;max-height:520px;background:var(--w1);right:-30%;top:-22%;animation:wrSpin 14s linear infinite;border-radius:42% 58% 63% 37%/45% 41% 59% 55%}
+.wr-blob.b{width:44vmax;height:44vmax;max-width:380px;max-height:380px;background:var(--w2);left:-25%;bottom:-18%;animation:wrSpin 18s linear infinite reverse;border-radius:58% 42% 37% 63%/55% 59% 41% 45%;opacity:.75}
+.wr.embed .wr-blob.a{width:340px;height:340px}.wr.embed .wr-blob.b{width:260px;height:260px}
+@keyframes wrSpin{to{transform:rotate(360deg)}}
+.wr-bars{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));left:16px;right:16px;display:flex;gap:4px;z-index:3}.wr.embed .wr-bars{top:14px}
+.wr-bars i{flex:1;height:3px;border-radius:2px;background:color-mix(in srgb,var(--wf) 28%,transparent)}.wr-bars i.on,.wr-bars i.done{background:var(--wf)}
+.wr-x{position:absolute;top:calc(26px + env(safe-area-inset-top,0px));right:14px;z-index:4;width:38px;height:38px;border-radius:50%;border:0;background:color-mix(in srgb,var(--wf) 16%,transparent);color:var(--wf);font-size:1rem;cursor:pointer}
+.wr-in{position:relative;z-index:2;display:flex;flex-direction:column;gap:14px;max-width:560px;width:100%;margin:0 auto;animation:wrIn .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes wrIn{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}
+.wr-ey{font-size:.78rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase;display:inline-block;align-self:flex-start;background:var(--wf);color:var(--wb);padding:5px 10px;border-radius:999px}
+.wr-big{font-size:clamp(2.6rem,12vw,4.2rem);font-weight:900;line-height:1.02;letter-spacing:-.04em;word-break:keep-all}
+.wr.embed .wr-big{font-size:2.4rem}
+.wr-sub{font-size:1.05rem;line-height:1.6;font-weight:600;opacity:.92}
+.wr-nums{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.wr-nums div{display:flex;flex-direction:column;gap:2px;background:color-mix(in srgb,var(--wf) 10%,transparent);border-radius:16px;padding:12px 14px;backdrop-filter:blur(6px)}
+.wr-nums b{font-size:2.1rem;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1.05}.wr-nums span{font-size:.78rem;font-weight:700;opacity:.75}
+.wr-chart{width:100%;height:auto;background:color-mix(in srgb,var(--wf) 6%,transparent);border-radius:16px;padding:6px}
+.wr-bar{animation:wrGrow .7s cubic-bezier(.2,.8,.2,1) both}@keyframes wrGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.wr-line{stroke-dasharray:1200;stroke-dashoffset:1200;animation:wrDraw 1.4s ease forwards}@keyframes wrDraw{to{stroke-dashoffset:0}}
+.wr-leg{display:flex;gap:12px;font-size:.75rem;font-weight:700;opacity:.85}.wr-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.wr-tbl{overflow-x:auto;border-radius:14px;background:color-mix(in srgb,var(--wf) 8%,transparent)}
+.wr-tbl table{width:100%;border-collapse:collapse;font-size:.74rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.wr-tbl th{font-size:.7rem;font-weight:800;opacity:.7;text-align:right;padding:8px 5px;border-bottom:1px solid color-mix(in srgb,var(--wf) 25%,transparent)}.wr-tbl td{text-align:right;padding:9px 5px;font-weight:700}
+.wr-tbl th:first-child,.wr-tbl td:first-child{text-align:left;font-weight:900}
+.wr-ms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.wr-ms div{display:flex;flex-direction:column;gap:2px;padding:11px 12px;border-radius:14px;background:color-mix(in srgb,var(--wf) 10%,transparent)}
+.wr-ms div.big{background:var(--w1);color:var(--wb)}.wr-ms span{font-size:.72rem;font-weight:800;opacity:.75}.wr-ms b{font-size:.98rem;font-weight:900;line-height:1.3;word-break:keep-all}
+.wr-list{display:flex;flex-direction:column;gap:8px}.wr-list div{font-size:1rem;font-weight:800;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--wf) 12%,transparent)}
+.wr-q{display:flex;flex-direction:column;gap:8px}.wr-q div{background:color-mix(in srgb,var(--wf) 12%,transparent);border-radius:14px;padding:12px 14px;font-size:.96rem;line-height:1.45;font-weight:600}.wr-q span{display:block;font-size:.7rem;opacity:.65;margin-bottom:2px}
+.wr-foot{font-size:.8rem;font-weight:700;opacity:.7}
+.wr-av{align-self:flex-start;filter:drop-shadow(0 10px 20px rgba(0,0,0,.35))}
+.wr-end{align-self:stretch;border:0;border-radius:16px;padding:15px;background:var(--wf);color:var(--wb);font:inherit;font-weight:900;font-size:1rem;cursor:pointer}
+.wr .rcp-l,.wr .rcp-r{position:absolute;top:0;bottom:0;width:50%;background:none;border:0;z-index:3;cursor:pointer}.wr .rcp-l{left:0}.wr .rcp-r{right:0}
+.wr-end,.wr-x{position:relative;z-index:4}.wr-x{position:absolute}
+@media (prefers-reduced-motion:reduce){.wr-blob,.wr-in,.wr-bar,.wr-line{animation:none!important;stroke-dashoffset:0}}
 </style>
 </head>
 <body>
@@ -7938,6 +7976,84 @@ function psAcc(x){try{const y=S.y;let A=S._psAcc;if(!A||A.y!==y)A=S._psAcc={y,G:
 const PIT_X2=/홈런(?! ?(맞|허용|내줬|안 맞|억제|군단))|안타 (쳐|치)|장타|볼넷 골라/;
 function roleBad2(t){try{if(!t)return false;if(roleBad(t))return true;if(isP()&&PIT_X2.test(t)&&!PIT_OK.test(t))return true}catch(e){}return false}
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME)return out;out=out.filter(c=>!(c&&roleBad2(c.t)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!roleBad2(typeof r==='string'?r:r&&r.t))})}catch(e){}return out}}
+
+/* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
+/* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
+   (예: 롯데 → MLB → 롯데 복귀 = KBO에선 롯데 한 팀이라 OK · KBO에서 두 팀 이상 뛰었으면 KBO 영구결번은 없음) */
+retireNo=function(){let best=null;for(const lv of PRO){const rs=S.rows.filter(r=>r.lv===lv);if(!rs.length)continue;const teams=new Set(rs.map(r=>r.team));if(teams.size!==1)continue;
+  let w=0;rs.forEach(r=>{try{w+=rowWAR(r)}catch(e){}});if(w>=55&&(!best||w>best.w))best={team:[...teams][0],w,lv}}return best};
+
+/* ---------- 리캡 데이터 ---------- */
+const WR_TH={green:['#0d0d0d','#ffffff','#1ed760','#169c46'],pink:['#ff3ea5','#120010','#ffe14d','#6b1fff'],blue:['#2d1bff','#ffffff','#ff6ad5','#00e5ff'],sun:['#ff6a1a','#140800','#ffd400','#c4001a'],
+  lime:['#c8ff3c','#0d0d0d','#111111','#2f6bff'],purple:['#1a0638','#ffffff','#b14bff','#ff4fa3'],gold:['#15100a','#ffffff','#f5c518','#ff9f1a'],teal:['#003838','#ffffff','#00f0c8','#ffe14d'],red:['#d1001f','#ffffff','#ffd400','#3b0010'],ink:['#0a0a0f','#ffffff','#7c5cff','#1ed760']};
+function wrSeasons(){const P=isP(),ys=[...new Set(S.rows.filter(r=>PRO.includes(r.lv)).map(r=>r.y))].sort((a,b)=>a-b);
+  return ys.map(y=>{const rs=S.rows.filter(r=>r.y===y&&PRO.includes(r.lv));let w=0;rs.forEach(r=>{try{w+=rowWAR(r)}catch(e){}});const main=rs.slice().sort((a,b)=>(P?(b.p.outs||0)-(a.p.outs||0):(b.b.PA||0)-(a.b.PA||0)))[0];
+    const b=blankB(),p=blankP();rs.forEach(r=>{addTo(b,r.b);addTo(p,r.p)});return{y,w:Math.round(w*10)/10,lv:main?main.lv:'KBO',ops:b.PA>=100?Math.round(opsN(b)*1000)/1000:null,era:p.outs>=90?Math.round(p.R*27/p.outs*100)/100:null,b,p}})}
+function wrMilestones(){const P=isP(),out=[],ys=wrSeasons();const cum={H:0,HR:0,RBI:0,SB:0,W:0,SV:0,K:0,HLD:0};const marks=P?{W:[100,150,200,250],SV:[100,200,300,400],K:[1000,1500,2000,2500,3000],HLD:[100,200]}:{H:[1000,1500,2000,2500,3000],HR:[100,200,300,400,500],RBI:[1000,1500],SB:[200,300,400]};
+  const LN={H:'안타',HR:'홈런',RBI:'타점',SB:'도루',W:'승',SV:'세이브',K:'탈삼진',HLD:'홀드'};
+  ys.forEach(s=>{for(const k in marks){const v0=cum[k],add=P?(s.p[k]||0):(s.b[k]||0);cum[k]+=add;marks[k].forEach(m=>{if(v0<m&&cum[k]>=m)out.push({y:s.y,t:`통산 ${m.toLocaleString()}${LN[k]}`,big:m>=(k==='H'?2000:k==='HR'?300:k==='K'?2000:k==='W'?150:k==='SV'?300:9e9)})})}});
+  /* 시즌 최고 기록 */
+  if(P){const sp=ys.filter(s=>s.p.outs>=300);const bw=ys.slice().sort((a,b)=>(b.p.W||0)-(a.p.W||0))[0],bk=ys.slice().sort((a,b)=>(b.p.K||0)-(a.p.K||0))[0],be=sp.slice().sort((a,b)=>a.era-b.era)[0],bs=ys.slice().sort((a,b)=>(b.p.SV||0)-(a.p.SV||0))[0];
+    if(bw&&bw.p.W>=15)out.push({y:bw.y,t:`시즌 ${bw.p.W}승`});if(bk&&bk.p.K>=180)out.push({y:bk.y,t:`시즌 ${bk.p.K}탈삼진`});if(be&&be.era<=2.5)out.push({y:be.y,t:`시즌 평균자책 ${be.era.toFixed(2)}`,big:be.era<2});if(bs&&bs.p.SV>=35)out.push({y:bs.y,t:`시즌 ${bs.p.SV}세이브`})}
+  else{const q=ys.filter(s=>s.b.PA>=400);const bh=ys.slice().sort((a,b)=>(b.b.HR||0)-(a.b.HR||0))[0],ba=q.slice().sort((a,b)=>b.b.H/b.b.AB-a.b.H/a.b.AB)[0],bt=ys.slice().sort((a,b)=>(b.b.H||0)-(a.b.H||0))[0],bsb=ys.slice().sort((a,b)=>(b.b.SB||0)-(a.b.SB||0))[0];
+    if(bh&&bh.b.HR>=30)out.push({y:bh.y,t:`시즌 ${bh.b.HR}홈런`,big:bh.b.HR>=45});if(ba&&ba.b.H/ba.b.AB>=.330)out.push({y:ba.y,t:`시즌 타율 ${(ba.b.H/ba.b.AB).toFixed(3).replace(/^0/,'')}`,big:ba.b.H/ba.b.AB>=.370});if(bt&&bt.b.H>=180)out.push({y:bt.y,t:`시즌 ${bt.b.H}안타`,big:bt.b.H>=200});if(bsb&&bsb.b.SB>=40)out.push({y:bsb.y,t:`시즌 ${bsb.b.SB}도루`})}
+  /* 업적 · 진기록 */
+  try{(S.feats||[]).filter(f=>f.big&&/신기록|사이클링|노히트|퍼펙트|트리플 크라운|40-40|30-30|인사이드 더 파크|완봉/.test(f.t)).forEach(f=>{const t=String(f.t).replace(/^\d+월 /,'').replace(/<[^>]*>/g,'');if(!out.some(o=>o.t===t))out.push({y:f.y,t,big:true})})}catch(e){}
+  return out.sort((a,b)=>(b.big?1:0)-(a.big?1:0)||a.y-b.y).slice(0,8).sort((a,b)=>a.y-b.y)}
+recapSlides=function(){const e=S.ended||{},P=isP(),t=careerTot(PRO),b=t.b,p=t.p,ys=wrSeasons(),dr=S.pro&&S.pro.draft;
+  const first=S.rows.length?Math.min(...S.rows.map(r=>r.y)):S.y,yrs=(e.y||S.y)-first+1,best=ys.slice().sort((a,b)=>b.w-a.w)[0],sl=[];
+  const cnt=n=>S.awards.filter(a=>a.n.includes(n)).length,fa=(S.faList||[]).slice().sort((a,b)=>b.tot-a.tot)[0];
+  sl.push({th:'green',ey:'YOUR CAREER WRAPPED',big:ME.name,sub:`${first}–${e.y||S.y} · ${yrs}년의 야구 인생`,av:1,foot:'화면을 눌러 넘겨보세요'});
+  sl.push({th:'pink',ey:'시작',big:SCHOOLS[S.school]?SCHOOLS[S.school].n:'',sub:`${first}년, 16살 고교 1학년.\n${dr?`${dr.y+1} 드래프트 ${dr.rd}라운드 전체 ${dr.pick}순위.`:S.pro&&S.pro.dev?'아무도 부르지 않았지만, 육성선수로 다시 시작했다.':S.univ?`${S.univ}를 거쳐 프로에 왔다.`:'프로의 문은 끝내 열리지 않았다.'}`});
+  sl.push({th:'blue',ey:'숫자로 보는 커리어',nums:P?[[p.G,'경기'],[p.W,'승'],[p.K,'탈삼진'],[p.SV,'세이브'],[p.outs?+(p.R*27/p.outs).toFixed(2):0,'평균자책'],[+t.w.toFixed(1),'WAR']]:[[b.G,'경기'],[b.H,'안타'],[b.HR,'홈런'],[b.RBI,'타점'],[b.AB?+(b.H/b.AB).toFixed(3):0,'타율'],[+t.w.toFixed(1),'WAR']]});
+  if(ys.length>=2)sl.push({th:'ink',ey:'시즌별 WAR',sub:`${ys.length}시즌의 기록 · 가장 높은 막대가 커리어 하이`,chart:{type:'bar',pts:ys.map(s=>[String(s.y).slice(2),s.w,s.lv]),hi:best?String(best.y).slice(2):''}});
+  const ln=ys.filter(s=>P?s.era!=null:s.ops!=null);if(ln.length>=3)sl.push({th:'teal',ey:P?'시즌별 평균자책':'시즌별 OPS',sub:P?'낮을수록 좋아요':'높을수록 좋아요',chart:{type:'line',inv:P?1:0,pts:ln.map(s=>[String(s.y).slice(2),P?s.era:s.ops])}});
+  if(best&&best.w>0)sl.push({th:'sun',ey:'커리어 하이',big:`${best.y}`,sub:`${lineFor(S.rows.filter(r=>r.y===best.y&&PRO.includes(r.lv)))}\n그해, 리그는 당신의 것이었다.`});
+  const lgRows=PRO.map(lv=>{const rs=S.rows.filter(r=>r.lv===lv);if(!rs.length)return null;const B=blankB(),Pp=blankP();let w=0;rs.forEach(r=>{addTo(B,r.b);addTo(Pp,r.p);try{w+=rowWAR(r)}catch(e){}});const n=new Set(rs.map(r=>r.y)).size;
+    return P?[lv,n,Pp.G,`${Pp.W}-${Pp.L}`,Pp.SV,Pp.outs?(Pp.R*27/Pp.outs).toFixed(2):'-',Pp.K,w.toFixed(1)]:[lv,n,B.G,B.AB?(B.H/B.AB).toFixed(3).replace(/^0/,''):'-',B.HR,B.H,B.PA?opsN(B).toFixed(3).replace(/^0/,''):'-',w.toFixed(1)]}).filter(Boolean);
+  if(lgRows.length)sl.push({th:'lime',ey:'리그별 통산 기록',table:{head:P?['리그','시즌','경기','승-패','세이브','ERA','K','WAR']:['리그','시즌','경기','타율','홈런','안타','OPS','WAR'],rows:lgRows}});
+  const ms=wrMilestones();if(ms.length)sl.push({th:'purple',ey:'대기록',ms:ms.map(m=>[m.y,m.t,m.big?1:0])});
+  let mo=[];try{mo=careerMoments()}catch(er){}if(mo.length){const seen=new Set(),L=[];mo.forEach(m=>{const t=String(m.t).replace(/<[^>]*>/g,'').replace(/^\d{4}\s*/,'').replace(/\s*수상$/,'');const k=m.y+t;if(seen.has(k))return;seen.add(k);L.push(`${m.y} · ${t}`)});sl.push({th:'red',ey:'가장 빛났던 순간',list:L})}
+  sl.push({th:'gold',ey:'트로피 진열장',nums:[[S.hist.rings||0,'우승 반지'],[cnt('MVP'),'MVP'],[cnt('골든글러브'),'골든글러브'],[S.awards.filter(a=>/왕|최다/.test(a.n)).length,'타이틀'],[S.hist.nat||0,'국가대표'],[S.hist.allstar||0,'올스타']]});
+  try{const st=stints().filter(s=>PRO.includes(s.kind));if(st.length)sl.push({th:'blue',ey:'함께한 팀',list:st.map(s=>`${s.y1===s.y2?s.y1:`${s.y1}–${String(s.y2).slice(2)}`} · ${s.name}`)})}catch(er){}
+  if(fa)sl.push({th:'teal',ey:'인생 계약',big:`${fa.yrs}년 ${money(fa.tot)}`,sub:`${fa.y}년, ${TEAMS[fa.team]?TEAMS[fa.team].city+' '+TEAMS[fa.team].nick:''}.\n그 가치를 증명하는 시간이었다.`});
+  if(S.retNo)sl.push({th:'gold',ey:'영구결번',big:`No. ${S.retNo.num}`,sub:`${S.retNo.team}의 영원한 번호.\n원클럽맨, 팀 통산 WAR ${(+S.retNo.w).toFixed(1)}.`});
+  const art=(S.arts||[]).find(a=>a.tone==='retire')||(S.arts||[]).find(a=>/은퇴|명예의 전당/.test(a.head));if(art&&art.cm&&art.cm.length)sl.push({th:'pink',ey:'팬들의 한마디',quotes:art.cm.slice(0,4).map(c=>[c.nk,c.t])});
+  sl.push({th:e.hof?'gold':'ink',ey:e.hof?'HALL OF FAME':'THANK YOU',big:e.hof?'명예의 전당':'고마웠어요',sub:`${ME.name}, ${e.age||age()}세.\n${e.hof?'당신의 이름은 영원히 남는다.':'그라운드에 남긴 모든 순간에 박수를.'}\n커리어 점수 ${e.score??'-'}`,last:1});
+  return sl};
+/* ---------- 그리기 (내 리캡 · 명예의 전당 남의 리캡 공용, 글자는 전부 esc) ---------- */
+function wrChart(c,th){const W=320,H=170,pad=20,pts=c.pts||[];if(!pts.length)return'';const T=v=>esc(String(v));
+  if(c.type==='bar'){const vs=pts.map(p=>+p[1]||0),mx=Math.max(1,...vs),mn=Math.min(0,...vs),rng=mx-mn,bw=(W-pad*2)/pts.length,zero=H-pad-(0-mn)/rng*(H-pad*2);
+    const lvC={KBO:th[2],MLB:th[3],NPB:th[1]};
+    return`<svg class="wr-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="시즌별 WAR 막대 그래프"><line x1="${pad}" x2="${W-pad}" y1="${zero}" y2="${zero}" stroke="${th[1]}" stroke-opacity=".3"/>${pts.map((p,i)=>{const v=+p[1]||0,h=Math.abs(v)/rng*(H-pad*2),x=pad+i*bw+bw*.15,y=v>=0?zero-h:zero,hi=String(p[0])===String(c.hi);
+      return`<g><rect class="wr-bar" style="animation-delay:${(i*.05).toFixed(2)}s;transform-origin:${x}px ${zero}px" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*.7).toFixed(1)}" height="${Math.max(1,h).toFixed(1)}" rx="2" fill="${lvC[p[2]]||th[2]}" ${hi?`stroke="${th[1]}" stroke-width="2"`:''}/>${hi?`<text x="${(x+bw*.35).toFixed(1)}" y="${(y-5).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="800" fill="${th[1]}">${T(v)}</text>`:''}${pts.length<=16||i%2===0?`<text x="${(x+bw*.35).toFixed(1)}" y="${H-4}" text-anchor="middle" font-size="9" fill="${th[1]}" fill-opacity=".7">'${T(p[0])}</text>`:''}</g>`}).join('')}</svg>
+      <div class="wr-leg">${[...new Set(pts.map(p=>p[2]))].map(l=>`<span><i style="background:${lvC[l]||th[2]}"></i>${T(l)}</span>`).join('')}</div>`}
+  const vs=pts.map(p=>+p[1]||0),mx=Math.max(...vs),mn=Math.min(...vs),rng=(mx-mn)||1,X=i=>pad+i*(W-pad*2)/Math.max(1,pts.length-1),Y=v=>{const k=(v-mn)/rng;return pad+(c.inv?k:1-k)*(H-pad*2-10)};
+  const d=pts.map((p,i)=>`${i?'L':'M'}${X(i).toFixed(1)} ${Y(+p[1]).toFixed(1)}`).join(' ');const bi=c.inv?vs.indexOf(mn):vs.indexOf(mx);
+  return`<svg class="wr-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="시즌별 추이 그래프"><path class="wr-line" d="${d}" fill="none" stroke="${th[2]}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>${pts.map((p,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(+p[1]).toFixed(1)}" r="${i===bi?5:3}" fill="${i===bi?th[3]:th[2]}"/>${i===bi?`<text x="${X(i).toFixed(1)}" y="${(Y(+p[1])-9).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="800" fill="${th[1]}">${T(p[1])}</text>`:''}${pts.length<=14||i%2===0?`<text x="${X(i).toFixed(1)}" y="${H-2}" text-anchor="middle" font-size="9" fill="${th[1]}" fill-opacity=".7">'${T(p[0])}</text>`:''}`).join('')}</svg>`}
+function wrSlide(s,i,n,o){o=o||{};const th=WR_TH[s.th]||WR_TH.green,T=v=>esc(String(v==null?'':v));const num=v=>{const x=+v;if(!isFinite(x))return T(v);const dec=String(v).includes('.')?String(v).split('.')[1].length:0;return`<b class="wr-cnt" data-v="${x}" data-d="${dec}">${dec?x.toFixed(dec):x.toLocaleString()}</b>`};
+  return`<div class="wr${o.embed?' embed':''}" style="--wb:${th[0]};--wf:${th[1]};--w1:${th[2]};--w2:${th[3]}"><i class="wr-blob a"></i><i class="wr-blob b"></i>
+  <div class="wr-bars">${Array.from({length:n},(_,j)=>`<i class="${j<i?'done':j===i?'on':''}"></i>`).join('')}</div>${o.embed?'':`<button class="wr-x" data-act="rcpx" aria-label="닫기">✕</button>`}
+  <div class="wr-in" key="w${i}">${s.av&&o.av?`<div class="wr-av">${o.av}</div>`:''}<div class="wr-ey">${T(s.ey)}</div>${s.big!=null&&s.big!==''?`<div class="wr-big">${T(s.big)}</div>`:''}${s.sub?`<div class="wr-sub">${T(s.sub).replace(/\n/g,'<br>')}</div>`:''}
+    ${Array.isArray(s.nums)?`<div class="wr-nums">${s.nums.map(z=>`<div>${z&&z[1]==='타율'?`<b>${T((+z[0]).toFixed(3).replace(/^0/,''))}</b>`:num(z&&z[0])}<span>${T(z&&z[1])}</span></div>`).join('')}</div>`:''}
+    ${s.chart?wrChart(s.chart,th):''}
+    ${s.table&&Array.isArray(s.table.rows)?`<div class="wr-tbl"><table><thead><tr>${(s.table.head||[]).map(h=>`<th>${T(h)}</th>`).join('')}</tr></thead><tbody>${s.table.rows.map(r=>`<tr>${(r||[]).map(c=>`<td>${T(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:''}
+    ${Array.isArray(s.ms)?`<div class="wr-ms">${s.ms.map(m=>`<div class="${m&&m[2]?'big':''}"><span>${T(m&&m[0])}</span><b>${T(m&&m[1])}</b></div>`).join('')}</div>`:''}
+    ${Array.isArray(s.list)?`<div class="wr-list">${s.list.map(x=>`<div>${T(x)}</div>`).join('')}</div>`:''}
+    ${Array.isArray(s.quotes)?`<div class="wr-q">${s.quotes.map(q=>`<div><span>${T(q&&q[0])}</span>${T(q&&q[1])}</div>`).join('')}</div>`:''}
+    ${s.foot?`<div class="wr-foot">${T(s.foot)}</div>`:''}${s.last&&!o.embed?`<button class="wr-end" data-act="rcpx">은퇴 카드 보기</button>`:''}</div>
+  ${o.embed?'':`<button class="rcp-l" data-act="rcp" data-v="-1" aria-label="이전"></button><button class="rcp-r" data-act="rcp" data-v="1" aria-label="다음"></button>`}</div>`}
+vRecap=function(){const sl=recapSlides(),i=cl(ui.recap,0,sl.length-1);let av='';try{av=spBody(ME,190,spTeam())}catch(e){}return wrSlide(sl[i],i,sl.length,{av})};
+/* 숫자 올라가는 애니메이션 */
+function wrCount(){try{document.querySelectorAll('.wr-cnt').forEach(el=>{if(el.dataset.done)return;el.dataset.done=1;const v=+el.dataset.v,d=+el.dataset.d||0,t0=performance.now(),D=700;
+  const f=t=>{const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3),x=v*e;el.textContent=d?x.toFixed(d):Math.round(x).toLocaleString();if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}catch(e){}}
+{const _pr=postRender;postRender=function(app){const r=_pr(app);try{if(document.querySelector('.wr'))wrCount()}catch(e){}return r}}
+/* 명예의 전당에서 남의 리캡: 같은 디자인으로 */
+{const _vv=vHofView;vHofView=function(){let h=_vv();try{const v=ui.hof&&ui.hof.view;if(!v||v.mode!=='recap')return h;const L=HOFD['v:'+v.id];if(!L||!L.row||!L.row.extra||!Array.isArray(L.row.extra.sl)||!L.row.extra.sl.length)return h;
+  const sl=L.row.extra.sl,i=cl(v.i||0,0,sl.length-1),s=sl[i]||{};const old=!s.th;const ss=old?{...s,th:['green','pink','blue','sun','purple','teal','red','gold'][i%8]}:s;
+  const a=h.indexOf('<div class="hv-rcp"'),b=h.indexOf('<div class="row" style="gap:8px"><button class="btn" style="flex:1" data-hof="vstep"');if(a<0||b<0)return h;
+  let av='';try{const lk=L.row.extra.look||{};if(ss.av&&lk.nh!=null){const fake={look:{nh:lk.nh},body:lk.body||'표준'};av=nsImg(nsURL(nsKey(fake),{team:(L.row.extra.D&&L.row.extra.D.av&&L.row.extra.D.av.c1)||null}),150)}}catch(e){}
+  h=h.slice(0,a)+wrSlide(ss,i,sl.length,{embed:1,av})+h.slice(b)}catch(e){}setTimeout(wrCount,30);return h}}
 
 </script>
 
