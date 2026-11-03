@@ -8056,6 +8056,13 @@ function roleBad2(t){try{if(!t)return false;if(roleBad(t))return true;if(isP()&&
     const k=o>=.9?2:1;L.sort(()=>R()-.5).slice(0,k).forEach(t=>put(t,[pick(/강대엽/.test(t)?['아직 강은 못 넘었다 ㅋㅋ','추는 넘은 듯','이 페이스면 진짜 넘는다','ㅇㅈ 개추']:['ㅇㅈ','새벽 야구 맛집','메이저 적응 끝났다','국뽕 차오른다'])]))}
   else if(o>=.9&&R()<.35)put(pick([`잘한다 잘한다 하니까 계속 잘하네 ㅋㅋㅋ`,`${gn} 요즘 OPS ${ot} 폼 미쳤다`,`${gn} 이 페이스 시즌 끝까지만 가자`]),[pick(['칭찬은 고래도 춤추게 한다','부정 탄다 말 아껴라 ㅋㅋ','ㄹㅇ 질리지가 않네'])]);
   if(add.length)out.splice(1,0,...add)}catch(e){}return out}}
+/* 맛○○ 드립: 연애 시작·결혼 후 1년 안에만 · 그 기간 부진하면 '연애하더니 맛이 갔네' 류 */
+function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.married&&S.married.y!=null&&S.y-S.married.y<=1))}catch(e){return false}}
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME)return out;const gn=giv(ME.name),MAT=new RegExp('맛'+gn+'|맛\\{|갓'+gn+' 아니고');
+  if(!loveWin()){out=out.filter(c=>!(c&&MAT.test(c.t)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!MAT.test(typeof r==='string'?r:r&&r.t))});return out}
+  if(!x||tone==='love'||tone==='wedding')return out;const P=isP(),bad=P?((x.ipO||0)>=3&&(x.ra||0)>=4):((x.gPA||0)>=4&&(x.gH||0)===0&&!(x.gRBI>0));if(!bad||R()>=.45)return out;
+  const who=S.married&&S.y-S.married.y<=1?'결혼':'연애',T=who==='결혼'?[`결혼하더니 맛이 갔네`,`신혼이라 정신이 딴 데 가 있나 ${gn}`,`${gn} 신혼 버프가 아니라 신혼 디버프네`]:[`연애 맛보더니 못하네`,`연애하더니 맛이 갔네`,`${gn} 요즘 경기보다 폰이 더 중요한 듯 ㅋㅋ`];
+  const t=josaFix(pick(T));if(seenHas(t))return out;seenAdd(t);out.splice(0,0,mkC(t,[{nk:pick(NICKS),t:`맛${gn}${((gn.charCodeAt(gn.length-1)-0xAC00)%28)?'이네':'네'} 그럼 ㅋㅋ`,up:ri(200,1500)},{nk:pick(NICKS),t:pick(['사생활은 건드리지 말자','폼 돌아오면 다 조용해짐','ㅋㅋㅋㅋㅋ 맛'+gn]),up:ri(50,600)}],{up:ri(1500,6000),must:1}))}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
