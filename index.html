@@ -2820,7 +2820,7 @@ EV.push(
    {t:'미팅에서 한마디 한다',s:'팀 분위기↑ · 말한 만큼 부담 (컨디션 조금↓)',fx:{chem:3,form:-1},r:'"한 경기만 이기자." 짧지만 진심이었다.'},
    {t:'내 플레이로 보여준다',s:'워크에식↑ · 피로 조금↑',fx:{we:1,fat:2},r:'말없이 더 일찍 나와 훈련했다.'}]})},
  {c:()=>S.stage==='pro'&&!isP()&&inSeason()&&ME.pos!=='C',f:()=>({title:'임시 포지션 변경',text:'주전 동료가 다쳤다. 감독이 익숙하지 않은 포지션을 맡아줄 수 있냐고 묻는다.',ch:[
-   {t:'팀을 위해 맡는다',s:'감독 신뢰 크게↑ · 실책 위험',fx:{coach:5,chem:2,form:-1},r:'어색했지만 몸을 날렸다. 감독이 엄지를 들었다.'},
+   {t:'팀을 위해 맡는다',s:'감독 신뢰 크게↑ · 실책 위험',fx:{coach:5,chem:2},act:'tmppos',r:'어색했지만 몸을 날렸다. 감독이 엄지를 들었다.'},
    {t:'내 포지션에 집중하고 싶다',s:'감독 신뢰↓ · 내 포지션 감각 유지 (컨디션↑)',fx:{coach:-3,form:1},r:'감독은 다른 선수를 찾았다.'}]})},
  {c:()=>S.stage==='pro'&&inSeason(),f:()=>({title:'원정 강행군',text:'원정 9연전. 버스와 호텔을 오가다 보니 잠을 제대로 못 잔다.',ch:[
    {t:'수면 루틴에 투자한다',s:'−100만원 · 피로↓',fx:{money:-100,fat:-8},r:'암막 커튼과 베개를 챙겼다. 확실히 다르다.'},
@@ -7812,6 +7812,12 @@ ACT.gfbreak=function(){const g=S.gf;if(!g)return'';const n=g.n;S.gf=null;S.gfCoo
 /* 결혼: 결과 문구 팝업 없이 바로 '결혼 · 백년가약' 화면 · 멘탈 +5 표시 */
 {const _mr=ACT.marry;ACT.marry=function(a){const n0=S.queue.length,m0=S.married;const r=_mr(a);try{if(S.married&&S.married!==m0){ME.hid.men=cl(ME.hid.men+1,20,80);
   const aw=S.queue.find(q=>q&&q.type==='award'&&q.a&&q.a.title==='결혼');if(aw){aw.a.sub=`${S.married.y} · ${S.married.n} 씨와 백년가약`;aw.a.extra=(aw.a.extra||[]).filter(x=>!/멘탈/.test(x));aw.a.extra.push('멘탈 +5')}return''}}catch(e){}return r}}
+/* 임시 포지션 변경: 수비력이 좋을수록 낯선 포지션에서도 잘함 (설명은 안 보여줌) */
+ACT.tmppos=function(){let d=50;try{d=(DV(E('rng'))+DV(E('fld'))+DV(E('arm')))/3}catch(e){}
+  if(d>=75){ME.form=cl(ME.form+1,-6,6);S.rel.coach=cl(S.rel.coach+3,0,100);S.rel.fame=cl(S.rel.fame+1,0,100);return'낯선 자리인데도 원래 내 포지션인 것처럼 막아냈다. "수비 센스는 어디 안 가네." 감독이 감탄했다.'}
+  if(d>=60){return'어색했지만 몸을 날렸다. 감독이 엄지를 들었다.'}
+  if(d>=48){ME.form=cl(ME.form-1,-6,6);return'몇 번 아찔한 장면이 있었지만 큰 실수 없이 버텼다.'}
+  ME.form=cl(ME.form-2,-6,6);S.rel.coach=cl(S.rel.coach-3,0,100);try{const r=getRow(S.pro?S.pro.league:'KBO');if(r&&r.b)r.b.E=(r.b.E||0)+ri(1,2)}catch(e){}return'익숙하지 않은 자리에서 실책이 나왔다. 감독도 고개를 저었다.'};
 
 /* ===================== 명예의 전당: 다른 플레이어의 은퇴 카드 · 커리어 리캡 보기 · 슬롯 삭제해도 기록 남기기 ===================== */
 /* 남의 데이터는 글자만 저장 (HTML 태그 제거) → 보여줄 때 전부 esc */
