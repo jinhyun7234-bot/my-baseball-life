@@ -7925,6 +7925,14 @@ function defWeak(){try{return!isP()&&posFit()<ovrE()-4}catch(e){return false}}
   let p=sp<35?.45:.25;if(o.intl||/차전|결승/.test(o.title||''))p*=1.3;if(R()>=p)return g;
   const nm=ME.name;let k=-1;for(let i=g.ev.length-1;i>=0;i--){const e=g.ev[i];if(/\bme\b/.test(e.c)&&e.t&&e.t.indexOf(nm+':')>=0){k=i;break}}if(k<0)return g;
   const e=g.ev[k];g.ev.splice(k+1,0,{...e,t:`${last.i}회 — 대주자 투입. ${jo(nm,'은','는')} 여기까지, 벤치로 들어간다`,c:'sub'});g.pr=1}catch(e){}return g}}
+/* 가을야구 엔트리 제외 이유: 부상이면 부상이라고 확실히 */
+psOutReason=(function(_o){return function(){try{if(ME.inj)return _o();const r=S.prevRole||'',il=S.injLast&&S.injLast.y===S.y?S.injLast:null,ia=il?{head:', '+il.n+'으로 이탈',ph:il.ph,m:il.m}:null;
+  if(r==='inj'||S.role==='inj'||(ia&&ia.m>=8))return`부상${ia?` (${String(ia.head).replace(/^.*?,\s*/,'').replace(/으로 이탈.*$/,'')})`:''} 여파로 가을야구 엔트리에서 빠졌다. 몸이 완전히 회복되지 않아 팀 경기를 밖에서 지켜봤다.`;
+  if(ia&&ia.m>=6)return`시즌 후반 부상(${String(ia.head).replace(/^.*?,\s*/,'').replace(/으로 이탈.*$/,'')})에서 돌아왔지만 경기 감각이 올라오지 않아 엔트리에 들지 못했다.`;
+  if(/^f/.test(r)||r==='reserve')return'시즌 막판 1군 엔트리에 없어서 가을야구 엔트리에 들지 못했다.';
+  if(r==='bench')return'주전 경쟁에서 밀려 가을야구 엔트리 마지막 자리를 다른 선수에게 내줬다.';
+  return _o()}catch(e){return _o()}}})(psOutReason);
+{const _ij=injure;injure=function(rep){const r=_ij(rep);try{if(ME.inj)S.injLast={y:S.y,ph:S.phase,m:S.m,n:ME.inj.n}}catch(e){}return r}}
 
 /* ===================== 큰 경기 댓글 확장: 경기가 클수록 댓글 수↑ · 커뮤 드립(대○○ 호감 · ○○ 사랑하면 개추 …) · 투수/타자 분리 ===================== */
 /* 경기 크기: 0 정규시즌 · 1 와일드카드/준PO · 2 PO/디비전 · 3 한국시리즈/월드시리즈/챔피언십 · 4 우승 확정·국제대회 결승 승리 */
