@@ -1667,7 +1667,7 @@ function phaseEnd(rep,tot0){
   const gs=Object.values(rep.games),main=gs.find(g=>PRO.includes(g.lvk))||gs[0];
   const ps=main?perfScore(main):0;
   if(main&&(S.stage==='pro'||S.stage==='mil'||R()<.5))phaseArticle(main,ps);
-  const bigF=S.phFeats.filter(f=>f.big&&!/차전|결승|시리즈|와일드카드|준PO|플레이오프|올림픽|아시안게임|WBC|프리미어/.test(f.t));if(bigF.length)article(`[${S.y} ${PHASE[S.phase]}] ${ME.name}, ${bigF[0].t.replace(/^\d+월 /,'')}`,`${shortTeam()}의 ${jo(ME.name,'이','가')} ${bigF.length>1?`이번 기간에만 특별한 기록을 ${bigF.length}개나 쏟아냈다.`:'팬들의 탄성을 자아냈다.'}`,bigF[0].t.includes('신기록')?'record':'feat');
+  const bigF=S.phFeats.filter(f=>f.big&&!/차전|결승|시리즈|와일드카드|준PO|플레이오프|올림픽|아시안게임|WBC|프리미어|타이틀 획득/.test(f.t));if(bigF.length)article(`[${S.y} ${PHASE[S.phase]}] ${ME.name}, ${bigF[0].t.replace(/^\d+월 /,'')}`,`${shortTeam()}의 ${jo(ME.name,'이','가')} ${bigF.length>1?`이번 기간에만 특별한 기록을 ${bigF.length}개나 쏟아냈다.`:'팬들의 탄성을 자아냈다.'}`,bigF[0].t.includes('신기록')?'record':'feat');
   // bold interview follow-up
   if(S.mood&&S.mood.bold&&main){if(ps<0){S.rel.fame-=6;news('"큰소리치더니…" 지난 인터뷰가 역풍을 맞았다.')}else S.rel.fame+=3;S.mood.bold=0}
   // one event per phase at most
@@ -1768,9 +1768,10 @@ function awards(rep){
   if(isP()){if(w>rn(5.2,.9))give('골든글러브 (투수)')}else if(b.G>=100&&w>rn(3.6,1))give(`골든글러브 (${POS[ME.pos]})`);
   if(got.some(x=>x.startsWith('골든')))S.ach.gg=S.ach.gg||S.y;
   const top=(c,pt,v,lo)=>{if(S.pro.league!=='KBO')return false;const r=ranking(c,pt).list;return !!(r.length&&r[0].me&&(v===undefined||v>0))};
-  if(!isP()){if(top('avg',0))give('타격왕');if(top('hr',0,b.HR))give('홈런왕');if(top('rbi',0,b.RBI))give('타점왕');if(top('sb',0,b.SB))give('도루왕');if(top('h',0,b.H))give('최다안타');if(top('r',0,b.R))give('득점왕')}
+  if(!isP()){if(top('avg',0))give('타격왕');if(top('hr',0,b.HR))give('홈런왕');if(top('rbi',0,b.RBI))give('타점왕');if(top('sb',0,b.SB))give('도루왕');if(top('h',0,b.H))give('최다안타');if(top('r',0,b.R))give('득점왕');if(top('obp',0))give('출루율왕');if(top('slg',0))give('장타율왕')}
   else{if(top('w',1,p.W))give('다승왕');if(top('era',1))give('평균자책점왕');if(top('k',1,p.K))give('탈삼진왕');if(top('sv',1,p.SV))give('세이브왕');if(top('hld',1,p.HLD))give('홀드왕')}
-  if(got.length){const pri=['정규시즌 MVP','신인왕','골든글러브','타격왕','홈런왕','다승왕','평균자책점왕','탈삼진왕','세이브왕','타점왕','도루왕','최다안타','득점왕','홀드왕'];const main=got.slice().sort((a,b)=>pri.findIndex(p=>a.startsWith(p))-pri.findIndex(p=>b.startsWith(p)))[0];
+  {const TT=['타격왕','홈런왕','타점왕','득점왕','출루율왕','도루왕','최다안타','장타율왕','다승왕','평균자책점왕','탈삼진왕','세이브왕','홀드왕'];got.filter(n=>TT.includes(n)).forEach(n=>feat(`${S.y} KBO ${n==='최다안타'?'최다안타(안타왕)':n} 타이틀 획득`,1))}
+  if(got.length){const pri=['정규시즌 MVP','신인왕','골든글러브','타격왕','홈런왕','다승왕','평균자책점왕','탈삼진왕','세이브왕','타점왕','도루왕','최다안타','득점왕','출루율왕','장타율왕','홀드왕'];const main=got.slice().sort((a,b)=>pri.findIndex(p=>a.startsWith(p))-pri.findIndex(p=>b.startsWith(p)))[0];
     celebrate(main.includes('MVP')?'mvp':main.startsWith('골든')?'glove':main==='신인왕'?'trophy':'crown',main,`${S.y} KBO 시상식 · WAR ${w.toFixed(1)}`,got.filter(x=>x!==main));
     rep.lines.push(`시상식: ${got.join(', ')}`);news(`${S.y} 시상식: ${got.join(', ')}`);
     article(got.includes('정규시즌 MVP')?`${S.y} 정규시즌 MVP는 ${ME.name}! 압도적 지지`:`${ME.name}, ${got[0]}${got.length>1?` 등 ${got.length}관왕`:''}`,`${jo(ME.name,'은','는')} 올 시즌 WAR ${w.toFixed(1)}을 기록했다.`,'award')}
@@ -2367,7 +2368,7 @@ function streakOf(rec){if(!rec||!rec.length)return'-';const x=rec.filter(r=>r!==
 function last10(rec){const x=(rec||[]).slice(-10);const w=x.filter(r=>r==='W').length,d=x.filter(r=>r==='D').length;return x.length?`${w}승${d?d+'무':''}${x.length-w-d}패`:'-'}
 
 /* ===== rankings ===== */
-const RKB=[['avg','타율',b=>b.AB?b.H/b.AB:0,v=>f3v(v),1],['hr','홈런',b=>b.HR,v=>v,0],['rbi','타점',b=>b.RBI,v=>v,0],['h','안타',b=>b.H,v=>v,0],['r','득점',b=>b.R,v=>v,0],['sb','도루',b=>b.SB,v=>v,0],['ops','OPS',b=>opsN(b),v=>f3v(v),1],['obp','출루율',b=>b.PA?(b.H+b.BB)/b.PA:0,v=>f3v(v),1]];
+const RKB=[['avg','타율',b=>b.AB?b.H/b.AB:0,v=>f3v(v),1],['hr','홈런',b=>b.HR,v=>v,0],['rbi','타점',b=>b.RBI,v=>v,0],['h','안타',b=>b.H,v=>v,0],['r','득점',b=>b.R,v=>v,0],['sb','도루',b=>b.SB,v=>v,0],['ops','OPS',b=>opsN(b),v=>f3v(v),1],['obp','출루율',b=>b.PA?(b.H+b.BB)/b.PA:0,v=>f3v(v),1],['slg','장타율',b=>b.AB?(b.H+(b.D||0)+2*(b.T||0)+3*b.HR)/b.AB:0,v=>f3v(v),1]];
 const RKP=[['era','평균자책',p=>p.outs?p.R*27/p.outs:99,v=>v.toFixed(2),1,true],['w','승리',p=>p.W,v=>v,0],['sv','세이브',p=>p.SV,v=>v,0],['hld','홀드',p=>p.HLD,v=>v,0],['k','탈삼진',p=>p.K,v=>v,0],['whip','WHIP',p=>p.outs?(p.H+p.BB)*3/p.outs:99,v=>v.toFixed(2),1,true],['ip','이닝',p=>p.outs,v=>ip(v),0]];
 const f3v=v=>v>=1?v.toFixed(3):v.toFixed(3).replace(/^0/,'');
 function myKBO(){if(!(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'))return null;const r=S.rows.filter(x=>x.y===S.y&&x.lv==='KBO');if(!r.length)return null;const b=blankB(),p=blankP();r.forEach(x=>{addTo(b,x.b);addTo(p,x.p)});return{n:ME.name,t:S.pro.team,k:isP()?'P':'B',me:true,s:isP()?p:b}}
@@ -7909,7 +7910,7 @@ const PERF_ADJ={B:.3,P:0};
   const m=(1+.03*g(DV(eff('velo')),60,95))*(1+.03*g(DV(eff('stf')),60,95))*(1+.03*g(n,1,4));return{...o,k:o.k*m}}catch(e){return o}}}
 /* 아이템 효과 살짝 하향: 능력치별 훈련 장비 +5%→+4%, +10%→+8% · 퍼포먼스 연구소 +15%→+12%, 파워·구속 +25%→+20% */
 (function(){ITEMS.forEach(it=>{if(/^te2_/.test(it.id))it.p=4000;if(it.te){for(const k in it.te){if(it.te[k]===.05)it.te[k]=.04;else if(it.te[k]===.10||it.te[k]===.1)it.te[k]=.08}if(it.d)it.d=it.d.replace('훈련 효과 +5%','훈련 효과 +4%').replace('훈련 효과 +10%','훈련 효과 +8%')}
-  if(it.id==='lab'){it.eff=.12;it.pw=.2;it.d='1년간 모든 능력치 훈련 효과 +12%, 파워·구속 훈련 +20%'}})})();
+  if(it.id==='lab'){it.eff=.10;it.pw=.18;it.d='1년간 모든 능력치 훈련 효과 +10%, 파워·구속 훈련 +18%'}})})();
 /* 특성 '눈야구 리듬': 볼넷 +3% → 출루 +3% (볼넷 +1.5% · 안타 +1.5%) */
 (function(){[typeof TR!=='undefined'?TR:[],typeof SKILLS!=='undefined'?SKILLS:[]].forEach(L=>L.forEach(t=>{if(t&&t.id==='b_bbchain'){t.a={bb:.015,hit:.015};t.d='직전 타석 볼넷이면 다음 타석 출루 확률 +3% (볼넷 +1.5% · 안타 +1.5%)'}}))})();
 /* KBO FA 연평균 상한: 약 32억 (KBO 현실 수준) */
@@ -7943,6 +7944,12 @@ FEV.push({sr:1,t:'후배에게 심부름?',x:'원정 숙소. 피곤해 죽겠는
  {sr:1,t:'후배의 짐 들기',x:'원정 이동 날. 짐이 많아 버스까지 가는 길이 멀다. 신인 후배가 "선배님 짐 제가 들게요!" 하며 손을 내민다.',ok:['고맙다며 맡긴다',{fat:-5,chem:-2},'편하게 버스에 올랐다. 몇몇 동료가 "고참 다 됐네" 하며 웃었다.'],no:['"됐어, 네 것이나 챙겨"',{fat:3,chem:3},'후배가 더 열심히 따라다닌다. 라커룸 분위기가 훈훈하다.']});
 {const _pf=pickFev;pickFev=function(){const a=age(),py=(typeof proYears==='function'?proYears():0),jr=a<=28&&py<=6,sr=a>=31;const keep=FEV.slice();try{
   const L=FEV.filter(e=>!(e.jr&&!jr)&&!(e.sr&&!sr));FEV.length=0;L.forEach(e=>FEV.push(e));return _pf()}finally{FEV.length=0;keep.forEach(e=>FEV.push(e))}}}
+/* 특성 효과 전체 약 14% 하향 (예: 장타 +20% → +17%, 홈런 +6% → +5.2%) · 설명 문구도 같이 */
+(function(){const F=.86,fmt=v=>{const r=Math.round(v*10)/10;return(r%1?r.toFixed(1):String(r))};
+  const fixD=d=>d&&d.replace(/([+−\-]?)(\d+(?:\.\d+)?)(%p?)/g,(m,sg,n,u)=>sg+fmt(+n*F)+u);
+  const done=new Set();TR.forEach(t=>{if(!t||!t.a||t.neg||done.has(t.id))return;done.add(t.id);
+    for(const k in t.a){const v=t.a[k];if(typeof v!=='number')continue;t.a[k]=k==='hr'?+(1+(v-1)*F).toFixed(4):+(v*F).toFixed(4)}
+    t.d=fixD(t.d);const sk=SKILLS.find(s=>s.id===t.id);if(sk)sk.d=t.d})})();
 
 /* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
 /* 방망이 점수(수비 제외)와 수비 적합도 */
