@@ -7336,7 +7336,7 @@ function onClick(e){
     case'lookrand':keepName();cr.look=randLook();ui.pop=true;break;
     case'openq':ui.sheet='q';break;
     case'closeq':ui.sheet=null;break;
-    case'pick':{AU.sfx('choose');const r=choose(+d.i)||'';const nq=nextQ();if(nq&&nq.type==='contract'&&!r){ui.res=null;ui.sheet=null;window.scrollTo(0,0)}else ui.res=r||'선택을 마쳤다.';break}
+    case'pick':{AU.sfx('choose');const r=choose(+d.i)||'';const nq=nextQ();if(nq&&(nq.type==='contract'||(nq.type==='award'&&nq.a&&nq.a.title==='결혼'))&&!r){ui.res=null;ui.sheet=null;window.scrollTo(0,0)}else ui.res=r||'선택을 마쳤다.';break}
     case'cnum':{const q=nextQ();q.c.num=+d.v;save();break}
     case'csigclr':{const q=nextQ();q.c.sig=[];q.c.auto=false;q.c.signed=false;save();break}
     case'csigauto':{const q=nextQ();q.c.auto=true;q.c.signed=true;AU.sfx('pen');save();break}
