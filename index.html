@@ -5854,10 +5854,10 @@ function tradeTargets(){if(S.pro.league==='MLB')return Object.keys(MLB_CITY).fil
   const mlb=S.pro.league==='MLB',lg=mlb||S.pro.league==='KBO';if(!lg)return;const lgk=S.pro.league,{b,p:pp}=yearTot(S.y,[lgk]),ip=pp.outs/3,P=isP(),ops=b.PA?opsN(b):0,era=pp.outs?pp.R*27/pp.outs:9;
   const used=P?(ip>=100||(pp.SV+pp.HLD)>=15||pp.GS>=15):b.PA>=350,good=P?(ip>=50&&era<=3.8):(b.PA>=200&&ops>=.8),youngGood=proYears()<=2&&lastWAR()>=2;
   const bench=!used&&!['start','SP','CL','SU'].includes(S.role)&&!(lastWAR()>=2),star=DV(ovrE())>=85&&age()>=27&&proYears()>=4;
-  let p=(good||youngGood||(S.lastTradeY&&S.y-S.lastTradeY<3))?0:bench?(mlb?.06:.03):(mlb?.012:.004),big=false;if(star&&mlb&&R()<.006){big=true;p=1}if(R()>=p)return;
+  let p=(good||youngGood||(S.lastTradeY&&S.y-S.lastTradeY<3))?0:bench?(mlb?.06:.03):(mlb?.012:.004),big=false;const chemBad=(S.rel.chem||50)<30&&!(S.lastTradeY&&S.y-S.lastTradeY<2);if(chemBad)p=Math.max(p,mlb?.04:.03);if(star&&mlb&&R()<.006){big=true;p=1}if(R()>=p)return;
   const T=pick(tradeTargets()),tn=mlb?`${T} ${MLB_CITY[T]}`:`${TEAMS[T].city} ${TEAMS[T].nick}`,pkg=big?pick(['유망주 4명','유망주 3명 + 현금','주전급 2명 + 유망주 2명','1라운드 지명권 2장 + 유망주 2명']):pick(['유망주 1명','불펜 투수 1명','현금','하위 라운드 지명권']);
   const cw=(()=>{try{return careerTot(PRO).w}catch(e){return 0}})(),stP=lastWAR()>=4||cw>=30,rich=(S.pro.salary||0)>=(mlb?200000:100000);
-  const why=bench?'거기선 매일 뛸 수 있을 거다.':stP&&rich?`솔직히 말하마. 구단이 팀 연봉을 줄여야 한다. 네 연봉이 제일 크다.`:stP?`우승을 노리는 ${tn} 쪽에서 ${isP()?'마운드':'핵심 타선'}을 보강하려고 너를 콕 집었다.`:`우리 팀은 ${pkg}${jo(pkg,'이','가').slice(-1)} 필요하고, 그쪽은 주전급 선수가 필요하다.`;
+  const why=chemBad&&!big?`라커룸 분위기가 많이 안 좋다는 거, 너도 알지? 구단이 분위기 쇄신이 필요하다고 판단했다.`:bench?'거기선 매일 뛸 수 있을 거다.':stP&&rich?`솔직히 말하마. 구단이 팀 연봉을 줄여야 한다. 네 연봉이 제일 크다.`:stP?`우승을 노리는 ${tn} 쪽에서 ${isP()?'마운드':'핵심 타선'}을 보강하려고 너를 콕 집었다.`:`우리 팀은 ${pkg}${jo(pkg,'이','가').slice(-1)} 필요하고, 그쪽은 주전급 선수가 필요하다.`;
   const txt=big?`🔥 블록버스터 트레이드!\n${jo(tn,'이','가')} ${pkg}${jo(pkg,'을','를').slice(-1)} 내주고 ${stP?(isP()?'리그 최고 투수 중 한 명인 ':'리그 최고 타자 중 한 명인 '):''}당신을 데려간다. 리그 전체가 들썩인다.`:`${mlb?'트레이드 마감일':'비시즌'}, 단장실에 불려갔다.\n"${tn}에서 너를 원한다. ${jo(pkg,'과','와')} 맞트레이드다. ${why}"`;
   const ch=[{t:'새 팀에서 새 출발',s:big?'인기↑↑ · 새 감독·동료':(bench?'새 감독·동료 · 출전 기회 기대':'새 감독·동료'),act:'tradeGo',arg:{T,big}}];if(mlb&&S.pro.noMinor)ch.push({t:'트레이드 거부권을 행사한다',s:'팀에 남는다 · 구단과 관계↓',act:'tradeNo'});
   S.queue.push({title:big?'💥 블록버스터 트레이드':'📞 트레이드 통보',text:txt,ch})}catch(e){}}}
