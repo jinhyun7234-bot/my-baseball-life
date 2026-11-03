@@ -7852,7 +7852,7 @@ const PERF_ADJ={B:.3,P:0};
   const n=PITCHES.filter(p=>p!=='FB'&&(ME.pt[p]||0)>0&&eff(p)>=55).length;
   const m=(1+.03*g(DV(eff('velo')),60,95))*(1+.03*g(DV(eff('stf')),60,95))*(1+.03*g(n,1,4));return{...o,k:o.k*m}}catch(e){return o}}}
 /* 아이템 효과 살짝 하향: 능력치별 훈련 장비 +5%→+4%, +10%→+8% · 퍼포먼스 연구소 +15%→+12%, 파워·구속 +25%→+20% */
-(function(){ITEMS.forEach(it=>{if(it.te){for(const k in it.te){if(it.te[k]===.05)it.te[k]=.04;else if(it.te[k]===.10||it.te[k]===.1)it.te[k]=.08}if(it.d)it.d=it.d.replace('훈련 효과 +5%','훈련 효과 +4%').replace('훈련 효과 +10%','훈련 효과 +8%')}
+(function(){ITEMS.forEach(it=>{if(/^te2_/.test(it.id))it.p=4000;if(it.te){for(const k in it.te){if(it.te[k]===.05)it.te[k]=.04;else if(it.te[k]===.10||it.te[k]===.1)it.te[k]=.08}if(it.d)it.d=it.d.replace('훈련 효과 +5%','훈련 효과 +4%').replace('훈련 효과 +10%','훈련 효과 +8%')}
   if(it.id==='lab'){it.eff=.12;it.pw=.2;it.d='1년간 모든 능력치 훈련 효과 +12%, 파워·구속 훈련 +20%'}})})();
 
 /* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
@@ -8054,6 +8054,11 @@ function wrCount(){try{document.querySelectorAll('.wr-cnt').forEach(el=>{if(el.d
   const a=h.indexOf('<div class="hv-rcp"'),b=h.indexOf('<div class="row" style="gap:8px"><button class="btn" style="flex:1" data-hof="vstep"');if(a<0||b<0)return h;
   let av='';try{const lk=L.row.extra.look||{};if(ss.av&&lk.nh!=null){const fake={look:{nh:lk.nh},body:lk.body||'표준'};av=nsImg(nsURL(nsKey(fake),{team:(L.row.extra.D&&L.row.extra.D.av&&L.row.extra.D.av.c1)||null}),150)}}catch(e){}
   h=h.slice(0,a)+wrSlide(ss,i,sl.length,{embed:1,av})+h.slice(b)}catch(e){}setTimeout(wrCount,30);return h}}
+/* 해외(MLB·NPB) 계약도 기록 → 리캡 '인생 계약'은 KBO FA와 해외 계약 중 원화 기준 총액이 가장 큰 것 */
+{const _ab=ACT.abroad;ACT.abroad=function(a){const r=_ab(a);try{if(a&&!a.stay&&a.per&&a.yrs)(S.abList=S.abList||[]).push({y:S.y+1,lg:a.lg,tname:S.pro&&S.pro.tname||a.tname||a.lg,yrs:a.yrs,tot:a.per*a.yrs})}catch(e){}return r}}
+{const _rs=recapSlides;recapSlides=function(){const sl=_rs();try{const kb=(S.faList||[]).map(f=>({...f,nm:TEAMS[f.team]?TEAMS[f.team].city+' '+TEAMS[f.team].nick:'',lg:'KBO'})),ab=(S.abList||[]).map(f=>({...f,nm:String(f.tname||'').replace(/\s*\((MLB|NPB)\)/,'')}));
+  const best=kb.concat(ab).sort((a,b)=>b.tot-a.tot)[0];const i=sl.findIndex(s=>s.ey==='인생 계약');
+  if(best){const s={th:'teal',ey:'인생 계약',big:`${best.yrs}년 ${money(best.tot)}`,sub:`${best.y}년, ${best.nm}${best.lg!=='KBO'?` (${best.lg})`:''}.${best.lg==='MLB'?`\n총액 ${usd2(best.tot/USDM)}.`:''}\n그 가치를 증명하는 한 해였다.`};if(i>=0)sl[i]=s;else{const j=sl.findIndex(x=>x.ey==='영구결번'||x.ey==='팬들의 한마디'||x.last);sl.splice(j<0?sl.length-1:j,0,s)}}}catch(e){}return sl}}
 
 </script>
 
