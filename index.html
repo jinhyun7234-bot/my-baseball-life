@@ -8142,6 +8142,20 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
 {const OLD=/이 나이에|저 나이에|노장|베테랑|나이를 잊|회춘|불혹|녹슬지|경험은 무시 못|자기 관리가 얼마나|자기관리가 베테랑|에이징 커브|노익장|은퇴 전에|마지막 불꽃|아직 죽지 않|살에 이게/,YOUNG=/어린 선수|어린 나이|고졸 신인|애기|막내가|신인이 벌써|신인이 이|이제 막 데뷔|아기/;
  const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME)return out;const a=age();const bad=t=>(a<35&&OLD.test(t))||(a>=25&&YOUNG.test(t));
   out=out.filter(c=>!(c&&bad(c.t)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!bad(typeof r==='string'?r:r&&r.t))})}catch(e){}return out}}
+/* 부상 기사: 잘해온 선수에게 먹튀 드립 금지 · 유리몸은 실제로 자주 다칠 때만 (아니면 10%만) · 응원 댓글 위주 */
+{const _cm=comments;comments=function(tone,x){if(tone!=='injury')return _cm(tone,x);let out=_cm(tone,x);try{if(!S||!ME)return out;const gn=giv(ME.name);
+  const injN=(S.arts||[]).filter(a=>a.tone==='injury'&&a.y>=S.y-2).length;/* 이번 포함 최근 3년 부상 기사 수 */
+  let w2=0;S.rows.filter(r=>r.y>=S.y-2&&r.y<S.y&&PRO.includes(r.lv)).forEach(r=>{try{w2+=rowWAR(r)}catch(e){}});const proven=w2>=4;
+  const glass=injN>=3;let gl=0;
+  out=out.filter(c=>{if(!c)return false;if(proven&&/먹튀|비싸게|돈값|거품|연봉 아깝|실망|기대하면|못 치|물방망이/.test(c.t))return false;if(/유리몸/.test(c.t)){if(glass)return true;if(gl===0&&R()<.1){gl=1;return true}return false}if(!glass&&/맨날 부상|또 다치|자주 다치/.test(c.t))return false;return true});
+  const lastPS=S.postY&&S.postY[S.y-1],deep=lastPS&&/월드시리즈|한국시리즈|우승/.test(String(lastPS.res||'')),add=[];
+  const put=(t,re)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,re?[{nk:pick(NICKS),t:re,up:ri(40,600)}]:[],{up:ri(800,4000),must:1}))};
+  const L=[`부상 안타깝네… 빨리 낫자`,`${vocA(gn)} 빨리 낫고 건강하게 복귀하자`,`푹 쉬고 와라 몸이 먼저다`,`조급하게 돌아오지 말고 완벽하게 낫고 와`,`${gn} 없는 동안 다른 선수들이 버텨주길`];
+  if(proven)L.push(`그동안 너무 많이 뛰었다 이번 기회에 좀 쉬어가자`,`${gn} 지난 시즌들 생각하면 몸이 버틴 게 신기했다`);
+  if(deep)L.push(`작년 가을에 너무 다 쏟아부었다`,`작년에 ${String(lastPS.res).includes('월드')?'월드시리즈':'가을'}까지 달린 여파인 듯`);
+  if(S.m>=9)L.push(`정규시즌에 기운 다 썼나 보네`);
+  L.sort(()=>R()-.5).slice(0,3).forEach(t=>put(t,pick(['ㄹㅇ 건강이 최고','쾌유 기원','기다릴게','복귀하면 다시 잘할 거다',null])));
+  out.splice(0,0,...add)}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
