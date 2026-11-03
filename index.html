@@ -8072,17 +8072,29 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
   const sum=a=>a.reduce((s,v)=>s+(+v||0),0),R0=sum(L[0]),R1=sum(L[1]),last=+L[1][L[1].length-1]||0;if(!(R1>R0&&last>0&&R1-last<=R0))return out;/* 홈팀 끝내기 */
   const inn=L[1].length,extra=inn>9,big=!!(x.ps||x.intl),gn=giv(ME.name),add=[];const put=(t,re,up)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,(re||[]).map(r=>({nk:pick(NICKS),t:r,up:ri(80,1200)})),{up:up||ri(2000,8000),must:1}))};
   const RE=['ㄹㅇ 전율','소름 아직도 안 가라앉음','레전드 경기 확정','하이라이트 무한 반복 중','이 맛에 야구 본다','심장 아직도 뜀'];
-  if(my===1){const pl=Array.isArray(x.pl)?x.pl:[],mine=pl.length&&pl[pl.length-1].i===inn&&pl[pl.length-1].r>0&&!isP();
-    if(mine)put(pick([`${gn} 끝내기!!!! 영웅 탄생이다`,`${extra?inn+'회 연장':'9회말'} ${gn} 끝내기 소름 돋았다`,`${gn} 끝내기 칠 때 소리 질러서 옆집에서 벽 침 ㅋㅋㅋ`]),[pick(['오늘 MVP 고민할 필요 없음','이 장면 평생 돌려본다','영웅은 마지막에 나타난다'])],ri(4000,12000));
+  let P0=0;if(my===1){const pl=Array.isArray(x.pl)?x.pl:[],mine=pl.length&&pl[pl.length-1].i===inn&&pl[pl.length-1].r>0&&!isP();
+    if(mine&&big){const ws=/월드시리즈|한국시리즈/.test(String(x.title||'')),hrW=pl[pl.length-1].t==='HR',ser=String(x.title||'').replace(/\s*\d+차전.*$/,''),er=(x.gErr||0)>0,up=ri(9000,25000);
+      const CAT=[
+       [`${ser} ${inn}회말 끝내기${hrW?' 홈런':''}…${gn} 이건 역대급이다`,`${gn} ${ser}에서 끝내기${hrW?' 홈런':''} 실화냐 이건 영화다`,`${extra?inn+'회 연장':'9회말'} ${gn} 끝내기 이건 구단 역사에 남는다`],
+       [hrW?`빠던하고 세리머니 할 때 진짜 눈물 났다`:`1루 돌면서 헬멧 던질 때 울컥했다`,`${gn} 베이스 도는 동안 나도 모르게 울고 있었음`,`동료들한테 둘러싸여 물 맞는 장면 보는데 눈물 남 ㅠㅠ`],
+       [`인터뷰에서 "이 순간을 위해 야구했던 것 같다"는데 ${gn} 인터뷰도 잘하네`,`${gn} 인터뷰 울먹이는 거 보고 같이 울었다`,`${gn} 수훈 인터뷰 무한 반복 중`],
+       [`대${gn} 대${gn} 대${gn} 대${gn} 대${gn}`,`${gn} 도파민 과다 투여 고소한다 ㅋㅋㅋ`,`${gn} 사랑하면 개추 ㅋㅋㅋㅋ`,`오늘 ${gn} 유니폼 품절 각`],
+       [`끝내기 칠 때 소리 질러서 옆집에서 벽 침 ㅋㅋㅋ`,`상대 마무리 표정 봤냐… 영혼이 나갔다`,`새벽에 소리 지르다 부모님 깨움 ㅋㅋㅋ`,`회사에서 몰래 보다가 일어나서 박수침`],
+       [`끝날 때까지 끝난 게 아니다 진짜`,`이런 경기 때문에 야구에 빠지는 거다`,`야구는 9회말 2아웃부터라는 말 오늘 처음 실감함`]];
+      if(er)CAT.push([`${gn} 실책한 거 다 잊음 ㅋㅋㅋ`,`실책으로 병 주고 끝내기로 약 주네 ㅋㅋ`]);
+      if(ws)CAT.push([`${ser} 끝내기는 평생 한 번 볼까 말까다`,`이 장면 하나로 ${gn} 은퇴할 때까지 틀어준다`]);
+      const RE2=['오늘 MVP 고민할 필요 없음','이 장면 평생 돌려본다','영웅은 마지막에 나타난다','소름 아직도 안 가라앉음','ㄹㅇ 레전드','개추 박고 간다','눈물 버튼이다 진짜','ㅋㅋㅋㅋㅋ 공감'];
+      const R2=RE2.slice().sort(()=>R()-.5);CAT.forEach((c,i)=>put(pick(c),[R2[i%R2.length]],Math.round(up*(1-i*.07))));P0=2;x._wo=1}
+    else if(mine)put(pick([`${gn} 끝내기!!!! 영웅 탄생이다`,`${extra?inn+'회 연장':'9회말'} ${gn} 끝내기 소름 돋았다`,`${gn} 끝내기 칠 때 소리 질러서 옆집에서 벽 침 ㅋㅋㅋ`]),[pick(['오늘 MVP 고민할 필요 없음','이 장면 평생 돌려본다','영웅은 마지막에 나타난다'])],ri(4000,12000));
     const P=extra?[`연장 끝내기는 반칙이지 심장 남아나질 않네`,`이게 가을야구지 ㅠㅠ 전율 레전드`,`${inn}회까지 가서 끝내기 실화냐`,`연장 혈투 끝내기 이런 경기 하려고 야구 본다`,`오늘 경기 수준 진짜 높다 양 팀 다 잘했다`,`끝내기 칠 때 소름 돋았다 진짜`,`직관 간 사람들 평생 자랑하겠네`,`끝내기 순간 구장 함성 중계로도 다 들림`]:[`끝내기!!!! 소름 돋았다 진짜`,`9회말 끝내기 이게 야구지`,`끝내기 칠 때 심장 터지는 줄`,`직관 간 사람들 오늘 복 받았다`];
-    P.filter(t=>big||!/가을야구/.test(t)).sort(()=>R()-.5).slice(0,big?(extra?4:3):2).forEach(t=>put(t,[pick(RE)]))}
+    P.filter(t=>big||!/가을야구/.test(t)).sort(()=>R()-.5).slice(0,P0||(big?(extra?4:3):2)).forEach(t=>put(t,[pick(RE)]))}
   else{put(pick([extra?`${inn}회 연장까지 가서 끝내기로 지는 게 제일 아프다`:`끝내기로 지는 게 제일 아프다`,`다 잡은 경기였는데 끝내기 맞고 끝나네…`,`끝내기 맞는 순간 TV 껐다`]),[pick(['잠이 안 온다','오늘 진 건 오래 남겠다','그래도 끝까지 잘 싸웠다'])]);
     if(big&&extra)put(`그래도 ${inn}회까지 간 혈투, 수준은 진짜 높았다`,[pick(['인정','져도 박수 쳐줄 경기'])])}
   out.splice(0,0,...add)}catch(e){}return out}}
 /* 큰 경기 결정적 홈런: 3점 차 이내 승리 · 7회 이후 2타점 이상 홈런 (또는 6회 이후 역전·동점 홈런) → 레전드 빨기 */
-{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||!x||!x.win||!(x.ps||x.intl)||!Array.isArray(x.pl))return out;
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||!x||!x.win||!(x.ps||x.intl)||!Array.isArray(x.pl)||x._wo)return out;
   const sum=a=>Array.isArray(a)?a.reduce((s,v)=>s+(+v||0),0):0,mg=Array.isArray(x.lsc)&&x.mySide!=null?sum(x.lsc[x.mySide])-sum(x.lsc[1-x.mySide]):1;if(mg>3)return out;
-  const hr=x.pl.find(p=>p&&p.t==='HR'&&((p.i>=7&&p.r>=2)||(p.i>=6&&p.my>=p.op&&p.my-p.r<=p.op)));if(!hr)return out;
+  const hr=x.pl.find(p=>p&&p.t==='HR'&&((p.i>=7&&p.r>=2)||(p.i>=6&&p.my>=p.op&&p.my-p.r<=p.op)));if(!hr)return out;x._dhr=1;
   const gn=giv(ME.name),mlb=S.pro&&S.pro.league==='MLB',add=[];const put=(t,re,up)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,(re||[]).map(r=>({nk:pick(NICKS),t:r,up:ri(100,1500)})),{up:up||ri(5000,15000),must:1}))};
   const L=[`${gn} ${hr.i}회 ${hr.r}점 홈런 이거 레전드다 진짜`,`${gn} 도파민에 샤워한 놈 ㅋㅋㅋㅋ`,`대${gn} 대${gn} 대${gn}`,`${gn} 이 홈런 평생 돌려본다`,`${hr.i}회에 저걸 넘기는 게 사람이냐`,`홈런 맞는 순간 상대 투수 표정 봐라 ㅋㅋㅋ`,`${gn} 배트 던지는 거 실화냐 간지 미쳤다`,`이 홈런 하나로 시리즈 분위기 끝났다`];
   if(mlb)L.push(`한국인이 메이저 가을에 이걸 해내네 국뽕 차오른다`,`새벽에 소리 질렀다 ${gn} 국뽕 MAX`,`대한민국 ${gn} 메이저 가을을 찢었다`);else if(x.intl)L.push(`${gn} 국뽕 그 자체 태극마크 단 보람 있다`,`대한민국 ${gn}!!! 국뽕 차오른다`);
@@ -8098,7 +8110,7 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
   put(pick([`대한민국 ${P?'투수':'타자'} GOAT ${gn}`,`역대 한국인 메이저리거 중 ${P?'투수':'타자'} GOAT 아니냐`,`${gn} 대한민국 ${P?'투수':'타자'} GOAT 확정`]),[pick(['반박 시 니 말이 틀림','이건 인정해야 함','국뽕 차오른다','기록이 말해준다'])]);
   out.splice(0,0,...add)}catch(e){}return out}}
 /* 접전 승리에서 내 타점이 점수 차를 만들었으면 레전드급으로 */
-{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||!x||!x.win||!(x.ps||x.intl)||!Array.isArray(x.lsc)||x.mySide==null)return out;
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||!x||!x.win||!(x.ps||x.intl)||!Array.isArray(x.lsc)||x.mySide==null||x._wo||x._dhr)return out;
   const sum=a=>a.reduce((s,v)=>s+(+v||0),0),mg=sum(x.lsc[x.mySide])-sum(x.lsc[1-x.mySide]),rbi=x.gRBI||0,hr=x.gHR||0;if(mg<1||mg>2||rbi<mg||(rbi===mg&&!hr))return out;
   const gn=giv(ME.name),mlb=S.pro&&S.pro.league==='MLB',tot=sum(x.lsc[x.mySide]),add=[];const put=(t,re,up)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,re.map(r=>({nk:pick(NICKS),t:r,up:ri(100,1500)})),{up:up||ri(6000,18000),must:1}))};
   const L=[`${mg}점 차 승부에서 ${rbi}타점이면 그냥 ${gn} 혼자 이긴 거다`,`오늘 ${tot}점 중에 ${rbi}점이 ${gn} 방망이에서 나왔다 ㄷㄷ`,`${gn} 없었으면 지는 경기였다 진짜`,`${gn} 오늘 영웅 그 자체다 영웅`,`${gn} 이게 히어로지 이게`,`대${gn} 대${gn} 대${gn} 대${gn}`,`${gn} 도파민 샤워 시켜줘서 고맙다 ㅋㅋㅋ`,hr?`${gn} 그 홈런 아니었으면 오늘 끝났다`:`${gn} 그 적시타가 경기를 바꿨다`];
@@ -8110,6 +8122,9 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
   out.forEach(c=>{if(!c)return;const f=t=>typeof t==='string'?t.replace(/한국시리즈(?! ?MVP 출신)/g,ser):t;c.t=f(c.t);if(Array.isArray(c.re))c.re.forEach(r=>{if(r&&typeof r==='object')r.t=f(r.t)})});
   const ksMvp=S.awards.some(a=>/한국시리즈 MVP/.test(a.n)),good=isP()?((x.ipO||0)>=15&&(x.ra||0)<=2):((x.gH||0)>=2||(x.gHR||0)>=1);
   if(x.ps&&ksMvp&&good&&R()<.5){const t=josaFix(pick([`역시 한국시리즈 MVP 출신 가을야구 짬밥 어디 안 가네`,`한국시리즈 MVP 출신답다 ${giv(ME.name)} 큰 경기는 믿고 본다`]));if(!seenHas(t)){seenAdd(t);out.splice(1,0,mkC(t,[{nk:pick(NICKS),t:pick(['경험은 못 속인다','가을 DNA는 국적을 안 가린다','짬바 ㄷㄷ']),up:ri(80,900)}],{up:ri(2000,7000),must:1}))}}}catch(e){}return out}}
+/* 같은 유형 반복 방지: 대○○ 연호 · 도파민 · 국뽕 · 개추 · 눈물 · 벽 침 같은 드립은 한 기사에 한 번씩만 */
+{const KINDS=[/^대(\S+) 대\1/,/도파민/,/국뽕/,/개추/,/눈물|울컥|울었/,/벽 침|소리 질/,/MVP/,/레전드/,/소름/,/실책/,/속죄/];
+ const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{const seen=new Set();out=out.filter(c=>{if(!c||!c.t)return true;const k=KINDS.findIndex(r=>r.test(c.t));if(k<0)return true;if(seen.has(k))return false;seen.add(k);return true})}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
