@@ -8097,6 +8097,19 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
   if(!P)put(pick([`${sur}추강대엽 이제 인정이지?`,`추${sur}강대엽 아니고 ${sur}추강대엽이다`,`${sur}추강대엽 완성 ㅋㅋㅋ`]),[pick(['이제 추도 확실히 넘은 듯','추는 넘었고 이제 강이랑 비교 불가','ㅇㅈ 개추','반박 불가'])]);
   put(pick([`대한민국 ${P?'투수':'타자'} GOAT ${gn}`,`역대 한국인 메이저리거 중 ${P?'투수':'타자'} GOAT 아니냐`,`${gn} 대한민국 ${P?'투수':'타자'} GOAT 확정`]),[pick(['반박 시 니 말이 틀림','이건 인정해야 함','국뽕 차오른다','기록이 말해준다'])]);
   out.splice(0,0,...add)}catch(e){}return out}}
+/* 접전 승리에서 내 타점이 점수 차를 만들었으면 레전드급으로 */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||!x||!x.win||!(x.ps||x.intl)||!Array.isArray(x.lsc)||x.mySide==null)return out;
+  const sum=a=>a.reduce((s,v)=>s+(+v||0),0),mg=sum(x.lsc[x.mySide])-sum(x.lsc[1-x.mySide]),rbi=x.gRBI||0,hr=x.gHR||0;if(mg<1||mg>2||rbi<mg||(rbi===mg&&!hr))return out;
+  const gn=giv(ME.name),mlb=S.pro&&S.pro.league==='MLB',tot=sum(x.lsc[x.mySide]),add=[];const put=(t,re,up)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,re.map(r=>({nk:pick(NICKS),t:r,up:ri(100,1500)})),{up:up||ri(6000,18000),must:1}))};
+  const L=[`${mg}점 차 승부에서 ${rbi}타점이면 그냥 ${gn} 혼자 이긴 거다`,`오늘 ${tot}점 중에 ${rbi}점이 ${gn} 방망이에서 나왔다 ㄷㄷ`,`${gn} 없었으면 지는 경기였다 진짜`,`${gn} 오늘 영웅 그 자체다 영웅`,`${gn} 이게 히어로지 이게`,`대${gn} 대${gn} 대${gn} 대${gn}`,`${gn} 도파민 샤워 시켜줘서 고맙다 ㅋㅋㅋ`,hr?`${gn} 그 홈런 아니었으면 오늘 끝났다`:`${gn} 그 적시타가 경기를 바꿨다`];
+  if(mlb)L.push(`한국인 타자가 메이저 가을을 지배하네 국뽕 MAX`);
+  L.sort(()=>R()-.5).slice(0,4).forEach(t=>put(t,[pick(['이건 빨아도 빨아도 모자람','오늘 MVP 고민할 필요 없음','소름 돋는다 진짜','하이라이트 무한 재생 중','개추 박고 간다','이게 스타다'])]));
+  out.splice(0,0,...add)}catch(e){}return out}}
+/* MLB에서는 '한국시리즈' 표현을 그 시리즈 이름으로 · 한국시리즈 MVP 출신이면 짬밥 드립 */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||!S.pro||S.pro.league==='KBO'||!x||x.intl)return out;const ser=String(x.title||'').replace(/\s*\d+차전.*$/,'')||'가을야구';
+  out.forEach(c=>{if(!c)return;const f=t=>typeof t==='string'?t.replace(/한국시리즈(?! ?MVP 출신)/g,ser):t;c.t=f(c.t);if(Array.isArray(c.re))c.re.forEach(r=>{if(r&&typeof r==='object')r.t=f(r.t)})});
+  const ksMvp=S.awards.some(a=>/한국시리즈 MVP/.test(a.n)),good=isP()?((x.ipO||0)>=15&&(x.ra||0)<=2):((x.gH||0)>=2||(x.gHR||0)>=1);
+  if(x.ps&&ksMvp&&good&&R()<.5){const t=josaFix(pick([`역시 한국시리즈 MVP 출신 가을야구 짬밥 어디 안 가네`,`한국시리즈 MVP 출신답다 ${giv(ME.name)} 큰 경기는 믿고 본다`]));if(!seenHas(t)){seenAdd(t);out.splice(1,0,mkC(t,[{nk:pick(NICKS),t:pick(['경험은 못 속인다','가을 DNA는 국적을 안 가린다','짬바 ㄷㄷ']),up:ri(80,900)}],{up:ri(2000,7000),must:1}))}}}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 뛰었고, 그 팀 WAR 55 이상이면 그 팀이 영구결번
