@@ -8434,6 +8434,27 @@ function vTradeShow(q){const f=q.from||{n:'',c:'#555'},t=q.to||{n:'',c:'#3182f6'
 {const _rd=_render;_render=function(app,nav,bar,ov){try{if(S&&!ui.simming&&ui.screen!=='title'&&ui.recap==null){const q=nextQ();if(q&&q.type==='tradeshow'){ME=S.me;ui.sheet=null;full(app,nav,bar,ov,vTradeShow(q),' dark');bar.innerHTML='<button class="btn pri glow" data-act="tradeok">새 팀으로 ▶</button>';ov.innerHTML='';try{haptic([20,60,30])}catch(e){}return}}}catch(e){}return _rd(app,nav,bar,ov)}}
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="tradeok"]');if(!b||!S)return;e.stopPropagation();const q=nextQ();if(q&&q.type==='tradeshow'){S.queue.splice(S.queue.indexOf(q),1);save();afterQueue();ui.anim=true;render();window.scrollTo(0,0)}},true);
 
+/* ===================== MLB: KBO에서 검증된 선수(MVP·KBO WAR 25+·골글 4회)는 웬만하면 메이저 주전
+   - 툴 부족(어깨 등)으로 마이너에 묶이는 일 없음, 벤치로도 안 밀림
+   - 대신 시즌 중 크게 부진하면(타자 OPS .640 미만 / 투수 ERA 5.50 초과, 표본 충분) 가끔 '재정비 vs 버티기' 선택
+     · 마이너 재정비: 한 달 트리플A → 컨디션↑ 피로↓ 멘탈↑ / 그 달 메이저 기록 없음, 인기 소폭↓
+     · 1군 버티기: 계속 메이저 기록 쌓음 / 멘탈↓ 감독 신뢰↓, 부진이 계속되면 다음엔 강등될 수도 ===================== */
+function mlbProven(){try{return S.stage==='pro'&&S.pro&&S.pro.league==='MLB'&&!S.pro.dev&&kboPedigree()>=2}catch(e){return false}}
+function mlbSlump(){try{const {b,p}=yearTot(S.y,['MLB']);if(isP()){if(p.outs<90)return false;return eraN(p)>5.5}return b.PA>=120&&opsN(b)<.64}catch(e){return false}}
+{const _dr=decideRole;decideRole=function(){let r=_dr();try{if(!mlbProven()||!(S.m>=3&&S.m<=10)||ME.inj||r==='inj'||r==='susp')return r;const now=S.y*12+S.m;
+  if(S.mlbReset&&now<S.mlbReset.until)return isP()?'fP':'fB';
+  if(r==='fB'||r==='fP'||r==='bench'||r==='MR'&&ME.pos==='SP'){if(S.mlbFarm)S.mlbFarm.f=false;r=isP()?(ME.pos==='SP'?'SP':(r==='fP'?'SU':r)):'start'}}catch(e){}return r}}
+{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(!mlbProven()||!(S.m>=5&&S.m<=8)||ME.inj)return;const now=S.y*12+S.m,half=S.y+'-'+(S.m>=7?2:1);
+  if(S.mlbReset&&now<S.mlbReset.until)return;if(S.mlbSlumpAsk===half||S.queue.length>=3||!mlbSlump()||R()>=.4)return;S.mlbSlumpAsk=half;
+  const P=isP(),{b,p}=yearTot(S.y,['MLB']),line=P?`평균자책 ${era(p)}`:`OPS ${ops(b)}`,again=S.mlbStayY===S.y;
+  S.queue.push({title:'📋 감독 면담 — 부진',text:`${line}. 감독이 조용히 불렀다.\n"자리는 네 거다. 그건 변함없어. 다만 지금 상태로 계속 갈지, 트리플A에서 한 달 정비하고 올지는 너랑 얘기하고 싶다."${again?'\n\n(이번 시즌 두 번째 면담이다. 감독의 인내심이 줄고 있다.)':''}`,
+    ch:[{t:'트리플A에서 한 달 재정비',s:'컨디션↑ 피로↓ 멘탈↑ · 한 달 메이저 기록 없음 · 인기 소폭↓',act:'mlbreset',arg:{}},{t:'1군에 남아 버틴다',s:`계속 메이저 출전 · 멘탈↓ 감독 신뢰↓${again?' · 이번에도 부진하면 강등 위험':''}`,act:'mlbstay',arg:{again}}]})}catch(e){}}}
+ACT.mlbreset=function(){const now=S.y*12+S.m;S.mlbReset={until:now+2};if(S.mlbFarm)S.mlbFarm.f=false;ME.form=cl((ME.form||0)+3,-6,6);ME.fat=cl(ME.fat-20,0,100);ME.hid.men=cl(ME.hid.men+3,20,80);S.rel.fame=Math.max(0,S.rel.fame-2);
+  news(`${S.y}년 ${S.m}월 트리플A 재정비 결정.`);return`트리플A로 내려가 한 달 동안 폼을 다시 잡기로 했다. 감독은 "한 달 뒤에 보자"며 어깨를 두드렸다.`};
+ACT.mlbstay=function(a){ME.hid.men=cl(ME.hid.men-2,20,80);S.rel.coach=cl((S.rel.coach||50)-(a&&a.again?5:3),0,100);S.mlbStayY=S.y;
+  if(a&&a.again&&R()<.5){S.mlbReset={until:S.y*12+S.m+2};return'버티겠다고 했지만, 일주일 뒤 감독은 결국 트리플A행을 통보했다. "한 달만 내려가 있어라."'}
+  return'"버티겠습니다." 감독은 고개를 끄덕였다. 매 타석, 매 이닝이 시험대다.'};
+
 </script>
 
 <script>
