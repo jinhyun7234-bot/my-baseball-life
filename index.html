@@ -1819,7 +1819,9 @@ function intl(rep,cy){
   if(res==='은메달'||res==='동메달'){S.awards.push({y:S.y,n:`${ev.n} ${res}`});S.rel.fame+=res==='은메달'?5:3}
   if(res==='금메달'){S.ach.gold=S.ach.gold||cy;S.awards.push({y:S.y,n:`${ev.n} 금메달`});S.rel.fame+=8;article(`대한민국, ${ev.n} 금메달! ${ME.name} ${g.mvp?'결승 히어로':'맹활약'}`,`${on}를 꺾고 정상에 올랐다.`,'gold')}
   const exempt=(ev.n.includes('아시안게임')&&res==='금메달')||(ev.n.includes('올림픽')&&res!=='메달 획득 실패');
-  if(exempt&&S.mil.status==='none'){S.mil.status='exempt';rep.lines.push('병역 특례 대상이 됐다!');news('국제대회 성적으로 병역 특례.')}}
+  if(exempt&&S.mil.status==='none'){S.mil.status='exempt';S.mil.exY=S.y;S.mil.exEv=`${ev.n} ${res}`;rep.lines.push('🎖️ 병역 특례 확정!');news(`${ev.n} ${res}로 병역 특례 확정.`);ME.hid.men=cl(ME.hid.men+3,20,80);
+    article(`${ME.name}, ${ev.n} ${res}로 병역 특례 확정`,`${jo(ME.name,'은','는')} 4주 기초군사훈련만 받으면 군 복무를 마친 것으로 인정된다. 이제 군 걱정 없이 커리어를 이어간다.`,'gold');
+    S.queue.push({title:'🎖️ 병역 특례 확정',text:`${ev.n} ${res}!\n병역법에 따라 체육요원으로 편입된다. 4주 기초군사훈련만 받으면 군 복무를 마친 것으로 인정된다.\n\n이제 군대 걱정 없이 야구에만 집중할 수 있다.`,ch:[{t:'야구에만 집중한다!',s:'멘탈 +3 (적용됨)',act:'lifeok'}]})}}
 
 /* ===================== FOLLOW GAME ===================== */
 const HTXT={K:['헛스윙 삼진','루킹 삼진'],BB:['볼넷','볼넷 출루'],'1B':['좌전 안타','중전 안타','우전 안타','우중간 안타'],'2B':['좌중간 2루타','우중간 2루타','좌익선상 2루타'],'3B':['우중간 3루타'],HR:['좌월 홈런!','중월 홈런!','우월 홈런!'],GO:['유격수 땅볼','2루수 땅볼','3루수 땅볼'],FO:['좌익수 뜬공','중견수 뜬공','우익수 뜬공'],LO:['유격수 직선타','2루수 직선타']};
@@ -5471,7 +5473,7 @@ function intlBad(x){if(isP())return (x.ra||0)>=3;return (x.gPA||0)>=3&&(x.gH||0)
   if(good)out=out.filter(c=>c.troll&&!/^(KBO|이래도)/.test(c.t)?false:!/아니잖아|얻어맞|불 지르|배팅볼|역적|최악|실망|할 말이 없|이건 좀|다 알고 침|털렸|난타/.test(c.t));
     /* 2) 군면제 */
     const exempt=(win&&/아시안게임/.test(T)&&/결승전/.test(T))||(/올림픽/.test(T)&&/결승전/.test(T))||(win&&/올림픽/.test(T)&&/동메달/.test(T))||(tone==='gold'&&/아시안게임|올림픽/.test(ev+T));
-    if(exempt&&cmX('exempt'+S.y)&&S.mil&&S.mil.status==='none')add.push(mkC(pick([`${gn} 군면제 ㅊㅋㅊㅋ`,`군면제 ㅊㅋㅊㅋ ${gn} 이제 야구만 하면 된다`,`${gn} 군대 안 간다!!! 축하한다 진심`]),[pick(['이게 진짜 금메달보다 값짐 ㅋㅋㅋ','어머님 오늘 잠 못 주무시겠다','군면제 받고 더 잘할 듯']),'전역(?) 축하합니다 ㅋㅋ'],{up:ri(1500,5000)}));
+    if(exempt&&cmX('exempt'+S.y)&&S.mil&&S.mil.exY===S.y)add.push(mkC(pick([`${gn} 군면제 ㅊㅋㅊㅋ`,`군면제 ㅊㅋㅊㅋ ${gn} 이제 야구만 하면 된다`,`${gn} 군대 안 간다!!! 축하한다 진심`]),[pick(['이게 진짜 금메달보다 값짐 ㅋㅋㅋ','어머님 오늘 잠 못 주무시겠다','군면제 받고 더 잘할 듯']),'전역(?) 축하합니다 ㅋㅋ'],{up:ri(1500,5000)}));
   if(win){
     const L=['국뽕 차오른다 진짜','이게 국대지 국뽕 한 사발 들이킴',`아~~ 옛날 우리가 알던 야구다 실실 쪼개는 게 아니고 눈빛 살아 있고, 할 수 있다!! 할 수 있다!! 눈물 나`,'대한민국 할 수 있다!! 오늘 같은 날은 다 같이 한국 팬임'];
     if(good){L.push(`아 타팬인데 진짜 ${gn} 저 굳은 의지의 눈동자 뜨면서 할 수 있다 하는데 왜케 멋있냐ㅋㅋㅋ`,`들어오면서 '할 수 있다' 이 장면 분명히 CF 하나 딸 것 같다 ${gn}`);
@@ -6479,7 +6481,7 @@ function pmPick(arr,n){const y=S.y;S.pmY=S.pmY&&S.pmY.y===y?S.pmY:{y,u:{}};const
   const prev=S.postY&&S.postY[S.y-1],pv=prev?(P?(prev.p.outs>=27?(prev.p.R*27/prev.p.outs<=3?'good':prev.p.R*27/prev.p.outs>=6?'bad':'avg'):null):(prev.b.AB>=12?(prev.b.H/prev.b.AB>=.3||prev.b.HR>=2?'good':prev.b.H/prev.b.AB<.2?'bad':'avg'):null)):null;
   const L=[];const A=(k,arr)=>arr.forEach(s=>L.push([k,s.replace(/\{n\}(이|가|은|는|을|를|과|와)?(?=[\s,.!?ㅋㅠ]|$)/g,(m,j)=>j?jo(gn,{이:'이',가:'이',은:'은',는:'은',을:'을',를:'을',과:'과',와:'과'}[j],{이:'가',가:'가',은:'는',는:'는',을:'를',를:'를',과:'와',와:'와'}[j]):gn).replace(/\{n\}/g,gn).replace(/\{t\}/g,tn).replace(/\{o\}/g,opp)]));
   if(fin){/* ===== 국가대표 결승 ===== */
-    const AG=/아시안게임/.test(t),OL=/올림픽/.test(t),mil=S.mil&&S.mil.status==='none'&&((AG&&win)||(OL));
+    const AG=/아시안게임/.test(t),OL=/올림픽/.test(t),mil=S.mil&&S.mil.exY===S.y&&((AG&&win&&/결승전/.test(t))||(OL&&!/준결승/.test(t)&&(win||/결승전/.test(t))));
     if(win){if(perf==='good')A('kor',['이게 대한민국 야구다','결승전에서 이걸 해내네 {n}','상대 투수 오늘 한국 악몽 꾸겠다','결승이라는 부담감에도 자기 스윙 했다','국가대표로 이런 순간 만들어주다니 감동이다','야구 잘 몰라도 오늘은 진짜 멋있었다','국내 리그 선수들 경쟁력 제대로 보여줬다','오늘부터 국대 영구 소집해라 ㅋㅋ','소속팀에선 얄미운데 대표팀에선 든든하네','{n} 오늘 평생 기억될 경기 만들었다']);
       else if(perf==='avg')A('kor',['결과가 제일 중요하다 우승 축하한다','개인 성적은 평범해도 우승 멤버다','조용히 금메달 목에 걸기 ㅋㅋ','함께 우승했다는 게 의미 있다','우승했으면 됐다 다 같이 축하하자']);
       else A('kor',['무안타 금메달 탑승 완료 ㅋㅋ','동료들한테 평생 감사해라','그래도 대한민국 우승이다','개인적으론 아쉬워도 팀 결과는 최고다','타격은 쉬고 세리머니는 풀타임 ㅋㅋ','오늘 못했어도 우승했으니 축하한다','소속팀에선 잘하더니 오늘은 조용하네']);
