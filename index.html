@@ -3766,10 +3766,10 @@ const NEGRX=/못 이김|탓|먹튀|실망|답답|내려|2군|방출|폭망|ㅉ�
 const cmId=c=>c.id||(c.id=(S.cmUid=(S.cmUid||0)+1));
 cmHtml=function(c,j){const nk=String(c.nk).replace(/^@/,''),id=cmId(c);
   return`<div class="cm${c.troll?' troll':''}"><span class="cmav" style="background:${avc(nk)}">${esc(nk[0])}</span><div class="cmb">
-  <div class="cmh"><b>${esc(c.nk)}</b>${c.fl?`<span class="flair">${esc(c.fl)}</span>`:''}<span class="ago">${c.ago||''}</span></div><div class="cmt">${esc(c.t)}</div>
+  <div class="cmh"><b>${esc(c.nk)}</b>${c.fl?`<span class="flair">${esc(c.fl)}</span>`:''}<span class="ago">${c.ago||''}</span></div><div class="cmt">${esc(nmFull(c.t))}</div>
   ${c.pl?`<div class="plike">${pxAvatar(ME,16,{...myPxOpt(),y1:29,cls:'px'})}<span>${esc(ME.name)} 선수가 좋아요를 눌렀어요</span></div>`:''}
   <div class="cmf"><button class="cmv${c.my===1?' on':''}" data-cmv="${id}" data-v="1" aria-label="좋아요"><span>좋아요 ${kfmt(c.up||0)}</span></button><button class="cmv dn${c.my===-1?' on':''}" data-cmv="${id}" data-v="-1" aria-label="싫어요"><span>싫어요 ${kfmt(c.dn||0)}</span></button>${(c.re||[]).length?`<span>답글 ${c.re.length}</span>`:''}${j===0&&c.up>=10&&!c.troll?'<span class="hot">인기 댓글</span>':''}</div>
-  ${(c.re||[]).map(r=>{const rn=String(r.nk).replace(/^@/,'');return`<div class="reply${r.me?' me':''}"><span class="cmav sm" style="background:${r.me?'var(--seam)':avc(rn)}">${esc(rn[0])}</span><div><b>${esc(r.nk)}</b> <span>${esc(r.t)}</span>${r.up?` <span class="rlk">좋아요 ${kfmt(r.up)}</span>`:''}</div></div>`}).join('')}</div></div>`};
+  ${(c.re||[]).map(r=>{const rn=String(r.nk).replace(/^@/,'');return`<div class="reply${r.me?' me':''}"><span class="cmav sm" style="background:${r.me?'var(--seam)':avc(rn)}">${esc(rn[0])}</span><div><b>${esc(r.nk)}</b> <span>${esc(nmFull(r.t))}</span>${r.up?` <span class="rlk">좋아요 ${kfmt(r.up)}</span>`:''}</div></div>`}).join('')}</div></div>`};
 function findCm(id){for(const a of S.arts||[])for(const c of a.cm||[])if(c.id===id)return c;return null}
 const PL_THX=['헐 선수 본인이 좋아요 눌렀다 ㅠㅠㅠ 평생 팬함','캡처했다 가보로 남긴다','선수님 보고 계셨군요 ㅠㅠ 사랑합니다','좋아요 받았다 오늘 로또 산다','본인 등판 ㄷㄷ 이 댓글 박제','엄마 나 선수한테 좋아요 받았어'];
 const PL_TROLL=['선수 본인도 싫어요 박음 ㅋㅋㅋㅋ','본인 등판으로 참교육 ㅋㅋ','분탕 선수한테 직접 걸림 ㅋㅋㅋ','싫어요에 선수 지분 있음 ㅋㅋ'];
@@ -7071,9 +7071,9 @@ function artCard(a,i){const top=a.cm[0];return`<button class="art artbtn" data-a
 const kfmt=n=>n>=1000?(n/1000).toFixed(n>=10000?0:1)+'k':String(n);
 const avc=s=>{let h=0;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;return['#3182f6','#f04452','#03b26c','#fe9800','#7c4dff','#14b8a6','#e05a9a','#64748b'][h%8]};
 function cmHtml(c,j){const nk=String(c.nk).replace(/^@/,'');return`<div class="cm"><span class="cmav" style="background:${avc(nk)}">${esc(nk[0])}</span><div class="cmb">
-  <div class="cmh"><b>${esc(c.nk)}</b>${c.fl?`<span class="flair">${esc(c.fl)}</span>`:''}<span class="ago">${c.ago||''}</span></div><div class="cmt">${esc(c.t)}</div>
+  <div class="cmh"><b>${esc(c.nk)}</b>${c.fl?`<span class="flair">${esc(c.fl)}</span>`:''}<span class="ago">${c.ago||''}</span></div><div class="cmt">${esc(nmFull(c.t))}</div>
   <div class="cmf"><span class="lk">♥ ${kfmt(c.up)}</span>${(c.re||[]).length?`<span>답글 ${c.re.length}</span>`:''}${j===0&&c.up>=10?'<span class="hot">인기 댓글</span>':''}</div>
-  ${(c.re||[]).map(r=>{const rn=String(r.nk).replace(/^@/,'');return`<div class="reply"><span class="cmav sm" style="background:${avc(rn)}">${esc(rn[0])}</span><div><b>${esc(r.nk)}</b> <span>${esc(r.t)}</span></div></div>`}).join('')}</div></div>`}
+  ${(c.re||[]).map(r=>{const rn=String(r.nk).replace(/^@/,'');return`<div class="reply"><span class="cmav sm" style="background:${avc(rn)}">${esc(rn[0])}</span><div><b>${esc(r.nk)}</b> <span>${esc(nmFull(r.t))}</span></div></div>`}).join('')}</div></div>`}
 function vNews(){let h=header();
   if(!S.arts.length)h+=`<div class="card"><span class="small muted">아직 당신에 대한 기사가 없어요. 활약하면 기자들이 찾아와요.</span></div>`;
   h+=S.arts.slice(0,20).map((a,i)=>artCard(a,i)).join('');
@@ -8508,6 +8508,9 @@ ACT.kbostay=function(a){ME.hid.men=cl(ME.hid.men-2,20,80);S.rel.coach=cl((S.rel.
   if(a&&a.again&&R()<.5){S.kboDown={until:S.y*12+S.m+2,why:'stay'};return'버티겠다고 했지만 며칠 뒤 엔트리에서 이름이 빠졌다. 결국 2군행이다.'}
   return'"버티겠습니다." 감독은 말없이 고개만 끄덕였다.'};
 ACT.kbodown=function(){ME.hid.men=cl(ME.hid.men-2,20,80);return'퓨처스 구장으로 향하는 버스 안. 한 달 뒤엔 다시 올라가야 한다.'};
+/* 댓글에서 내 이름이 문장 맨 앞에 오면 성까지 붙여서 (지성 미쳤다 → 이지성 미쳤다) · 부르는 말(지성아/지성이)은 그대로 */
+function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;const full=ME.name,gn=full.slice(1);
+  const re=new RegExp('(^|[.!?…~ㅋㅎ]\\s+|\\n)'+gn+'(?![아야]|'+gn+')','g');return String(t).replace(re,(m,pre,off,str)=>{const before=str.slice(Math.max(0,off+pre.length-1),off+pre.length);if(before===full[0])return m;return pre+full})}catch(e){return t}}
 
 </script>
 
