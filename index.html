@@ -1767,7 +1767,7 @@ function awards(rep){
   const row=S.rows.find(r=>r.y===S.y&&r.lv==='KBO');if(!row)return;
   const w=rowWAR(row),b=row.b,p=row.p,got=[];
   const give=n=>{got.push(n);S.awards.push({y:S.y,n});S.rel.fame+=4;S.money+=300};
-  if(w>=4.5&&w>rn(6.6,.9)){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
+  if(w>=6&&w>rn(6.9,.7)){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
   const prior=S.rows.filter(r=>r.lv==='KBO'&&r.y<S.y),priorPA=prior.reduce((s,r)=>s+r.b.PA,0),priorO=prior.reduce((s,r)=>s+r.p.outs,0);
   if(!S.ach.roy&&S.y-S.pro.debut<5&&priorPA<60&&priorO<90&&(b.PA>=150||p.outs>=120)&&w>rn(2.4,.8)){give('신인왕');S.ach.roy=S.y}
   if(isP()){if(R()<ggProb(w,'P'))give('골든글러브 (투수)')}else if(b.G>=100&&R()<ggProb(w,ME.pos))give(`골든글러브 (${POS[ME.pos]})`);
@@ -5872,12 +5872,12 @@ delete MENU_P.brk;
 /* 7) 트레이드: 주전 못 하면 가끔, MLB는 더 자주 · 아주 가끔 초대형 트레이드의 주인공 */
 function tradeTargets(){if(S.pro.league==='MLB')return Object.keys(MLB_CITY).filter(c=>c!==S.pro.tname);return TEAMS.map((t,i)=>i).filter(i=>i!==S.pro.team)}
 {const _ms10=monthStep;monthStep=function(rep){_ms10(rep);try{if(!(S.stage==='pro'&&S.pro&&!S.pro.dev&&(S.m===7||S.m===12)&&S.tradeY!==S.y+'-'+S.m&&S.queue.length<3))return;S.tradeY=S.y+'-'+S.m;
-  const mlb=S.pro.league==='MLB',lg=mlb||S.pro.league==='KBO';if(!lg)return;const lgk=S.pro.league,{b,p:pp}=yearTot(S.y,[lgk]),ip=pp.outs/3,P=isP(),ops=b.PA?opsN(b):0,era=pp.outs?pp.R*27/pp.outs:9;
+  const mlb=S.pro.league==='MLB',lg=mlb||S.pro.league==='KBO';if(!lg)return;const lgk=S.pro.league,_t0=yearTot(S.y,[lgk]),ry=(_t0.b.PA<150&&_t0.p.outs<90)?S.y-1:S.y,{b,p:pp}=ry===S.y?_t0:yearTot(ry,[lgk]),ip=pp.outs/3,ryW=S.rows.filter(r=>r.y===ry&&PRO.includes(r.lv)).reduce((a,r)=>a+rowWAR(r),0),ryAw=S.awards.some(a=>a.y>=ry&&/MVP|골든글러브|왕|최다/.test(a.n)&&!/우승$/.test(a.n)),P=isP(),ops=b.PA?opsN(b):0,era=pp.outs?pp.R*27/pp.outs:9;
   const used=P?(ip>=100||(pp.SV+pp.HLD)>=15||pp.GS>=15):b.PA>=350,good=P?(ip>=50&&era<=3.8):(b.PA>=200&&ops>=.8),youngGood=proYears()<=2&&lastWAR()>=2;
-  const bench=!used&&!['start','SP','CL','SU'].includes(S.role)&&!(lastWAR()>=2),star=DV(ovrE())>=85&&age()>=27&&proYears()>=4;
-  let p=(good||youngGood||(S.lastTradeY&&S.y-S.lastTradeY<3))?0:bench?(mlb?.06:.03):(mlb?.012:.004),big=false;const chemBad=(S.rel.chem||50)<30&&!(S.lastTradeY&&S.y-S.lastTradeY<2);if(chemBad)p=Math.max(p,mlb?.04:.03);if(star&&mlb&&R()<.006){big=true;p=1}if(R()>=p)return;
-  const T=pick(tradeTargets()),tn=mlb?`${T} ${MLB_CITY[T]}`:`${TEAMS[T].city} ${TEAMS[T].nick}`,pkg=big?pick(['유망주 4명','유망주 3명 + 현금','주전급 2명 + 유망주 2명','1라운드 지명권 2장 + 유망주 2명']):pick(['유망주 1명','불펜 투수 1명','현금','하위 라운드 지명권']);
-  const cw=(()=>{try{return careerTot(PRO).w}catch(e){return 0}})(),stP=lastWAR()>=4||cw>=30,rich=(S.pro.salary||0)>=(mlb?200000:100000);
+  const bench=!used&&!['start','SP','CL','SU'].includes(S.role)&&!(lastWAR()>=2)&&ryW<2&&!ryAw,star=DV(ovrE())>=85&&age()>=27&&proYears()>=4;
+  let p=(good||youngGood||ryAw||ryW>=3||(S.lastTradeY&&S.y-S.lastTradeY<3))?0:bench?(mlb?.06:.03):(mlb?.012:.004),big=false;const chemBad=(S.rel.chem||50)<30&&!(S.lastTradeY&&S.y-S.lastTradeY<2);if(chemBad)p=Math.max(p,mlb?.04:.03);if(star&&mlb&&R()<.006){big=true;p=1}if(R()>=p)return;
+  const T=pick(tradeTargets()),tn=mlb?`${T} ${MLB_CITY[T]}`:`${TEAMS[T].city} ${TEAMS[T].nick}`,pkg=big?pick(['유망주 4명','유망주 3명 + 현금','주전급 2명 + 유망주 2명','1라운드 지명권 2장 + 유망주 2명']):(bench?pick(['유망주 1명','불펜 투수 1명','현금','하위 라운드 지명권']):(ryW>=4||lastWAR()>=4)?pick(P?['상대 주전 4번 타자','주전 외야수 + 1라운드 지명권','국가대표 마무리 투수']:['상대 에이스 선발','10승 선발 투수 + 유망주','국가대표 마무리 + 1라운드 지명권']):pick(P?['주전급 야수 1명','유망주 2명 + 현금','1라운드 지명권']:['선발 투수 1명','필승조 투수 + 유망주','1라운드 지명권']));
+  const cw=(()=>{try{return careerTot(PRO).w}catch(e){return 0}})(),stP=lastWAR()>=4||ryW>=4||cw>=30,rich=(S.pro.salary||0)>=(mlb?200000:100000);
   const why=chemBad&&!big?`라커룸 분위기가 많이 안 좋다는 거, 너도 알지? 구단이 분위기 쇄신이 필요하다고 판단했다.`:bench?'거기선 매일 뛸 수 있을 거다.':stP&&rich?`솔직히 말하마. 구단이 팀 연봉을 줄여야 한다. 네 연봉이 제일 크다.`:stP?`우승을 노리는 ${tn} 쪽에서 ${isP()?'마운드':'핵심 타선'}을 보강하려고 너를 콕 집었다.`:`우리 팀은 ${pkg}${jo(pkg,'이','가').slice(-1)} 필요하고, 그쪽은 주전급 선수가 필요하다.`;
   const txt=big?`🔥 블록버스터 트레이드!\n${jo(tn,'이','가')} ${pkg}${jo(pkg,'을','를').slice(-1)} 내주고 ${stP?(isP()?'리그 최고 투수 중 한 명인 ':'리그 최고 타자 중 한 명인 '):''}당신을 데려간다. 리그 전체가 들썩인다.`:`${mlb?'트레이드 마감일':'비시즌'}, 단장실에 불려갔다.\n"${tn}에서 너를 원한다. ${jo(pkg,'과','와')} 맞트레이드다. ${why}"`;
   const ch=[{t:'새 팀에서 새 출발',s:big?'인기↑↑ · 새 감독·동료':(bench?'새 감독·동료 · 출전 기회 기대':'새 감독·동료'),act:'tradeGo',arg:{T,big}}];if(mlb&&S.pro.noMinor)ch.push({t:'트레이드 거부권을 행사한다',s:'팀에 남는다 · 구단과 관계↓',act:'tradeNo'});
