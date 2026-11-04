@@ -3869,7 +3869,7 @@ const FEV=[{t:'선배의 심부름',x:'숙소에서 쉬려는데 선배가 부�
   if(inj0&&!ME.inj&&(inj0.sev||1)>=2){const v=inj0.sev>=3?6:3;ME.rust={v,v0:v};rep.lines.push('복귀했지만 아직 경기 감각이 완전하지 않다. (부상 회복기간)')}
   else if(ME.rust&&!ME.inj){ME.rust.v-=rustRate();if(ME.rust.v<=0){ME.rust=null;rep.lines.push('부상 전 감각을 완전히 되찾았다!')}}}catch(e){}}}
 function pickFev(){S.evY=S.evY||{};const L=FEV.filter(e=>!(isP()&&e.bat)&&!(!isP()&&e.pit)&&!(S.evY['😮‍💨 '+e.t]>=S.y-1));if(!L.length)return null;const e=pick(L);S.evY['😮‍💨 '+e.t]=S.y;return e}
-const fevS=f=>[f.fat?`피로${f.fat>=16?'↑↑':'↑'}`:'',f.chem>0?'팀 분위기↑':f.chem<0?'팀 분위기↓':'',f.coach>0?'감독 신뢰↑':f.coach<0?'감독 신뢰↓':'',f.fame>0?'인기↑':f.fame<0?'인기↓':''].filter(Boolean).join(' · ');
+const fevS=f=>[f.fat>0?`피로${f.fat>=16?'↑↑':'↑'}`:f.fat<0?`피로${f.fat<=-16?'↓↓':'↓'}`:'',f.chem>0?'팀 분위기↑':f.chem<0?'팀 분위기↓':'',f.coach>0?'감독 신뢰↑':f.coach<0?'감독 신뢰↓':'',f.fame>0?'인기↑':f.fame<0?'인기↓':''].filter(Boolean).join(' · ');
 ACT.fev=function(a){const f=a.f;if(f.fat)ME.fat=cl(ME.fat+f.fat,0,100);for(const k of ['chem','coach','fame'])if(f[k])S.rel[k]=cl(S.rel[k]+f[k],0,100);return a.m};
 {const _vs=vStats;vStats=function(){const h=_vs();if(!ME.rust)return h;const i=h.indexOf('<div class="card xpc">');return i<0?h+vRust():h.slice(0,i)+vRust()+h.slice(i)}}
 {const _vt2=vTurn;vTurn=function(){const h=_vt2();if(!ME.rust)return h;const k='<div class="card"><span class="lbl">';const i=h.indexOf(k);return i<0?h:h.slice(0,i)+vRust()+h.slice(i)}}
@@ -3943,7 +3943,7 @@ function cmCats(tone,x){const c=[],pos=['hype','psHero','feat','award','record',
   const neg=['bad','psGoat','psLose','injury','faBig'].includes(tone),add=[];
   use.forEach(id=>{let pool=(CMLIB[id]||[]).filter(l=>{const t=l[0];if(isP()&&BATW.test(t))return false;if(!isP()&&PITW.test(t))return false;if(id===12&&(neg!==NICK_NEG.test(t)))return false;return!seenHas(cmFill(t))});
     const n=id===2||id===1?3:2;for(let i=0;i<n&&pool.length;i++){const l=pool.splice(ri(0,pool.length-1),1)[0],t=cmFill(l[0]);seenAdd(t);
-      add.push({nk:pick(NICKS),fl:S.pro&&S.pro.team!=null&&R()<.5?TEAMS[S.pro.team].nick:null,t,up:Math.round(ri(60,600)*(1+S.rel.fame/25)),dn:ri(1,40),ago:pick(AGO),re:l.slice(1).map(r=>({nk:pick(NICKS),t:cmFill(r),up:ri(20,300)}))})}});
+      add.push({lib:1,nk:pick(NICKS),fl:S.pro&&S.pro.team!=null&&R()<.5?TEAMS[S.pro.team].nick:null,t,up:Math.round(ri(60,600)*(1+S.rel.fame/25)),dn:ri(1,40),ago:pick(AGO),re:l.slice(1).map(r=>({nk:pick(NICKS),t:cmFill(r),up:ri(20,300)}))})}});
   if(add.length){S.cmRecent=use.concat(recent).slice(0,4);add.forEach(c=>out.splice(Math.min(out.length,ri(1,5)),0,c))}}catch(e){}return out}}
 
 /* ===================== 경기 진행 화면 정리 · 타석 결과 흐름 ===================== */
@@ -8530,7 +8530,7 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
   const P=isP(),fame=(S.rel&&S.rel.fame)||0;
   const boring=P?!((x.ipO||0)>=18&&(x.ra||0)<=1)&&!((x.ra||0)>=5)&&!((x.gK||0)>=9):!((x.gHR||0)>=1||(x.gH||0)>=3||(x.gRBI||0)>=3||x._wo||(x.gGreat||0)>=1||(x.gErr||0)>=1||((x.gH||0)===0&&(x.gPA||0)>=5));
   let cap=boring?(fame<15?ri(3,4):fame<40?ri(3,6):ri(4,7)):(fame<15?ri(5,7):fame<35?ri(6,9):99);if(out.length<=cap)return out;
-  const must=out.filter(c=>c.must),rest=out.filter(c=>!c.must);out=must.slice(0,cap).concat(rest.slice(0,Math.max(0,cap-must.length)));out.sort((a,b)=>(b.up||0)-(a.up||0))}catch(e){}return out}}
+  const must=out.filter(c=>c.must),lib=out.filter(c=>!c.must&&c.lib),rest=out.filter(c=>!c.must&&!c.lib);out=must.slice(0,cap).concat(lib,rest).slice(0,Math.max(cap,must.length?Math.min(must.length,cap):0));out.sort((a,b)=>(b.up||0)-(a.up||0))}catch(e){}return out}}
 /* WBC·프리미어12 준우승(결승 패배) · WBC 4강: 잘한 거다 → 칭찬·응원·수고했다 댓글 위주, 비난 제거 */
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.intl||x.win||!Array.isArray(out))return out;const t=String(x.title||''),W=/WBC/.test(t),P12=/프리미어12/.test(t);
   if(!((W||P12)&&/결승전/.test(t))&&!(W&&/준결승/.test(t)))return out;const gn=giv(ME.name),fin=/결승전/.test(t),hero=isP()?((x.ipO||0)>=12&&(x.ra||0)<=2):((x.gH||0)>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2);
@@ -8553,6 +8553,14 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
   if(!got.length)return;const main=got[0],una=/MVP/.test(main)&&w>=11;rep.lines.push(`${main} 수상!${una?' (만장일치)':''}`);news(`${S.y} ${got.join(', ')} 수상.`);
   celebrate(/MVP/.test(main)?'mvp':'trophy',main,`${S.y} MLB 시상식 · WAR ${w.toFixed(1)}${una?' · 만장일치':''}`,got.slice(1));
   const firstM=S.awards.filter(a=>/리그 MVP/.test(a.n)&&!/정규시즌/.test(a.n)).length<=1;article(una?`${ME.name}, 만장일치 ${main}!${firstM?' 한국인 최초의 역사':' 또 한 번 역사를 쓰다'}`:`${ME.name}, ${got.join('·')} 수상`,`${jo(ME.name,'은','는')} 올 시즌 WAR ${w.toFixed(1)}을 기록하며 메이저리그 최고의 선수로 우뚝 섰다.`,'award')}catch(e){}}}
+/* 생활 기사(결혼·열애·출산·가족 등)엔 야구 기록·성적·사고 얘기 댓글 금지 */
+{const LIFE=['wedding','love','baby','famDay','gfbreak','marry'];const STAT=/\d+\s?(타점|홈런|안타|도루|승|세이브|홀드|탈삼진|이닝|K\b|득점|경기)|타율|OPS|ERA|WAR|평균자책|찬스에|음주운전|사고만|타석|등판|멀티히트|홈런|타점|폼 미쳤|MVP|연봉|FA|먹튀|슬럼프|2군|트레이드/;
+ const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(LIFE.includes(tone)&&Array.isArray(out)){out=out.filter(c=>!STAT.test(c.t));out.forEach(c=>{if(c.re)c.re=c.re.filter(r=>!STAT.test(r.t))})}}catch(e){}return out}}
+/* 가을야구 1점 차 승부: '진짜 재밌다' 류 댓글 하나는 꼭 */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.ps||!Array.isArray(out)||x.myR==null||x.opR==null||Math.abs(x.myR-x.opR)!==1)return out;
+  const L=['와 진짜 재밌다 이게 가을야구지','심장 터지는 줄 1점 차 승부 미쳤다','오늘 경기 한 편의 드라마였다 진짜 재밌다','이래서 가을야구 본다 끝까지 손에 땀 쥠','야구 보면서 이렇게 떨린 거 오랜만이다 ㅋㅋ','1점 차 가을야구는 수명 깎이는데 너무 재밌음','명승부다 진짜 양 팀 다 박수'];
+  const pool=L.filter(t=>!seenHas(t));if(!pool.length||out.some(c=>L.includes(c.t)))return out;const t=pick(pool);seenAdd(t);
+  out.splice(Math.min(1,out.length),0,mkC(t,[{nk:pick(NICKS),t:pick(['ㄹㅇ 끝까지 못 끄겠더라','청심환 필요했음','이게 야구지','상대 팬이지만 인정'],),up:ri(80,900)}],{up:ri(2000,7000),must:1}))}catch(e){}return out}}
 
 </script>
 
