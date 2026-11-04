@@ -1342,7 +1342,7 @@ const addTo=(a,b)=>{for(const k in b)if(typeof b[k]==='number')a[k]=(a[k]||0)+b[
 const PADJ={C:10,SS:7,'2B':3,CF:3,'3B':2,RF:-6,LF:-6,'1B':-11};
 /* WAR 분리: oWAR = 타격 득점 + 대체선수 보정 / dWAR = 수비 득점 + 포지션 보정 (WAR = oWAR + dWAR) */
 function bWARsplit(b,lv){if(!b||!b.PA)return{o:0,d:0};const s=b.H-b.D-b.T-b.HR,w=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.1*b.HR)/b.PA,raa=(w-.33)/1.2*b.PA,f=b.G/140;
-  const dr=cl((defScore()-(LV[lv]||51))*.45+(sk('glove')?3:0)+(sk('laser')?2:0),-10,15)*f-b.E*.25;return{o:(raa+20*b.PA/600)/10,d:(dr+(PADJ[ME.pos]||0)*f)/10}}
+  const dr=cl((defScore()-(LV[lv]||51))*.45+(sk('glove')?3:0)+(sk('laser')?2:0),-10,15)*f-b.E*.25;const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+(PADJ[ME.pos]||0)*f)/10*mg}}
 function bWAR(b,lv){if(!b.PA)return 0;const x=bWARsplit(b,lv);return x.o+x.d}
 function pWAR(p){const i=p.outs/3;if(!i)return 0;const fip=(13*p.HR+3*p.BB-2*p.K)/i+3.2;return((4.7-fip)/9*i+.035*i)/10}
 const rowWAR=r=>isP()?pWAR(r.p,r.lv):bWAR(r.b,r.lv);
@@ -1795,7 +1795,7 @@ function intl(rep,cy){
   const o=ovrE(),nf=natForm(),good=(nf&&nf.ok)||o>=62;let ev=null;
   if(m===8&&cy>=2028&&(cy-2028)%4===0&&good)ev={n:`${cy} 올림픽`,opp:['일본','미국','도미니카']};
   if(m===9&&cy>=2026&&(cy-2026)%4===0&&good)ev={n:`${cy} 아시안게임`,opp:['대만','일본']};
-  if(m===11&&cy>=2027&&(cy-2027)%4===0&&good)ev={n:`${cy} 프리미어12`,opp:['일본','대만','미국','멕시코']};
+  if(m===11&&cy>=2027&&(cy-2027)%8===0&&good)ev={n:`${cy} 프리미어12`,opp:['일본','대만','미국','멕시코']};
   if(m===3&&cy>=2026&&(cy-2026)%4===0&&good)ev={n:`${cy} WBC`,opp:['일본','미국','도미니카']};
   if(!ev)return;
   S.hist.nat++;S.ach.nat=S.ach.nat||cy;S.rel.fame+=5;ME.xp+=4;rep.lines.push(`${ev.n} 국가대표 발탁! (성장 포인트 +4)`);
@@ -4609,7 +4609,7 @@ const INTL_OFF=/구단|프런트|대체자|돈도|돈 없|계약|단장|감독 �
 const toIntl=t=>t.replace(/가을야구/g,'국대 경기').replace(/가을에/g,'국대에서').replace(/가을만 되면/g,'큰 대회만 되면').replace(/가을/g,'국대').replace(/정규리그에서만/g,'리그에서만').replace(/포스트시즌/g,'국제대회');
 {const _c12=comments;comments=function(tone,x){let out=_c12(tone,x);try{if(x&&x.intl){out.forEach(c=>{if(c.nar||/국대|국제|대표|태극|대한민국|한국|일본|대만|미국|병역|금메달|은메달|동메달/.test(c.t))c.t=toIntl(c.t)});out=out.filter(c=>c.nar||!INTL_OFF.test(c.t));out.forEach(c=>{c.fl=null;if(c.re)c.re=c.re.filter(r=>!INTL_OFF.test(r.t))})}}catch(e){}return out}}
 /* 병역 특례 후엔 아시안게임·올림픽 미선발 · WBC/프리미어12는 시즌 전 참가 여부 선택 (참가 시 피로↑) */
-function intlUpcoming(y){const L=[];if(y>=2026&&(y-2026)%4===0)L.push(['wbc',`${y} WBC`,'3월','시즌 개막 직전이라 몸을 일찍 끌어올려야 해요 · 피로도↑']);if(y>=2027&&(y-2027)%4===0)L.push(['p12',`${y} 프리미어12`,'11월','시즌 끝나고 쉬지 못하고 바로 떠나요 · 피로도↑']);return L}
+function intlUpcoming(y){const L=[];if(y>=2026&&(y-2026)%4===0)L.push(['wbc',`${y} WBC`,'3월','시즌 개막 직전이라 몸을 일찍 끌어올려야 해요 · 피로도↑']);if(y>=2027&&(y-2027)%8===0)L.push(['p12',`${y} 프리미어12`,'11월','시즌 끝나고 쉬지 못하고 바로 떠나요 · 피로도↑']);return L}
 {const _ny6=newYear;newYear=function(){const r=_ny6();try{if(S.stage==='pro'&&S.pro&&!S.pro.dev&&S.pro.league==='KBO'){const nf=natForm(),good=(nf&&nf.ok)||ovrE()>=62;
   if(good)for(const [k,n,mo,s] of intlUpcoming(S.y)){S.intlPick=S.intlPick||{};if(S.intlPick[n]!=null)continue;
     S.queue.push({title:`🇰🇷 ${n} 대표팀 예비 명단`,text:`대표팀 감독이 연락했다. "${mo}에 열리는 ${n}, 함께 가자." 국가대표로 뛰면 이름값이 오르지만 몸은 더 지친다.`,ch:[{t:'태극마크 단다',s:`인기·성장↑ · ${s}`,act:'intlp',arg:{n,go:1}},{t:'이번엔 고사한다',s:'시즌에 집중 · 대표팀 감독 서운함',act:'intlp',arg:{n,go:0}}]})}}}catch(e){}return r}}
@@ -4617,7 +4617,7 @@ ACT.intlp=function(a){S.intlPick=S.intlPick||{};S.intlPick[a.n]=!!a.go;if(a.go)r
 CRIT.add('intlp');
 {const _in=intl;intl=function(rep,cy){try{const m=S.m;
   const ag=(m===8&&cy>=2028&&(cy-2028)%4===0)||(m===9&&cy>=2026&&(cy-2026)%4===0);if(ag&&S.mil&&S.mil.status==='exempt')return;
-  const n=m===3&&cy>=2026&&(cy-2026)%4===0?`${cy} WBC`:m===11&&cy>=2027&&(cy-2027)%4===0?`${cy} 프리미어12`:null;
+  const n=m===3&&cy>=2026&&(cy-2026)%4===0?`${cy} WBC`:m===11&&cy>=2027&&(cy-2027)%8===0?`${cy} 프리미어12`:null;
   if(n&&S.intlPick&&S.intlPick[n]===false)return;
   const before=S.hist.nat;_in(rep,cy);
   if(n&&S.hist.nat>before){const add=n.includes('WBC')?14:11;ME.fat=cl(ME.fat+add,0,100);rep.lines.push(`대표팀 일정으로 몸이 지쳤다. (피로도 +${add})`)}}catch(e){}}}
@@ -8008,6 +8008,11 @@ function rbiTarget(m){if(!m||!m.PA)return 0;const s1=Math.max(0,m.H-m.D-m.T-m.HR
   const _pr=postRender;postRender=function(app){mig();return _pr(app)}})();
 /* 특성 목록: 싼 것부터 비싼 순 (같은 가격은 원래 순서) */
 (function(){const ix=new Map(SKILLS.map((s,i)=>[s,i]));SKILLS.sort((a,b)=>(a.c||0)-(b.c||0)||ix.get(a)-ix.get(b))})();
+/* MLB: 경기 수(162)가 많아 WAR 소폭 가산 (×1.08, 타자는 bWARsplit에서) · 메이저 타격 난이도 아주 살짝↑ (안타 2.5%가 범타로 → OPS 약 −.02) */
+{const _pw=pWAR;pWAR=function(p,lv){const v=_pw(p,lv);return lv==='MLB'?v*1.08:v}}
+{const _sb=simBat;simBat=function(role,tg,L,row,lvk){const r=_sb(role,tg,L,row,lvk);try{if(lvk!=='MLB'||!r||!r.m||!r.m.H)return r;const m=r.m,B=row&&row.b;
+  let n=0;for(let i=0;i<m.H;i++)if(R()<.025)n++;n=Math.min(n,m.H-m.HR);if(!n)return r;
+  for(let i=0;i<n;i++){const s1=m.H-m.D-m.T-m.HR,q=R()*(s1+m.D+m.T*1)+0;const k=q<s1?'S':q<s1+m.D?'D':'T';m.H--;if(B)B.H--;if(k==='D'){m.D--;if(B)B.D--}else if(k==='T'){m.T--;if(B)B.T--}}}catch(e){}return r}}
 
 /* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
 /* 방망이 점수(수비 제외)와 수비 적합도 */
@@ -8157,7 +8162,7 @@ function roleBad2(t){try{if(!t)return false;if(roleBad(t))return true;if(isP()&&
   if(er>=1&&!win&&!clutch){const PR=/개추|호감|잘했다|MVP|GOAT|업고|갓|폼 미쳤|시대 개막|사랑/;out=out.filter(c=>!PR.test(c.t))}
   if(add.length)out.splice(0,0,...add)}catch(e){}return out}}
 /* 국제대회 패배: 아시안게임은 우승이 당연 → 지면 확실히 부정적 (우물 안 개구리 KBO 등) */
-{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||!x||!x.intl||x.win)return out;const t=String(x.title||''),AG=/아시안게임/.test(t),P=isP(),gn=giv(ME.name),opp=String(x.sub||'').replace(/.*vs\s*/,'')||'상대';
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||!x||!x.intl||x.win)return out;const t=String(x.title||''),AG=/아시안게임/.test(t);if(!AG&&(/결승전/.test(t)||/WBC/.test(t)))return out;const P=isP(),gn=giv(ME.name),opp=String(x.sub||'').replace(/.*vs\s*/,'')||'상대';
   const hero=P?((x.ipO||0)>=15&&(x.ra||0)<=1):((x.gH||0)>=3||(x.gHR||0)>=1||(x.gRBI||0)>=2),add=[];
   const put=(tt,re,up)=>{tt=josaFix(tt);if(seenHas(tt))return;seenAdd(tt);add.push(mkC(tt,(re||[]).map(r=>({nk:pick(NICKS),t:r,up:ri(80,1200)})),{up:up||ri(1500,6000),must:1}))};
   const RE=['ㄹㅇ 우물 안 개구리','할 말이 없다','대표팀 세대교체 시급하다','감독 책임이 제일 크다','국제대회 나가면 늘 이 모양','연봉 거품 빠져야 됨'];
@@ -8526,6 +8531,16 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
   const boring=P?!((x.ipO||0)>=18&&(x.ra||0)<=1)&&!((x.ra||0)>=5)&&!((x.gK||0)>=9):!((x.gHR||0)>=1||(x.gH||0)>=3||(x.gRBI||0)>=3||x._wo||(x.gGreat||0)>=1||(x.gErr||0)>=1||((x.gH||0)===0&&(x.gPA||0)>=5));
   let cap=boring?(fame<15?ri(3,4):fame<40?ri(3,6):ri(4,7)):(fame<15?ri(5,7):fame<35?ri(6,9):99);if(out.length<=cap)return out;
   const must=out.filter(c=>c.must),rest=out.filter(c=>!c.must);out=must.slice(0,cap).concat(rest.slice(0,Math.max(0,cap-must.length)));out.sort((a,b)=>(b.up||0)-(a.up||0))}catch(e){}return out}}
+/* WBC·프리미어12 준우승(결승 패배) · WBC 4강: 잘한 거다 → 칭찬·응원·수고했다 댓글 위주, 비난 제거 */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.intl||x.win||!Array.isArray(out))return out;const t=String(x.title||''),W=/WBC/.test(t),P12=/프리미어12/.test(t);
+  if(!((W||P12)&&/결승전/.test(t))&&!(W&&/준결승/.test(t)))return out;const gn=giv(ME.name),fin=/결승전/.test(t),hero=isP()?((x.ipO||0)>=12&&(x.ra||0)<=2):((x.gH||0)>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2);
+  const NEG=/우물|개구리|작아지|벽이 높|할 말 없|부족|망신|거품|볼 낯|수준 얘기|평범|이 꼴|몇 번째|책임|세대교체|늘 이 모양|1000만|나가지 마라|공인구|못 이긴다|탓|TV 끈|정신 차려|아쉬움이 남|운영에서|때문에 졌|역적|먹튀|노답|혈압|기회를 못 살|아쉬운 결승|못 살렸|답답/;out=out.filter(c=>!NEG.test(c.t));out.forEach(c=>{if(c.re)c.re=c.re.filter(r=>!NEG.test(r.t))});
+  const L=fin?[`${W?'WBC':'프리미어12'} 준우승이면 진짜 잘한 거다 다들 수고했다`,'세계 2위다 고개 숙일 필요 하나도 없음','결승까지 간 것 자체가 대단하다 박수 쳐주자',`${W?'메이저리거들 상대로':'세계 강호들 상대로'} 이 정도 했으면 충분히 자랑스럽다`,'끝까지 포기 안 하는 모습 보고 울컥했다','다음 대회는 진짜 우승 노려볼 만하다','이번 대표팀 진짜 멋있었다 고생 많았다','한국 야구 아직 안 죽었다 보여줬다']
+    :['WBC 4강이면 충분히 잘한 거다 수고했다','세계 4강 고개 숙이지 마라','강팀들 사이에서 여기까지 온 게 대단함','이번 대표팀 투지 진짜 좋았다','다음 WBC가 벌써 기대된다'];
+  if(hero)L.push(`${gn} 국제무대에서도 통한다는 거 확실히 보여줬다`,`${gn} 이번 대회 진짜 에이스였다`);else L.push(`${gn}도 태극마크 달고 끝까지 뛰어줘서 고맙다`);
+  const RE=['ㄹㅇ 박수 쳐줘야 함','고생했다 진짜','인정 이 정도면 잘한 거지','자랑스럽다 진짜','다음엔 우승이다','눈물 남 ㅠㅠ'];
+  const add=L.filter(s=>!seenHas(josaFix(s))).sort(()=>R()-.5).slice(0,ri(5,6)).map(s=>{s=josaFix(s);seenAdd(s);return mkC(s,R()<.7?[{nk:pick(NICKS),t:pick(RE),up:ri(100,1500)}]:[],{up:ri(1500,7000),must:1})});
+  out=add.concat(out).sort((a,b)=>(b.up||0)-(a.up||0))}catch(e){}return out}}
 
 </script>
 
