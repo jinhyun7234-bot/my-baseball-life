@@ -7960,11 +7960,24 @@ FEV.push({sr:1,t:'후배에게 심부름?',x:'원정 숙소. 피곤해 죽겠는
   const done=new Set();TR.forEach(t=>{if(!t||!t.a||t.neg||done.has(t.id))return;done.add(t.id);
     for(const k in t.a){const v=t.a[k];if(typeof v!=='number')continue;t.a[k]=k==='hr'?+(1+(v-1)*F).toFixed(4):+(v*F).toFixed(4)}
     t.d=fixD(t.d);const sk=SKILLS.find(s=>s.id===t.id);if(sk)sk.d=t.d})})();
-/* 훈련 상호 보너스 (아주 살짝): 주루 훈련으로 오른 주력의 12%만큼 수비 범위도 상승 · 수비 훈련으로 오른 수비력의 10%만큼 주력도 상승 */
-{const _tm=trainMonth;trainMonth=function(rep){const b=ME&&ME.r?{spd:ME.r.spd,fld:ME.r.fld,rng:ME.r.rng}:null;const r=_tm(rep);try{if(b&&!isP()){
-  const ds=(ME.r.spd||0)-(b.spd||0),df=(ME.r.fld||0)-(b.fld||0);
-  if(ds>0&&ME.r.rng!=null&&ME.r.rng<80)ME.r.rng=Math.min(80,ME.r.rng+ds*.12);
-  if(df>0&&ME.r.spd!=null&&ME.r.spd<80)ME.r.spd=Math.min(80,ME.r.spd+df*.10)}}catch(e){}return r}}
+/* 훈련 상호 보너스 (한 기간 기준, 표시 수치): 메인일 때 전부, 서브일 때 절반
+   - 수비 훈련: 주력 +0.2 · 타구처리 위주면 어깨 +0.3 · 수비범위 위주면 수비범위 +0.3 · 균형이면 어깨·수비범위 +0.15씩
+   - 주루 훈련: 수비범위 +0.15
+   예상 성장 칸에도 그대로 반영 */
+function trCross(){const out={};try{if(isP()||!S.plan)return out;const p=S.plan,add=(k,v)=>out[k]=(out[k]||0)+v;
+  [[p.main,1],[p.sub,.5]].forEach(([id,f])=>{if(id==='def'){add('spd',.2*f);const b=p.defBias||'bal';if(b==='fld')add('arm',.3*f);else if(b==='rng')add('rng',.3*f);else{add('arm',.15*f);add('rng',.15*f)}}
+    else if(id==='spd')add('rng',.15*f)})}catch(e){}return out}
+{const _tm=trainMonth;trainMonth=function(rep){const inj=ME&&ME.inj;const r=_tm(rep);try{if(!inj&&!isP()){const X=trCross(),mo=(PMON[S.phase]||[1]).length||1;
+  for(const k in X){if(ME.r[k]==null)continue;const cap=typeof capOf==='function'?capOf(k):80;if(ME.r[k]<cap)ME.r[k]=Math.min(cap,ME.r[k]+X[k]*.75/mo)}}}catch(e){}return r}}
+/* 예상 성장 칸: 실제 성장에 붙는 배율(난이도·타자 보정·저연차·능력치별 장비·투수/구종 보정)까지 반영 + 상호 보너스 */
+{const _vtp=vTrainPlan;vTrainPlan=function(){let h=_vtp();try{if(ME.inj)return h;const P=isP(),p=S.plan,inv={};for(const k in LBL)inv[LBL[k]]=k;
+  const young=(S.stage==='hs'||(S.stage==='pro'&&S.pro&&proYears()<=3))?1.3:1,base=(typeof DIFF_G==='number'?DIFF_G:1)*(P?1.05:8/7)*young;
+  const a=h.indexOf('이번 기간 예상 성장'),b=a>=0?h.indexOf('예상 피로',a):-1;if(a<0||b<0)return h;let seg=h.slice(a,b);
+  seg=seg.replace(/(<span class="chip[^"]*">)([^<▲]+) ▲([0-9.]+)<\/span>/g,(m,o,lb,n)=>{const k=inv[lb.trim()]||(P&&p.pitch&&lb.trim()===LBL[p.pitch]?'brk':null);if(!k)return m;
+    const isPt=typeof PITCHES!=='undefined'&&(PITCHES.includes(k)||k==='brk');let v=+n*base*(1+(teBonus(isPt?'brk':k)||0))*(P&&isPt?1.1:1);return`${o}${lb} ▲${v.toFixed(1)}</span>`});
+  if(!P){const X=trCross();for(const k in X){const lb=LBL[k],re=new RegExp('(<span class="chip[^"]*">)'+lb+' ▲([0-9.]+)</span>');
+    if(re.test(seg))seg=seg.replace(re,(m,o,n)=>`${o}${lb} ▲${(+n+X[k]).toFixed(1)}</span>`);else seg=seg.replace('<div class="row wrap">',`<div class="row wrap"><span class="chip">${lb} ▲${X[k].toFixed(1)}</span>`)}}
+  h=h.slice(0,a)+seg+h.slice(b)}catch(e){}return h}}
 
 /* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
 /* 방망이 점수(수비 제외)와 수비 적합도 */
@@ -8274,6 +8287,15 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
     if((x.gGreat||0)>=1)L.push(`${ab}타수 무안타인데 호수비로 안타 지운 걸로 퉁치자`,`자기 안타는 못 쳤는데 남의 안타는 지워버림 ㅋㅋ`);
     put(pick(L),[pick(['ㄹㅇ 수비 WAR는 안 보이니까 모름','그래도 방망이 좀 쳐줬으면 ㅋㅋ','인정 저 수비면 무안타도 OK','수비만으로 밥값 함','다음 경기에 치면 됨','타격은 사이클이니까'])],ri(400,2500))}
   if(add.length)out.splice(Math.min(2,out.length),0,...add)}catch(e){}return out}}
+/* 수비 잘하는 야수: 평소에도 가끔 '수비 든든' 류 댓글 (호수비한 날은 더 자주) */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||!x||!Array.isArray(out)||['DH','P','SP','RP'].includes(ME.pos)||S.dhNow||x.gH==null||x.gErr>0)return out;
+  const inf=['C','SS','2B','3B'].includes(ME.pos),dq=(DV(eff('rng'))+DV(eff('fld'))+(inf?DV(eff('arm'))*.5:0))/(inf?2.5:2);if(dq<68)return out;
+  const g=x.gGreat||0;if(R()>=(g?.6:.18))return out;const gn=giv(ME.name),pn=POS[ME.pos]||'수비수',n=ri(1,3);
+  const L=[`${gn} ${pn} 들어가 있으면 그냥 든든함`,`투수들은 ${gn}한테 고기 사줘라 ㅋㅋ`,`${gn} 수비로 막는 점수가 시즌에 몇 점이냐 진짜`,`우리 투수들 평균자책 절반은 ${gn} 수비빨이다`,`${gn} 없을 때 수비 보면 ${gn} 소중함 알게 됨`,`투수들 ${gn} 쪽으로 땅볼 유도하면 그냥 아웃임`,
+    `${gn}가 ${pn} 자리에 있는 것만으로 투수가 편하게 던짐`,`수비 WAR 따로 보면 ${gn} 리그 상위권일 듯`];
+  if(g)L.push(`오늘 투수 승리는 ${gn} 지분 30%`,`${gn} 호수비 없었으면 오늘 몇 점 더 줬다`,`투수 인터뷰에서 ${gn} 얘기 안 하면 서운할 듯`);
+  const t=josaFix(pick(L.filter(t=>!seenHas(josaFix(t))))||L[0]);if(seenHas(t))return out;seenAdd(t);
+  out.splice(Math.min(n,out.length),0,mkC(t,[{nk:pick(NICKS),t:pick(['ㄹㅇ 투수들 복 받았다','회식비는 투수들이 내라 ㅋㅋ','이게 보이지 않는 가치지','ㅇㅈ 저 정도면 수비 원툴이어도 됨',`${gn} 수비는 진짜 국대급`]),up:ri(40,700)}],{up:ri(500,3000)}))}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 9시즌 이상 뛰었고, 그 팀 WAR 60 이상이면 그 팀이 영구결번
