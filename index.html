@@ -1972,7 +1972,7 @@ function faEvent(o,w,f){
   const cur=S.pro.team,list=(o>=46+(a>=37?4:0)?[cur]:[]).concat(teams.filter(i=>i!==cur).slice(0,n));
   const fv=faValue(o,w);list.forEach(t=>{const y=t===cur?yrs:Math.max(a>=40?1:2,yrs+(R()<.3?1:R()<.3?-1:0)),tot=Math.max(10000,Math.round(fv*y*rn(1,.1)*(t===cur?.95:1)/10000)*10000);offers.push({t:`${TEAMS[t].city} ${TEAMS[t].nick}${t===cur?' (잔류)':''}`,s:`${y}년 최대 ${money(tot)}`,d:`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/y)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상 시 연 ${money(tot*.15/y)})`,act:'fa',arg:{team:t,yrs:y,tot}})});offers.sort((x,y)=>y.arg.tot-x.arg.tot);
   const ch=offers.slice(0,5);
-  if(o>=57)ch.push({t:'해외 진출에 도전한다',s:'MLB·NPB 구단의 제안을 기다린다',act:'abroadTry'});
+  if(o>=57)ch.push({t:'해외 진출에 도전한다',s:'MLB 구단의 제안을 기다린다',act:'abroadTry'});
   if(!ch.length)ch.push({t:'원하는 구단이 없다… 은퇴한다',act:'retire'},{t:'입단 테스트를 받는다',s:'성공 확률 낮음',act:'tryout'});
   else ch.push({t:'은퇴를 선언한다',s:'커리어 종료',act:'retire'});
   return{title:'FA 자격 획득',text:`드디어 FA다. 올해 WAR ${w.toFixed(1)}, 나이 ${a}세. 구단들의 제안이 도착했다.`,ch}}
@@ -7705,7 +7705,7 @@ function vHofHall(){const L=hofLoad('hall','order=wwar.desc.nullslast&limit=400'
   const slot=(lbl,r)=>`<div class="hof-slot ${r?'':'empty'}"><span class="hof-pos">${lbl}</span>${r?`<div class="hof-who">${hofWho(r)}<span class="hof-ln">${hofLine(r)}</span><span class="hof-sub">${hofWarTxt(r)}</span></div><span class="hof-war">점수<b>${(+(r.wwar??r.war)).toFixed(1)}</b></span>`:'<div class="hof-who"><span class="hof-sub">아직 주인 없음 — 첫 번째 주인공이 되어 보세요</span></div>'}</div>`;
   const bat=HOF_POS.map(p=>slot(HOF_PN[p],best(r=>r.kind==='B'&&r.pos===p))).join('');
   const sp=best(r=>r.kind==='P'&&r.prole==='SP'),cl=best(r=>r.kind==='P'&&r.prole==='CL'),rp=best(r=>r.kind==='P'&&r.prole==='RP');
-  return`<div class="hof-note">은퇴한 모든 플레이어의 커리어 중 포지션별 명예의 전당 점수 1위가 올라요.<br>점수 = KBO WAR ×1.0 + MLB WAR ×2.0 + NPB WAR ×1.3 + 마이너 WAR (AAA ×0.5 · AA 이하 ×0.3) · 퓨처스(2군) 기록은 제외</div><div class="hof-grp">야수</div>${bat}<div class="hof-grp">투수</div>${slot('1 · 선발',sp)}${slot('2 · 마무리',cl)}${slot('3 · 불펜',rp)}`}
+  return`<div class="hof-note">은퇴한 모든 플레이어의 커리어 중 포지션별 명예의 전당 점수 1위가 올라요.<br>점수 = KBO WAR ×1.0 + MLB WAR ×2.0 + 마이너 WAR (AAA ×0.5 · AA 이하 ×0.3) · 퓨처스(2군) 기록은 제외</div><div class="hof-grp">야수</div>${bat}<div class="hof-grp">투수</div>${slot('1 · 선발',sp)}${slot('2 · 마무리',cl)}${slot('3 · 불펜',rp)}`}
 function vHofRank(kind){const cats=HOF_CAT[kind],cur=cats.find(c=>c[0]===(ui.hof.cat&&ui.hof.cat[kind]))||cats[0],L=hofLoad(kind+cur[0],hofQuery(kind,cur[0]));
   let body;if(L.loading)body='<div class="hof-msg">불러오는 중…</div>';else if(L.err)body='<div class="hof-msg">순위를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>';else if(!L.data.length)body='<div class="hof-msg">아직 기록이 없어요. 은퇴하면 첫 기록을 올릴 수 있어요!</div>';
   else body=L.data.map((r,i)=>`<div class="hof-row ${S&&S.cid===r.career_id?'me':''}"><span class="hof-rk ${i<3?'rk'+(i+1):''}">${i+1}</span><div class="hof-who">${hofWho(r)}<span class="hof-ln">${HOF_PN[r.kind==='P'?r.prole:r.pos]||''} · ${hofLine(r)}</span>${cur[0]==='wwar'||cur[0]==='war'?`<span class="hof-sub">${hofWarTxt(r)}</span>`:''}</div><span class="hof-val">${hofFmt(r,cur[0],cur[2])}</span></div>`).join('');
@@ -8623,7 +8623,10 @@ ACT.dhno=function(){return'"아직 수비 자신 있습니다." 감독은 "지�
   const nm=ME.name;let k=-1;for(let i=g.ev.length-1;i>=0;i--){const e=g.ev[i];if(/\bme\b/.test(e.c)&&e.t&&e.t.indexOf(nm+':')>=0){k=i;break}}if(k<0)return g;
   g.ev.splice(k+1,0,{...g.ev[k],t:`${last.i}회 — 대주자 투입. 지명타자 ${jo(nm,'은','는')} 여기까지, 벤치로 들어간다`,c:'sub'});g.pr=1}catch(e){}return g}}
 /* 전반기·후반기 결과 화면 맨 위: 이번 기간 성적 + 시즌 누적 성적 + 팀 순위표 */
-function phaseTopHtml(){try{const r=S.report;if(!r||!(r.ph===1||r.ph===2)||S.stage!=='pro'||!S.pro||S.pro.dev)return'';const lg=S.pro.league;if(!['KBO','MLB','NPB'].includes(lg))return'';
+function phaseTopHtml(){try{const r=S.report;if(!r||!(r.ph===1||r.ph===2))return'';
+  if(S.stage==='hs'||S.stage==='univ'){const lk=S.stage,P=isP(),g=Object.values(r.games).find(x=>x.lvk===lk)||Object.values(r.games)[0],t=yearTot(r.y,[lk]),sm=P?t.p:t.b;if(!g&&!(P?sm.outs:sm.PA))return'';
+    return`<div class="ptop"><div class="ptop-r"><span class="ptop-k">${PHASE[r.ph]} 성적</span><b>${g?esc(lineTxt(g)):'출전 기록 없음'}</b></div>${(P?sm.outs:sm.PA)?`<div class="ptop-r"><span class="ptop-k">${r.y} 시즌${r.ph===2?' (전반기+후반기)':''}</span><b>${esc(lineTxt({kind:P?'P':'B',lvk:lk,m:sm}))}</b></div>`:''}</div>`}
+  if(S.stage!=='pro'||!S.pro||S.pro.dev)return'';const lg=S.pro.league;if(!['KBO','MLB','NPB'].includes(lg))return'';
   const P=isP(),g=Object.values(r.games).find(x=>x.lvk===lg);const t=yearTot(r.y,[lg]),sm=P?t.p:t.b;if(!(P?sm.outs:sm.PA))return'';
   const pn=PHASE[r.ph];let h=`<div class="ptop"><div class="ptop-r"><span class="ptop-k">${pn} 성적</span><b>${g?esc(lineTxt(g)):'출전 기록 없음'}</b></div><div class="ptop-r"><span class="ptop-k">${r.y} 시즌${r.ph===2?' (전반기+후반기)':''}</span><b>${esc(lineTxt({kind:P?'P':'B',lvk:lg,m:sm}))}</b></div>`;
   if(lg==='KBO'){ensureLP();const st=standings(),lw=st[0].w,ll=st[0].l,my=S.pro.team;
