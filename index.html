@@ -5879,7 +5879,7 @@ function tradeTargets(){if(S.pro.league==='MLB')return Object.keys(MLB_CITY).fil
 {const _ms10=monthStep;monthStep=function(rep){_ms10(rep);try{if(!(S.stage==='pro'&&S.pro&&!S.pro.dev&&(S.m===7||S.m===12)&&S.tradeY!==S.y+'-'+S.m&&S.queue.length<3))return;S.tradeY=S.y+'-'+S.m;
   const mlb=S.pro.league==='MLB',lg=mlb||S.pro.league==='KBO';if(!lg)return;const lgk=S.pro.league,_t0=yearTot(S.y,[lgk]),ry=(_t0.b.PA<150&&_t0.p.outs<90)?S.y-1:S.y,{b,p:pp}=ry===S.y?_t0:yearTot(ry,[lgk]),ip=pp.outs/3,ryW=S.rows.filter(r=>r.y===ry&&PRO.includes(r.lv)).reduce((a,r)=>a+rowWAR(r),0),ryAw=S.awards.some(a=>a.y>=ry&&/MVP|골든글러브|왕|최다/.test(a.n)&&!/우승$/.test(a.n)),P=isP(),ops=b.PA?opsN(b):0,era=pp.outs?pp.R*27/pp.outs:9;
   const used=P?(ip>=100||(pp.SV+pp.HLD)>=15||pp.GS>=15):b.PA>=350,good=P?(ip>=50&&era<=3.8):(b.PA>=200&&ops>=.8),youngGood=proYears()<=2&&lastWAR()>=2;
-  const bench=!used&&!['start','SP','CL','SU'].includes(S.role)&&!(lastWAR()>=2)&&ryW<2&&!ryAw,star=DV(ovrE())>=85&&age()>=27&&proYears()>=4;
+  const bench=!used&&!['start','SP','CL','SU'].includes(S.role)&&!(lastWAR()>=2)&&ryW<2&&!ryAw&&(()=>{try{return careerTot(PRO).w<20}catch(e){return true}})(),star=DV(ovrE())>=85&&age()>=27&&proYears()>=4;
   let p=(good||youngGood||ryAw||ryW>=3||(S.lastTradeY&&S.y-S.lastTradeY<3))?0:bench?(mlb?.06:.03):(mlb?.012:.004),big=false;const chemBad=(S.rel.chem||50)<30&&!(S.lastTradeY&&S.y-S.lastTradeY<2);if(chemBad)p=Math.max(p,mlb?.04:.03);if(star&&mlb&&R()<.006){big=true;p=1}if(R()>=p)return;
   const T=pick(tradeTargets()),tn=mlb?`${T} ${MLB_CITY[T]}`:`${TEAMS[T].city} ${TEAMS[T].nick}`,pkg=big?pick(['유망주 4명','유망주 3명 + 현금','주전급 2명 + 유망주 2명','1라운드 지명권 2장 + 유망주 2명']):(bench?pick(['유망주 1명','불펜 투수 1명','현금','하위 라운드 지명권']):(ryW>=4||lastWAR()>=4)?pick(P?['상대 주전 4번 타자','주전 외야수 + 1라운드 지명권','국가대표 마무리 투수']:['상대 에이스 선발','10승 선발 투수 + 유망주','국가대표 마무리 + 1라운드 지명권']):pick(P?['주전급 야수 1명','유망주 2명 + 현금','1라운드 지명권']:['선발 투수 1명','필승조 투수 + 유망주','1라운드 지명권']));
   const cw=(()=>{try{return careerTot(PRO).w}catch(e){return 0}})(),stP=lastWAR()>=4||ryW>=4||cw>=30,rich=(S.pro.salary||0)>=(mlb?200000:100000);
@@ -6295,8 +6295,8 @@ function psLogOut(name,gn,win,w,l,opp){try{S._psFlow=S._psFlow||{lines:[],quiet:
 const OPSADJ={C:-.10,SS:-.07,'2B':-.05,CF:-.05,'3B':-.02,LF:0,RF:0,'1B':.02,DH:.03};
 function opsTier(o,pos){const a=o-(OPSADJ[pos]||0);return a>=1?6:a>=.95?5:a>=.9?4:a>=.85?3:a>=.8?2:a>=.75?1:0}
 const OPST=['아쉬운 수준','평균 아래','무난한 수준','평균 이상 수준급','확실히 잘하는 편','아주 잘하는 편','MVP급'];
-function yrDW(y){return S.rows.filter(r=>r.y===y&&r.b&&r.b.PA).reduce((s,r)=>{const v=advB(r.b,r.lv).dwar;return s+(isFinite(v)?v:0)},0)}
-function carDW(){return S.rows.filter(r=>r.b&&r.b.PA&&r.lv!=='hs'&&r.lv!=='univ').reduce((s,r)=>{const v=advB(r.b,r.lv).dwar;return s+(isFinite(v)?v:0)},0)}
+function yrDW(y){return S.rows.filter(r=>r.y===y&&r.b&&r.b.PA&&PRO.includes(r.lv)).reduce((s,r)=>{const v=bWARsplit(r.b,r.lv).d;return s+(isFinite(v)?v:0)},0)}
+function carDW(){return S.rows.filter(r=>r.b&&r.b.PA&&PRO.includes(r.lv)).reduce((s,r)=>{const v=bWARsplit(r.b,r.lv).d;return s+(isFinite(v)?v:0)},0)}
 function defEval(){if(isP()||!S.pro)return null;const d=yrDW(S.y),c=carDW(),pn=POS[ME.pos]||'수비수',f=v=>(v>-.05?'+':'')+(Math.abs(v)<.05?0:v).toFixed(1);
   const t=d>=1.5?`리그 정상급 ${pn} 수비`:d>=.5?'수비로도 확실히 보탬':d>-.5?'수비는 평균 정도':d>-1.5?'수비가 아쉽다는 평가':'수비가 확실한 약점';
   const ct=proYears()>=4?(c<=-8?' · 통산으로 보면 수비는 사실상 포기 수준':c>=8?' · 통산으로도 손꼽히는 수비수':''):'';return{d,c,txt:`수비 dWAR ${f(d)} (통산 ${f(c)}) — ${t}${ct}`}}
@@ -8574,6 +8574,22 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
     :[`${pa}타석 ${ob}출루면 할 건 했다`,`${gn} 오늘 출루로 제 역할 다 함`,`꾸준히 나가주니까 뒤에서 쳐주는 거지`,`화려하진 않아도 ${gn} 오늘 알짜배기였다`];
   L.sort(()=>R()-.5).slice(0,2).forEach(t=>put(t,R()<.6?[pick(['ㅇㅈ 출루가 최고','이게 보이지 않는 활약','볼넷도 안타랑 같은 1루임','팀 득점 절반은 ${gn} 출루에서 나옴'.replace('${gn}',gn)])]:[]));
   out=add.concat(out)}catch(e){}return out}}
+/* 트레이드 기사 댓글: 트레이드 얘기만 (가서도 잘해라 · 잘하는데 왜 보내냐 · ○○ 보낸 팀 후회할 듯 · 새 팀 개이득 등) */
+function tradeComments(from,to,star,rich,big){const gn=giv(ME.name),cln=v=>String(v||'').replace(/\s*\([^)]*\)/g,'').trim(),sh=v=>{const c=cln(v);return S.pro&&S.pro.league==='MLB'?c:c.split(' ').pop()},fn=sh(from),tn=sh(to),C=[];const A=(t,re)=>C.push([t,re]);
+  A(`가서도 잘해라 진심으로 응원한다`,['어디서든 응원함','새 팀에서 꽃길만']);A(`${fn}에서 그동안 고생 많았다 고마웠다 ${gn}`,['ㄹㅇ 그동안 고마웠다','유니폼 아직 못 버림 ㅠㅠ']);
+  A(`${tn} 팬들 환영합니다 우리 ${gn} 잘 부탁해요`,['잘 챙겨줄게요','이미 반했음 ㅋㅋ']);A(`친정 상대로 홈런 치는 장면 벌써 보인다`,['그거 나오면 진짜 눈물 날 듯','친정 상대로는 살살 해라 ㅋㅋ']);
+  A(`이 트레이드는 3년 뒤에 평가하자`,['ㅇㅈ 지금은 아무도 모름']);A(`새 유니폼도 생각보다 잘 어울릴 듯`,[]);A(`마킹한 지 얼마 안 됐는데 ㅠㅠ`,['나도 작년에 샀다…']);
+  if(star){A(`아니 잘하는데 왜 보내냐 프런트 제정신이냐`,['단장 나와라','이건 진짜 이해 안 됨']);A(`${gn} 보낸 ${fn} 두고두고 후회할 듯`,['ㄹㅇ 2~3년 뒤에 땅을 치지','이 트레이드 역대급 손해로 남는다']);A(`${tn} 이번 트레이드 개이득이네`,['우승 각 잡았다 ㅋㅋ','상대 팀 팬인데 부럽다']);
+    if(rich)A(`결국 연봉 정리였네 씁쓸하다`,['돈 앞에 의리 없다','프랜차이즈도 이렇게 가는구나']);if(big)A(`이 정도면 리그 판도가 바뀐다`,['역대급 블록버스터','이제 순위 싸움 재밌어지겠네'])}
+  else{A(`오히려 좋을 수도 거기선 기회 더 받을 듯`,['ㄹㅇ 여기선 자리가 없었음','출전만 꾸준하면 터질 선수']);A(`잘 풀렸으면 좋겠다 꾸준히 나가면 터질 선수임`,[]);A(`솔직히 여기선 자리가 없었지`,['서로 윈윈일 듯'])}
+  return C.sort(()=>R()-.5).slice(0,ri(5,7)).map(([t,re])=>mkC(josaFix(t),re.slice(0,re.length?ri(1,re.length):0).map(r=>({nk:pick(NICKS),t:josaFix(r),up:ri(30,600)})),{up:ri(300,4000)}))}
+{const _tg=ACT.tradeGo;ACT.tradeGo=function(a){let from='';try{from=teamLabel()}catch(e){}const n0=S.artId||0;const r=_tg(a);try{const ar=S.arts.find(x=>x.id>n0&&/트레이드|유니폼 입는다/.test(x.head));if(ar){const to=(()=>{try{return teamLabel()}catch(e){return''}})();
+  const cw=(()=>{try{return careerTot(PRO).w}catch(e){return 0}})(),star=!!a.big||lastWAR()>=3||cw>=20,rich=(S.pro.salary||0)>=(S.pro.league==='MLB'?200000:100000);
+  const cl2=v=>String(v||'').replace(/\s*\([^)]*\)/g,'').trim();if(star&&!a.big)ar.body=`${jo(cl2(from),'을','를')} 떠나 ${cl2(to)} 유니폼을 입는다. 리그 정상급 ${isP()?'투수':'타자'}의 이적에 팬들의 반응이 뜨겁다.`;ar.cm=tradeComments(from,to,star,rich,!!a.big)}}catch(e){}return r}}
+/* ○추강대엽 댓글은 내가 확실히 잘하고 팀도 이긴 경기(또는 시상식·은퇴 같은 커리어 기사)에서만 */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!Array.isArray(out))return out;const game=x&&(x.gH!=null||x.ipO!=null);
+  const ok=game?(x.win&&(isP()?((x.ipO||0)>=18&&(x.ra||0)<=1):((x.gH||0)>=2||(x.gHR||0)>=1||(x.gRBI||0)>=3))):['award','legend','retire','record','mlbBig'].includes(tone);
+  if(!ok){out=out.filter(c=>!/추강대엽|추 넘/.test(c.t));out.forEach(c=>{if(c.re)c.re=c.re.filter(r=>!/추강대엽|추 넘/.test(r.t))})}}catch(e){}return out}}
 
 </script>
 
