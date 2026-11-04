@@ -1767,10 +1767,13 @@ function awards(rep){
   const row=S.rows.find(r=>r.y===S.y&&r.lv==='KBO');if(!row)return;
   const w=rowWAR(row),b=row.b,p=row.p,got=[];
   const give=n=>{got.push(n);S.awards.push({y:S.y,n});S.rel.fame+=4;S.money+=300};
-  if(w>=6&&w>rn(6.9,.7)){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
+  /* 개인 타이틀 1개당 MVP·골든글러브 확률 아주 살짝↑ (MVP: WAR +0.12 효과, 골글: WAR +0.08 효과 · 최소 WAR 조건은 그대로) */
+  const _top=(c,pt)=>{try{if(S.pro.league!=='KBO')return false;const r=ranking(c,pt).list;return!!(r.length&&r[0].me)}catch(e){return false}};
+  const tcnt=isP()?[_top('w',1)&&p.W>0,_top('era',1),_top('k',1)&&p.K>0,_top('sv',1)&&p.SV>0,_top('hld',1)&&p.HLD>0].filter(Boolean).length:[_top('avg',0),_top('hr',0)&&b.HR>0,_top('rbi',0)&&b.RBI>0,_top('sb',0)&&b.SB>0,_top('h',0)&&b.H>0,_top('r',0)&&b.R>0,_top('obp',0),_top('slg',0)].filter(Boolean).length;
+  if(w>=6&&w+tcnt*.12>rn(6.9,.7)){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
   const prior=S.rows.filter(r=>r.lv==='KBO'&&r.y<S.y),priorPA=prior.reduce((s,r)=>s+r.b.PA,0),priorO=prior.reduce((s,r)=>s+r.p.outs,0);
   if(!S.ach.roy&&S.y-S.pro.debut<5&&priorPA<60&&priorO<90&&(b.PA>=150||p.outs>=120)&&w>rn(2.4,.8)){give('신인왕');S.ach.roy=S.y}
-  if(isP()){if(R()<ggProb(w,'P'))give('골든글러브 (투수)')}else if(b.G>=100&&R()<ggProb(w,ME.pos))give(`골든글러브 (${POS[ME.pos]})`);
+  if(isP()){if(w>3.7&&R()<ggProb(w+tcnt*.08,'P'))give('골든글러브 (투수)')}else if(b.G>=100&&w>3.7&&R()<ggProb(w+tcnt*.08,ME.pos))give(`골든글러브 (${POS[ME.pos]})`);
   if(got.some(x=>x.startsWith('골든')))S.ach.gg=S.ach.gg||S.y;
   const top=(c,pt,v,lo)=>{if(S.pro.league!=='KBO')return false;const r=ranking(c,pt).list;return !!(r.length&&r[0].me&&(v===undefined||v>0))};
   if(!isP()){if(top('avg',0))give('타격왕');if(top('hr',0,b.HR))give('홈런왕');if(top('rbi',0,b.RBI))give('타점왕');if(top('sb',0,b.SB))give('도루왕');if(top('h',0,b.H))give('최다안타');if(top('r',0,b.R))give('득점왕');if(top('obp',0))give('출루율왕');if(top('slg',0))give('장타율왕')}
