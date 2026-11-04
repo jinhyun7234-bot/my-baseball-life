@@ -8511,6 +8511,21 @@ ACT.kbodown=function(){ME.hid.men=cl(ME.hid.men-2,20,80);return'퓨처스 구장
 /* 댓글에서 내 이름이 문장 맨 앞에 오면 성까지 붙여서 (지성 미쳤다 → 이지성 미쳤다) · 부르는 말(지성아/지성이)은 그대로 */
 function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;const full=ME.name,gn=full.slice(1);
   const re=new RegExp('(^|[.!?…~ㅋㅎ]\\s+|\\n)'+gn+'(?![아야]|'+gn+')','g');return String(t).replace(re,(m,pre,off,str)=>{const before=str.slice(Math.max(0,off+pre.length-1),off+pre.length);if(before===full[0])return m;return pre+full})}catch(e){return t}}
+/* 드래프트 지명(고교 → 프로 팀) 기사: 툴 평가형 댓글 (제일 좋은 툴 칭찬 · 약한 툴은 다듬자 · 고교 영상 보는 중) */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(tone!=='draft'||!Array.isArray(out)||!ME)return out;const P=isP(),gn=giv(ME.name);
+  const K=P?[['velo','구속'],['ctl','제구'],['stf','구위'],['sta','체력'],['pcl','볼배합']]:[['con','컨택'],['pow','파워'],['eye','선구안'],['spd','주력'],['fld','수비'],['arm','어깨']];
+  const sc=K.map(([k,l])=>[l,DV(eff(k))]).sort((a,b)=>b[1]-a[1]),best=sc[0][0],best2=sc[1][0],weak=sc[sc.length-1][0];
+  const add=[[`${best} 툴 진짜 좋네 이건 가르쳐서 되는 게 아님`,[`${best}는 이미 프로급`,'스카우트들이 왜 찍었는지 알겠다']],[`${weak}는 좀 다듬어야 할 듯`,[`${weak}만 올라오면 진짜 물건`,'고졸이면 시간 있지 뭐']],
+    [`고교 때 영상 보는 중 ㅋㅋㅋ`,[`${best} 장면만 모아놓은 거 있음 ㅋㅋ`,'나도 지금 보는 중 ㅋㅋ']],[`기대된다 진짜 ${gn} 빨리 1군에서 보고 싶다`,['2군에서 몸 좀 만들고 와라']],
+    [`${best}랑 ${best2} 둘 다 되는 ${P?'투수':'타자'}는 흔치 않음`,['툴가이 인정']]];
+  const pickN=add.sort(()=>R()-.5).slice(0,ri(3,4)).map(([t,re])=>mkC(josaFix(t),re.slice(0,ri(1,re.length)).map(r=>({nk:pick(NICKS),t:josaFix(r),up:ri(20,300)})),{up:ri(200,1500)}));
+  out=out.filter(c=>!/(컨택|파워|선구안|주력|수비|어깨|구속|제구|구위|체력|볼배합)[이가은는]? ?좀 걱정/.test(c.t));out.splice(Math.min(1,out.length),0,...pickN)}catch(e){}return out}}
+/* 별일 없는 정규시즌 경기는 댓글 3~7개 · 인기 낮으면 더 적게 (큰 경기·명장면은 그대로) */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!Array.isArray(out)||!x||x.ps||x.intl||x.clinch||(x.gH==null&&x.ipO==null))return out;
+  const P=isP(),fame=(S.rel&&S.rel.fame)||0;
+  const boring=P?!((x.ipO||0)>=18&&(x.ra||0)<=1)&&!((x.ra||0)>=5)&&!((x.gK||0)>=9):!((x.gHR||0)>=1||(x.gH||0)>=3||(x.gRBI||0)>=3||x._wo||(x.gGreat||0)>=1||(x.gErr||0)>=1||((x.gH||0)===0&&(x.gPA||0)>=5));
+  let cap=boring?(fame<15?ri(3,4):fame<40?ri(3,6):ri(4,7)):(fame<15?ri(5,7):fame<35?ri(6,9):99);if(out.length<=cap)return out;
+  const must=out.filter(c=>c.must),rest=out.filter(c=>!c.must);out=must.slice(0,cap).concat(rest.slice(0,Math.max(0,cap-must.length)));out.sort((a,b)=>(b.up||0)-(a.up||0))}catch(e){}return out}}
 
 </script>
 
