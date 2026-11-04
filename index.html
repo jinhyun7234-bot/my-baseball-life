@@ -1340,8 +1340,10 @@ const blankB=()=>({G:0,PA:0,AB:0,H:0,D:0,T:0,HR:0,RBI:0,R:0,BB:0,K:0,SB:0,CS:0,E
 const blankP=()=>({G:0,GS:0,W:0,L:0,SV:0,HLD:0,outs:0,H:0,R:0,BB:0,K:0,HR:0,CG:0,SHO:0,NH:0});
 const addTo=(a,b)=>{for(const k in b)if(typeof b[k]==='number')a[k]=(a[k]||0)+b[k]};
 const PADJ={C:10,SS:7,'2B':3,CF:3,'3B':2,RF:-6,LF:-6,'1B':-11};
-function bWAR(b,lv){if(!b.PA)return 0;const s=b.H-b.D-b.T-b.HR,w=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.1*b.HR)/b.PA,raa=(w-.33)/1.2*b.PA,f=b.G/140;
-  const dr=cl((defScore()-(LV[lv]||51))*.45+(sk('glove')?3:0)+(sk('laser')?2:0),-10,15)*f-b.E*.25;return(raa+dr+(PADJ[ME.pos]||0)*f+20*b.PA/600)/10}
+/* WAR 분리: oWAR = 타격 득점 + 대체선수 보정 / dWAR = 수비 득점 + 포지션 보정 (WAR = oWAR + dWAR) */
+function bWARsplit(b,lv){if(!b||!b.PA)return{o:0,d:0};const s=b.H-b.D-b.T-b.HR,w=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.1*b.HR)/b.PA,raa=(w-.33)/1.2*b.PA,f=b.G/140;
+  const dr=cl((defScore()-(LV[lv]||51))*.45+(sk('glove')?3:0)+(sk('laser')?2:0),-10,15)*f-b.E*.25;return{o:(raa+20*b.PA/600)/10,d:(dr+(PADJ[ME.pos]||0)*f)/10}}
+function bWAR(b,lv){if(!b.PA)return 0;const x=bWARsplit(b,lv);return x.o+x.d}
 function pWAR(p){const i=p.outs/3;if(!i)return 0;const fip=(13*p.HR+3*p.BB-2*p.K)/i+3.2;return((4.7-fip)/9*i+.035*i)/10}
 const rowWAR=r=>isP()?pWAR(r.p,r.lv):bWAR(r.b,r.lv);
 function teamLabel(){
@@ -1974,9 +1976,9 @@ function faEvent(o,w,f){
    - 부상 등으로 출전이 적었으면 최근 2년 평균 WAR로 판단 */
 /* 골든글러브 확률: 2020~2025 실제 KBO 수상자 포지션별 평균 WAR 기준
    투수 6.9 · 포수 4.8 · 1루 4.8 · 2루 4.7 · 3루 6.5 · 유격 5.1 · 외야 6.0(3자리라 기준 −0.6) · 지명 4.3
-   평균에 가까우면 약 65%, 평균 +1이면 90%대, 평균 −1.5면 15% 안팎, 평균 −2 아래면 거의 없음 · WAR 3.7 이하는 절대 수상 불가 */
+   평균에 가까우면 약 65%, 평균 +1이면 90%대, 평균 −1.5면 15% 안팎, 평균 −2 아래면 거의 없음 · WAR 3.7 이하는 절대 수상 불가, 3.7~4.7 구간은 0%에서 부드럽게 올라감 */
 const GG_AVG={P:6.9,C:4.8,'1B':4.8,'2B':4.7,'3B':6.5,SS:5.1,LF:6.0,CF:6.0,RF:6.0,DH:4.3};
-function ggProb(w,pos){if(w<=3.7)return 0;const m=(GG_AVG[pos]||5)-(/^(LF|CF|RF)$/.test(pos)?.6:0)-.35;return 1/(1+Math.exp(-(w-m)/.5))}
+function ggProb(w,pos){if(w<=3.7)return 0;const m=(GG_AVG[pos]||5)-(/^(LF|CF|RF)$/.test(pos)?.6:0)-.35,t=Math.min(1,(w-3.7)/1.0),ramp=t*t*(3-2*t);return ramp/(1+Math.exp(-(w-m)/.5))}
 function releaseCut(o,w,a,L){try{if(a<27)return false;
   const AW=/MVP|최우수|골든글러브|왕|다승|구원|탈삼진|평균자책|세이브|타점|도루|올스타/;if((S.awards||[]).some(x=>x&&x.y>=S.y-1&&AW.test(x.n)&&!/우승$/.test(x.n)))return false;
   const thr=a>=38?L+2:a>=34?L-2:a>=31?L-6:L-11,needW=a>=38?1.5:a>=34?1:a>=31?.5:0;
@@ -2908,13 +2910,13 @@ function vStatTable(){const pit=isP(),lvSel=ui.stlv||'KBO',inLv=r=>lvSel==='abro
   const rows=S.rows.filter(r=>inLv(r)&&(r.b.PA||r.p.outs||r.b.G||r.p.G)).sort((a,b)=>b.y-a.y);
   const cB=[['G',b=>b.G],['타율',b=>avg(b)],['타석',b=>b.PA],['타수',b=>b.AB],['득점',b=>b.R],['안타',b=>b.H],['2타',b=>b.D],['3타',b=>b.T],['홈런',b=>b.HR],['타점',b=>b.RBI],['도루',b=>b.SB],['볼넷',b=>b.BB],['삼진',b=>b.K],['병살',b=>b.GDP||0],['실책',b=>b.E],['출루',b=>obp(b)],['장타',b=>slg(b)],['OPS',b=>ops(b)]];
   const cP=[['ERA',p=>era(p)],['G',p=>p.G],['선발',p=>p.GS],['승',p=>p.W],['패',p=>p.L],['세',p=>p.SV],['홀',p=>p.HLD],['이닝',p=>ip(p.outs)],['피안타',p=>p.H],['피홈런',p=>p.HR],['볼넷',p=>p.BB],['삼진',p=>p.K],['WHIP',p=>p.outs?((p.H+p.BB)*3/p.outs).toFixed(2):'-'],['완투',p=>p.CG],['완봉',p=>p.SHO]];
-  const cols=pit?cP:cB,adv=r=>pit?advP(r.p):advB(r.b,r.lv);
-  const line=(y,team,b,p,w,ad,cls)=>`<tr class="${cls||''}"><td class="l stk"><b>${y}</b>${team?`<span class="stteam">${esc(team)}</span>`:''}</td>${cols.map(([,f])=>`<td>${f(pit?p:b)}</td>`).join('')}${pit?`<td>${ad.fip.toFixed(2)}</td>`:`<td>${ad.wrc}</td>`}<td><b>${w.toFixed(2)}</b></td></tr>`;
+  const cols=pit?cP:cB,adv=r=>{if(pit)return advP(r.p);const x=bWARsplit(r.b,r.lv);return{...advB(r.b,r.lv),ow:x.o,dw:x.d}};
+  const line=(y,team,b,p,w,ad,cls)=>`<tr class="${cls||''}"><td class="l stk"><b>${y}</b>${team?`<span class="stteam">${esc(team)}</span>`:''}</td>${cols.map(([,f])=>`<td>${f(pit?p:b)}</td>`).join('')}${pit?`<td>${ad.fip.toFixed(2)}</td>`:`<td>${ad.wrc}</td><td>${(ad.ow||0).toFixed(2)}</td><td>${(ad.dw||0).toFixed(2)}</td>`}<td><b>${w.toFixed(2)}</b></td></tr>`;
   const tb=blankB(),tp=blankP();let tw=0;rows.forEach(r=>{addTo(tb,r.b);addTo(tp,r.p);tw+=rowWAR(r)});
-  const tad=pit?advP(tp):advB(tb,lvSel==='KBO'?'KBO':rows[0]?rows[0].lv:'KBO');
+  const tad=pit?advP(tp):advB(tb,lvSel==='KBO'?'KBO':rows[0]?rows[0].lv:'KBO');if(!pit){tad.ow=0;tad.dw=0;rows.forEach(r=>{const x=bWARsplit(r.b,r.lv);tad.ow+=x.o;tad.dw+=x.d})}
   return`<div class="card"><div class="row"><span class="lbl sp">${pit?'투수':'타자'} 기록</span><span class="tiny muted">${esc(ME.name)} · ${POS[ME.pos]}</span></div>
     ${avail.length>1?`<div class="cats">${avail.map(([k,n])=>`<button class="${lvSel===k?'on':''}" data-act="stlv" data-v="${k}">${n}</button>`).join('')}</div>`:''}
-    ${rows.length?`<div class="tblw st"><table class="tbl stt"><thead><tr><th class="l stk">시즌</th>${cols.map(([n])=>`<th>${n}</th>`).join('')}<th>${pit?'FIP':'wRC+'}</th><th>WAR</th></tr></thead><tbody>
+    ${rows.length?`<div class="tblw st"><table class="tbl stt"><thead><tr><th class="l stk">시즌</th>${cols.map(([n])=>`<th>${n}</th>`).join('')}<th>${pit?'FIP':'wRC+'}</th>${pit?'':'<th>oWAR</th><th>dWAR</th>'}<th>WAR</th></tr></thead><tbody>
       ${rows.map(r=>line(r.y,r.team.replace(/^(서울|고척|인천|수원|대전|대구|광주|부산|창원) /,'').replace(/ \\((MLB|NPB)\\)/,''),r.b,r.p,rowWAR(r),adv(r))).join('')}
       ${line('통산','',tb,tp,tw,tad,'tot')}</tbody></table></div><div class="tiny muted">표를 옆으로 밀어 전체 기록을 볼 수 있어요.</div>`:'<span class="small muted">아직 기록이 없어요.</span>'}</div>`}
 {const _pm3=playMonth;playMonth=function(r){const g=_pm3(r);if(S.rsp&&S.stage==='pro'){S.rspY=S.rspY&&S.rspY.y===S.y?S.rspY:{y:S.y,pa:0,h:0};S.rspY.pa+=S.rsp.pa;S.rspY.h+=S.rsp.h}return g}}
@@ -3361,7 +3363,7 @@ function vRecord(){let h=header();
   const yd=yearsData(),tot=careerTot(yd.pro?PRO:null);
   if(ui.rseg==='sum'){
     const tiles=isP()?[['경기',tot.p.G,'i'],['승',tot.p.W,'i'],['평균자책',tot.p.outs?eraN(tot.p):0,'2'],['탈삼진',tot.p.K,'i'],['세이브',tot.p.SV,'i'],['홀드',tot.p.HLD||0,'i'],['WAR',tot.w,'1']]
-      :[['경기',tot.b.G,'i'],['타율',tot.b.AB?tot.b.H/tot.b.AB:0,'3'],['홈런',tot.b.HR,'i'],['안타',tot.b.H,'i'],['타점',tot.b.RBI,'i'],['WAR',tot.w,'1']];
+      :[['경기',tot.b.G,'i'],['타율',tot.b.AB?tot.b.H/tot.b.AB:0,'3'],['홈런',tot.b.HR,'i'],['안타',tot.b.H,'i'],['타점',tot.b.RBI,'i'],['WAR',tot.w,'1'],...(()=>{let o=0,dd=0;yd.list.forEach(x=>(x.rows||[]).forEach(r=>{const s=bWARsplit(r.b,r.lv);o+=s.o;dd+=s.d}));return[['oWAR',o,'1'],['dWAR',dd,'1']]})()];
     h+=`<div class="card"><div class="row"><span class="lbl sp">${yd.pro?'프로 통산':'아마추어 통산'}</span><span class="tiny muted">${yd.list.length}시즌</span></div><div class="tiles">${tiles.map(([k,v,f])=>`<div class="tile"><div class="tk">${k}</div><div class="tv">${cu(v,f)}</div></div>`).join('')}</div></div>`;
     {const rr=S.rows.filter(r=>yd.pro?PRO.includes(r.lv):true);if(rr.length)h+=`<div class="card"><div class="row"><span class="lbl sp">세부 지표</span><span class="tiny muted">${isP()?'FIP 기반 fWAR · ERA 기반 rWAR':'wRC+ 100 = 리그 평균'}</span></div><div class="tiles">${advRows(rr).map(([k,v])=>`<div class="tile"><div class="tk">${k}</div><div class="tv">${v}</div></div>`).join('')}</div></div>`}
     const MT=isP()?METRIC_P:METRIC_B,mk=MT[ui.metric]?ui.metric:Object.keys(MT)[0];
@@ -3372,7 +3374,7 @@ function vRecord(){let h=header();
   else if(ui.rseg==='stat'){h+=vStatTable()}
   else if(ui.rseg==='season'){
     h+=yd.list.slice().reverse().map(d=>{const aw=S.awards.filter(a=>a.y===d.y),open=ui.sopen===d.y,b=d.b,p=d.p;
-      const det=isP()?[['경기',p.G],['선발',p.GS],['세이브',p.SV],['홀드',p.HLD],['이닝',ip(p.outs)],['피안타',p.H],['볼넷',p.BB],['피홈런',p.HR],['완투',p.CG],['완봉',p.SHO],['K/9',p.outs?(p.K*27/p.outs).toFixed(1):'-'],['WHIP',p.outs?((p.H+p.BB)*3/p.outs).toFixed(2):'-'],...advRows(d.rows||[]).filter(x=>!['K/9','WHIP'].includes(x[0]))]:[['경기',b.G],['타석',b.PA],['안타',b.H],['2루타',b.D],['3루타',b.T],['볼넷',b.BB],['삼진',b.K],['도루',b.SB],['출루율',obp(b)],['장타율',slg(b)],['OPS',ops(b)],['실책',b.E],...advRows(d.rows||[])];
+      const det=isP()?[['경기',p.G],['선발',p.GS],['세이브',p.SV],['홀드',p.HLD],['이닝',ip(p.outs)],['피안타',p.H],['볼넷',p.BB],['피홈런',p.HR],['완투',p.CG],['완봉',p.SHO],['K/9',p.outs?(p.K*27/p.outs).toFixed(1):'-'],['WHIP',p.outs?((p.H+p.BB)*3/p.outs).toFixed(2):'-'],...advRows(d.rows||[]).filter(x=>!['K/9','WHIP'].includes(x[0]))]:[['경기',b.G],['타석',b.PA],['안타',b.H],['2루타',b.D],['3루타',b.T],['볼넷',b.BB],['삼진',b.K],['도루',b.SB],['출루율',obp(b)],['장타율',slg(b)],['OPS',ops(b)],['실책',b.E],...(()=>{let o=0,dd=0;(d.rows||[]).forEach(r=>{const x=bWARsplit(r.b,r.lv);o+=x.o;dd+=x.d});return[['oWAR',o.toFixed(2)],['dWAR',dd.toFixed(2)]]})(),...advRows(d.rows||[])];
       const big=isP()?(p.GS*2<p.G?[['승-패',`${p.W}-${p.L}`],['ERA',era(p)],['세이브',p.SV],['홀드',p.HLD],['WAR',d.w.toFixed(1)]]:[['승-패',`${p.W}-${p.L}`],['ERA',era(p)],['탈삼진',p.K],['WAR',d.w.toFixed(1)]]):[['타율',avg(b)],['홈런',b.HR],['타점',b.RBI],['WAR',d.w.toFixed(1)]];
       return`<button class="scard ${open?'open':''}" data-act="sopen" data-v="${d.y}"><div class="row"><span class="syear">${d.y}</span><div class="sp"><div class="small" style="font-weight:700">${d.rows.map(r=>r.team).join(' · ')}</div><div class="tiny muted">${age()-(S.y-d.y)}세 · ${[...new Set(d.rows.map(r=>LVN[r.lv]))].join('/')}</div></div><span class="chev">${open?'−':'+'}</span></div>
       <div class="sbig">${big.map(([k,v])=>`<div><div class="tk">${k}</div><div class="tv2">${v}</div></div>`).join('')}</div>
