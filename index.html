@@ -8541,6 +8541,18 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
   const RE=['ㄹㅇ 박수 쳐줘야 함','고생했다 진짜','인정 이 정도면 잘한 거지','자랑스럽다 진짜','다음엔 우승이다','눈물 남 ㅠㅠ'];
   const add=L.filter(s=>!seenHas(josaFix(s))).sort(()=>R()-.5).slice(0,ri(5,6)).map(s=>{s=josaFix(s);seenAdd(s);return mkC(s,R()<.7?[{nk:pick(NICKS),t:pick(RE),up:ri(100,1500)}]:[],{up:ri(1500,7000),must:1})});
   out=add.concat(out).sort((a,b)=>(b.up||0)-(a.up||0))}catch(e){}return out}}
+/* MLB 시상식 (기존엔 MLB에서 MVP 판정 자체가 없었음)
+   - 리그 MVP: WAR 9 ≈ 16% · 10 ≈ 64% · 11 이상 거의 확정(99%), WAR 8 미만은 불가
+   - 사이영상(투수): WAR 6 ≈ 27% · 7 ≈ 73% · 8 이상 거의 확정, WAR 5 미만은 불가 */
+{const _aw=awards;awards=function(rep){_aw(rep);try{if(!(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'))return;const rows=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB');if(!rows.length)return;
+  const w=rows.reduce((a,r)=>a+rowWAR(r),0),P=isP(),b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB()),lg=(()=>{try{return mlbSeed().lg==='NL'?'내셔널리그':'아메리칸리그'}catch(e){return'아메리칸리그'}})();
+  if(!P&&b.G<100)return;if(S.awards.some(a=>a.y===S.y&&/리그 MVP|사이영/.test(a.n)))return;const got=[];
+  const give=n=>{got.push(n);S.awards.push({y:S.y,n});S.rel.fame=cl(S.rel.fame+6,0,100);feat(`${S.y} ${n} 수상`,1)};
+  const pMVP=w<8?0:w>=11?.99:1/(1+Math.exp(-(w-9.75)/.45));if(R()<pMVP){give(`${lg} MVP`);S.rel.fame=cl(S.rel.fame+6,0,100)}
+  if(P){const pc=w<5?0:w>=8?.98:1/(1+Math.exp(-(w-6.5)/.45));if(R()<pc)give(`${lg} 사이영상`)}
+  if(!got.length)return;const main=got[0],una=/MVP/.test(main)&&w>=11;rep.lines.push(`${main} 수상!${una?' (만장일치)':''}`);news(`${S.y} ${got.join(', ')} 수상.`);
+  celebrate(/MVP/.test(main)?'mvp':'trophy',main,`${S.y} MLB 시상식 · WAR ${w.toFixed(1)}${una?' · 만장일치':''}`,got.slice(1));
+  const firstM=S.awards.filter(a=>/리그 MVP/.test(a.n)&&!/정규시즌/.test(a.n)).length<=1;article(una?`${ME.name}, 만장일치 ${main}!${firstM?' 한국인 최초의 역사':' 또 한 번 역사를 쓰다'}`:`${ME.name}, ${got.join('·')} 수상`,`${jo(ME.name,'은','는')} 올 시즌 WAR ${w.toFixed(1)}을 기록하며 메이저리그 최고의 선수로 우뚝 섰다.`,'award')}catch(e){}}}
 
 </script>
 
