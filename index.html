@@ -1342,7 +1342,7 @@ const addTo=(a,b)=>{for(const k in b)if(typeof b[k]==='number')a[k]=(a[k]||0)+b[
 const PADJ={C:10,SS:7,'2B':3,CF:3,'3B':2,RF:-6,LF:-6,'1B':-11};
 /* WAR 분리: oWAR = 타격 득점 + 대체선수 보정 / dWAR = 수비 득점 + 포지션 보정 (WAR = oWAR + dWAR) */
 function bWARsplit(b,lv){if(!b||!b.PA)return{o:0,d:0};const s=b.H-b.D-b.T-b.HR,w=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.1*b.HR)/b.PA,raa=(w-.33)/1.2*b.PA,f=b.G/140;
-  const dr=cl((defScore()-(LV[lv]||51))*.45+(sk('glove')?3:0)+(sk('laser')?2:0),-10,15)*f-b.E*.25;const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+(PADJ[ME.pos]||0)*f)/10*mg}}
+  const dhc=!!b._dh,dr=dhc?0:cl((defScore()-(LV[lv]||51))*.45+(sk('glove')?3:0)+(sk('laser')?2:0),-10,15)*f-b.E*.25,pa_=dhc?-13:(PADJ[ME.pos]||0);const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+pa_*f)/10*mg}}
 function bWAR(b,lv){if(!b.PA)return 0;const x=bWARsplit(b,lv);return x.o+x.d}
 function pWAR(p){const i=p.outs/3;if(!i)return 0;const fip=(13*p.HR+3*p.BB-2*p.K)/i+3.2;return((4.7-fip)/9*i+.035*i)/10}
 const rowWAR=r=>isP()?pWAR(r.p,r.lv):bWAR(r.b,r.lv);
@@ -2640,8 +2640,8 @@ const GFN=['지은','서연','하은','민서','수아','지민','예린','채�
 function lifeEvents(){const out=[];if(S.stage==='ret')return out;S.gfCool=Math.max(0,(S.gfCool||0)-1);
   if(S.gf&&!S.married){const g=S.gf;
     if(g.aff<20){S.gf=null;S.gfCool=4;ME.form=cl(ME.form-3,-6,6);out.push({title:'💔 이별',text:`"요즘 우리 얼굴 본 지 얼마나 됐는지 알아?"\n${jo(g.n,'과','와')} 헤어졌다. 한동안 마음이 무거울 것 같다.`,ch:[{t:'야구에 더 집중하자',s:'컨디션 일시 하락',act:'lifeok'}]});return out}
-    if(g.aff>=75&&S.y-g.since>=3&&age()>=26&&R()<.5){const cost=Math.max(2000,Math.round((S.pro?S.pro.salary:5000)*.1/100)*100);out.push({title:'💍 프러포즈',text:`${jo(g.n,'과','와')} 만난 지 ${S.y-g.since}년. 이제 평생을 함께하고 싶다는 생각이 든다.\n(결혼식·신혼집 비용 약 ${money(cost)})`,ch:[{t:'프러포즈한다',s:`−${money(cost)} · 안정된 가정 (컨디션 상승 확률↑↑, 멘탈↑)`,act:'marry',arg:{cost}},{t:'아직은 이르다',s:'호감 −10 · 반지 비용 아낌 · 야구에 집중',act:'gfaff',arg:{d:-10}}]});return out}
-    if(R()<.55){const big=Math.max(300,Math.round((S.pro?S.pro.salary:3000)*.02/10)*10),nm=jo(g.n,'이','가'),kind=pick(S.phase===0?['gift','trip','trip','parents','fight','date']:['gift','away','away','fight','date','park','parents']);
+    if(g.aff>=75&&S.y-g.since>=3&&age()>=26&&R()<.5){const cost=Math.min(15000,Math.max(2000,Math.round((S.pro?S.pro.salary:5000)*.05/100)*100));out.push({title:'💍 프러포즈',text:`${jo(g.n,'과','와')} 만난 지 ${S.y-g.since}년. 이제 평생을 함께하고 싶다는 생각이 든다.\n(결혼식·신혼집 비용 약 ${money(cost)})`,ch:[{t:'프러포즈한다',s:`−${money(cost)} · 안정된 가정 (컨디션 상승 확률↑↑, 멘탈↑)`,act:'marry',arg:{cost}},{t:'아직은 이르다',s:'호감 −10 · 반지 비용 아낌 · 야구에 집중',act:'gfaff',arg:{d:-10}}]});return out}
+    if(R()<.55){const big=Math.min(1500,Math.max(300,Math.round((S.pro?S.pro.salary:3000)*.006/10)*10)),nm=jo(g.n,'이','가'),kind=pick(S.phase===0?['gift','trip','trip','parents','fight','date']:['gift','away','away','fight','date','park','parents']);
       if(kind==='gift')out.push({title:'🎁 기념일',text:`곧 ${jo(g.n,'과','와')}의 ${pick(['100일','1주년','생일','크리스마스'])}이다.`,ch:[{t:'명품 선물',s:`−${money(big)} · 호감 크게↑`,act:'gift',arg:{c:big,d:20}},{t:'직접 요리한 저녁 + 손편지',s:'돈 거의 안 듦 · 호감↑ · 피로↑',act:'lv',arg:{d:12,f:3,c:10}},{t:'바빠서 그냥 넘어간다',s:'호감 크게↓ · 돈·시간 아낌 (피로↓)',act:'lv',arg:{d:-16,f:-3}}]});
       if(kind==='away')out.push({title:'📱 서운함',text:`원정만 3주째. ${nm} 보낸 문자: "요즘 우리 연락 너무 안 하는 거 알아?"`,ch:[{t:'매일 밤 영상통화',s:'호감↑ · 피로↑',act:'lv',arg:{d:9,f:3}},{t:'경기 끝나고 짧게 통화',s:'호감 조금↑',act:'lv',arg:{d:3}},{t:'피곤해서 답장 못 한다',s:'호감↓ · 푹 잔다 (피로↓)',act:'lv',arg:{d:-12,f:-4}}]});
       if(kind==='trip')out.push({title:'✈️ 비시즌 여행',text:`캠프 들어가기 전, ${nm} 여행 가자고 한다.`,ch:[{t:'해외여행 (일주일)',s:`−${money(Math.max(300,big/2))} · 호감 크게↑ · 피로↓`,act:'lv',arg:{d:16,f:-8,c:Math.max(300,big/2)}},{t:'가까운 국내 여행',s:'−80만원 · 호감↑',act:'lv',arg:{d:8,f:-4,c:80}},{t:'집에서 푹 쉬자',s:'피로↓ · 호감 조금↓',act:'lv',arg:{d:-3,f:-5}}]});
@@ -3857,7 +3857,7 @@ function vRust(){if(!ME.rust)return'';const m=Math.max(1,Math.ceil(ME.rust.v/rus
 
 /* ---------- 피로: 경기 수 · 팀 내 관계 · 이벤트 ---------- */
 const FEV=[{t:'선배의 심부름',x:'숙소에서 쉬려는데 선배가 부른다. "야, 편의점 좀 다녀오고 장비도 좀 정리해놔라." 오늘만 벌써 세 번째다.',ok:['다녀오겠습니다',{chem:4,fat:16},'선배들이 "싹싹하네" 하며 웃었다. 몸은 천근만근이다.'],no:['오늘은 좀 쉬겠다고 말한다',{chem:-5,fat:-4},'분위기가 싸해졌다. 라커룸이 조금 불편하다.']},
- {bat:1,t:'감독의 무리한 지시',x:'경기 끝나고 감독이 부른다. "내일부터 특타 2시간 추가. 군말 없이 해."',ok:['지시대로 한다',{coach:4,fat:20},'감독이 고개를 끄덕였다. 손바닥이 다 까졌다.'],no:['컨디션 관리가 필요하다고 말한다',{coach:-6,fat:-5},'감독의 표정이 굳었다. "알았다."']},
+ {bat:1,jr2:1,t:'감독의 무리한 지시',x:'경기 끝나고 감독이 부른다. "내일부터 특타 2시간 추가. 군말 없이 해."',ok:['지시대로 한다',{coach:4,fat:20},'감독이 고개를 끄덕였다. 손바닥이 다 까졌다.'],no:['컨디션 관리가 필요하다고 말한다',{coach:-6,fat:-5},'감독의 표정이 굳었다. "알았다."']},
  {t:'구단 행사 동원',x:'휴식일에 구단 팬 행사와 스폰서 촬영이 잡혔다. 홍보팀이 꼭 와달라고 한다.',ok:['참석한다',{fame:4,fat:12},'팬들이 엄청 좋아했다. 집에 오니 녹초다.'],no:['휴식일이라 정중히 거절한다',{fame:-2,chem:-1,fat:-4},'홍보팀이 아쉬워했다.']},
  {t:'라커룸 군기',x:'최근 팀 성적이 나쁘자 고참들이 저연차 선수들만 따로 불러 야간 러닝을 시킨다.',ok:['묵묵히 뛴다',{chem:3,fat:18},'다리가 후들거린다. 그래도 고참들 눈 밖에 나진 않았다.'],no:['코치에게 상황을 알린다',{chem:-6,coach:2},'코치가 정리해줬지만 고참들 시선이 차갑다.']}];
 {const _ms4=monthStep;monthStep=function(rep){const inj0=ME.inj;_ms4(rep);try{const g=S.lastGame;
@@ -6088,7 +6088,7 @@ const REGT={서울:[0,1,2],부산:[8],광주:[7],대구:[6],대전:[5],수원:[4
 
 /* ===================== 선택형 이벤트 빈도 60%로 ===================== */
 const EV_KEEP=/계약|FA|드래프트|병역|입대|방출|연봉|포스팅|피로 경고|수술|인대|부상|트레이드|보직|진로|면담|살림|출산|프러포즈|이별|육아|이름|아빠|국가대표|WBC|프리미어|2세|투수 진로/;
-{const _adv9=advance;advance=function(...a){const n0=S&&S.queue?S.queue.length:0;const r=_adv9.apply(this,a);try{if(S&&S.queue&&S.queue.length>n0){const keep=S.queue.slice(0,n0),add=S.queue.slice(n0).filter(q=>{if(!q||q.type||!q.ch)return true;if(q.ch.some(c=>CRIT.has(c.act))||EV_KEEP.test(q.title||''))return true;return R()<.6});S.queue=keep.concat(add);if(typeof afterQueue==='function'&&!S.queue.length)afterQueue()}}catch(e){}return r}}
+{const _adv9=advance;advance=function(...a){const n0=S&&S.queue?S.queue.length:0;const r=_adv9.apply(this,a);try{if(S&&S.queue&&S.queue.length>n0){const keep=S.queue.slice(0,n0),add=S.queue.slice(n0).filter(q=>{if(!q||q.type||!q.ch)return true;if(q.ch.some(c=>CRIT.has(c.act))||EV_KEEP.test(q.title||''))return true;return R()<.4});S.queue=keep.concat(add);if(typeof afterQueue==='function'&&!S.queue.length)afterQueue()}}catch(e){}return r}}
 /* 리그 순위: 비시즌(캠프)엔 지난 시즌 기록으로 나도 포함 */
 {const _mk=myKBO;myKBO=function(){const r=_mk();if(r)return r;try{if(!(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'))return null;const y=S.phase===0?S.y-1:S.y,rows=S.rows.filter(x=>x.y===y&&x.lv==='KBO');if(!rows.length)return null;const b=blankB(),p=blankP();rows.forEach(x=>{addTo(b,x.b);addTo(p,x.p)});return{n:ME.name,t:S.pro.team,k:isP()?'P':'B',me:true,s:isP()?p:b}}catch(e){return null}}}
 /* 이벤트 결과 창을 다 본 다음에 중계/결산 화면으로 */
@@ -7958,7 +7958,7 @@ FEV.push({sr:1,t:'후배에게 심부름?',x:'원정 숙소. 피곤해 죽겠는
  {sr:1,t:'후배들 군기 잡기',x:'연패가 길어지자 몇몇 고참이 "애들 정신 좀 차리게 하자"며 저연차 선수들을 불러 모으자고 한다. 고참인 내 한마디가 필요하다.',ok:['"한번 제대로 잡자"',{coach:3,chem:-6,fat:4},'감독은 고참들이 나섰다며 만족했지만, 후배들 표정이 굳었다.'],no:['"애들 탓 아니다, 우리부터 잘하자"',{chem:5,coach:-2,fat:3},'후배들이 고개를 숙였다. 대신 고참들끼리 남아 추가 훈련을 했다. 코치진은 "너무 물러졌다"며 한숨이다.']},
  {sr:1,t:'후배의 짐 들기',x:'원정 이동 날. 짐이 많아 버스까지 가는 길이 멀다. 신인 후배가 "선배님 짐 제가 들게요!" 하며 손을 내민다.',ok:['고맙다며 맡긴다',{fat:-5,chem:-2},'편하게 버스에 올랐다. 몇몇 동료가 "고참 다 됐네" 하며 웃었다.'],no:['"됐어, 네 것이나 챙겨"',{fat:3,chem:3},'후배가 더 열심히 따라다닌다. 라커룸 분위기가 훈훈하다.']});
 {const _pf=pickFev;pickFev=function(){const a=age(),py=(typeof proYears==='function'?proYears():0),jr=a<=28&&py<=6,sr=a>=31;const keep=FEV.slice();try{
-  const L=FEV.filter(e=>!(e.jr&&!jr)&&!(e.sr&&!sr));FEV.length=0;L.forEach(e=>FEV.push(e));return _pf()}finally{FEV.length=0;keep.forEach(e=>FEV.push(e))}}}
+  const L=FEV.filter(e=>!(e.jr&&!jr)&&!(e.sr&&!sr)&&!(e.jr2&&a>=30&&R()<.9));FEV.length=0;L.forEach(e=>FEV.push(e));return _pf()}finally{FEV.length=0;keep.forEach(e=>FEV.push(e))}}}
 /* 특성 효과 전체 약 14% 하향 (예: 장타 +20% → +17%, 홈런 +6% → +5.2%) · 설명 문구도 같이 */
 (function(){const F=.86,fmt=v=>{const r=Math.round(v*10)/10;return(r%1?r.toFixed(1):String(r))};
   const fixD=d=>d&&d.replace(/([+−\-]?)(\d+(?:\.\d+)?)(%p?)/g,(m,sg,n,u)=>sg+fmt(+n*F)+u);
@@ -8590,6 +8590,21 @@ function tradeComments(from,to,star,rich,big){const gn=giv(ME.name),cln=v=>Strin
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!Array.isArray(out))return out;const game=x&&(x.gH!=null||x.ipO!=null);
   const ok=game?(x.win&&(isP()?((x.ipO||0)>=18&&(x.ra||0)<=1):((x.gH||0)>=2||(x.gHR||0)>=1||(x.gRBI||0)>=3))):['award','legend','retire','record','mlbBig'].includes(tone);
   if(!ok){out=out.filter(c=>!/추강대엽|추 넘/.test(c.t));out.forEach(c=>{if(c.re)c.re=c.re.filter(r=>!/추강대엽|추 넘/.test(r.t))})}}catch(e){}return out}}
+/* 말년 지명타자 전향: 33세+ 야수인데 수비가 크게 처지면(직전 시즌 dWAR −0.8 이하 또는 수비 적합도 낮음) 비시즌에 감독이 제안
+   - 수락: 이후 지명타자 출전(수비·실책 없음, 대신 dWAR는 지명타자 보정) · 팀 로스터 부담으로 대타 출전 비율 조금↑
+     (지명타자로 OPS가 좋으면 대타 비율은 다시 내려감 — 유저 설명 없음)
+   - 거절: 원래 포지션 유지 · 감독 신뢰 −3 */
+{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(isP()||S.stage!=='pro'||!S.pro||S.pro.dev||S.dhConv||ME.pos==='DH'||S.m!==12||age()<33||S.queue.length>=3)return;if(S.dhAskY&&S.y-S.dhAskY<2)return;
+  const dw=S.rows.filter(r=>r.y===S.y&&PRO.includes(r.lv)&&r.b&&r.b.PA>=150).reduce((a,r)=>a+bWARsplit(r.b,r.lv).d,0),fit=(()=>{try{return posFit()-ovrE()}catch(e){return 0}})();
+  if(!(dw<=-.8||fit<=-8))return;S.dhAskY=S.y;const pn=POS[ME.pos]||'수비';
+  S.queue.push({title:'🧢 감독 면담 — 지명타자',text:`시즌이 끝나고 감독이 불렀다.\n"솔직히 말하마. 요즘 ${pn} 수비가 많이 힘들어 보인다. 방망이는 아직 쓸 만하니까, 내년부터 지명타자로 뛰어보는 건 어떠냐?"\n\n지명타자 자리는 하나뿐이라 팀 운용에 부담이 생긴다. 컨디션이나 상대 투수에 따라 대타로 나가는 날이 조금 늘어날 수 있다.`,
+    ch:[{t:'지명타자로 전향한다',s:'수비 부담·실책 없음 · 체력 관리↑ · 대타 출전 비율 조금↑ · 팀 부담',act:'dhyes',arg:{}},{t:`${pn} 자리를 지키겠다`,s:'포지션 유지 · 감독 신뢰↓',act:'dhno',arg:{}}]})}catch(e){}}}
+ACT.dhyes=function(){S.dhConv=S.y+1;news(`${S.y+1}시즌부터 지명타자 전향.`);try{article(`${ME.name}, 내년부터 지명타자 전향`,`${jo(ME.name,'은','는')} 수비 부담을 덜고 타격에 집중한다.`,'mix',{})}catch(e){}return'글러브를 내려놓기로 했다. 이제 방망이로만 말한다.'};
+ACT.dhno=function(){S.rel.coach=cl((S.rel.coach??50)-3,0,100);return'"아직 수비 자신 있습니다." 감독은 "지켜보겠다"고만 했다.'};
+{const _dr=decideRole;decideRole=function(){let r=_dr();try{if(!S.dhConv||S.y<S.dhConv||isP()||S.stage!=='pro')return r;ME.fat=cl(ME.fat-2,0,100);if(r==='start'){S.dhNow=1;
+  const {ops,pa}=batOPS(),p=pa>=100&&ops!=null?(ops>=.85?.03:ops>=.78?.07:ops>=.72?.12:.18):.10;if(R()<p){S.dhNow=0;r='bench'}}}catch(e){}return r}}
+{const _pp=psPick;psPick=function(base,gn,g7,need){const r=_pp(base,gn,g7,need);try{if(S.dhConv&&S.y>=S.dhConv&&!isP()&&r==='start')S._dhG=1}catch(e){}return r}}
+{const _sb=simBat;simBat=function(role,tg,L,row,lvk){const r=_sb(role,tg,L,row,lvk);try{if(S.dhConv&&S.y>=S.dhConv&&row&&row.b&&!isP())row.b._dh=1}catch(e){}return r}}
 
 </script>
 
