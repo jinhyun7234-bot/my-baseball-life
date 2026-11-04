@@ -2408,6 +2408,17 @@ const LEGN=[
  {B:['나성혁','박민규','테일러','손시우'],SP:['구창호','해리스','루친든'],RP:['임창준','원종석']}];
 function legendName(t,k){S.legUsed=S.legUsed||[];const key=k==='B'?'B':k==='SP'?'SP':'RP',used=new Set([...S.legUsed,...S.lp.map(x=>x.n)]);
   let c=LEGN[t][key].filter(n=>!used.has(n));if(!c.length)c=LEGN.flatMap(x=>x[key]).filter(n=>!used.has(n));if(!c.length)return null;const n=pick(c);S.legUsed.push(n);return n}
+/* ===================== 포지션별 요구 툴 순위 (감독 주전 선임 기준) =====================
+   순위 가중치 1위 .34 · 2위 .24 · 3위 .18 · 4위 .14 · 5위 .10 ('+'로 묶인 건 두 자리 몫을 나눔)
+   '컨택'은 컨택 75% + 선구안 25%로 계산 */
+const POSPRIO={CF:[['rng','spd'],['con'],['arm'],['pow']],'1B':[['pow'],['con'],['fld'],['spd'],['arm']],SS:[['rng','fld'],['arm'],['con'],['spd'],['pow']],'3B':[['pow'],['arm'],['con'],['fld'],['spd']],
+  C:[['fld'],['arm'],['con'],['pow'],['spd']],LF:[['pow'],['con'],['rng'],['spd'],['arm']],RF:[['pow'],['con'],['arm'],['rng'],['spd']],'2B':[['con'],['rng','fld'],['spd'],['pow'],['arm']],DH:[['pow'],['con'],['spd']]};
+const PRIO_SLOT=[.34,.24,.18,.14,.10],PRIO_LBL={rng:'수비범위',spd:'주력',con:'컨택',arm:'어깨',pow:'파워',fld:'타구처리'};
+function prioW(pos){const L=POSPRIO[pos]||POSPRIO.DH,w={};let i=0;L.forEach(g=>{const sh=PRIO_SLOT.slice(i,i+g.length).reduce((a,b)=>a+b,0);g.forEach(k=>w[k]=(w[k]||0)+sh/g.length);i+=g.length});const t=Object.values(w).reduce((a,b)=>a+b,0);for(const k in w)w[k]/=t;return w}
+function prioVal(k){return k==='con'?E('con')*.75+E('eye')*.25:E(k)}
+function prioScore(){const w=prioW(ME.pos);let s=0;for(const k in w)s+=prioVal(k)*w[k];return s}
+function prioHtml(){const L=POSPRIO[ME.pos]||POSPRIO.DH;return L.map(g=>g.map(k=>`${PRIO_LBL[k]} <span class="num ${gcls(prioVal(k))}">${DV(prioVal(k)).toFixed(0)}</span>`).join(' + ')).join(' <span class="muted">›</span> ')}
+selScore=function(){return isP()?ovrE():ovrE()*.35+prioScore()*.65};
 
 /* ===================== TRAINING MENUS (파워프로식) ===================== */
 const MENU_B={bat:{n:'배팅 훈련',ic:'🏏',w:{con:.65,eye:.35}},wt:{n:'웨이트',ic:'🏋️',w:{pow:.7,arm:.3}},fungo:{n:'펑고',ic:'🧤',w:{rng:.5,fld:.5}},run:{n:'주루 훈련',ic:'👟',w:{spd:.7,rng:.3}},video:{n:'영상 분석',ic:'📺',w:{eye:.6,con:.4},men:1},throw:{n:'송구 훈련',ic:'🎯',w:{arm:.6,fld:.4}},rest:{n:'휴식',ic:'🛌',w:{}}};
@@ -7055,7 +7066,7 @@ function vStats(){let h=header();const o=ovrE();
   if(isP()){h+=`<div class="card"><span class="lbl">투구 · 직구 최고 ${kmh(E('velo'))} · 평균 ${avgKmh(E('velo'),E('sta'))}km/h</span>${PIT.map(row).join('')}<div class="tiny muted">볼배합 × 구종 ${PITCHES.filter(k=>E(k)>=40).length}개 시너지 ${pSyn()>=0?'+':''}${pSyn().toFixed(1)}</div></div>`;
     h+=`<div class="card"><span class="lbl">구종 완성도</span>${PITCHES.filter(p=>ME.pt[p]>0).map(row).join('')}<div class="tiny muted">새 구종은 훈련 배분의 '변화구 집중'에서 골라 익혀요.</div></div>`}
   else{const L=LV[lvOf(curRoleL())]||LV.hs,od=batOrder(L),ON={1:'리드오프',2:'테이블세터',3:'중심타선',4:'4번 타자',5:'중심타선'}[od]||'하위타선';
-    h+=`<div class="card"><span class="lbl">포지션 · 타순</span><div class="row"><div class="sp"><div class="small muted">${POS[ME.pos]} 주전 경쟁 핵심</div><b>${POSKEY[ME.pos].filter(x=>x[1]>=.25).map(([k])=>`${LBL[k]} <span class="num ${gcls(E(k))}">${DV(E(k)-rustOf(k)).toFixed(1)}</span>`).join(' · ')}</b><div class="tiny muted">포지션 적합도 ${DV(posFit()).toFixed(1)}</div></div><div style="text-align:right"><div class="small muted">${({hs:'고교',univ:'대학',fut:'2군',KBO:'1군',NPB:'NPB',MLB:'MLB'})[lvOf(curRoleL())]||''} 기준 타순</div><b>${od}번</b> <span class="small muted">${ON}</span></div></div><div class="tiny muted">주전은 포지션 핵심 능력이 크게 좌우하고, 타순은 컨택·파워·주력·선구안 조합으로 정해져요.</div></div>`}
+    h+=`<div class="card"><span class="lbl">포지션 · 타순</span><div class="row"><div class="sp"><div class="small muted">${POS[ME.pos]||'지명타자'} 요구 툴 순위</div><b>${prioHtml()}</b><div class="tiny muted">포지션 적합도 ${DV(posFit()).toFixed(1)}</div></div><div style="text-align:right"><div class="small muted">${({hs:'고교',univ:'대학',fut:'2군',KBO:'1군',NPB:'NPB',MLB:'MLB'})[lvOf(curRoleL())]||''} 기준 타순</div><b>${od}번</b> <span class="small muted">${ON}</span></div></div><div class="tiny muted">감독은 주전을 정할 때 이 순서를 가장 크게 봐요. 앞쪽 툴일수록 주전 기용에 큰 영향을 줘요. 타순은 컨택·파워·주력·선구안 조합으로 정해져요.</div></div>`}
   if(!isP())h+=`<div class="card"><span class="lbl">타격</span>${['con','pow','eye','vis'].filter(k=>k in ME.r).map(row).join('')}</div><div class="card"><span class="lbl">주루·수비</span>${['spd','rng','fld','arm'].map(row).join('')}</div>`;
   h+=`<div class="card"><span class="lbl">성향</span>${['we','men','dur'].map(k=>`<div class="rt hidr"><span>${tipB(k,LBL[k])} <span class="tiny muted">${HIDD[k]}</span></span>${bar(ME.hid[k]-20,'',60)}${grdB(ME.hid[k])}<span class="n ${gcls(ME.hid[k])}">${DV(ME.hid[k]).toFixed(1)}</span><span></span></div>`).join('')}
     <div class="small muted">현재 ${word(o)}</div></div>`;
@@ -8598,13 +8609,18 @@ function tradeComments(from,to,star,rich,big){const gn=giv(ME.name),cln=v=>Strin
   const dw=S.rows.filter(r=>r.y===S.y&&PRO.includes(r.lv)&&r.b&&r.b.PA>=150).reduce((a,r)=>a+bWARsplit(r.b,r.lv).d,0),fit=(()=>{try{return posFit()-ovrE()}catch(e){return 0}})();
   if(!(dw<=-.8||fit<=-8))return;S.dhAskY=S.y;const pn=POS[ME.pos]||'수비';
   S.queue.push({title:'🧢 감독 면담 — 지명타자',text:`시즌이 끝나고 감독이 불렀다.\n"솔직히 말하마. 요즘 ${pn} 수비가 많이 힘들어 보인다. 방망이는 아직 쓸 만하니까, 내년부터 지명타자로 뛰어보는 건 어떠냐?"\n\n지명타자 자리는 하나뿐이라 팀 운용에 부담이 생긴다. 컨디션이나 상대 투수에 따라 대타로 나가는 날이 조금 늘어날 수 있다.`,
-    ch:[{t:'지명타자로 전향한다',s:'수비 부담·실책 없음 · 체력 관리↑ · 대타 출전 비율 조금↑ · 팀 부담',act:'dhyes',arg:{}},{t:`${pn} 자리를 지키겠다`,s:'포지션 유지 · 감독 신뢰↓',act:'dhno',arg:{}}]})}catch(e){}}}
+    ch:[{t:'지명타자로 전향한다',s:'수비 부담·실책 없음 · 체력 관리↑ · 대타 출전 비율 조금↑ · 팀 부담',act:'dhyes',arg:{}},{t:`${pn} 자리를 지키겠다`,s:'포지션 유지 · 매일 선발 출전 · 수비 부담은 그대로',act:'dhno',arg:{}}]})}catch(e){}}}
 ACT.dhyes=function(){S.dhConv=S.y+1;news(`${S.y+1}시즌부터 지명타자 전향.`);try{article(`${ME.name}, 내년부터 지명타자 전향`,`${jo(ME.name,'은','는')} 수비 부담을 덜고 타격에 집중한다.`,'mix',{})}catch(e){}return'글러브를 내려놓기로 했다. 이제 방망이로만 말한다.'};
-ACT.dhno=function(){S.rel.coach=cl((S.rel.coach??50)-3,0,100);return'"아직 수비 자신 있습니다." 감독은 "지켜보겠다"고만 했다.'};
+ACT.dhno=function(){return'"아직 수비 자신 있습니다." 감독은 "지켜보겠다"고만 했다.'};
 {const _dr=decideRole;decideRole=function(){let r=_dr();try{if(!S.dhConv||S.y<S.dhConv||isP()||S.stage!=='pro')return r;ME.fat=cl(ME.fat-2,0,100);if(r==='start'){S.dhNow=1;
   const {ops,pa}=batOPS(),p=pa>=100&&ops!=null?(ops>=.85?.03:ops>=.78?.07:ops>=.72?.12:.18):.10;if(R()<p){S.dhNow=0;r='bench'}}}catch(e){}return r}}
 {const _pp=psPick;psPick=function(base,gn,g7,need){const r=_pp(base,gn,g7,need);try{if(S.dhConv&&S.y>=S.dhConv&&!isP()&&r==='start')S._dhG=1}catch(e){}return r}}
 {const _sb=simBat;simBat=function(role,tg,L,row,lvk){const r=_sb(role,tg,L,row,lvk);try{if(S.dhConv&&S.y>=S.dhConv&&row&&row.b&&!isP())row.b._dh=1}catch(e){}return r}}
+/* 지명타자로 나온 경기: 7~9회 접전에서 출루하면 대주자로 자주 교체 (주력 느릴수록 더 자주) */
+{const _fg=followGame;followGame=function(o){const g=_fg(o);try{if(isP()||!g||!g.dh||g.pr||!g.pl||!g.pl.length||!g.ev)return g;const last=g.pl[g.pl.length-1];
+  if(!last||last.i<7||!['1B','BB','2B'].includes(last.t)||Math.abs(last.my-last.op)>3)return g;const sp=DV(eff('spd'));let p=sp<45?.6:sp<55?.45:sp<65?.3:.15;if(o.intl||/차전|결승/.test(o.title||''))p*=1.2;if(R()>=p)return g;
+  const nm=ME.name;let k=-1;for(let i=g.ev.length-1;i>=0;i--){const e=g.ev[i];if(/\bme\b/.test(e.c)&&e.t&&e.t.indexOf(nm+':')>=0){k=i;break}}if(k<0)return g;
+  g.ev.splice(k+1,0,{...g.ev[k],t:`${last.i}회 — 대주자 투입. 지명타자 ${jo(nm,'은','는')} 여기까지, 벤치로 들어간다`,c:'sub'});g.pr=1}catch(e){}return g}}
 
 </script>
 
