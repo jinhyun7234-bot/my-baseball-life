@@ -8000,6 +8000,10 @@ function rbiTarget(m){if(!m||!m.PA)return 0;const s1=Math.max(0,m.H-m.D-m.T-m.HR
   let r=s1*.22+m.D*.65+m.T*.9+m.HR*1.55+m.BB*.05+outs*.03;const od=S.order||0;if(od>=1&&od<=9)r*=RBI_ORD[od-1];return Math.max(m.HR,r)}
 {const _sb=simBat;simBat=function(role,tg,L,row,lvk){const r=_sb(role,tg,L,row,lvk);try{if(isP()||!r||!r.m||!r.m.PA)return r;const m=r.m,t=rbiTarget(m);
   let nr=Math.floor(t)+(R()<t%1?1:0);nr=Math.max(m.HR,Math.round(nr*.8+m.RBI*.2));const d=nr-m.RBI;if(d){m.RBI+=d;if(row&&row.b)row.b.RBI=Math.max(0,(row.b.RBI||0)+d)}}catch(e){}return r}}
+/* 특성 삭제: 홈/원정 강자 4종 (안방마님·원정 강자·홈 수호신·원정 강자) — 갖고 있던 세이브는 성장 포인트 15씩 환급 */
+(function(){const DEL=['b_road','b_home','p_road','p_home'];for(const arr of [TR,SKILLS])for(let i=arr.length-1;i>=0;i--)if(arr[i]&&DEL.includes(arr[i].id))arr.splice(i,1);
+  const mig=()=>{try{if(!S||!S.me||S.skMig2)return;S.skMig2=1;const m=S.me;let ref=0;m.skills=(m.skills||[]).filter(id=>{if(DEL.includes(id)){ref+=15;return false}return true});if(ref){m.xp=(m.xp||0)+ref;news(`특성 개편: 홈/원정 특성 삭제 — 성장 포인트 ${ref} 환급.`)}}catch(e){}};
+  const _pr=postRender;postRender=function(app){mig();return _pr(app)}})();
 
 /* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
 /* 방망이 점수(수비 제외)와 수비 적합도 */
