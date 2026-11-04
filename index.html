@@ -6892,7 +6892,7 @@ TRAIN_ITEMS.forEach(([k,t,nm,n1,n2])=>{ITEMS.push({id:'te1_'+k,n:n1,p:350,t,te:{
 function teBonus(k){let v=0;for(const it of ITEMS)if(it.te&&it.te[k]&&owned(it.id))v=Math.max(v,it.te[k]);return v}
 {const _gr=grow;grow=function(k,amt){try{const key=(typeof PITCHES!=='undefined'&&PITCHES.includes(k))?'brk':k;const b=teBonus(key);if(b&&amt>0)amt*=1+b}catch(e){}return _gr(k,amt)}}
 /* 상위 장비를 샀으면 하위 장비 구매 버튼 숨김 · 상위 장비는 하위를 먼저 사야 보임 */
-{const _vsh2=vShop;vShop=function(){const keep=ITEMS.slice();try{for(let i=ITEMS.length-1;i>=0;i--){const it=ITEMS[i];if(it.cat==='life')continue;const up=ITEMS.some(y=>y.rep===it.id&&owned(y.id));const needPrev=it.te&&it.rep&&!owned(it.rep)&&!owned(it.id);if(up||needPrev)ITEMS.splice(i,1)}return _vsh2()}finally{ITEMS.length=0;ITEMS.push(...keep)}}}
+{const _vsh2=vShop;vShop=function(){const keep=ITEMS.slice();try{for(let i=ITEMS.length-1;i>=0;i--){const it=ITEMS[i];if(it.cat==='life')continue;const up=ITEMS.some(y=>y.rep===it.id&&owned(y.id));const needPrev=false;if(up||needPrev)ITEMS.splice(i,1)}return _vsh2()}finally{ITEMS.length=0;ITEMS.push(...keep)}}}
 
 /* ===================== 특성 개편: 계절형 삭제 · 경기 상황형 15개 추가 ===================== */
 const DEL_TR={b_summer:25,b_spring:15,p_summer:25,p_spring:15};
@@ -7919,7 +7919,7 @@ const PERF_ADJ={B:.3,P:0};
   const n=PITCHES.filter(p=>p!=='FB'&&(ME.pt[p]||0)>0&&eff(p)>=55).length;
   const m=(1+.03*g(DV(eff('velo')),60,95))*(1+.03*g(DV(eff('stf')),60,95))*(1+.03*g(n,1,4));return{...o,k:o.k*m}}catch(e){return o}}}
 /* 아이템 효과 살짝 하향: 능력치별 훈련 장비 +5%→+4%, +10%→+8% · 퍼포먼스 연구소 +15%→+12%, 파워·구속 +25%→+20% */
-(function(){ITEMS.forEach(it=>{if(/^te2_/.test(it.id))it.p=4000;if(it.te){for(const k in it.te){if(it.te[k]===.05)it.te[k]=.04;else if(it.te[k]===.10||it.te[k]===.1)it.te[k]=.08}if(it.d)it.d=it.d.replace('훈련 효과 +5%','훈련 효과 +4%').replace('훈련 효과 +10%','훈련 효과 +8%')}
+(function(){ITEMS.forEach(it=>{if(/^te2_/.test(it.id))it.p=5000;if(it.te){for(const k in it.te){if(it.te[k]===.05)it.te[k]=.04;else if(it.te[k]===.10||it.te[k]===.1)it.te[k]=.08}if(it.d)it.d=it.d.replace('훈련 효과 +5%','훈련 효과 +4%').replace('훈련 효과 +10%','훈련 효과 +8%')}
   if(it.id==='lab'){it.eff=.10;it.pw=.18;it.d='1년간 모든 능력치 훈련 효과 +10%, 파워·구속 훈련 +18%'}})})();
 /* 특성 '눈야구 리듬': 볼넷 +3% → 출루 +3% (볼넷 +1.5% · 안타 +1.5%) */
 (function(){[typeof TR!=='undefined'?TR:[],typeof SKILLS!=='undefined'?SKILLS:[]].forEach(L=>L.forEach(t=>{if(t&&t.id==='b_bbchain'){t.a={bb:.015,hit:.015};t.d='직전 타석 볼넷이면 다음 타석 출루 확률 +3% (볼넷 +1.5% · 안타 +1.5%)'}}))})();
@@ -7965,9 +7965,6 @@ FEV.push({sr:1,t:'후배에게 심부름?',x:'원정 숙소. 피곤해 죽겠는
   const ds=(ME.r.spd||0)-(b.spd||0),df=(ME.r.fld||0)-(b.fld||0);
   if(ds>0&&ME.r.rng!=null&&ME.r.rng<80)ME.r.rng=Math.min(80,ME.r.rng+ds*.12);
   if(df>0&&ME.r.spd!=null&&ME.r.spd<80)ME.r.spd=Math.min(80,ME.r.spd+df*.10)}}catch(e){}return r}}
-/* 전체 훈련 효과 장비 2단계 (따로 구매 가능): 고속 카메라·분석 앱 800만원 +4% / AI 훈련 분석 시스템 5,000만원 +8% (카메라 대체) */
-(function(){const cam=ITEMS.find(i=>i.id==='cam');if(cam){cam.hide=0;cam.p=800;cam.eff=.04;cam.pw=0;cam.d='모든 능력치 훈련 효과 +4%'}
-  if(!ITEMS.find(i=>i.id==='cam2'))ITEMS.push({id:'cam2',n:'AI 훈련 분석 시스템',p:5000,t:'A',eff:.08,rep:'cam',d:'모든 능력치 훈련 효과 +8% (고속 카메라·분석 앱 대체)'})})();
 
 /* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
 /* 방망이 점수(수비 제외)와 수비 적합도 */
