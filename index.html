@@ -1798,10 +1798,10 @@ function intl(rep,cy){
   S.hist.nat++;S.ach.nat=S.ach.nat||cy;S.rel.fame+=5;ME.xp+=4;rep.lines.push(`${ev.n} 국가대표 발탁! (성장 포인트 +4)`);
   const bn=nf?nf.bonus:0;let stage,want,force=null;
   /* 결승 진출·우승 확률 (내 성적이 좋을수록 bonus 0~0.2만큼 올라감)
-     아시안게임: 결승 90%(+최대 7%) · 결승 승리 70%(+최대 18%)
+     아시안게임: 결승 90%(+최대 7%) · 결승 승리 90%(+최대 8%)
      올림픽: 결승 40% · 결승 승리 45% · 결승 못 가면 동메달 결정전 70% · 동메달 55% → 3위 이상 약 60%
      프리미어12: 우승 20% · 준우승 22% / WBC: 우승 6% · 준우승 13% (난이도 높음) */
-  if(ev.n.includes('아시안게임')){if(R()<Math.min(.97,.9+bn*.35)){stage='final';want=R()<Math.min(.88,.7+bn*.9);force=want}else{stage='semi';want=false}}
+  if(ev.n.includes('아시안게임')){if(R()<Math.min(.97,.9+bn*.35)){stage='final';want=R()<Math.min(.98,.9+bn*.4);force=want}else{stage='semi';want=false}}
   else if(ev.n.includes('올림픽')){if(R()<Math.min(.55,.4+bn*.6)){stage='final';want=R()<Math.min(.6,.45+bn)}else if(R()<.7){stage='bronze';want=R()<Math.min(.7,.55+bn*.5)}else{stage='semi';want=false}if(stage!=='semi')force=want}
   else{const OD=ev.n.includes('프리미어12')?{w:.2,f:.28,br:1}:{w:.06,f:.14,br:0};const winP=Math.min(.6,OD.w+bn*.6),r=R();
     if(r<winP){stage='final';want=true}else if(R()<OD.f+bn*.4){stage='final';want=false}else if(OD.br){stage='bronze';want=R()<.5}else{stage='semi';want=false}}
