@@ -8262,6 +8262,18 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
   else{if(DV(eff('pcl'))<70)return out;const ip=x.ipO||0,ra=x.ra||0,good=(ip>=15&&ra<=2)||(ip>=3&&ip<15&&ra===0);if(!good||R()>=.45)return out;
     const L=[`구속 떨어져도 볼배합으로 잡아내네 노련함 미쳤다`,`머리로 던지는 투수는 오래 간다니까`,`${gn} 타자 수 싸움은 지금이 전성기인 듯`,`힘으로 안 되면 머리로 잡는다 이게 베테랑이지`,`타자 노림수 다 읽고 던지네 이 나이에 이게 노련함이다`];
     put(pick(L),[pick(['볼배합은 안 늙는다','공 빠르기보다 수 싸움','타자들이 알고도 당함 ㅋㅋ','이래서 경험이 무섭다'])])}}catch(e){}return out}}
+/* 수비 잘하는 야수: ① 가을야구·국제대회 호수비엔 댓글 더 ② 무안타여도 수비로 벌어준 게 있다는 쉴드 댓글 (가끔) */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||!x||!Array.isArray(out)||['DH','P','SP','RP'].includes(ME.pos)||S.dhNow||x.gH==null)return out;
+  const dq=(DV(eff('rng'))+DV(eff('fld'))+(['C','SS','2B','3B'].includes(ME.pos)?DV(eff('arm'))*.5:0))/(['C','SS','2B','3B'].includes(ME.pos)?2.5:2);if(dq<68)return out;
+  const gn=giv(ME.name),pn=POS[ME.pos]||'수비수',big=!!(x.ps||x.intl),add=[];
+  const put=(t,re,up)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,(re||[]).map(r=>({nk:pick(NICKS),t:r,up:ri(40,900)})),{up:up||ri(600,3500),must:1}))};
+  if(big&&(x.gGreat||0)>=1){const L=[`가을에 ${gn} 수비 보는 맛이 있다 이게 ${pn}지`,`큰 경기일수록 ${gn} 수비가 빛나네`,`${gn} 수비 하나가 투수 멘탈 살렸다`,`포스트시즌 하이라이트 또 ${gn} 수비임 ㅋㅋ`,`이런 경기에서 저 타구 잡는 게 진짜 클래스`,`${gn}한테 공 가는 순간 안심됨 ㄹㅇ`,`방망이 말고 글러브로 시리즈 지배하는 중`];
+    const n=(x.gGreat>=2?3:2);for(let i=0;i<n;i++)put(pick(L.filter(t=>!seenHas(josaFix(t))))||L[0],[pick(['수비 장인','이게 골글 수비','상대 팀 한숨 소리 들림 ㅋㅋ','투수가 제일 고마울 듯','중계진도 감탄함','이건 돈 주고 봐야 함'])],ri(1500,6000))}
+  const ab=(x.gPA||0)-(x.gBB||0);if((x.gH||0)===0&&ab>=4&&!(x.gErr>0)&&R()<((x.gGreat||0)>=1?.75:.35)){
+    const L=[`${ab}타수 무안타여도 ${gn}는 수비로 벌어다 주는 게 있어서 괜찮음`,`방망이 쉬는 날도 ${gn} 수비는 출근함`,`${gn} 무안타라고 까는 애들 수비 막은 거 계산 좀 해라`,`안타는 없어도 ${gn}가 수비로 막은 점수가 몇 점이냐`,`타격은 기복 있어도 수비는 슬럼프가 없다`,`오늘 ${gn} 타석은 아쉬운데 ${pn} 자리에 있는 것만으로 든든함`];
+    if((x.gGreat||0)>=1)L.push(`${ab}타수 무안타인데 호수비로 안타 지운 걸로 퉁치자`,`자기 안타는 못 쳤는데 남의 안타는 지워버림 ㅋㅋ`);
+    put(pick(L),[pick(['ㄹㅇ 수비 WAR는 안 보이니까 모름','그래도 방망이 좀 쳐줬으면 ㅋㅋ','인정 저 수비면 무안타도 OK','수비만으로 밥값 함','다음 경기에 치면 됨','타격은 사이클이니까'])],ri(400,2500))}
+  if(add.length)out.splice(Math.min(2,out.length),0,...add)}catch(e){}return out}}
 
 /* ===================== 영구결번 새 기준 · 커리어 리캡 리뉴얼 (Wrapped 스타일: 그래프·표·대기록) ===================== */
 /* 영구결번: 리그마다 따로 본다. 그 리그에서 한 팀에서만 9시즌 이상 뛰었고, 그 팀 WAR 60 이상이면 그 팀이 영구결번
