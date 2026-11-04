@@ -1768,7 +1768,7 @@ function awards(rep){
   if(w>=4.5&&w>rn(6.6,.9)){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
   const prior=S.rows.filter(r=>r.lv==='KBO'&&r.y<S.y),priorPA=prior.reduce((s,r)=>s+r.b.PA,0),priorO=prior.reduce((s,r)=>s+r.p.outs,0);
   if(!S.ach.roy&&S.y-S.pro.debut<5&&priorPA<60&&priorO<90&&(b.PA>=150||p.outs>=120)&&w>rn(2.4,.8)){give('신인왕');S.ach.roy=S.y}
-  if(isP()){if(w>rn(5.2,.9))give('골든글러브 (투수)')}else if(b.G>=100&&w>rn(3.6,1))give(`골든글러브 (${POS[ME.pos]})`);
+  if(isP()){if(R()<ggProb(w,'P'))give('골든글러브 (투수)')}else if(b.G>=100&&R()<ggProb(w,ME.pos))give(`골든글러브 (${POS[ME.pos]})`);
   if(got.some(x=>x.startsWith('골든')))S.ach.gg=S.ach.gg||S.y;
   const top=(c,pt,v,lo)=>{if(S.pro.league!=='KBO')return false;const r=ranking(c,pt).list;return !!(r.length&&r[0].me&&(v===undefined||v>0))};
   if(!isP()){if(top('avg',0))give('타격왕');if(top('hr',0,b.HR))give('홈런왕');if(top('rbi',0,b.RBI))give('타점왕');if(top('sb',0,b.SB))give('도루왕');if(top('h',0,b.H))give('최다안타');if(top('r',0,b.R))give('득점왕');if(top('obp',0))give('출루율왕');if(top('slg',0))give('장타율왕')}
@@ -1972,6 +1972,11 @@ function faEvent(o,w,f){
    - 올해 또는 작년에 MVP·개인 타이틀·골든글러브 등 수상하면 절대 방출 안 됨
    - 기준 WAR: 38세+ 1.5 · 34세+ 1.0 · 31세+ 0.5 · 27세+ 0 (1 WAR ≈ 능력치 4)
    - 부상 등으로 출전이 적었으면 최근 2년 평균 WAR로 판단 */
+/* 골든글러브 확률: 2020~2025 실제 KBO 수상자 포지션별 평균 WAR 기준
+   투수 6.9 · 포수 4.8 · 1루 4.8 · 2루 4.7 · 3루 6.5 · 유격 5.1 · 외야 6.0(3자리라 기준 −0.6) · 지명 4.3
+   평균에 가까우면 약 65%, 평균 +1이면 90%대, 평균 −1.5면 15% 안팎, 평균 −2 아래면 거의 없음 */
+const GG_AVG={P:6.9,C:4.8,'1B':4.8,'2B':4.7,'3B':6.5,SS:5.1,LF:6.0,CF:6.0,RF:6.0,DH:4.3};
+function ggProb(w,pos){const m=(GG_AVG[pos]||5)-(/^(LF|CF|RF)$/.test(pos)?.6:0)-.35;return 1/(1+Math.exp(-(w-m)/.5))}
 function releaseCut(o,w,a,L){try{if(a<27)return false;
   const AW=/MVP|최우수|골든글러브|왕|다승|구원|탈삼진|평균자책|세이브|타점|도루|올스타/;if((S.awards||[]).some(x=>x&&x.y>=S.y-1&&AW.test(x.n)&&!/우승$/.test(x.n)))return false;
   const thr=a>=38?L+2:a>=34?L-2:a>=31?L-6:L-11,needW=a>=38?1.5:a>=34?1:a>=31?.5:0;
