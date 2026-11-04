@@ -7979,6 +7979,15 @@ function trCross(){const out={};try{if(isP()||!S.plan)return out;const p=S.plan,
     if(re.test(seg))seg=seg.replace(re,(m,o,n)=>`${o}${lb} ▲${(+n+X[k]).toFixed(1)}</span>`);else seg=seg.replace('<div class="row wrap">',`<div class="row wrap"><span class="chip">${lb} ▲${X[k].toFixed(1)}</span>`)}}
   {const m=seg.match(/<div class="row wrap">([\s\S]*?)<\/div>/);if(m){const chips=m[1].match(/<span class="chip[^"]*">[^<]*▲[0-9.]+<\/span>/g);if(chips&&chips.length>1){const srt=chips.map(c=>[c,+c.match(/▲([0-9.]+)/)[1]]).sort((x,y)=>y[1]-x[1]).map(x=>x[0].replace(/class="chip[^"]*"/,`class="chip${+x[0].match(/▲([0-9.]+)/)[1]>=.6?' up':''}"`)).join('');seg=seg.replace(m[1],srt+m[1].replace(/<span class="chip[^"]*">[^<]*▲[0-9.]+<\/span>/g,''))}}}
   h=h.slice(0,a)+seg+h.slice(b)}catch(e){}return h}}
+/* 득점 보정: KBO 실제 기록 기준 '출루율별 득점' 표로 맞춤 (600타석 기준, 보통 주력·15홈런 기준선)
+   출루율 .300 → 58 · .330 → 70 · .360 → 82 · .390 → 94 · .420 → 106 · .450 → 118
+   + 홈런 15개 초과분 ×0.4 · 도루 ×0.2 · 주력 표시 55 기준 1당 ±0.4% · 타순 1번 ×1.08 … 9번 ×0.88
+   (예: 출루율 .420 · 38홈런 · 40도루 · 발 빠른 3번 타자 ≈ 140득점) */
+const RUN_ORD=[1.08,1.05,1.02,1,.97,.94,.92,.9,.88];
+function runTarget(m){if(!m||!m.PA)return 0;const obp=(m.H+m.BB)/m.PA,f=600/m.PA,hr6=m.HR*f,sb6=(m.SB||0)*f;
+  let r=58+(obp-.3)*400+.4*(hr6-15)+.2*sb6;r*=1+(DV(eff('spd'))-55)*.004;const od=S.order||0;if(od>=1&&od<=9)r*=RUN_ORD[od-1];return Math.max(0,r)*m.PA/600}
+{const _sb=simBat;simBat=function(role,tg,L,row,lvk){const r=_sb(role,tg,L,row,lvk);try{if(isP()||!r||!r.m||!r.m.PA)return r;const m=r.m,t=runTarget(m);
+  let nr=Math.floor(t)+(R()<t%1?1:0);nr=Math.max(m.HR,Math.round(nr*.8+m.R*.2));const d=nr-m.R;if(d){m.R+=d;if(row&&row.b)row.b.R=Math.max(0,(row.b.R||0)+d)}}catch(e){}return r}}
 
 /* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
 /* 방망이 점수(수비 제외)와 수비 적합도 */
