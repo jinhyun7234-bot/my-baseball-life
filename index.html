@@ -2420,6 +2420,7 @@ function prioVal(k){return k==='con'?E('con')*.75+E('eye')*.25:E(k)}
 function prioScore(){const w=prioW(ME.pos);let s=0;for(const k in w)s+=prioVal(k)*w[k];return s}
 function prioHtml(){const L=POSPRIO[ME.pos]||POSPRIO.DH;return L.map(g=>g.map(k=>`${PRIO_LBL[k]} <span class="num ${gcls(prioVal(k))}">${DV(prioVal(k)).toFixed(0)}</span>`).join(' + ')).join(' <span class="muted">›</span> ')}
 selScore=function(){return isP()?ovrE():ovrE()*.35+prioScore()*.65};
+function prioTxt(pos){return(POSPRIO[pos]||POSPRIO.DH).map(g=>g.map(k=>PRIO_LBL[k]).join(' + ')).join(' › ')}
 
 /* ===================== TRAINING MENUS (파워프로식) ===================== */
 const MENU_B={bat:{n:'배팅 훈련',ic:'🏏',w:{con:.65,eye:.35}},wt:{n:'웨이트',ic:'🏋️',w:{pow:.7,arm:.3}},fungo:{n:'펑고',ic:'🧤',w:{rng:.5,fld:.5}},run:{n:'주루 훈련',ic:'👟',w:{spd:.7,rng:.3}},video:{n:'영상 분석',ic:'📺',w:{eye:.6,con:.4},men:1},throw:{n:'송구 훈련',ic:'🎯',w:{arm:.6,fld:.4}},rest:{n:'휴식',ic:'🛌',w:{}}};
@@ -7026,7 +7027,7 @@ function vCreate(){const cr=ui.cr;ME=buildMe(cr);const me=ME,o=ovrE();
     ${cr.type==='P'?`<div class="small muted">직구 최고 구속 약 ${kmh(me.r.velo)}km/h · 평균 ${avgKmh(me.r.velo,me.r.sta)}km/h</div>`:''}
     ${keys.map(k=>row(k,k in me.r?me.r[k]:me.pt[k],8)).join('')}
     <span class="lbl" style="margin-top:6px">성향 (추가포인트 1점 = +1)</span>${['we','men','dur'].map(k=>row(k,me.hid[k],10)).join('')}
-    <p class="small muted">워크에식: 훈련 능력치 증가량↑ · 멘탈: 큰 경기·중요 경기 활약↑ · 내구성: 부상 빈도↓·피로 회복↑</p>${cr.type==='B'?`<p class="small muted">${POS[cr.pos]} 주전 경쟁 핵심 능력: <b>${POSKN[cr.pos]}</b></p>`:''}</div>`}
+    <p class="small muted">워크에식: 훈련 능력치 증가량↑ · 멘탈: 큰 경기·중요 경기 활약↑ · 내구성: 부상 빈도↓·피로 회복↑</p>${cr.type==='B'?`<p class="small muted">${POS[cr.pos]} 요구 툴 순위: <b>${prioTxt(cr.pos)}</b><br><span class="tiny">감독은 주전을 정할 때 이 순서를 가장 크게 봐요. 앞쪽 툴일수록 주전 기용에 큰 영향을 줘요.</span></p>`:''}</div>`}
 
 /* ===================== TURN ===================== */
 const HIDD={we:'훈련으로 오르는 능력치 증가량↑',men:'큰 경기·중요 경기 활약↑',dur:'부상 빈도↓'};
