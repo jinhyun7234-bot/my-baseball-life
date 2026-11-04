@@ -8004,6 +8004,8 @@ function rbiTarget(m){if(!m||!m.PA)return 0;const s1=Math.max(0,m.H-m.D-m.T-m.HR
 (function(){const DEL=['b_road','b_home','p_road','p_home'];for(const arr of [TR,SKILLS])for(let i=arr.length-1;i>=0;i--)if(arr[i]&&DEL.includes(arr[i].id))arr.splice(i,1);
   const mig=()=>{try{if(!S||!S.me||S.skMig2)return;S.skMig2=1;const m=S.me;let ref=0;m.skills=(m.skills||[]).filter(id=>{if(DEL.includes(id)){ref+=15;return false}return true});if(ref){m.xp=(m.xp||0)+ref;news(`특성 개편: 홈/원정 특성 삭제 — 성장 포인트 ${ref} 환급.`)}}catch(e){}};
   const _pr=postRender;postRender=function(app){mig();return _pr(app)}})();
+/* 특성 목록: 싼 것부터 비싼 순 (같은 가격은 원래 순서) */
+(function(){const ix=new Map(SKILLS.map((s,i)=>[s,i]));SKILLS.sort((a,b)=>(a.c||0)-(b.c||0)||ix.get(a)-ix.get(b))})();
 
 /* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
 /* 방망이 점수(수비 제외)와 수비 적합도 */
