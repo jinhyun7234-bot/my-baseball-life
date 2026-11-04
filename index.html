@@ -7961,12 +7961,12 @@ FEV.push({sr:1,t:'후배에게 심부름?',x:'원정 숙소. 피곤해 죽겠는
     for(const k in t.a){const v=t.a[k];if(typeof v!=='number')continue;t.a[k]=k==='hr'?+(1+(v-1)*F).toFixed(4):+(v*F).toFixed(4)}
     t.d=fixD(t.d);const sk=SKILLS.find(s=>s.id===t.id);if(sk)sk.d=t.d})})();
 /* 훈련 상호 보너스 (한 기간 기준, 표시 수치): 메인일 때 전부, 서브일 때 절반
-   - 수비 훈련: 주력 +0.2 · 타구처리 위주면 어깨 +0.3 · 수비범위 위주면 수비범위 +0.3 · 균형이면 어깨·수비범위 +0.15씩
-   - 주루 훈련: 수비범위 +0.15
+   - 수비 훈련: 주력 +0.35 · 타구처리 위주면 어깨 +0.3 · 수비범위 위주면 수비범위 +0.3 · 균형이면 어깨·수비범위 +0.15씩
+   - 주루 훈련: 수비범위 +0.3 · 송구 훈련: 타구처리 +0.3
    예상 성장 칸에도 그대로 반영 */
 function trCross(){const out={};try{if(isP()||!S.plan)return out;const p=S.plan,add=(k,v)=>out[k]=(out[k]||0)+v;
-  [[p.main,1],[p.sub,.5]].forEach(([id,f])=>{if(id==='def'){add('spd',.2*f);const b=p.defBias||'bal';if(b==='fld')add('arm',.3*f);else if(b==='rng')add('rng',.3*f);else{add('arm',.15*f);add('rng',.15*f)}}
-    else if(id==='spd')add('rng',.15*f)})}catch(e){}return out}
+  [[p.main,1],[p.sub,.5]].forEach(([id,f])=>{if(id==='def'){add('spd',.35*f);const b=p.defBias||'bal';if(b==='fld')add('arm',.3*f);else if(b==='rng')add('rng',.3*f);else{add('arm',.15*f);add('rng',.15*f)}}
+    else if(id==='spd')add('rng',.3*f);else if(id==='arm')add('fld',.3*f)})}catch(e){}return out}
 {const _tm=trainMonth;trainMonth=function(rep){const inj=ME&&ME.inj;const r=_tm(rep);try{if(!inj&&!isP()){const X=trCross(),mo=(PMON[S.phase]||[1]).length||1;
   for(const k in X){if(ME.r[k]==null)continue;const cap=typeof capOf==='function'?capOf(k):80;if(ME.r[k]<cap)ME.r[k]=Math.min(cap,ME.r[k]+X[k]*.75/mo)}}}catch(e){}return r}}
 /* 예상 성장 칸: 실제 성장에 붙는 배율(난이도·타자 보정·저연차·능력치별 장비·투수/구종 보정)까지 반영 + 상호 보너스 */
@@ -7977,6 +7977,7 @@ function trCross(){const out={};try{if(isP()||!S.plan)return out;const p=S.plan,
     const isPt=typeof PITCHES!=='undefined'&&(PITCHES.includes(k)||k==='brk');let v=+n*base*(1+(teBonus(isPt?'brk':k)||0))*(P&&isPt?1.1:1);return`${o}${lb} ▲${v.toFixed(1)}</span>`});
   if(!P){const X=trCross();for(const k in X){const lb=LBL[k],re=new RegExp('(<span class="chip[^"]*">)'+lb+' ▲([0-9.]+)</span>');
     if(re.test(seg))seg=seg.replace(re,(m,o,n)=>`${o}${lb} ▲${(+n+X[k]).toFixed(1)}</span>`);else seg=seg.replace('<div class="row wrap">',`<div class="row wrap"><span class="chip">${lb} ▲${X[k].toFixed(1)}</span>`)}}
+  {const m=seg.match(/<div class="row wrap">([\s\S]*?)<\/div>/);if(m){const chips=m[1].match(/<span class="chip[^"]*">[^<]*▲[0-9.]+<\/span>/g);if(chips&&chips.length>1){const srt=chips.map(c=>[c,+c.match(/▲([0-9.]+)/)[1]]).sort((x,y)=>y[1]-x[1]).map(x=>x[0].replace(/class="chip[^"]*"/,`class="chip${+x[0].match(/▲([0-9.]+)/)[1]>=.6?' up':''}"`)).join('');seg=seg.replace(m[1],srt+m[1].replace(/<span class="chip[^"]*">[^<]*▲[0-9.]+<\/span>/g,''))}}}
   h=h.slice(0,a)+seg+h.slice(b)}catch(e){}return h}}
 
 /* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
