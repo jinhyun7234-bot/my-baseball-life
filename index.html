@@ -8455,6 +8455,30 @@ ACT.mlbreset=function(){const now=S.y*12+S.m;S.mlbReset={until:now+2};if(S.mlbFa
 ACT.mlbstay=function(a){ME.hid.men=cl(ME.hid.men-2,20,80);S.rel.coach=cl((S.rel.coach||50)-(a&&a.again?5:3),0,100);S.mlbStayY=S.y;
   if(a&&a.again&&R()<.5){S.mlbReset={until:S.y*12+S.m+2};return'버티겠다고 했지만, 일주일 뒤 감독은 결국 트리플A행을 통보했다. "한 달만 내려가 있어라."'}
   return'"버티겠습니다." 감독은 고개를 끄덕였다. 매 타석, 매 이닝이 시험대다.'};
+/* ===================== KBO: 부진하면 2군 재정비 선택 · 감독 신뢰나 팀 분위기가 바닥이면 말없이 2군 통보
+   - 부진 면담: 1군 주전(투수는 선발·필승조 포함)인데 타자 OPS .650 미만(120타석+) / 투수 ERA 5.80 초과(30이닝+), 5~8월 반 시즌 한 번, 확률 40%
+     · 2군 재정비: 한 달 퓨처스 → 컨디션↑ 피로↓ 멘탈↑ / 그 달 1군 기록 없음
+     · 1군 버티기: 계속 1군 / 멘탈↓ 감독 신뢰↓ · 같은 시즌 두 번째면 50% 확률로 결국 2군행
+   - 감독 신뢰 25 미만 또는 팀 분위기 20 미만: 4~9월 매달 25% 확률로 예고 없이 한 달 2군 (시즌당 최대 2번) ===================== */
+function kboOn(){return S.stage==='pro'&&S.pro&&S.pro.league==='KBO'&&!S.pro.dev&&S.m>=4&&S.m<=9&&!ME.inj}
+function kboSlump(){try{const {b,p}=yearTot(S.y,['KBO']);if(isP()){if(p.outs<90)return false;return eraN(p)>5.8}return b.PA>=120&&opsN(b)<.65}catch(e){return false}}
+{const _dr=decideRole;decideRole=function(){let r=_dr();try{if(!(S.stage==='pro'&&S.pro&&S.pro.league==='KBO')||ME.inj||r==='inj'||r==='susp')return r;
+  if(S.kboDown&&S.y*12+S.m<S.kboDown.until)return isP()?'fP':'fB'}catch(e){}return r}}
+{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(!kboOn())return;const now=S.y*12+S.m,P=isP();if(S.kboDown&&now<S.kboDown.until)return;
+  const role=S.role||'',up=!/^f/.test(role)&&!['bench','inj','susp','off','pre','army'].includes(role);if(!up)return;
+  const coach=S.rel.coach??50,chem=S.rel.chem??50;S.kboSilent=S.kboSilent&&S.kboSilent.y===S.y?S.kboSilent:{y:S.y,n:0};
+  if((coach<25||chem<20)&&S.kboSilent.n<2&&R()<.25){S.kboSilent.n++;S.kboDown={until:now+2,why:coach<25?'coach':'chem'};
+    news(`${S.y}년 ${S.m}월 2군행 통보.`);S.queue.push({title:'📄 2군행 통보',text:`훈련을 마치고 라커에 돌아오니 매니저가 종이 한 장을 건넸다.\n"내일부터 퓨처스로 가."\n감독은 아무 말도 하지 않았다.${coach<25?'\n\n감독과의 사이가 이미 멀어질 대로 멀어졌다.':'\n\n라커룸 분위기가 나빠진 책임이 나한테 돌아왔다.'}`,ch:[{t:'짐을 싼다',s:'한 달 2군 · 멘탈 −2',act:'kbodown',arg:{}}]});return}
+  const half=S.y+'-'+(S.m>=7?2:1);if(!(S.m>=5&&S.m<=8)||S.kboSlumpAsk===half||S.queue.length>=3||!kboSlump()||R()>=.4)return;S.kboSlumpAsk=half;
+  const {b,p}=yearTot(S.y,['KBO']),line=P?`평균자책 ${era(p)}`:`OPS ${ops(b)}`,again=S.kboStayY===S.y;
+  S.queue.push({title:'📋 감독 면담 — 부진',text:`${line}. 감독실에 불려갔다.\n"요즘 너무 쫓기는 것 같다. 2군 내려가서 한 달 머리 좀 식히고 올래, 아니면 여기서 버텨볼래?"${again?'\n\n(이번 시즌 두 번째 면담이다. 감독 표정이 굳어 있다.)':''}`,
+    ch:[{t:'2군에서 한 달 재정비',s:'컨디션↑ 피로↓ 멘탈↑ · 한 달 1군 기록 없음',act:'kboreset',arg:{}},{t:'1군에 남아 버틴다',s:`계속 1군 출전 · 멘탈↓ 감독 신뢰↓${again?' · 이번에도 부진하면 2군행 위험':''}`,act:'kbostay',arg:{again}}]})}catch(e){}}}
+ACT.kboreset=function(){S.kboDown={until:S.y*12+S.m+2,why:'reset'};ME.form=cl((ME.form||0)+3,-6,6);ME.fat=cl(ME.fat-20,0,100);ME.hid.men=cl(ME.hid.men+3,20,80);news(`${S.y}년 ${S.m}월 2군 재정비.`);
+  return'2군에서 한 달 동안 밸런스를 다시 잡기로 했다. 감독은 "몸 만들어서 올라와라"라고만 했다.'};
+ACT.kbostay=function(a){ME.hid.men=cl(ME.hid.men-2,20,80);S.rel.coach=cl((S.rel.coach??50)-(a&&a.again?5:3),0,100);S.kboStayY=S.y;
+  if(a&&a.again&&R()<.5){S.kboDown={until:S.y*12+S.m+2,why:'stay'};return'버티겠다고 했지만 며칠 뒤 엔트리에서 이름이 빠졌다. 결국 2군행이다.'}
+  return'"버티겠습니다." 감독은 말없이 고개만 끄덕였다.'};
+ACT.kbodown=function(){ME.hid.men=cl(ME.hid.men-2,20,80);return'퓨처스 구장으로 향하는 버스 안. 한 달 뒤엔 다시 올라가야 한다.'};
 
 </script>
 
