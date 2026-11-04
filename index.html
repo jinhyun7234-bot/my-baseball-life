@@ -8561,6 +8561,19 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
   const L=['와 진짜 재밌다 이게 가을야구지','심장 터지는 줄 1점 차 승부 미쳤다','오늘 경기 한 편의 드라마였다 진짜 재밌다','이래서 가을야구 본다 끝까지 손에 땀 쥠','야구 보면서 이렇게 떨린 거 오랜만이다 ㅋㅋ','1점 차 가을야구는 수명 깎이는데 너무 재밌음','명승부다 진짜 양 팀 다 박수'];
   const pool=L.filter(t=>!seenHas(t));if(!pool.length||out.some(c=>L.includes(c.t)))return out;const t=pick(pool);seenAdd(t);
   out.splice(Math.min(1,out.length),0,mkC(t,[{nk:pick(NICKS),t:pick(['ㄹㅇ 끝까지 못 끄겠더라','청심환 필요했음','이게 야구지','상대 팬이지만 인정'],),up:ri(80,900)}],{up:ri(2000,7000),must:1}))}catch(e){}return out}}
+/* 한 경기 출루율 .400 이상(3타석+)이면 욕·버스 댓글 금지, '할 건 했다' 류 위주 · 볼넷 3개 이상이면 출루 GOAT 댓글 */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||isP()||!Array.isArray(out)||!(x.gPA>=3)||x.gH==null)return out;const pa=x.gPA,ob=(x.gH||0)+(x.gBB||0),obp=ob/pa;if(obp<.4)return out;
+  const gn=giv(ME.name),bb=x.gBB||0,h=x.gH||0;
+  const NEG=/답답|자신감|못 쳐|무안타|침묵|부진|먹튀|문제는 아니|문제다|버스|멱살 잡고 살려|살려줬|업고|조용했|쉬어가|빠져라|빼라|2군|슬럼프|한심|실망|노답|혈압|정신 차려|끄지라|꺼져|역적|밥값|아쉽|안 맞|안맞|헛스윙|병살|삼진만|못하네|못했|갚으면|못 쳐도|웃기네|ㅉㅉ|에휴|끌고 갔|휴식하고|대타 쓰|경험이 (부족|필요)|작아지|방망이 집|할 말이 없|TV 끈|한 방이 부족|늦네|만회|감안|부상 있었|기용부터|못 따라|타이밍 (안|못)|방망이가 (안|무)|배트가 (안|늦)|못 살렸|기회를 날|존재감|어디 갔|안 보이|뭐 하냐|뭐했냐|출근하네/;
+  const NEG2=/연봉|계약 첫해|속 터|정규리그에서만|우승이 없다|출루 0|타순|풍경 감상|선풍기|갚아|잊고|무죄|곤란|소환|기복|쳐라|넘어간다|타구 질|몰아가|라도 잘하면|밈 붙|실패/,POS=/할 건|출루|볼넷|눈야구|GOAT|응원|믿고|유니폼|제 몫|알짜|최고|클래스|사랑|인정|기대|든든|역할|대단|멋/,me=new RegExp(gn);
+  const bad=t=>NEG.test(t)||NEG2.test(t)||(me.test(t)&&!POS.test(t));out=out.filter(c=>!bad(c.t));out.forEach(c=>{if(c.re)c.re=c.re.filter(r=>!bad(r.t))});
+  const add=[],put=(t,re,up)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,(re||[]).map(r=>({nk:pick(NICKS),t:r,up:ri(40,900)})),{up:up||ri(800,4000),must:1}))};
+  if(bb>=3){const t=josaFix(pick([`${gn} 출루 GOAT ㅋㅋㅋㅋ`,`볼넷 ${bb}개 ㅋㅋㅋ 투수들이 ${gn} 피해 다니네`,`${gn} 오늘 볼넷 ${bb}개 눈야구 장인 ㅋㅋㅋ`,`출루 머신 ${gn} ㅋㅋㅋㅋ 오늘만 ${ob}번 나감`]));seenAdd(t);add.push(mkC(t,[{nk:pick(NICKS),t:pick(['ㄹㅇ 출루 GOAT','볼 고르는 거 보소','투수들이 승부를 못 함 ㅋㅋ','이게 진짜 무서운 타자지']),up:ri(100,900)}],{up:ri(2500,7000),must:1}))}
+  if(0)put(pick([`${gn} 출루 GOAT ㅋㅋㅋㅋ`,`볼넷 ${bb}개 ㅋㅋㅋ 투수들이 ${gn} 피해 다니네`,`${gn} 오늘 볼넷 ${bb}개 눈야구 장인 ㅋㅋㅋ`,`출루 머신 ${gn} ㅋㅋㅋㅋ 오늘만 ${ob}번 나감`]),[pick(['ㄹㅇ 출루 GOAT','볼 고르는 거 보소','투수들이 승부를 못 함 ㅋㅋ','이게 진짜 4번 대우지'])],ri(2000,6000));
+  const L=h===0?[`안타는 없어도 출루 ${ob}번이면 할 건 다 했다`,`볼넷 골라내는 것도 실력이다 ${gn} 오늘 제 몫 함`,`타율은 몰라도 출루율로 보면 오늘 ${gn} 만점`,`무안타라고 까는 사람들 출루율 좀 봐라`,`${ob}번 출루했는데 뭘 더 바라냐 ㅋㅋ`]
+    :[`${pa}타석 ${ob}출루면 할 건 했다`,`${gn} 오늘 출루로 제 역할 다 함`,`꾸준히 나가주니까 뒤에서 쳐주는 거지`,`화려하진 않아도 ${gn} 오늘 알짜배기였다`];
+  L.sort(()=>R()-.5).slice(0,2).forEach(t=>put(t,R()<.6?[pick(['ㅇㅈ 출루가 최고','이게 보이지 않는 활약','볼넷도 안타랑 같은 1루임','팀 득점 절반은 ${gn} 출루에서 나옴'.replace('${gn}',gn)])]:[]));
+  out=add.concat(out)}catch(e){}return out}}
 
 </script>
 
