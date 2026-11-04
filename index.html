@@ -1974,9 +1974,9 @@ function faEvent(o,w,f){
    - 부상 등으로 출전이 적었으면 최근 2년 평균 WAR로 판단 */
 /* 골든글러브 확률: 2020~2025 실제 KBO 수상자 포지션별 평균 WAR 기준
    투수 6.9 · 포수 4.8 · 1루 4.8 · 2루 4.7 · 3루 6.5 · 유격 5.1 · 외야 6.0(3자리라 기준 −0.6) · 지명 4.3
-   평균에 가까우면 약 65%, 평균 +1이면 90%대, 평균 −1.5면 15% 안팎, 평균 −2 아래면 거의 없음 */
+   평균에 가까우면 약 65%, 평균 +1이면 90%대, 평균 −1.5면 15% 안팎, 평균 −2 아래면 거의 없음 · WAR 3.7 이하는 절대 수상 불가 */
 const GG_AVG={P:6.9,C:4.8,'1B':4.8,'2B':4.7,'3B':6.5,SS:5.1,LF:6.0,CF:6.0,RF:6.0,DH:4.3};
-function ggProb(w,pos){const m=(GG_AVG[pos]||5)-(/^(LF|CF|RF)$/.test(pos)?.6:0)-.35;return 1/(1+Math.exp(-(w-m)/.5))}
+function ggProb(w,pos){if(w<=3.7)return 0;const m=(GG_AVG[pos]||5)-(/^(LF|CF|RF)$/.test(pos)?.6:0)-.35;return 1/(1+Math.exp(-(w-m)/.5))}
 function releaseCut(o,w,a,L){try{if(a<27)return false;
   const AW=/MVP|최우수|골든글러브|왕|다승|구원|탈삼진|평균자책|세이브|타점|도루|올스타/;if((S.awards||[]).some(x=>x&&x.y>=S.y-1&&AW.test(x.n)&&!/우승$/.test(x.n)))return false;
   const thr=a>=38?L+2:a>=34?L-2:a>=31?L-6:L-11,needW=a>=38?1.5:a>=34?1:a>=31?.5:0;
@@ -7958,6 +7958,11 @@ FEV.push({sr:1,t:'후배에게 심부름?',x:'원정 숙소. 피곤해 죽겠는
   const done=new Set();TR.forEach(t=>{if(!t||!t.a||t.neg||done.has(t.id))return;done.add(t.id);
     for(const k in t.a){const v=t.a[k];if(typeof v!=='number')continue;t.a[k]=k==='hr'?+(1+(v-1)*F).toFixed(4):+(v*F).toFixed(4)}
     t.d=fixD(t.d);const sk=SKILLS.find(s=>s.id===t.id);if(sk)sk.d=t.d})})();
+/* 훈련 상호 보너스 (아주 살짝): 주루 훈련으로 오른 주력의 12%만큼 수비 범위도 상승 · 수비 훈련으로 오른 수비력의 10%만큼 주력도 상승 */
+{const _tm=trainMonth;trainMonth=function(rep){const b=ME&&ME.r?{spd:ME.r.spd,fld:ME.r.fld,rng:ME.r.rng}:null;const r=_tm(rep);try{if(b&&!isP()){
+  const ds=(ME.r.spd||0)-(b.spd||0),df=(ME.r.fld||0)-(b.fld||0);
+  if(ds>0&&ME.r.rng!=null&&ME.r.rng<80)ME.r.rng=Math.min(80,ME.r.rng+ds*.12);
+  if(df>0&&ME.r.spd!=null&&ME.r.spd<80)ME.r.spd=Math.min(80,ME.r.spd+df*.10)}}catch(e){}return r}}
 
 /* ===================== 수비 약한 타자: 지명타자 · 대타 출전 / 가을야구 벤치 멤버 출전 분배 ===================== */
 /* 방망이 점수(수비 제외)와 수비 적합도 */
