@@ -2138,17 +2138,17 @@ CM.faFair=['이 가격이면 혜자 계약','합리적인 계약 프런트 칭�
 CM.faBig=['{yrs}년 {tot}? 거품이다 진짜','KBO에서만 통하는 우물 안 개구리한테 {tot}','오버페이 확정 4년 뒤에 보자','이 돈이면 외국인 선수 셋 산다','FA로이드 끝나면 먹튀각','계약 끝날 때 {endAge}살인데 괜찮냐','구단이 돈 쓸 데가 없나 ㅋㅋ','{tot} 받을 그릇인지는 모르겠다','시장가 다 망가뜨렸네','그래도 잡을 선수는 잡아야지','우승하면 아무도 오버페이 소리 안 함','이 정도면 레전드 대우 맞음'];
 function profilePools(){const neg=[],pos=[],{b,p}=yearTot(S.y),tb=careerTot(PRO).b,f=x=>Math.round(DV(x));
   if(!isP()){const gdp=b.GDP||0,kr=b.PA?b.K/b.PA:0;
-    if(E('spd')<45)neg.push(`주력 ${f(E('spd'))}에 병살 ${gdp}개… 발 때문에 다 잡아먹음`,'발이 느려서 내야안타는 기대도 안 함',`병살타 ${gdp}개면 찬스 때 무서움`);
+    if(E('spd')<45){neg.push('발이 느려서 내야안타는 기대도 안 함');if(b.PA>=150&&gdp>=8)neg.push(`주력 ${f(E('spd'))}에 병살 ${gdp}개… 발 때문에 다 잡아먹음`,`병살타 ${gdp}개면 찬스 때 무서움`)}
     if(gdp>=14)neg.push(`올해만 병살 ${gdp}개 실화?`,'1사 1루면 병살 각 잡고 봄 ㅋㅋ');
-    if(E('eye')<45)neg.push(`볼넷을 너무 못 고름 출루율 ${obp(b)}`,'유인구에 배트가 자동으로 나감');
+    if(E('eye')<45){neg.push('유인구에 배트가 자동으로 나감');if(b.PA>=100)neg.push(`볼넷을 너무 못 고름 출루율 ${obp(b)}`)}
     if(kr>.25&&b.PA>100)neg.push(`삼진 ${b.K}개… 선풍기 돌리냐`,'변화구 오면 그냥 헛스윙 각');
-    if(E('fld')<45&&b.E>=8)neg.push(`수비 들어가면 불안함 실책 ${b.E}개`,'공 날아가면 기도부터 함 ㅋㅋ');
+    if(E('fld')<45&&b.E>=8&&b.PA>=100)neg.push(`수비 들어가면 불안함 실책 ${b.E}개`,'공 날아가면 기도부터 함 ㅋㅋ');
     if(E('pow')<45&&b.HR<8)neg.push('장타가 없어서 클린업은 무리','홈런 기대하면 실망함');
-    if(E('spd')>=65)pos.push(`주루 센스 미쳤다 도루 ${b.SB}개`,'1루에 나가면 투수가 신경 쓰는 게 보임');
-    if(E('eye')>=65)pos.push(`선구안 미쳤음 볼넷 ${b.BB}개`,'공 골라내는 거 보면 투수가 질려함');
+    if(E('spd')>=65){pos.push('1루에 나가면 투수가 신경 쓰는 게 보임');if(b.SB>=10)pos.push(`주루 센스 미쳤다 도루 ${b.SB}개`)}
+    if(E('eye')>=65){pos.push('공 골라내는 거 보면 투수가 질려함');if(b.PA>=100&&b.BB/b.PA>=.1)pos.push(`선구안 미쳤음 볼넷 ${b.BB}개`)}
     if(E('rng')>=65)pos.push('수비만 봐도 입장료 아깝지 않음','타구가 그쪽으로 가면 안심됨')}
   else{const ip=p.outs/3;
-    if(E('ctl')<45)neg.push(`볼넷 ${p.BB}개 볼질 좀 그만`,'카운트 싸움을 못 함 맨날 풀카운트');
+    if(E('ctl')<45){neg.push('카운트 싸움을 못 함 맨날 풀카운트');if(ip>=20&&p.BB/ip*9>=4)neg.push(`볼넷 ${p.BB}개 볼질 좀 그만`)}
     if(ip>30&&p.HR/ip*9>1.3)neg.push(`피홈런 ${p.HR}개… 배팅볼이냐`,'실투 하나가 꼭 담장 넘어감');
     if(ME.pos==='SP'&&E('sta')<45)neg.push('5이닝 넘기는 걸 못 봄','100구 근처 가면 구위 뚝 떨어짐');
     if(E('velo')>=65)pos.push(`구속 ${kmh(E('velo'))} 찍히는 거 보고 소름`,'직구 하나로 윽박지름');
@@ -5119,7 +5119,14 @@ function slotPitchLines(tone){if(!isP()||S.stage!=='pro')return[];const o=[],goo
 
 /* ===================== 부상 복귀 기사 · 복귀 환영 댓글 ===================== */
 {const _ms5=monthStep;monthStep=function(rep){const inj0=ME&&ME.inj?{...ME.inj}:null;_ms5(rep);try{if(inj0&&!ME.inj&&S.stage==='pro'&&S.pro&&!S.pro.dev&&((inj0.sev||1)>=2||(inj0.wk||0)>=4)&&S.injRetY!==S.y+':'+S.m){S.injRetY=S.y+':'+S.m;
-  article(`'돌아온 ${ME.name}' ${inj0.n||'부상'} 털고 복귀`,`${jo(ME.name,"이","가")} 부상을 이겨내고 그라운드로 돌아왔다. 팬들의 함성이 쏟아졌다.`,'injRet',{inj:inj0.n})}}catch(e){}}}
+  const c=injRetCtx(),nm=ME.name,inj=inj0.n||'부상';
+  if(c.camp)article(`[스프링캠프] ${nm}, ${inj} 털고 캠프 훈련 합류`,`${jo(nm,"이","가")} 재활을 마치고 스프링캠프 훈련에 정상 합류했다. 개막에 맞춰 컨디션을 끌어올릴 계획이다.`,'injRet',{inj:inj0.n,camp:1,rk:c.rookie,fut:c.fut});
+  else if(c.fut)article(`[${c.lvN}] ${nm}, ${inj} 털고 실전 복귀`,`${jo(nm,"이","가")} 재활을 마치고 ${c.lvN} 경기에 복귀했다. 몸 상태를 점검하며 ${c.up} 콜업을 노린다.`,'injRet',{inj:inj0.n,rk:c.rookie,fut:1});
+  else article(`'돌아온 ${nm}' ${inj} 털고 복귀`,`${jo(nm,"이","가")} 부상을 이겨내고 그라운드로 돌아왔다. 팬들의 함성이 쏟아졌다.`,'injRet',{inj:inj0.n,rk:c.rookie})}}catch(e){}}}
+/* 복귀 상황: 캠프 중인지 · 2군/마이너인지 · 1군(메이저) 출전 경험이 있는지 */
+function injRetCtx(){const mlb=S.pro&&S.pro.league==='MLB',top=careerTot(['KBO','MLB','NPB']),played=(top.b.G||0)+(top.p.G||0)>0;
+  let fut=false;try{fut=!!(S.pro.dev||/^f/.test(S.role||'')||(typeof artMinor==='function'&&artMinor()))}catch(e){}
+  return{camp:S.phase===0,fut,rookie:!played,mlb,lvN:mlb?'마이너':'퓨처스',up:mlb?'메이저리그':'1군'}}
 function injRetLines(){const P=isP(),nm=ME.name,gn=giv(nm),gA=jo(gn,'아','야'),gI=jo(gn,'이','가'),kbo=S.pro.league==='KBO',T=kbo?TEAMS[S.pro.team]:null,nick=T?T.nick:(myMLBNick?myMLBNick():S.pro.tname),park=T?(PARK2[T.nick]||'홈구장'):'홈구장';
   let mate=null;try{if(kbo){const L=S.lp.filter(p=>p.t===S.pro.team&&(P?p.k!=='B':p.k==='B'));if(L.length)mate=pick(L).n}}catch(e){}
   const others=TEAMS.filter((t,i)=>!kbo||i!==S.pro.team),oth=pick(others).nick,o2=pick(others).nick;
@@ -5134,9 +5141,17 @@ function injRetLines(){const P=isP(),nm=ME.name,gn=giv(nm),gA=jo(gn,'아','야')
   if(mate)o.push(`${jo(mate,'이','가')} ${gn} 공백 100% 채워줘서 너무너무 고맙다... 좀 지친 거 같은데 그동안 수고했어!!`);
   if(!P&&E('eye')>=60)o.push(`예전처럼 출루머신이 되길 (오늘도 출루를...ㄷㄷ)`);if(!P)o.push('기다렸다,, 이 등장을. 그리고 시원한 안타.');else o.push('기다렸다,, 이 등장을. 그리고 시원한 삼진.');
   return o}
-{const _c25=comments;comments=function(tone,x){if(tone!=='injRet')return _c25(tone,x);const out=[];try{const L=injRetLines().filter(t=>!seenHas(t)),n=Math.min(L.length,ri(6,8));
+{const _c25=comments;comments=function(tone,x){if(tone!=='injRet')return _c25(tone,x);const out=[];try{const L=((x&&(x.camp||x.fut||x.rk))?injRetLines2(x):injRetLines()).filter(t=>!seenHas(t)),n=Math.min(L.length,(x&&(x.camp||x.fut||x.rk))?ri(3,5):ri(6,8));
   for(let i=0;i<n;i++){const t=L.splice(ri(0,L.length-1),1)[0];seenAdd(t);out.push({nk:pick(NICKS),fl:S.pro&&S.pro.league==='KBO'&&R()<.6?TEAMS[S.pro.team].nick:null,t,up:Math.round(ri(40,360)*(1+S.rel.fame/20)),dn:ri(0,4),ago:pick(AGO),re:R()<.3?[{nk:pick(NICKS),t:pick(['ㄹㅇ 나도 울었음','222','이제 아프지만 말자','진짜 기다렸다 ㅠㅠ']),up:ri(10,120)}]:[]})}
   out.sort((a,b)=>b.up-a.up)}catch(e){}return out}}
+
+/* 캠프 합류 · 2군 복귀 · 1군 데뷔 전 선수: 경기·응원가·그리움 얘기 없이 상황에 맞게 */
+function injRetLines2(x){const gn=giv(ME.name),c=injRetCtx(),P=isP(),o=[];
+  if(x.camp){o.push(`시즌 전에 돌아와서 진짜 다행이다`,`개막 맞춰서 몸 잘 만들자 무리하지 말고`,`캠프 사진 보니까 ${gn} 표정 밝아서 좋다`,`재활 끝나고 바로 캠프 합류면 관리 잘했네`,`이번엔 아프지 말고 풀시즌 가자`,P?`불펜 피칭 영상 올라왔던데 공 괜찮아 보이더라`:`배팅 훈련 영상 올라왔던데 스윙 괜찮아 보이더라`,`시범경기 때 컨디션 한번 보자`)}
+  else{o.push(`${c.lvN}에서 천천히 감 찾으면 된다`,`무리해서 서두르지 말자 몸이 먼저다`,`${c.lvN} 복귀전 기록 보니까 몸 상태는 괜찮은 듯`,`이제 건강하게 ${c.up} 올라가는 것만 보자`)}
+  if(x.rk)o.push(`아직 ${c.up} 데뷔도 전인데 부상이라 걱정했다 다행이다`,`유망주는 아프지 않는 게 제일 중요함`,`건강하게 돌아왔으니 이제 ${c.up} 데뷔전 보고 싶다`);
+  else o.push(`건강하게 돌아왔으니 다시 ${c.up}에서 보자`,`공백 길었는데 ${gn} 복귀 환영한다`);
+  return o}
 
 /* ===================== 포스트시즌 1~2점 차 명승부 (시리즈 계속) 댓글 ===================== */
 function classicLines(x){const nm=ME.name,gn=giv(nm),win=x.win!==false,mlb=S.pro&&S.pro.league==='MLB',nick=mlb?(typeof myMLBNick==='function'?myMLBNick():S.pro.tname):(S.pro&&S.pro.league==='KBO'?TEAMS[S.pro.team].nick:'한국'),
@@ -8708,9 +8723,9 @@ function phaseTopHtml(){try{const r=S.report;if(!r||!(r.ph===1||r.ph===2))return
   add('HLD',sr(rel*P.h*good)-m.HLD);if(P.s)add('SV',sr(rel*P.s*good)-(k==='CL'?99:0)-(k!=='CL'?m.SV:0));
   add('W',sr(rel*P.w*cl(1.2-era/12,.5,1.2))-m.W);add('L',sr(rel*P.l*bad)-m.L)}catch(e){}return r}}
 /* 2군·마이너에서 뛰는 동안의 내 경기·활약 기사엔 머리말: [퓨처스] / [마이너] (리그 용어 그대로) */
-{const LIFE=/wedding|love|baby|famDay|gfbreak|marry|scandal|salary|move|franMove|homeBack|trade|injury|draft|retire|legend|hof|award/;
+{const LIFE=/wedding|love|baby|famDay|gfbreak|marry|scandal|salary|move|franMove|homeBack|trade|injury|injRet|draft|retire|legend|hof|award/;
  const _ar=article;article=function(head,body,tone,x){const prev=S&&S._cmMinor;try{S._cmMinor=null;const mi=(typeof head==='string'&&/선언|계약|입단|지명|직행|사인|도전/.test(head))?null:artMinor();if(mi&&!LIFE.test(String(tone||''))&&!(x&&(x.ps||x.intl))){S._cmMinor=mi;if(mi.mlb&&typeof head==='string')head=head.replace(/ ?\(MLB\)/g,'');if(typeof head==='string'&&head.indexOf(ME.name)>=0&&!/\[(마이너|퓨처스)/.test(head)&&!/^\[(?!\d{4} )/.test(head)){const m=head.match(/^\[(\d{4} [^\]]*)\] /);if(m)head=`[${m[1]} · ${mi.mlb?mi.ln:'퓨처스'}] `+head.slice(m[0].length);else head=`[${mi.lab}] `+head.replace(/^\[(퓨처스|마이너)\] /,'')}if(mi.mlb&&typeof body==='string')body=body.replace(/ ?\(MLB\)/g,` 산하 ${mi.ln}`)}
-  else if(!mi&&S.stage==='pro'&&S.pro&&!S.pro.dev&&typeof head==='string'&&head.indexOf(ME.name)>=0&&!LIFE.test(String(tone||''))&&!/award|contract|trade|retire|ring|ws|intl/.test(String(tone||''))&&!(x&&(x.ps||x.intl))&&!/^\[(?!\d{4} )/.test(head)&&!/\[(메이저|KBO 1군|1군)/.test(head)&&!/대한민국|국가대표|아시안게임|WBC|올림픽|프리미어|대표팀|전역|입대|은퇴/.test(head)){
+  else if(!mi&&S.stage==='pro'&&S.phase!==0&&S.pro&&!S.pro.dev&&typeof head==='string'&&head.indexOf(ME.name)>=0&&!LIFE.test(String(tone||''))&&!/award|contract|trade|retire|ring|ws|intl/.test(String(tone||''))&&!(x&&(x.ps||x.intl))&&!/^\[(?!\d{4} )/.test(head)&&!/\[(메이저|KBO 1군|1군)/.test(head)&&!/대한민국|국가대표|아시안게임|WBC|올림픽|프리미어|대표팀|전역|입대|은퇴/.test(head)){
     const lv=S._artLv||S.pro.league;const lab=lv==='MLB'?'메이저리그':lv==='KBO'?'KBO 1군':null;if(lab){const m=head.match(/^\[(\d{4} [^\]]*)\] /);head=m?`[${m[1]} · ${lab}] `+head.slice(m[0].length):`[${lab}] `+head}}}catch(e){}try{return _ar(head,body,tone,x)}finally{S._cmMinor=prev||null}}}
 /* 지금 기사가 2군/마이너 경기 내용인지: 결산 기사는 그 기간 실제 뛴 레벨 기준 */
 const MLV={AAA:'트리플A',AA:'더블A',A:'싱글A'};
