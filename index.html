@@ -8910,7 +8910,8 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
 {const _ms=monthStep;monthStep=function(rep){try{if(S.pro&&S.pro.team==null)S.pro.team=0}catch(e){}return _ms(rep)}}
 /* 진동 손맛: 투수 삼진·병살 길게 / 타자 장타·홈런은 안타보다 길게 */
 {const _sg=stepGame;stepGame=function(g){const r=_sg(g);try{const e=g&&g.ev&&g.ev[g.idx];if(!e)return r;let pat=null;const c=e.c||'',t=e.t||'';
-  if(isP()&&/\bme\b/.test(c)){if(/\bkk\b/.test(c)||/삼진/.test(t))pat=[70,40,110];else if(/\(병살!?\)/.test(t))pat=[50,35,50,35,110]}
+  if(!isP()&&/\bdef\b/.test(c)&&/\bme\b/.test(c))pat=[90,40,130,40,180];
+  else if(isP()&&/\bme\b/.test(c)){if(/\bkk\b/.test(c)||/삼진/.test(t))pat=[70,40,110];else if(/\(병살!?\)/.test(t))pat=[50,35,50,35,110]}
   else if(!isP()&&e.last&&e.last.me){const k=e.last.t;pat=k==='HR'?[90,40,130,40,220]:k==='2B'||k==='3B'?[60,30,100]:k==='1B'?[30,20,40]:null}
   if(pat)setTimeout(()=>haptic(pat),5)}catch(er){}return r}}
 /* 메이저 난이도 아주 살짝↑ (리그 수준 59 → 59.5) */
