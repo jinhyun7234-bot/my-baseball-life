@@ -6155,7 +6155,7 @@ function mlbOpp(name,sd){const s=sd.seed,sx=sd.seeds,other=mlbSeeds(sd.tbl,sd.lg
 /* mlbPost 안의 대진 풀 교체 */
 function mlbRoundOpp(){try{if(!S._mlbBr)return null;const nm=(S._mlbRN||[])[S._mlbRi++]||'';return mlbOpp(nm,S._mlbBr)[0]||null}catch(e){return null}}
 /* 홈 화면 순위 문구 */
-{const _mrl=myRankLine;myRankLine=function(){const r=_mrl();try{if(r&&S.pro&&S.pro.league==='MLB'){const sd=mlbSeed();r.t=`${sd.lg} ${sd.div}지구 ${sd.divRank}위${sd.seed>=1?` · 시드 ${sd.seed}`:` · WC ${sd.wcRank}위`}`}}catch(e){}return r}}
+{const _mrl=myRankLine;myRankLine=function(){const r=_mrl();try{if(r&&S.pro&&S.pro.league==='MLB'){const sd=mlbSeed();r.t=`${sd.lg==='AL'?'AL':'NL'} ${sd.div}지구 ${sd.divRank}위${sd.divRank===1?'':` · 와일드카드 ${sd.wcRank}위`}`}}catch(e){}return r}}
 /* 정규시즌 종료 화면 */
 {const _re=regEndItem;regEndItem=function(){const q=_re();try{if(q&&S.pro.league==='MLB'){const sd=mlbSeed();q.rank=`${sd.lg==='AL'?'아메리칸리그':'내셔널리그'} ${sd.div}지구 ${sd.divRank}위`;q.tag=sd.seed===1||sd.seed===2?`지구 우승 · ${sd.seed}번 시드 — 디비전 시리즈 직행`:sd.seed===3?'지구 우승 · 3번 시드 — 와일드카드 시리즈 (홈)':sd.seed>=4?`와일드카드 ${sd.seed-3}위 — 와일드카드 시리즈`:`와일드카드 ${sd.wcRank}위 — 포스트시즌 탈락`;q.ok=sd.seed>=1}}catch(e){}return q}}
 /* 기록 > 리그 > MLB 순위: 지구별 표 + 와일드카드 레이스 */
@@ -8665,8 +8665,11 @@ function phaseTopHtml(){try{const r=S.report;if(!r||!(r.ph===1||r.ph===2))return
   const pn=PHASE[r.ph];let h=`<div class="ptop"><div class="ptop-k">${r.y} ${pn} 내 성적</div>${phaseStatTbl([[pn,g&&g.m],[r.ph===2?'시즌':'시즌',sm]],P)}<div class="ptop-k" style="margin-top:6px">팀 순위</div>`;
   if(lg==='KBO'){ensureLP();const st=standings(),lw=st[0].w,ll=st[0].l,my=S.pro.team;
     h+=`<div class="tblw"><table class="tbl nv ptbl"><thead><tr><th>#</th><th class="l">팀</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>차</th></tr></thead><tbody>${st.map((x,i)=>{const gb=((lw-x.w)+(x.l-ll))/2;return`<tr class="${x.i===my?'me':''}${i===4?' cut':''}"><td><b>${i+1}</b></td><td class="l">${TEAMS[x.i].nick}</td><td>${x.w}</td><td>${x.l}</td><td>${x.d}</td><td><b>${f3(x.w,x.w+x.l)}</b></td><td>${gb?gb.toFixed(1):'-'}</td></tr>`}).join('')}</tbody></table></div>`}
-  else if(lg==='MLB'){const {g:gp,out}=mlbStandings(),myLg=MLB30.AL.includes(myMLBNick())?'AL':'NL',L=out[myLg]||[];if(gp&&L.length){const top=L[0];
-    h+=`<div class="tiny muted">${myLg==='AL'?'아메리칸리그':'내셔널리그'}</div><div class="tblw"><table class="tbl nv ptbl"><thead><tr><th>#</th><th class="l">팀</th><th>승</th><th>패</th><th>승률</th><th>차</th></tr></thead><tbody>${L.map((x,i)=>({x,i})).filter(({x,i})=>i<6||x.me).map(({x,i})=>{const gb=((top.w-x.w)+(x.l-top.l))/2;return`<tr class="${x.me?'me':''}${i===5?' cut':''}"><td><b>${i+1}</b></td><td class="l">${esc(x.n||x.t||'')}</td><td>${x.w}</td><td>${x.l}</td><td><b>${f3(x.w,x.w+x.l)}</b></td><td>${gb?gb.toFixed(1):'-'}</td></tr>`}).join('')}</tbody></table></div>`}}
+  else if(lg==='MLB'){const {g:gp,out}=mlbStandings(),myLg=myMLBLg();if(gp&&out[myLg]){const S6=mlbSeeds(out,myLg),dv=S6.dv.find(d=>d.rows.some(r=>r.me))||S6.dv[0],LN=myLg==='AL'?'아메리칸리그':'내셔널리그';
+    const T=(rows,lead,cut,rk)=>`<div class="tblw"><table class="tbl nv ptbl"><thead><tr><th>#</th><th class="l">팀</th><th>승</th><th>패</th><th>승률</th><th>차</th></tr></thead><tbody>${rows.map((x,i)=>{const gb=((lead.w-x.w)+(x.l-lead.l))/2;return`<tr class="${x.me?'me':''}${i===cut?' cut':''}"><td><b>${rk?rk(x,i):i+1}</b></td><td class="l">${esc(x.n)}</td><td>${x.w}</td><td>${x.l}</td><td><b>${f3(x.w,x.w+x.l)}</b></td><td>${gb>0?gb.toFixed(1):gb<0?'+'+(-gb).toFixed(1):'-'}</td></tr>`}).join('')}</tbody></table></div>`;
+    h+=`<div class="tiny muted">${LN} ${dv.d}지구</div>${T(dv.rows,dv.rows[0],-1)}`;
+    const myWc=S6.wc.findIndex(r=>r.me);if(myWc!==-1||true){const wcRows=S6.wc.map((x,i)=>({x,i})).filter(({x,i})=>i<5||x.me);h+=`<div class="tiny muted" style="margin-top:6px">와일드카드 (상위 3팀 진출)</div>${T(wcRows.map(o=>o.x),S6.wc[2]||S6.wc[0],3,(x,k)=>wcRows[k].i+1)}`}
+    const si=S6.seeds.findIndex(r=>r.me);h+=`<div class="tiny muted" style="margin-top:4px">${si===-1?'':si<3?`지구 1위 · 현재 ${si+1}번 시드`:`와일드카드 ${si-2}위 · 현재 ${si+1}번 시드`}</div>`}}
   return h+'</div>'}catch(e){return''}}
 {const _vt=vTurn;vTurn=function(){let h=_vt();try{const r=S.report;if(!r)return h;const key=`${r.y} ${PHASE[r.ph]} 결과`,i=h.indexOf(key);if(i<0)return h;const j=h.indexOf('</span>',i);if(j<0)return h;const add=phaseTopHtml();if(add)h=h.slice(0,j+7)+add+h.slice(j+7)}catch(e){}return h}}
 /* 시즌 마무리 순서 정리: (국제대회) → 정규시즌 종료/가을야구 진출 → 가을야구 경기 → 가을야구 시상 → 정규시즌 시상(MVP 등) → 시즌 결산 → 나머지(연봉 협상·캠프 등) */
@@ -8839,11 +8842,11 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
   let P=S._psR;if(!P||P.y!==S.y)P=S._psR={y:S.y,day:0,last:-99,any:0,pend:0};
   const mlb=S.pro&&S.pro.league==='MLB';
   if(gn===1){P.day+=P.any?1+(mlb?ri(1,3):1):0}else P.day+=1+((gn===3||gn===6)&&need>=4?1:0);P.any=1;
-  const rest=P.day-P.last-1,sta=E('sta'),okRest=rest>=4||(rest===3&&sta>=66);
+  const rest=P.day-P.last-1,sta=E('sta'),okRest=rest>=4||(rest===3&&sta>=66&&!P.lastShort);
   const isStart=r===base;
   if(isStart&&!okRest){P.pend=1;return rest>=2&&g7&&R()<.25?'MR':'none'}
   if(!isStart&&P.pend&&okRest&&gn<=3){r=base}
-  if(r===base){P.last=P.day;P.pend=0;if(rest===3){S._srNow=1}}
+  if(r===base){P.last=P.day;P.pend=0;P.lastShort=rest===3?1:0;if(rest===3){S._srNow=1}}
   else if(r==='MR'&&rest<2)r='none';S._psRoleNow=r}catch(e){}return r}}
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(S._srNow&&isP()&&x&&x.ps&&Array.isArray(out)&&x.ipO>=15){const good=(x.ra||0)<=2&&x.ipO>=15;
   const L=good?['3일 쉬고 나와서 이렇게 던진다고? 체력 괴물이네','체력이 좋네 3일 쉬고 와도 ㅈㄴ 잘 던지네','짧은 휴식인데 구속 안 떨어진 거 봐라 몸이 다르다','에이스는 에이스다 3일 휴식 등판을 이렇게 버티네','7차전 던지고 또 나온다고 걱정했는데 쓸데없는 걱정이었음']:
@@ -8855,14 +8858,16 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
   [['con',54.4],['pow',51.4],['eye',52.2]].forEach(([k,t])=>{const m=mean(B,k);B.forEach(p=>{p[k]=cl(p[k]-(m-t)*.85,28,79)})})}catch(e){}}}
 /* MLB 개인 타이틀 (리그 1위 기준선과 비교) */
 {const _aw=awards;awards=function(rep){_aw(rep);try{if(!(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'))return;const rows=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB');if(!rows.length)return;
-  if(S.awards.some(a=>a.y===S.y&&/^MLB (다승|평균자책|탈삼진|세이브|홈런|타격|타점|도루)/.test(a.n)))return;const P=isP(),got=[];
+  if(S.awards.some(a=>a.y===S.y&&/^MLB (다승|평균자책|탈삼진|세이브|홀드|홈런|타격|타점|도루|최다안타|득점|출루율|장타율)/.test(a.n)))return;const P=isP(),got=[];
   const give=n=>{got.push(n);S.awards.push({y:S.y,n:'MLB '+n});S.rel.fame=cl(S.rel.fame+3,0,100);feat(`${S.y} MLB ${n} 타이틀 획득`,1)};
   if(P){const p=rows.reduce((a,r)=>(addTo(a,r.p),a),blankP()),ip=p.outs/3,era=p.outs?p.R*27/p.outs:99;
-    if(p.W>=Math.round(rn(17.5,1.6)))give('다승왕');if(ip>=162&&era<=rn(2.45,.28))give('평균자책점왕');if(p.K>=Math.round(rn(255,18)))give('탈삼진왕');if((p.SV||0)>=Math.round(rn(43,3.5)))give('세이브왕')}
+    if(p.W>=Math.round(rn(17.5,1.6)))give('다승왕');if(ip>=162&&era<=rn(2.45,.28))give('평균자책점왕');if(p.K>=Math.round(rn(255,18)))give('탈삼진왕');if((p.SV||0)>=Math.round(rn(43,3.5)))give('세이브왕');if((p.HLD||0)>=Math.round(rn(36,3.5)))give('홀드왕')}
   else{const b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB()),avg=b.AB?b.H/b.AB:0;
-    if(b.PA>=502&&avg>=rn(.33,.012))give('타격왕');if(b.HR>=Math.round(rn(46,4)))give('홈런왕');if(b.RBI>=Math.round(rn(125,8)))give('타점왕');if(b.SB>=Math.round(rn(50,7)))give('도루왕')}
+    const obp=b.PA?(b.H+b.BB)/b.PA:0,slg=b.AB?(b.H+(b.D||0)+2*(b.T||0)+3*b.HR)/b.AB:0,q=b.PA>=502;
+    if(q&&avg>=rn(.33,.012))give('타격왕');if(b.HR>=Math.round(rn(46,4)))give('홈런왕');if(b.RBI>=Math.round(rn(125,8)))give('타점왕');if(b.SB>=Math.round(rn(50,7)))give('도루왕');
+    if(b.H>=Math.round(rn(200,8)))give('최다안타');if(b.R>=Math.round(rn(122,7)))give('득점왕');if(q&&obp>=rn(.425,.015))give('출루율왕');if(q&&slg>=rn(.615,.025))give('장타율왕')}
   if(!got.length)return;rep.lines.push(`MLB ${got.join('·')} 타이틀 획득!`);news(`${ME.name}, ${S.y} 메이저리그 ${got.join('·')} 차지`);
-  if(P&&got.includes('다승왕')&&got.includes('평균자책점왕')&&got.includes('탈삼진왕'))feat('MLB 투수 트리플 크라운!',1);
+  if(P&&got.includes('다승왕')&&got.includes('평균자책점왕')&&got.includes('탈삼진왕'))feat('MLB 투수 트리플 크라운!',1);if(!P&&got.includes('타격왕')&&got.includes('홈런왕')&&got.includes('타점왕'))feat('MLB 타격 트리플 크라운!',1);
   article(`${ME.name}, 메이저리그 ${got.join('·')} 등극`,`${jo(ME.name,'이','가')} 올 시즌 메이저리그 ${got.join(', ')} 타이틀을 거머쥐었다.`,'award')}catch(e){}}}
 /* MLB(및 산하 마이너) 감독은 이름 없이 '감독'으로 */
 {const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(S.stage==='pro'&&S.pro&&S.pro.league!=='KBO'&&S.coach!=='감독')S.coach='감독'}catch(e){}}}
@@ -8880,6 +8885,10 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
     const why=pick([`"우리, 서로 너무 다른 곳을 보고 있는 것 같아."`,`"난 늘 기다리기만 하는 것 같아. 이제 좀 지쳤어."`,`"너는 야구가 먼저잖아. 그게 나쁜 건 아닌데… 나는 아니야."`,`긴 대화 끝에 서로를 위해 각자의 길을 가기로 했다.`]);
     out.push({title:'💔 이별',text:`${why}\n${jo(n,'과','와')} 헤어졌다. 마음은 무겁지만, 혼자 쓰는 시간은 늘었다.`,ch:[{t:'받아들이고 야구에 집중한다',s:'멘탈↓ · 피로↓',act:'lifeok'}]})}}catch(e){}return out}}
 {const _pt=phaseTopHtml;phaseTopHtml=function(){const r=S.report,_mg=mlbGames;try{if(r&&(r.ph===1||r.ph===2))mlbGames=()=>r.ph===1?105:162;return _pt()}finally{mlbGames=_mg}}}
+/* 고교→MLB 직행: KBO 팀 인덱스가 없어 일부 댓글 생성이 멈추던 문제 방지 (연고 팀 하나 지정, 표시에는 안 쓰임) */
+{const _md=ACT.mlbDirect;if(_md)ACT.mlbDirect=function(a){const r=_md.apply(this,arguments);try{if(S.pro&&S.pro.team==null)S.pro.team=S.school!=null?(S.school%10):ri(0,9)}catch(e){}return r}}
+{const _ld=load;load=function(){const s=_ld.apply(this,arguments);try{if(s&&s.pro&&s.pro.team==null)s.pro.team=0}catch(e){}return s}}
+{const _ms=monthStep;monthStep=function(rep){try{if(S.pro&&S.pro.team==null)S.pro.team=0}catch(e){}return _ms(rep)}}
 
 </script>
 
