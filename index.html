@@ -9444,6 +9444,19 @@ function eyeDP(){try{if(isP())return 1;const d=DV(E('eye'));return d<55?Math.min
     const blk=gs.map(g=>{const t=yearTot(r.y,[g.lvk]),sm=P?t.p:t.b;return`<div class="ptop-k">${r.y} ${pn} 내 성적 · ${NM[g.lvk]||'퓨처스'}</div>${phaseStatTbl([[pn,g.m],['시즌',sm]],P)}`}).join('');
     if(!h)return`<div class="ptop">${blk}</div>`;
     const k=h.indexOf('<div class="ptop-k" style="margin-top:6px">팀 순위');return k>=0?h.slice(0,k)+`<div style="margin-top:6px"></div>`+blk+h.slice(k):h.replace(/<\/div>$/,blk+'</div>')}catch(e){return h}}}
+/* ===== 시즌 결산: 1군·퓨처스(마이너) 오간 시즌이면 두 성적 모두 · 퓨처스만 뛴 시즌도 결산 ===== */
+function srecFut(y){const mlb=S.pro&&S.pro.league==='MLB',lvs=mlb?['AAA','AA','A','fut']:['fut'],P=isP(),{b,p}=yearTot(y,lvs);if(!(P?p.outs:b.PA))return null;
+  const used=lvs.filter(l=>S.rows.some(r=>r.y===y&&r.lv===l&&(P?r.p.outs:r.b.PA))),NM={AAA:'트리플A',AA:'더블A',A:'싱글A',fut:mlb?'마이너':'퓨처스'};
+  const lab=mlb?(used.length===1?NM[used[0]]:'마이너'):'퓨처스';
+  const line=P?[['경기',p.G],['승',p.W],['패',p.L],['홀드',p.HLD||0],['세이브',p.SV||0],['ERA',era(p)],['이닝',ip(p.outs)],['탈삼진',p.K]]:[['타율',b.AB?avg(b):'-'],['홈런',b.HR],['타점',b.RBI],['득점',b.R],['안타',b.H],['도루',b.SB],['OPS',ops(b)]];
+  return{lab,line}}
+{const _bs=buildSeasonRecap;buildSeasonRecap=function(){const q=_bs.apply(this,arguments);try{const P=isP(),{b,p}=yearTot(q.y,[S.pro.league]);q.has1=!!(P?p.outs:b.PA);q.fut=srecFut(q.y);q.upLab=S.pro.league==='MLB'?'메이저리그':'1군';q.moments=(q.moments||[]).filter(m=>!/결산/.test(m)).map(m=>String(m).replace(/^\[[^\]]*\] /,''));(q.line||[]).forEach(z=>{if(z[0]==='WAR'&&/^-0\.0$/.test(String(z[1])))z[1]='0.0'})}catch(e){}return q}}
+{const _v=vSeasonRecap;vSeasonRecap=function(q){let h=_v(q);try{if(!q.fut)return h;const tiles=L=>`<div class="srec-tiles">${L.map(([k,v])=>`<div><span>${k}</span><b>${v}</b></div>`).join('')}</div>`;
+  const fb=`<div class="srec-k" style="margin-top:12px">${q.fut.lab}</div>${tiles(q.fut.line)}`;
+  if(q.has1===false){const i=h.indexOf('<div class="srec-k">나의 시즌</div>');if(i<0)return h;const j=h.indexOf('</div></div>',h.indexOf('srec-tiles',i))+12;return h.slice(0,i)+`<div class="srec-k">나의 시즌 · ${q.fut.lab}</div>${tiles(q.fut.line)}`+h.slice(j)}
+  h=h.replace('<div class="srec-k">나의 시즌</div>',`<div class="srec-k">나의 시즌 · ${q.upLab}</div>`);const i=h.indexOf('srec-tiles');if(i<0)return h;const j=h.indexOf('</div></div>',i)+12;return h.slice(0,j)+fb+h.slice(j)}catch(e){return h}}}
+{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(S.m===10&&S.stage==='pro'&&S.pro&&S.pro.debut<=S.y&&(S.pro.league==='KBO'||S.pro.league==='MLB')&&S.srecapY!==S.y&&srecFut(S.y)){
+  S.srecapY=S.y;const R0=buildSeasonRecap();let idx=0;S.queue.forEach((q,i)=>{if(q&&(q.type==='game'||q.type==='award'))idx=i+1});S.queue.splice(idx,0,R0)}}catch(e){}}}
 
 </script>
 
