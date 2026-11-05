@@ -8802,12 +8802,12 @@ function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${
     :[`결정적인 순간에는 언제나 ${jo(nm,'이','가')} 있었습니다`,`가장 필요한 순간, 가장 필요한 한 방을 ${jo(nm,'이','가')} 해냅니다`,`이 팀이 가장 필요로 할 때, ${nm}의 방망이가 응답합니다`,`승부처의 남자, 오늘도 ${nm}입니다`];
     put(`캐스터 "${pick(L)}" 이 멘트 나올 때 소름 돋았다`,pick(['ㄹㅇ 그 순간 ${nm}밖에 안 보였음'.replace('${nm}',giv(nm)),'중계진도 흥분함 ㅋㅋ','이 장면 하이라이트 1순위']))}
   out=add.concat(out)}catch(e){}return out}}
-/* ===== 의외의 천재성: 27~35세 투수, 매년 5% 새 변화구 발견 ===== */
-{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(!isP()||S.stage!=='pro'||!S.pro||S.m!==2||S.genY===S.y)return;const a=age();if(a<27||a>35)return;S.genY=S.y;if(R()>=.05)return;
+/* ===== 의외의 천재성: 27~35세 투수, 변화구 훈련 중일 때 매년 25% 새 변화구 발견 (능력치 = 최고 변화구 −10~15) ===== */
+{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(!isP()||S.stage!=='pro'||!S.pro||S.m!==2||S.genY===S.y)return;const a=age();if(a<27||a>35)return;const pl=S.plan||{},brk=((pl.alloc||{}).brk||0)>0||pl.main==='brk'||pl.sub==='brk';if(!brk)return;S.genY=S.y;if(R()>=.25)return;
   const cand=PITCHES.filter(k=>k!=='FB'&&!ME.pt[k]);if(!cand.length)return;const k=pick(cand),have=PITCHES.filter(x=>x!=='FB'&&ME.pt[x]).map(x=>ME.pt[x]),best=have.length?Math.max(...have):50;
-  const v=Math.round(cl(Math.max(best-ri(3,8),52)+ri(0,4),48,capOf(k)));ME.pt[k]=v;const nm=LBL[k];
+  const bd=Math.round(DV(best))-ri(10,15),v=cl(20+(bd-20)*.75,20,capOf(k));ME.pt[k]=v;const nm=LBL[k];
   const how=pick([`불펜 캐치볼 중에 장난삼아 던져본 ${nm}. 포수가 미트를 내려놓고 물었다. "방금 뭐야? 다시 던져봐."`,`스프링캠프 숙소에서 영상을 돌려보다 그립을 살짝 바꿔봤다. 다음 날 불펜에서 던진 ${nm}이 말도 안 되게 꺾였다.`,`손가락 물집 때문에 그립을 바꿔 잡았는데, 그게 오히려 ${nm}의 각을 만들어냈다. 투수코치가 한참 웃었다.`]);
-  feat(`의외의 천재성 — 새 구종 ${nm} 장착`,true);S.queue.push({title:'✨ 의외의 천재성',text:`${josaFix(how)}\n\n몇 년을 붙잡고 있어도 안 되던 게, 어느 날 갑자기 손에 붙는다.\n새 구종 ${nm}이(가) 레퍼토리에 추가됐다. (${nm} ${DV(v)})`});
+  feat(`의외의 천재성 — 새 구종 ${nm} 장착`,true);S.queue.push({title:'✨ 의외의 천재성',text:`${josaFix(how)}\n\n몇 년을 붙잡고 있어도 안 되던 게, 어느 날 갑자기 손에 붙는다.\n새 구종 ${jo(nm,'이','가')} 레퍼토리에 추가됐다. (${nm} ${Math.round(DV(v))})`});
   news(`${nmFull()} 캠프에서 새 구종 ${nm} 장착…"갑자기 됐다"`)}catch(e){}}}
 /* ===== 불펜 보직: 시즌 ERA 기준 (2.5↓ 특급 / ~3.8 필승·추격 혼용 / ~4.9 추격조 / 그 이상 패전처리) ===== */
 function relEra(){const sum=y=>{let o=0,r=0;S.rows.forEach(w=>{if(w.y===y&&PRO.includes(w.lv)&&w.lv!=='fut'){o+=w.p.outs;r+=w.p.R}});return{o,r}};let c=sum(S.y);if(c.o<30){const p=sum(S.y-1);if(p.o>=30)c={o:p.o+c.o,r:p.r+c.r}}return c.o>=30?c.r*27/c.o:null}
