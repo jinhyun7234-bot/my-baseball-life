@@ -9126,7 +9126,7 @@ function wbcEligible(){try{if(S.stage!=='pro'||!S.pro)return false;if(S.pro.leag
 {const _adv=advance;advance=function(){const ph0=S.phase,y0=S.y;const r=_adv.apply(this,arguments);try{if(ph0===0&&S.phase===1&&wbcYear(S.y)){const n=wbcName(S.y),pick=S.intlPick&&S.intlPick[n];
   if(pick===true&&wbcEligible()&&S.wbcDone!==S.y){S.wbcDone=S.y;wbcRun()}else if(pick===false){ME.fat=0;S.wbcRestM=2}}}catch(e){console&&console.error&&console.error(e)}return r}}
 {const _ms=monthStep;monthStep=function(rep){const on=(S.wbcRestM||0)>0;if(on)S.phF=(S.phF||0)+.9;try{return _ms(rep)}finally{if(on){S.phF-=.9;S.wbcRestM--}}}}
-function wbcPWin(a,b){return 1/(1+Math.exp(-(a-b)/2.4))}
+function wbcPWin(a,b){return 1/(1+Math.exp(-(a-b)/6.5))}
 function wbcRun(){const y=S.y,n=wbcName(y),nf=natForm(),bn=nf?nf.bonus:0,o=ovrE();
   const korR=56+bn*14+cl((o-62)*.12,-1,1.5),P=isP(),sp=P&&ME.pos==='SP';
   const pool=['체코','일본','대만','호주'],T={한국:{w:0,l:0,ra:0,outs:0}};pool.forEach(t=>T[t]={w:0,l:0,ra:0,outs:0});
@@ -9140,11 +9140,15 @@ function wbcRun(){const y=S.y,n=wbcName(y),nf=natForm(),bn=nf?nf.bonus:0,o=ovrE(
     S.queue.push({type:'game',g});games.push(g);return g};
   /* 1라운드 */
   const spGame=sp?(o>=66?1:0):-1;
+  const others=[];for(let i=0;i<pool.length;i++)for(let j=i+1;j<pool.length;j++)others.push([pool[i],pool[j]]);others.sort(()=>R()-.5);
+  const simO=([a,b])=>{const aw=R()<wbcPWin(WBC_R[a],WBC_R[b]);const ra=Math.max(0,Math.round(rn(4.2-(WBC_R[a]-55)*.25,2))),rb=Math.max(0,Math.round(rn(4.2-(WBC_R[b]-55)*.25,2)));if(aw){T[a].w++;T[b].l++}else{T[b].w++;T[a].l++}T[a].ra+=rb;T[b].ra+=ra;T[a].outs+=27;T[b].outs+=27;return`${a} ${aw?'승':'패'} ${b}`};
+  const table=()=>['한국',...pool].map(t=>({t,...T[t],rpo:T[t].ra/Math.max(1,T[t].outs)})).sort((a,b)=>b.w-a.w||a.l-b.l||a.rpo-b.rpo);
   pool.forEach((t,i)=>{const g=play(t,`${n} 1라운드 C조 ${i+1}차전`,`대한민국 vs ${t} · 도쿄돔`,'pool',65,true,sp?(i===spGame?'SP':'none'):null);const my=g.my,kr=g.R[my],op=g.R[1-my];
-    if(g.win){T.한국.w++;T[t].l++}else{T.한국.l++;T[t].w++}T.한국.ra+=op;T.한국.outs+=27;T[t].ra+=kr;T[t].outs+=27});
-  for(let i=0;i<pool.length;i++)for(let j=i+1;j<pool.length;j++){const a=pool[i],b=pool[j],pa=wbcPWin(WBC_R[a],WBC_R[b]),aw=R()<pa;const ra=Math.max(0,Math.round(rn(4.2-(WBC_R[a]-55)*.25,2))),rb=Math.max(0,Math.round(rn(4.2-(WBC_R[b]-55)*.25,2)));
-    if(aw){T[a].w++;T[b].l++}else{T[b].w++;T[a].l++}T[a].ra+=rb;T[b].ra+=ra;T[a].outs+=27;T[b].outs+=27}
-  const st=['한국',...pool].map(t=>({t,...T[t],rpo:T[t].ra/Math.max(1,T[t].outs)})).sort((a,b)=>b.w-a.w||a.rpo-b.rpo);
+    if(g.win){T.한국.w++;T[t].l++}else{T.한국.l++;T[t].w++}T.한국.ra+=op;T.한국.outs+=27;T[t].ra+=kr;T[t].outs+=27;
+    const left=pool.length-i,k=Math.ceil(others.length/left),done=others.splice(0,k).map(simO);
+    if(i<pool.length-1){const tb=table();S.queue.push({type:'wbcmid',y,n,st:tb,rk:tb.findIndex(x=>x.t==='한국')+1,res:`대한민국 ${kr}:${op} ${t} ${g.win?'승':'패'}`,others:done.map(x=>x.replace(/(\S+) 승 (\S+)/,'$1 승 vs $2').replace(/(\S+) 패 (\S+)/,'$2 승 vs $1')),next:pool[i+1],gi:i+1})}});
+  others.splice(0).forEach(simO);
+  const st=table();
   const rk=st.findIndex(x=>x.t==='한국')+1,adv=rk<=2;S.queue.push({type:'wbcpool',y,n,st,rk,adv});
   let res=adv?'8강':'1라운드 탈락',last=games[games.length-1];
   if(adv){const qo=rk===1?pick(['베네수엘라','푸에르토리코']):pick(['도미니카','베네수엘라']);const g=play(qo,`${n} 8강`,`대한민국 vs ${qo} · 마이애미`,'qf',80,true,sp?(spGame===0?'SP':'none'):null);last=g;
@@ -9162,8 +9166,12 @@ function vWbcIntro(q){return`<div class="srec"><div class="srec-ey">${q.y} WORLD
 function vWbcPool(q){return`<div class="srec"><div class="srec-ey">${q.y} WBC · POOL C</div><h1 class="srec-tt">${q.adv?'🇰🇷 8강 진출!':'1라운드 탈락'}</h1><div class="srec-team">C조 최종 ${q.rk}위</div>
   <div class="srec-card phs-card"><div class="ptop"><div class="tblw"><table class="tbl nv mlbt ptbl"><thead><tr><th>#</th><th class="l">국가</th><th>승</th><th>패</th><th>아웃당 실점</th></tr></thead><tbody>${q.st.map((x,i)=>`<tr class="${x.t==='한국'?'me':''}${i===2?' cut':''}"><td><b>${i+1}</b></td><td class="l">${x.t}</td><td>${x.w}</td><td>${x.l}</td><td>${x.rpo.toFixed(3)}</td></tr>`).join('')}</tbody></table></div></div></div>
   <div class="srec-card"><div class="srec-sub">${q.adv?'도쿄를 넘어 마이애미로. 이제부터는 지면 끝이다.':'또 한 번 1라운드의 벽에 막혔다. 시즌 준비로 돌아간다.'}</div></div></div>`}
+function vWbcMid(q){return`<div class="srec"><div class="srec-ey">${q.y} WBC · POOL C · ${q.gi}경기 종료</div><h1 class="srec-tt">C조 현재 ${q.rk}위</h1><div class="srec-team">${q.res}</div>
+  <div class="srec-card phs-card"><div class="ptop"><div class="tblw"><table class="tbl nv mlbt ptbl"><thead><tr><th>#</th><th class="l">국가</th><th>승</th><th>패</th><th>아웃당 실점</th></tr></thead><tbody>${q.st.map((x,i)=>`<tr class="${x.t==='한국'?'me':''}${i===2?' cut':''}"><td><b>${i+1}</b></td><td class="l">${x.t}</td><td>${x.w}</td><td>${x.l}</td><td>${x.outs?x.rpo.toFixed(3):'-'}</td></tr>`).join('')}</tbody></table></div></div></div>
+  ${q.others&&q.others.length?`<div class="srec-card"><div class="srec-k">같은 조 다른 경기</div><div class="srec-sub">${q.others.join('<br>')}</div></div>`:''}
+  <div class="srec-card"><div class="srec-k">다음 경기</div><div class="srec-big">대한민국 vs ${q.next}</div><div class="srec-sub">조 2위까지 8강 진출 · 동률이면 승자승 → 아웃카운트당 실점</div></div></div>`}
 function vWbcEnd(q){const t={우승:'🏆 세계 정상!',준우승:'🥈 준우승','4강':'4강 진출','8강':'8강에서 멈췄다','1라운드 탈락':'1라운드 탈락'}[q.res]||q.res;return`<div class="srec"><div class="srec-ey">${q.y} WORLD BASEBALL CLASSIC</div><h1 class="srec-tt">${t}</h1><div class="srec-team">대한민국 국가대표</div><div class="srec-card"><div class="srec-sub">${q.res==='우승'?'세계 야구의 정상에 섰다. 이 기억을 안고 시즌을 시작한다.':q.res==='준우승'?'세계 2위. 고개 숙일 필요 없는 대회였다.':'태극마크의 여정이 끝났다. 이제 소속팀으로 돌아가 시즌을 준비한다.'}</div></div></div>`}
-{const V={wbcintro:[vWbcIntro,'⚾ WBC 진행 ▶'],wbcpool:[vWbcPool,'다음 ▶'],wbcend:[vWbcEnd,'시즌으로 ▶']};
+{const V={wbcmid:[vWbcMid,'⚾ 다음 경기 ▶'],wbcintro:[vWbcIntro,'⚾ WBC 진행 ▶'],wbcpool:[vWbcPool,'다음 ▶'],wbcend:[vWbcEnd,'시즌으로 ▶']};
  const _rd=_render;_render=function(app,nav,bar,ov){try{if(S&&!ui.simming&&ui.screen!=='title'&&ui.recap==null){const q=nextQ();if(q&&V[q.type]){ME=S.me;ui.sheet=null;full(app,nav,bar,ov,V[q.type][0](q),' dark');bar.innerHTML=`<button class="btn pri glow" data-act="wbcok">${q.type==='wbcpool'&&!q.adv?'다음 ▶':V[q.type][1]}</button>`;ov.innerHTML='';return}}}catch(e){}return _rd(app,nav,bar,ov)};
  const _aq=afterQueue;afterQueue=function(){_aq();try{const q=nextQ();if(q&&V[q.type])ui.sheet=null}catch(e){}};
  if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="wbcok"]');if(!b||!S)return;e.stopPropagation();const q=nextQ();if(q&&V[q.type]){S.queue.shift();save();afterQueue();ui.anim=true;render();window.scrollTo(0,0)}},true)}
