@@ -8962,6 +8962,28 @@ const stA=()=>{try{return S&&S.stage==='pro'?(S.stoveAdj||0):0}catch(e){return 0
 {const _mp=mePitPA;mePitPA=function(bR,risp,tired){return _mp(isP()?bR+stA():bR,risp,tired)}}
 {const _vt=vTrainPlan;vTrainPlan=function(){let h=_vt();try{if(stoveOn()){const tag=`<span class="chip up">🔥 스토브리그 보너스 · 훈련 안 한 능력치도 전부 소폭↑</span>`;h=h.replace('이번 기간 예상 성장</div><div class="row wrap">','이번 기간 예상 성장</div><div class="row wrap">'+tag)}}catch(e){}return h}}
 {const _vs=vStats;vStats=function(){let h=_vs();try{h=h.replace(/(최대치(?:<span class="qi">\?<\/span>)?<\/button>) 100/,'$1 100 (장비 효과로 최대 103)');if(!/장비 효과로 최대 103/.test(h)){const i=h.indexOf('<div class="card xpc">');if(i>=0){const j=h.indexOf('</div></div>',i);if(j>0)h=h.slice(0,j)+' · 능력치 최대 100 (장비 효과로 최대 103)'+h.slice(j)}}}catch(e){}return h}}
+/* ===== 주력·수비 약점 / 수비형 선수 댓글 ===== */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||S.stage!=='pro'||!S.pro||!Array.isArray(out))return out;if(/wedding|love|baby|famDay|gfbreak|marry|award|contract|trade|retire|draft/.test(String(tone||'')))return out;
+  const lg=S.pro.league,{b}=yearTot(S.y,[lg]),gn=giv(ME.name),pn=POS[ME.pos]||'야수',IF=['SS','2B','3B','1B','C'].includes(ME.pos),dh=ME.pos==='DH'||S.dhConv&&S.y>=S.dhConv;
+  const fld=DV(E('fld')),rng=DV(E('rng')),spd=DV(E('spd')),ops=b.PA>=80?opsN(b):null,add=[];const A=(t,re,p)=>{if(!seenHas(t)&&R()<(p??.5))add.push([t,re||[]])};x=x||{};
+  /* 실책 많은 시즌 */
+  const eBad=!dh&&b.G>=25&&(b.E>=(IF?Math.max(8,b.G*.12):Math.max(5,b.G*.07)))&&fld<70;
+  if(eBad){A(`이 정도 실책 개수랑 수비력이면 그냥 지타 박거나 수비력 올라올 때까지 수납`,['수비 코치랑 펑고 1000개 받고 와라','지명타자 자리는 비어 있냐'],.55);A(`실책 ${b.E}개 실화냐 글러브에 구멍 났냐`,['공 굴러오면 내가 다 불안함 ㅋㅋ'],.5);
+    if(ops!=null&&ops>=.8)A('방망이로 번 점수 수비로 다 까먹는다',['타격만 보면 레전드인데…'],.5);if(IF&&ME.pos!=='1B')A(`${pn} 말고 1루나 외야로 돌리는 게 맞다`,['송구가 너무 불안함'],.4)}
+  /* 오늘 경기 실책 */
+  if(!dh&&(x.gErr||0)>=1){const hitGood=(x.gH||0)>=2||(x.gRBI||0)>=2;A(x.ps?'가을에 실책은 진짜 치명적이다':'오늘 실책 하나가 경기 분위기 다 바꿨다',['투수가 제일 허탈했을 듯'],.7);
+    A(hitGood?'실책은 했지만 방망이로 만회했으니 이번만 봐준다':'실책 했으면 방망이로라도 갚았어야지',[],.6)}
+  /* 주력 부족 병살 (주요 경기) */
+  const dp=Array.isArray(x.pl)&&x.pl.some(p=>p.dp),noHelp=(x.gH||0)===0||((x.gH||0)<=1&&(x.gRBI||0)===0);
+  if(dp&&spd<58&&noHelp&&(x.ps||x.intl||x.clinch)){A('와 주력이 없어서 저 타구에도 병살타가 나오네',['1루까지 거북이 레이스 ㅋㅋ','발 느린 건 진짜 답이 없다'],.85);A('발이 느리니까 땅볼 = 병살 공식',[],.5)}
+  else if(dp&&spd<55)A('땅볼 치는 순간 병살 예감했다 ㅋㅋ 발이 너무 느림',[],.45);
+  if(b.GDP>=Math.max(12,b.G*.12)&&spd<58)A(`올해 병살타 ${b.GDP}개… 발이 느리니 땅볼만 나오면 한숨부터 나옴`,[],.35);
+  /* 주루 센스 부족 */
+  if(spd<48&&b.G>=30&&R()<.3)A('2루타성 타구에 1루에서 멈추는 거 보고 웃음 나옴 ㅋㅋ',['주력은 노력으로 안 되는 영역이다'],.5);
+  /* 수비만 잘하는 유형 */
+  if(!dh&&fld>=75&&rng>=72&&ops!=null&&ops<.66&&b.PA>=120){A(`이러고 또 자기위로 하겠지 "난 수비형 ${pn}니까"`,[`수비형 ${pn}도 2할 5푼은 쳐야지`,'수비는 인정한다 수비는…'],.55);
+    A('수비는 진짜 리그 탑인데 방망이가… 9번 고정',['글러브로 먹고사는 선수 ㅋㅋ'],.5);A(`타석에선 답답한데 ${pn} 수비 보면 또 못 빼겠음`,['감독 마음이 이해된다'],.45)}
+  if(add.length){add.sort(()=>R()-.5).slice(0,2).forEach(([t,re],i)=>{seenAdd(t);out.splice(Math.min(1+i,out.length),0,mkC(t,re))})}}catch(er){}return out}}
 
 </script>
 
