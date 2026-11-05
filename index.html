@@ -9067,6 +9067,15 @@ if(typeof CRIT!=='undefined')CRIT.add('famXp');
      {title:'🌙 늦은 밤 스윙 연습',text:`밤늦게 거실에서 ${isP()?'섀도 피칭':'빈 스윙'}을 하는데 ${sn} 씨가 물을 떠다 준다. "오늘 경기 생각나서 그래?"`,ch:[{t:'고민을 털어놓고 같이 이야기한다',s:'성장 포인트 +1 · 멘탈↑ · 피로 조금↑',act:'famXp',arg:{xp:1,men:2,fat:2,sp:3,r:'말로 꺼내니 머릿속이 정리됐다.'}},{t:'"괜찮아, 먼저 자" 하고 혼자 연습한다',s:'피로↑ · 배우자 호감 조금↓',act:'famXp',arg:{fat:4,sp:-2,r:'새벽까지 혼자 연습했다.'}}]}];
     ev=pick(L)}
   if(ev){S.famXpY=S.y;out.push(ev)}}catch(e){}return out}}
+/* ===== 계약 중 입대 처리 안내 · FA 직후 입대 구단 반응 · 전역 기사 · 복귀 시즌 옵션 체크 제외 ===== */
+{const _ml=ACT.mil;ACT.mil=function(a){const yrs=S.pro?S.pro.years||0:0,recentFA=!!(S.faList&&S.faList.length&&S.faList[S.faList.length-1].y>=S.y);let r=_ml.apply(this,arguments);
+  try{if(S.stage==='mil'&&S.pro){S.milCtr=yrs;if(yrs>=2)r+=`\n\n📄 남은 계약 ${yrs}년은 복무 기간만큼 뒤로 미뤄진다. 복무 중엔 구단 연봉 대신 군 급여만 받는다. (이미 받은 계약금은 그대로)`;
+    if(recentFA){S.queue.push({title:'😮‍💨 구단의 한숨',text:`FA 계약 잉크도 마르기 전에 입대 소식이 전해졌다.\n단장이 전화를 걸어왔다. "알고는 있었지만… 팬들 반응이 걱정이네."`,ch:[{t:'"죄송합니다. 돌아와서 몸값 이상 하겠습니다"',s:'감독 신뢰 조금↓ · 멘탈↑',act:'famXp',arg:{men:2,r:'"그 말 꼭 지켜라." 단장의 목소리가 조금 풀렸다.'}},{t:'"계약할 때부터 정해진 일정이었습니다"',s:'멘탈 유지 · 팬 반응 갈림 (인기 조금↓)',act:'famXp',arg:{fame:-2,r:'틀린 말은 아니었다. 다만 팬들은 서운해했다.'}}]});S.rel.coach=cl(S.rel.coach-2,0,100)}}}catch(e){}return r}}
+{const _dc=discharge;discharge=function(){const was=S.mil&&S.mil.type;const r=_dc.apply(this,arguments);try{if(S.pro&&S.stage==='pro'){S.milBackY=S.y;const yrs=S.pro.years||0;
+  if(yrs>=2||(S.milCtr||0)>=2)article(`${ME.name}, ${was||''} 전역… 남은 계약 ${yrs}년 소화 시작`,`${jo(ME.name,'이','가')} 군 복무를 마치고 팀에 복귀했다. 계약 기간은 복무 기간만큼 연장돼 남은 ${yrs}년을 이어간다.`,'milback',{yrs})}}catch(e){}return r}}
+{const _cd=contractDec;contractDec=function(rep){const p=S.pro;let o=null;try{if(p&&S.milBackY===S.y&&p.opt){o=p.opt;p.opt=0;if(rep)rep.lines.push('복귀 시즌이라 계약 옵션 평가는 건너뛴다.')}}catch(e){}try{return _cd(rep)}finally{if(o!=null)p.opt=o}}}
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(tone!=='milback'||!Array.isArray(out))return out;const gn=giv(ME.name),L=[['군대 다녀와도 계약은 그대로 ㅋㅋ 구단 입장에선 1년 반 쉰 셈',['계약 기간 연장 조항 있어서 다행이다']],[`전역하자마자 남은 계약 소화 시작이네 ${gn} 몸값 해라`,['복귀 시즌 적응만 잘하면 된다']],[`${gn} 군대에서 몸 더 커져서 온 듯`,['상무 밥이 그렇게 좋다던데 ㅋㅋ']],['연봉 안 받고 1년 반 버틴 것도 대단하다',['군 급여로 어떻게 살았냐 ㅋㅋ']]];
+  out=L.sort(()=>R()-.5).slice(0,3).map(([t,re])=>mkC(t,re)).concat(out.slice(0,4))}catch(e){}return out}}
 
 </script>
 
