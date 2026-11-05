@@ -9104,6 +9104,9 @@ if(typeof CRIT!=='undefined'){CRIT.add('mlbReMinor');CRIT.add('mlbIndy')}
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.intl||!Array.isArray(out)||!S.pro||S.pro.league!=='MLB'||!S.mil||S.mil.status!=='none')return out;if(!/아시안게임|올림픽/.test(String(x.title||'')))return out;const gn=giv(ME.name);
   const L=x.win?[[`${gn} 메이저리거인데 병역 특례 걸린 대회라 눈빛부터 다르다`,['여기서 금메달 못 따면 커리어가 끊긴다']],['오늘 이 경기는 병역이 걸린 경기다 진짜 목숨 걸고 뛰네',['보는 내가 다 떨림']]]:[[`${gn} 이번 대회 메달 못 따면 군대 가야 되는데…`,['메이저 커리어 끊기면 너무 아깝다','다음 경기 무조건 이겨야 함']],['병역 걸린 대회에서 지니까 표정이 굳었다',[]]];
   L.forEach(([t,re])=>{if(!seenHas(t)&&R()<.6){seenAdd(t);out.splice(0,0,mkC(t,re))}})}catch(e){}return out}}
+/* 해외(MLB)에서 뛰다 KBO로 돌아온 선수에게는 포스팅 제안 안 함 (해외 진출은 FA로) */
+{const _cd=contractDec;contractDec=function(rep){try{if(S.pro&&S.pro.league==='KBO'&&(S.ach&&S.ach.abroad||S.rows.some(r=>r.lv==='MLB'||r.lv==='AAA'||r.lv==='AA')))S.pro.posted=true}catch(e){}return _cd(rep)}}
+{const _ld=load;load=function(){const s=_ld.apply(this,arguments);try{if(s&&s.pro&&s.pro.league==='KBO'&&s.ach&&s.ach.abroad){s.pro.posted=true;if(Array.isArray(s.queue))s.queue=s.queue.filter(q=>!(q&&/포스팅 도전/.test(q.title||'')))}}catch(e){}return s}}
 
 </script>
 
