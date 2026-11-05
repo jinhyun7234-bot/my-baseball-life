@@ -9335,7 +9335,7 @@ function retStory(){try{
   if(!S.cid)S.cid=Date.now().toString(36)+Math.random().toString(36).slice(2,10);
   const P=isP(),t=careerTot(PRO),b=t.b,p=t.p,A=S.awards||[],f=x=>Math.round(x).toLocaleString(),cnt=re=>A.filter(a=>re.test(a.n||'')).length,yrsOf=re=>A.filter(a=>re.test(a.n||'')).map(a=>a.y);
   const hs=k=>{let h=7;for(const c of S.cid+k)h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)},pk=(k,arr)=>arr[hs(k)%arr.length];
-  const K=n=>['','한','두','세','네','다섯','여섯','일곱','여덟','아홉','열'][n]||n,ro=x=>{const d=String(x).slice(-1);return x+('036'.includes(d)?'으로':'로')};
+  const K=n=>(n>=1&&n<=10)?['','한','두','세','네','다섯','여섯','일곱','여덟','아홉','열'][n]+' ':String(n),ro=x=>{const d=String(x).slice(-1);return x+('036'.includes(d)?'으로':'로')};
   const proRows=S.rows.filter(r=>PRO.includes(r.lv)),seasons=new Set(proRows.map(r=>r.y)).size;
   const club={};proRows.forEach(r=>{const n=String(r.team||'').replace(/ 퓨처스$/,'');(club[n]=club[n]||new Set()).add(r.y)});
   const clubs=Object.entries(club).map(([n,s])=>({n,y:s.size})).sort((a,b)=>b.y-a.y);
@@ -9344,18 +9344,18 @@ function retStory(){try{
   const avg=b.AB?(b.H/b.AB).toFixed(3).replace(/^0/,''):'.000',era=p.outs?p.R*27/p.outs:9,ip=Math.round((p.outs||0)/3),W1=t.w.toFixed(1);
   /* ---------- 상징 ---------- */
   const mv=yrsOf(/^정규시즌 MVP$|^(아메리칸|내셔널)리그 MVP$/),cy=yrsOf(/사이영상/),wm=yrsOf(/WBC MVP$/),ww=yrsOf(/WBC 우승$/);
-  if(mv.length){const r=mv.length>1?`MVP를 ${K(mv.length)} 번이나 받`:`${mv[0]}년 MVP를 받`;
+  if(mv.length){const r=mv.length>1?`MVP를 ${K(mv.length)}번이나 받`:`${mv[0]}년 MVP를 받`;
     add('mvp',1.4+.4*(mv.length-1),1.6,'mid',{o:pk('mvo',[`${r}은 선수로, 그 시절 리그라는 무대의 한가운데에는 언제나 그가 서 있었습니다.`,`${r}은 선수답게, 한창때의 리그는 마치 그를 중심으로 도는 태양계와도 같았습니다.`]),
       m:pk('mvm',[`${r}으며 한 시즌의 주인공을 넘어 한 시대를 재는 잣대가 되었습니다.`,`${r}았을 만큼, 리그가 직접 왕관을 씌워준 최고의 선수이기도 했습니다.`])})}
-  if(cy.length){const r=cy.length>1?`사이영상을 ${K(cy.length)} 번이나 받`:`${cy[0]}년 사이영상을 받`;
+  if(cy.length){const r=cy.length>1?`사이영상을 ${K(cy.length)}번이나 받`:`${cy[0]}년 사이영상을 받`;
     add('cy',1.4+.4*(cy.length-1),1.6,'mid',{o:`${r}은 투수로, 세계에서 가장 잘 던진 투수에게만 허락된 왕관을 한국에서 건너간 투수가 머리에 썼습니다.`,
       m:pk('cym',[`메이저리그에서 ${r}으며, 세계 최고의 투수라는 말이 결코 과장이 아님을 마운드 위에서 증명했습니다.`,`메이저리그 마운드에서도 ${r}았으니, 그 해 세계에서 가장 높은 봉우리에 선 투수는 바로 그였습니다.`])})}
   if(wm.length)add('wbcmvp',1.4,1.6,'mid',{o:`${wm[0]}년 WBC에서 대한민국이 세계의 정상에 깃발을 꽂던 순간, 그 한가운데에서 대회 MVP까지 거머쥔 선수가 바로 그입니다.`,m:pk('wmm',[`태극마크를 단 순간에도 그 빛은 바래지 않아서, ${wm[0]}년 WBC 우승을 이끌고 대회 MVP까지 품에 안았습니다.`,`${wm[0]}년 WBC에서는 세계를 제패하는 행진의 맨 앞에 서서 대회 MVP라는 훈장까지 가슴에 달았습니다.`])});
   else if(ww.length)add('wbc',1,1.3,'mid',{o:`${ww[0]}년 WBC에서 세계의 강호들을 차례로 넘어 끝내 정상에 선 대한민국 대표팀, 그 우승의 한 조각을 맞춘 선수가 바로 그입니다.`,m:pk('wwm',[`태극마크를 달고 ${ww[0]}년 WBC 우승 메달까지 목에 걸었으니, 국가대표로서 오를 수 있는 가장 높은 곳까지 올라가 보았습니다.`,`${ww[0]}년 WBC 우승 멤버로 세계의 꼭대기에도 서 보았으니, 그 메달은 그의 야구 인생에서 가장 밝게 빛나는 별 중 하나로 남을 것입니다.`])});
   /* ---------- 커리어 서사 ---------- */
   const ks=cnt(/^한국시리즈 우승$/),ws=cnt(/^월드시리즈 우승$/),rings=ks+ws,lgN=ws?(ks?'한국시리즈와 월드시리즈':'월드시리즈'):'한국시리즈';
-  if(rings>=2)add('ring',rings/2,1.3,'mid',{o:`우승 반지만 ${K(rings)} 개를 손에 낀 선수로, ${lgN} 트로피가 하늘로 들어 올려지는 순간마다 그 곁에는 늘 그가 있었습니다.`,m:pk('rgm',[`우승 반지도 ${K(rings)} 개나 끼면서 ${lgN}라는 산의 정상에서 몇 번이고 깃발을 흔들어 보았습니다.`,`${K(rings)} 번이나 우승의 샴페인을 터뜨렸으니, 챔피언이라는 이름이 이만큼 몸에 꼭 맞는 옷처럼 어울리는 선수도 드뭅니다.`])});
-  const sm=cnt(/^(한국시리즈|월드시리즈|플레이오프|챔피언십 시리즈|준플레이오프) MVP$/),smT=sm>1?`시리즈 MVP를 ${K(sm)} 번이나`:'시리즈 MVP까지';
+  if(rings>=2)add('ring',rings/2,1.3,'mid',{o:`우승 반지만 ${K(rings)}개를 손에 낀 선수로, ${lgN} 트로피가 하늘로 들어 올려지는 순간마다 그 곁에는 늘 그가 있었습니다.`,m:pk('rgm',[`우승 반지도 ${K(rings)}개나 끼면서 ${lgN}라는 산의 정상에서 몇 번이고 깃발을 흔들어 보았습니다.`,`${K(rings)}번이나 우승의 샴페인을 터뜨렸으니, 챔피언이라는 이름이 이만큼 몸에 꼭 맞는 옷처럼 어울리는 선수도 드뭅니다.`])});
+  const sm=cnt(/^(한국시리즈|월드시리즈|플레이오프|챔피언십 시리즈|준플레이오프) MVP$/),smT=sm>1?`시리즈 MVP를 ${K(sm)}번이나`:'시리즈 MVP까지';
   if(sm)add('fall',1+.3*(sm-1),1.3,'mid',{o:`찬 바람이 불기 시작하면 오히려 더 뜨거워지던 선수로, 모두가 숨죽이는 포스트시즌 무대에서 ${smT} 가져갔습니다.`,m:pk('flm',[`가을만 되면 온몸에 불이 붙는 선수라 포스트시즌 ${smT} 가져갔으니, 큰 경기 체질이라는 말이 딱 들어맞습니다.`,`모두의 손이 떨리는 포스트시즌 무대에서 오히려 물 만난 고기처럼 펄펄 날며 ${smT} 받아냈습니다.`])});
   if(mlbY>=5||mw>=10)add('mlb',Math.max(mlbY/5,mw/10),1.3,'mid',{o:`메이저리그에서만 ${mlbY}시즌을 뛰며, 세계 최고의 별들이 모인 하늘에서도 자기 자리를 당당하게 지켜낸 선수입니다.`,
     m:pk('mbm',[`태평양을 건너간 뒤에도 메이저리그에서 ${mlbY}시즌을 버텨내며, 세계라는 거친 바다에서도 충분히 항해할 수 있다는 것을 보여주었습니다.`,`무대를 세계로 넓혀 메이저리그 ${mlbY}시즌 동안 WAR ${mw.toFixed(1)}까지 쌓으며 낯선 땅에도 자신의 발자국을 깊게 남겼습니다.`]),
@@ -9363,7 +9363,8 @@ function retStory(){try{
   const d=S.pro&&S.pro.draft;
   if(d&&d.rd>=4&&t.w>=40)add('under',1+(d.rd-4)*.1,1,'open',{o:pk('udo',[`${d.y+1} 드래프트 ${d.rd}라운드, 그날 이 이름을 기억한 사람은 거의 없었지만 돌아보면 그것은 거대한 나무가 될 작은 씨앗이 땅에 떨어진 순간이었습니다.`,`${d.rd}라운드에서 겨우 이름이 불려 아무도 크게 기대하지 않던 선수였지만, 그 작은 불씨가 이렇게 큰 불길이 될 줄은 아무도 몰랐습니다.`])});
   /* ---------- 팀 ---------- */
-  if(S.retNo){const ry=(clubs.find(c=>c.n===S.retNo.team)||{y:seasons}).y;add('retno',1.4,1.6,'close',{c:pk('rnc',[`이제 ${S.retNo.team}에서 등번호 ${S.retNo.num}번을 다는 선수는 다시 나오지 않을 것이며, 이는 ${ry}년 동안 한 유니폼만 입은 선수에게 구단이 바칠 수 있는 최고의 예우입니다.`,`${ry}년 동안 처음 입은 유니폼을 마지막 날까지 지켜냈고, 이제 ${S.retNo.team}의 ${S.retNo.num}번은 구장 하늘 위에 영원히 그의 번호로 걸리게 되었습니다.`])})}
+  if(S.retNo&&mlbY){const ry=(clubs.find(c=>c.n===S.retNo.team)||{y:seasons}).y;add('retno',1.4,1.6,'close',{c:pk('rnc2',[`메이저리그를 다녀와서도 결국 ${S.retNo.team}로 돌아왔고, KBO에서는 ${ry}년 동안 오직 그 유니폼만 입었으니 이제 ${S.retNo.num}번은 구장 하늘 위에 영원히 그의 번호로 걸리게 되었습니다.`,`세계 무대를 누비고도 돌아올 곳은 하나뿐이었고, ${S.retNo.team}는 그 의리에 영구결번 ${S.retNo.num}번이라는 최고의 예우로 답했습니다.`])})}
+  else if(S.retNo){const ry=(clubs.find(c=>c.n===S.retNo.team)||{y:seasons}).y;add('retno',1.4,1.6,'close',{c:pk('rnc',[`이제 ${S.retNo.team}에서 등번호 ${S.retNo.num}번을 다는 선수는 다시 나오지 않을 것이며, 이는 ${ry}년 동안 한 유니폼만 입은 선수에게 구단이 바칠 수 있는 최고의 예우입니다.`,`${ry}년 동안 처음 입은 유니폼을 마지막 날까지 지켜냈고, 이제 ${S.retNo.team}의 ${S.retNo.num}번은 구장 하늘 위에 영원히 그의 번호로 걸리게 되었습니다.`])})}
   else if(clubs.length===1&&seasons>=12)add('one',seasons/12,1.3,'close',{c:pk('onc',[`${seasons}년 동안 ${clubs[0].n} 유니폼 하나만을 입고 처음 입은 그 옷을 마지막까지 지켰으니, 진정한 원클럽맨이라는 말은 바로 이런 선수를 위해 존재합니다.`,`한 팀에서 뿌리를 내리고 한 팀에서 열매를 맺었으며, ${clubs[0].n}에서만 ${seasons}년을 보냈으니 그 팀의 역사책에는 그의 이름이 굵은 글씨로 남을 것입니다.`])});
   const big=clubs.filter(c=>c.y>=3);
   if(big.length>=3)add('journey',big.length/3,1,'close',{c:pk('jnc',[`${big.slice(0,3).map(c=>c.n).join(', ')}의 유니폼을 차례로 입으면서도 가는 곳마다 자기 몫을 확실히 해냈으니, 여러 팀의 팬들이 함께 기억하는 이름이 되었습니다.`,`${big.length}개 팀을 거치며 떠나는 곳마다 아쉬움을, 도착하는 곳마다 새로운 역사를 남겼으니 한 팀의 전설로만 담기에는 너무 넓은 야구 인생이었습니다.`])});
@@ -9373,13 +9374,13 @@ function retStory(){try{
     if(b.HR>=300){const rb=b.RBI>=1200;add('hr',b.HR/300,1,'mid',{o:pk('hro',[`통산 ${f(b.HR)}홈런을 쏘아 올린 타자로, 그가 타석에 들어서면 상대 투수는 포수의 사인을 몇 번이고 다시 확인해야 할 만큼 긴장했습니다.${rb?` 주자가 루상에 있으면 그 방망이는 더욱 날카로워져 타점도 ${f(b.RBI)}개나 쌓았습니다.`:''}`,`${f(b.HR)}개의 타구를 밤하늘의 불꽃처럼 담장 너머로 쏘아 올리는 동안, 팬들은 그 공이 날아가는 순간을 매번 숨죽여 기다렸습니다.${rb?` 찬스에서도 강해 홈으로 불러들인 주자만 ${f(b.RBI)}명에 이릅니다.`:''}`]),
       m:pk('hrm',[`담장 밖으로 넘긴 공이 ${f(b.HR)}개${rb?`, 홈으로 불러들인 주자가 ${f(b.RBI)}명`:''}에 이르니, 그 방망이 하나만으로도 전설이라 불리기에 충분합니다.`,`홈런을 ${f(b.HR)}개나 쏘아 올리며 그가 타석에 설 때마다 관중석 전체가 먼저 일어설 준비를 하게 만들었습니다.`])})}
     else if(b.RBI>=1200)add('rbi',b.RBI/1200,1,'mid',{o:`통산 ${f(b.RBI)}타점을 올린 타자로, 주자가 나가 있는 순간이면 팬들은 마치 자물쇠를 열 열쇠를 기다리듯 그의 타석을 기다렸습니다.`,m:`찬스만 오면 더욱 강해져 통산 ${f(b.RBI)}타점을 쌓았으니, 해결사라는 말이 이만큼 꼭 맞는 타자도 드뭅니다.`});
-    if(b.H>=2000||bat>=2)add('hit',Math.max(b.H/2000,bat/2),1,'mid',{o:`매년 꾸준히 안타를 만들어내며 통산 ${f(b.H)}개${bat?`, 타격왕만 ${K(bat)} 번`:''}까지 쌓은 타자로, 그의 방망이는 좀처럼 꺼지지 않는 등불과도 같았습니다.`,
+    if(b.H>=2000||bat>=2)add('hit',Math.max(b.H/2000,bat/2),1,'mid',{o:`매년 꾸준히 안타를 만들어내며 통산 ${f(b.H)}개${bat?`, 타격왕만 ${K(bat)}번`:''}까지 쌓은 타자로, 그의 방망이는 좀처럼 꺼지지 않는 등불과도 같았습니다.`,
       m:pk('htm',[`안타도 쉬지 않고 만들어내 통산 ${f(b.H)}안타, 타율 ${avg}${bat?`에 타격왕 ${bat}회`:''}까지 남기며 마르지 않는 샘처럼 안타를 뽑아냈습니다.`,`매 시즌 벽돌을 쌓듯 차곡차곡 쌓은 안타가 어느새 ${f(b.H)}개가 되었으니, 이는 결코 아무나 쌓을 수 없는 높은 탑입니다.`])});
     if(b.SB>=300)add('sb',b.SB/300,1,'mid',{o:`통산 ${f(b.SB)}도루를 기록한 선수로, 견제구가 날아오는 순간에도 그의 시선은 이미 다음 베이스에 가 있었고 그 발 하나로 경기의 흐름을 바꾸었습니다.`,m:pk('sbm',[`바람 같은 발로 도루를 ${f(b.SB)}개나 기록했으니, 그가 1루에 서기만 해도 상대 투수가 먼저 숨을 골라야 했습니다.`,`베이스를 목적지가 아닌 출발점으로 여기는 선수답게 ${f(b.SB)}개의 도루로 그라운드를 종횡무진 누볐습니다.`])});
     if(b.BB>=900)add('eye',b.BB/900,1,'mid',{o:`통산 볼넷이 ${f(b.BB)}개에 이를 만큼, 투수가 아무리 달콤한 미끼를 던져도 결코 서두르지 않는 타자였습니다.`,m:`매의 눈으로 볼넷만 ${f(b.BB)}개를 골라냈으니, 살아 나가는 법을 누구보다 잘 아는 타자였습니다.`});
     const ft=(S.feats||[]).map(x=>String(x.t||'')),xx=ft.some(x=>/40-40/.test(x))?'40-40':ft.some(x=>/30-30/.test(x))?'30-30':null;
     if(xx)add('xx',xx==='40-40'?1.5:1.1,1.3,'mid',{o:`${xx} 클럽에 이름을 올린 선수답게 담장도 넘기고 베이스도 훔치는, 어느 하나 빠지지 않는 만능열쇠 같은 선수였습니다.`,m:`힘과 발을 모두 갖춰 ${xx} 클럽에도 이름을 올렸고, 통산 ${f(b.HR)}홈런에 ${f(b.SB)}도루라는 두 개의 훈장을 함께 남겼습니다.`});
-    if(gg>=3||dw>=10){const gt=gg>=3?`골든글러브를 ${K(gg)} 번이나 받`:`수비로만 WAR ${dw.toFixed(1)}까지 쌓`;
+    if(gg>=3||dw>=10){const gt=gg>=3?`골든글러브를 ${K(gg)}번이나 받`:`수비로만 WAR ${dw.toFixed(1)}까지 쌓`;
       add('def',Math.max(gg/3,dw/10),1,'mid',{o:`${gt}은 선수로, 타구가 그쪽으로 날아가면 팬들은 걱정 대신 안도의 한숨부터 내쉬었습니다.`,m:pk('dfm',[`수비는 두말할 것 없이 ${gt}았으며, 그가 지켜낸 아웃 하나하나가 모여 결국 팀의 승리라는 성을 쌓았습니다.`,`그의 글러브는 타구를 빨아들이는 블랙홀 같아서 ${gt}았고, 화려한 홈런보다 값진 아웃을 셀 수 없이 만들어냈습니다.`])})}
     if(ME.pos==='C'&&b.G>=1500)add('catcher',b.G/1500,1,'mid',{o:`포수 마스크를 쓰고 ${f(b.G)}경기를 뛰며 홈플레이트 뒤에서 팀의 심장 역할을 묵묵히 해낸 선수입니다.`,m:`그것도 체력 소모가 가장 큰 포수 자리에서 ${f(b.G)}경기를 뛰며, 수많은 투수들과 함께 폭풍 같은 위기를 넘겼습니다.`})}
   /* ---------- 기록: 투수 ---------- */
@@ -9397,7 +9398,7 @@ function retStory(){try{
       add('pitch',(dv-60)/15,1,'mid',{o:`${fx} ${jo(pn,'이','가')} 그의 주무기였는데, 타자들이 알고 있어도 손을 쓸 수 없을 만큼 마법 같은 공이었습니다.`,m:pk('ptm',[`결정구였던 ${jo(pn,'은','는')} ${fx} 궤적으로 타자들의 방망이를 수없이 허공으로 이끌었습니다.`,`${fx} ${jo(pn,'을','를')} 칼처럼 휘두르며 타자들이 알고도 당하게 만드는 투수였습니다.`])})}}}
   /* ---------- 공통: 타이틀·WAR·롱런 ---------- */
   const tl=cnt(/^(MLB )?(타격왕|홈런왕|타점왕|득점왕|출루율왕|도루왕|최다안타|장타율왕|다승왕|평균자책점왕|탈삼진왕|세이브왕|홀드왕)$/);
-  if(tl>=3)add('titles',tl/3,1,'mid',{o:`개인 타이틀만 ${K(tl)} 개를 거머쥔 선수로, 한 해 반짝이고 사라진 별똥별이 아니라 몇 번이고 리그의 꼭대기에서 빛난 붙박이별이었습니다.`,m:pk('tlm',[`타이틀 경쟁에서도 늘 선두에 서서 개인 타이틀만 ${K(tl)} 개를 가져가며 시상식의 단골손님이 되었습니다.`,`시즌이 끝나면 시상식에서 그의 이름이 불리는 것이 익숙한 풍경이 될 만큼 개인 타이틀을 ${K(tl)} 개나 가져갔습니다.`])});
+  if(tl>=3)add('titles',tl/3,1,'mid',{o:`개인 타이틀만 ${K(tl)}개를 거머쥔 선수로, 한 해 반짝이고 사라진 별똥별이 아니라 몇 번이고 리그의 꼭대기에서 빛난 붙박이별이었습니다.`,m:pk('tlm',[`타이틀 경쟁에서도 늘 선두에 서서 개인 타이틀만 ${K(tl)}개를 가져가며 시상식의 단골손님이 되었습니다.`,`시즌이 끝나면 시상식에서 그의 이름이 불리는 것이 익숙한 풍경이 될 만큼 개인 타이틀을 ${K(tl)}개나 가져갔습니다.`])});
   if(t.w>=60)add('war',t.w/60,.9,'mid',{o:`통산 WAR이 ${W1}에 이를 만큼, 그가 팀에 안겨준 승리는 숫자로만 보아도 하나의 산맥처럼 거대합니다.`,m:pk('wrm',[`통산 WAR도 ${W1}까지 쌓았으니, 어느 팀에 있든 그 덕분에 팀이 더 많이 웃을 수 있었습니다.`,`그렇게 쌓아 올린 통산 WAR이 ${W1}에 이르니, 그가 팀에 안겨준 승리는 헤아리기조차 어렵습니다.`])});
   if(seasons>=17)add('long',seasons/17,.9,'mid',{o:`프로에서만 ${seasons}시즌을 뛰며, 강산이 두 번 가까이 바뀌는 동안 한 번도 그라운드를 떠나지 않은 선수입니다.`,m:`그 모든 것을 ${seasons}시즌 동안이나 해냈다는 것이 더욱 대단한데, 오래도록 잘한다는 것은 야구에서 가장 어려운 일이기 때문입니다.`});
   /* ---------- 고르기: 3~5개 ---------- */
@@ -9421,7 +9422,7 @@ function retStory(){try{
 /* 은퇴 화면: 카드 바로 아래 멘트 */
 {const _vr=vRetired;vRetired=function(){let h=_vr();try{h=h.replace('(헌액 기준 110)','(헌액 기준 105)');const s=retStory();if(s){const box=`<div class="card retstory" style="gap:10px"><span class="lbl">은퇴 카드</span>${s.split('\n\n').map(x=>`<p style="margin:0;line-height:1.7">${esc(x)}</p>`).join('')}</div>`;const k=h.indexOf('<div class="card" style="text-align:center');h=k>=0?h.slice(0,k)+box+h.slice(k):h+box}}catch(e){}return h}}
 /* 커리어 리캡: 마지막 장 앞에 */
-{const _rs=recapSlides;recapSlides=function(){const sl=_rs.apply(this,arguments);try{const s=retStory();if(s&&sl.length){sl.splice(Math.max(1,sl.length-1),0,{th:'green',ey:'은퇴 카드',sub:s})}}catch(e){}return sl}}
+{const _rs=recapSlides;recapSlides=function(){const sl=_rs.apply(this,arguments);try{const s=retStory();if(s&&sl.length){const L=sl[sl.length-1],lf=L&&L.last;if(L)delete L.last;sl.push({th:'green',ey:'은퇴 카드',sub:s,last:lf||true})}}catch(e){}return sl}}
 
 /* ===================== 고교·대학 시절 기사/댓글: 어디서 뛰는지 머리말 + 아마추어 맥락 댓글 ===================== */
 function amaCtx(){try{if(!S||!ME)return null;if(S.stage==='hs'){const sc=(SCHOOLS[S.school]||{}).n||'고교';return{k:'hs',lab:'고교야구',where:sc,gr:cl(age()-15,1,3)}}
