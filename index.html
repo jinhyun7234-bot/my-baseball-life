@@ -8984,6 +8984,8 @@ const stA=()=>{try{return S&&S.stage==='pro'?(S.stoveAdj||0):0}catch(e){return 0
   if(!dh&&fld>=75&&rng>=72&&ops!=null&&ops<.66&&b.PA>=120){A(`이러고 또 자기위로 하겠지 "난 수비형 ${pn}니까"`,[`수비형 ${pn}도 2할 5푼은 쳐야지`,'수비는 인정한다 수비는…'],.55);
     A('수비는 진짜 리그 탑인데 방망이가… 9번 고정',['글러브로 먹고사는 선수 ㅋㅋ'],.5);A(`타석에선 답답한데 ${pn} 수비 보면 또 못 빼겠음`,['감독 마음이 이해된다'],.45)}
   if(add.length){add.sort(()=>R()-.5).slice(0,2).forEach(([t,re],i)=>{seenAdd(t);out.splice(Math.min(1+i,out.length),0,mkC(t,re))})}}catch(er){}return out}}
+/* 어깨(송구)·타구처리 훈련 효율 살짝↑ (×1.15) — 예상 성장 표시에도 반영 */
+{const _ba=buildAlloc;buildAlloc=function(){const r=_ba.apply(this,arguments);try{if(S&&S.plan&&!isP()){const m=S.plan.mul=S.plan.mul||{};m.arm=(m.arm||1)*1.15;m.fld=(m.fld||1)*1.15}}catch(e){}return r}}
 
 </script>
 
