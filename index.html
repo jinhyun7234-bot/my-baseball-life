@@ -8681,7 +8681,14 @@ function phaseTopHtml(){try{const r=S.report;if(!r||!(r.ph===1||r.ph===2))return
   add('W',sr(rel*P.w*cl(1.2-era/12,.5,1.2))-m.W);add('L',sr(rel*P.l*bad)-m.L)}catch(e){}return r}}
 /* 2군·마이너에서 뛰는 동안의 내 경기·활약 기사엔 머리말: [퓨처스] / [마이너] (리그 용어 그대로) */
 {const LIFE=/wedding|love|baby|famDay|gfbreak|marry|scandal|salary|move|franMove|homeBack|trade|injury|draft|retire|legend|hof|award/;
- const _ar=article;article=function(head,body,tone,x){try{if(S&&S.stage==='pro'&&S.pro&&typeof head==='string'&&!/^\[/.test(head)&&!LIFE.test(String(tone||''))&&(/^f/.test(S.role||'')||S.pro.dev)&&head.indexOf(ME.name)>=0){head=(S.pro.league==='MLB'?'[마이너] ':'[퓨처스] ')+head}}catch(e){}return _ar(head,body,tone,x)}}
+ const _ar=article;article=function(head,body,tone,x){const prev=S&&S._cmMinor;try{S._cmMinor=null;const mi=artMinor();if(mi&&!LIFE.test(String(tone||''))&&!(x&&(x.ps||x.intl))){S._cmMinor=mi;if(mi.mlb&&typeof head==='string')head=head.replace(/ ?\(MLB\)/g,'');if(typeof head==='string'&&head.indexOf(ME.name)>=0&&!/\[(마이너|퓨처스)/.test(head)&&!/^\[(?!\d{4} )/.test(head)){const m=head.match(/^\[(\d{4} [^\]]*)\] /);if(m)head=`[${m[1]} · ${mi.mlb?mi.ln:'퓨처스'}] `+head.slice(m[0].length);else head=`[${mi.lab}] `+head.replace(/^\[(퓨처스|마이너)\] /,'')}if(mi.mlb&&typeof body==='string')body=body.replace(/ ?\(MLB\)/g,` 산하 ${mi.ln}`)}}catch(e){}try{return _ar(head,body,tone,x)}finally{S._cmMinor=prev||null}}}
+/* 지금 기사가 2군/마이너 경기 내용인지: 결산 기사는 그 기간 실제 뛴 레벨 기준 */
+const MLV={AAA:'트리플A',AA:'더블A',A:'싱글A'};
+function artMinor(){try{if(!S||S.stage!=='pro'||!S.pro)return null;let lv=S._artLv;
+  if(lv==null){if(!(/^f/.test(S.role||'')||S.pro.dev))return null;const rw=(S.rows||[]).filter(r=>r.y===S.y&&['AAA','AA','A','fut'].includes(r.lv));lv=rw.length?rw[rw.length-1].lv:(S.pro.league==='MLB'?'AA':'fut')}
+  if(!['AAA','AA','A','fut'].includes(lv))return null;const mlb=lv!=='fut'&&S.pro.league!=='KBO'||(lv==='fut'&&S.pro.league==='MLB');
+  if(mlb){const l=lv==='fut'?'AA':lv;return{mlb:true,lv:l,ln:MLV[l]||'마이너',lab:`마이너 · ${MLV[l]||'마이너'}`}}return{mlb:false,lv:'fut',ln:'퓨처스',lab:'퓨처스'}}catch(e){return null}}
+{const _pa=phaseArticle;phaseArticle=function(g,ps){const pv=S._artLv;S._artLv=(g&&g.lvk)||null;try{return _pa(g,ps)}finally{S._artLv=pv}}}
 /* 가을야구·국제대회 불펜 등판에서 3연속 삼진(KKK) → 구체적 반응 댓글 · 36세 이상 무실점이면 나이 언급 버전 */
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!isP()||!(x.ps||x.intl)||!Array.isArray(out)||!Array.isArray(x.pp))return out;let run=0,mx=0;x.pp.forEach(p=>{run=p.t==='K'?run+1:0;mx=Math.max(mx,run)});if(mx<3)return out;
   const rel=ME.pos!=='SP'||(x.ipO||0)<=9,gn=giv(ME.name),a=age(),zero=!(x.ra>0),inn=(x.pp.find(p=>p.t==='K')||{}).i,kk='K'.repeat(Math.min(mx,5));
@@ -8792,6 +8799,19 @@ function noKboFilter(arr){if(!Array.isArray(arr))return arr;const o=arr.filter(c
   if(tone==='abroad'&&Array.isArray(out)&&out.length<6){const gn=giv(ME.name),tn=(S.pro&&S.pro.tname)||'';const L=[['고졸 메이저 직행 ㄷㄷ 배짱 하나는 인정',['실패해도 경험은 남는다']],[`${gn} 고등학교 때부터 스카우트들이 따라다녔다던데`,['영상 보니까 왜 데려가는지 알겠더라']],['마이너부터 차근차근 올라가면 된다',['루키리그 버스 생활 버티는 게 관건']],['한국 프로 안 거치고 바로 미국이라니 진짜 모험이다',['그래서 더 응원하게 됨']],[`${tn} 팜에서 잘 키워줬으면`,[]],['3~4년 뒤에 빅리그 데뷔하면 소름일 듯',[]],['영어 공부부터 빡세게 해라 ㅋㅋ',['통역 없이 버텨야 됨']],['부모님 마음은 반반일 듯',[]],['계약금 보니까 기대치가 보인다',[]]].filter(z=>!seenHas(z[0]));
    const pool=L.sort(()=>R()-.5).slice(0,6-out.length);pool.forEach(([t,re])=>{seenAdd(t);out.push(mkC(t,re))})}}}catch(e){}return out}}
 {const _ar=article;article=function(head,body,tone,x){const r=_ar(head,body,tone,x);try{if(noKboCareer()){const a=S.arts&&S.arts[0];if(a&&Array.isArray(a.cm))a.cm=noKboFilter(a.cm)}}catch(e){}return r}}
+/* 2군·마이너 기사 댓글: 1군/메이저급 얘기 제거 + 레벨 용어 맞추기 + 상황 맞는 댓글 보충 */
+{const BIG=/국대|국가대표|MVP|골든글러브|골글|올스타|가을야구|포스트시즌|한국시리즈|월드시리즈|우승|GOAT|레전드|명예의 전당|타이틀|홈런왕|타격왕|탈삼진왕|다승왕|구원왕|리그 (최고|탑|정상|원탑)|팀 순위|상대 팀이 약했|1군에서도|메이저에서도 통|메이저 정상|빅리그 (폭격|찢|평정)|역대급|국민|연봉|FA|먹튀|프랜차이즈|영구결번|등장곡|굿즈|유니폼 마킹|직관|사직|잠실|함성|중계 해설|캐스터|해설자|데뷔 시즌|신인왕|에이스|4번타자|클린업|주전/;
+ const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{const mi=S._cmMinor;if(!mi||!Array.isArray(out))return out;
+  const fix=t=>{let s=String(t||'');if(mi.mlb){s=s.replace(/2군|퓨처스/g,'마이너').replace(/1군/g,'빅리그');if(mi.lv!=='AAA')s=s.replace(/트리플A/g,mi.ln);s=s.replace(/(트리플A|더블A|싱글A)은/g,'$1는').replace(/(트리플A|더블A|싱글A)이 /g,'$1가 ').replace(/(트리플A|더블A|싱글A)을/g,'$1를')}else{s=s.replace(/마이너(리그)?/g,'2군').replace(/트리플A|더블A/g,'퓨처스')}return s};
+  out=out.filter(c=>!BIG.test(c.t||''));{const bd0=tone==='bad'||(isP()?x&&x.era!=null&&+x.era>=5.5:x&&x.ops&&+x.ops<.6);if(bd0)out=out.filter(c=>!/곧 올라갈|콜업 소식|콜업 각|폭격|레벨이 다르/.test(c.t||''))}out.forEach(c=>{c.t=fix(c.t);if(c.re)c.re=c.re.filter(q=>!BIG.test(q.t||'')).map(q=>(q.t=fix(q.t),q))});
+  const gn=giv(ME.name),P=isP(),ops=x&&x.ops?+x.ops:null,era=x&&x.era!=null?+x.era:null;
+  const good=tone==='hype'||(P?era!=null&&era<=3:ops!=null&&ops>=.82),bad=tone==='bad'||(P?era!=null&&era>=5.5:ops!=null&&ops<.6);
+  const L=mi.lv,ML=mi.mlb,lvN=mi.ln,up=ML?(L==='AAA'?'빅리그':'트리플A'):'1군',farm=ML?'마이너':'2군';
+  const G=[`${lvN}에서 이 정도면 ${up} 콜업 얘기 나올 만하다`,`${gn} ${farm}는 이제 좁아 보인다`,`${up} 가서도 이렇게만 해라`,`${farm} 성적 좋다고 바로 통하는 건 아니지만 기대는 된다`,ML?`${lvN} 투수들 상대로 이 정도면 확실히 레벨이 다르다`:`퓨처스 폭격 중이라던데 언제 올리냐`,`이러다 ${up} 엔트리 들어가겠다`,P?`${lvN}에서 저 구위면 올라가도 바로 쓸 만하다`:`${lvN}에서 타구 질이 다르다던데 진짜네`,`${gn} 요즘 ${farm} 기록 보는 맛에 산다`,`스카우트 리포트 좋게 나왔다더라`,`${farm}에서 이렇게 꾸준한 거 쉬운 거 아님`,P?`볼넷 적은 거 보니까 제구 확실히 잡혔네`:`삼진 줄어든 거 보면 선구안 확실히 좋아졌다`],
+   B=[`${farm}에서 이러면 ${up}${up==='1군'?'은':'는'} 아직 멀었다`,`조급해하지 말자 ${farm}는 원래 배우는 곳이다`,`${gn} 슬럼프 길어지네… 그래도 아직 어리다`,ML?`${lvN}도 만만한 리그가 아니다`:`퓨처스라고 쉬운 데 아니다`,`${farm}에서 폼 다시 잡고 올라오면 된다`,P?`${lvN} 타자들한테 맞는 거 보면 제구부터 다시 잡아야 할 듯`:`${lvN} 변화구에 계속 헛도는 거 보면 아직 적응 중`,`${gn}${jo(gn,'아','야').slice(gn.length)} 기죽지 마라 다들 ${farm}에서 한 번씩 헤맨다`,`이 성적이면 ${up}은 당분간 힘들겠다`.replace('트리플A은','트리플A는').replace('빅리그은','빅리그는'),`코치들이 뭘 고치고 있는지 궁금하다`,ML?`말도 안 통하는 데서 혼자 버티는 것도 쉽지 않을 듯`:`2군 버스 타고 다니면서 이 악물어라`,`올해는 그냥 몸 만들고 경험 쌓는 해라고 생각하자`,P?`구속은 나오는데 결과가 안 따라오네`:`타이밍이 계속 늦는 게 보인다`],
+   M=[`${farm}에서 경험 쌓는 중이니 지켜보자`,`딱 평균 정도 하는 중 아직 판단하긴 이르다`,`${gn} 몸 관리만 잘하면 된다`,`${farm} 성적만 보고 일희일비할 필요 없음`,P?`이닝 소화는 괜찮은데 결정구가 하나 더 있어야 할 듯`:`출루는 되는데 장타가 좀 아쉽다`,`${gn} ${lvN} 기록 꾸준히 챙겨보는 중`,`무난하다 이대로 차근차근 올라가면 됨`,`${up} 콜업 소식 언제 뜨나 기다리는 중`,ML?`${lvN} 경기 중계도 없어서 기록만 본다 ㅠ`:`퓨처스 경기 직관 가는 사람은 진짜 찐팬`,`${farm} 성적은 참고만 하자 결국 ${up}에서 보여줘야 함`];
+  const base=(good?G:bad?B:M).filter(t=>!out.some(c=>c.t===t));let pool=base.filter(t=>!seenHas(t)).sort(()=>R()-.5);if(pool.length<3)pool=pool.concat(base.filter(t=>!pool.includes(t)).sort(()=>R()-.5));const need=Math.max(0,5-out.length)+(R()<.6?1:0);
+  pool.slice(0,need).forEach(t=>{seenAdd(t);out.splice(ri(0,Math.min(2,out.length)),0,mkC(t,[]))})}catch(e){}return out}}
 
 </script>
 
