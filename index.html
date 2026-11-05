@@ -9421,7 +9421,7 @@ function retStory(){try{
   else out.push([hof?HOFL:seasons>=10?pk('gbc',['오래도록 꾸준히 잘한다는 것은 야구에서 가장 어려운 재능인데, 그는 그것을 커리어 내내 증명해 보였습니다.','이제 정든 그라운드를 떠나지만, 그가 남긴 시간들은 팬들의 기억 속에서 오래도록 꺼지지 않는 불빛으로 남을 것입니다.']):'길지 않은 시간이었지만 그라운드 위에서 보여준 진심은 충분히 전해졌으며, 그동안 정말 수고 많으셨습니다.']);
   return out.map(x=>x.join(' ')).join('\n\n')}catch(e){return''}}
 /* 은퇴 화면: 카드 바로 아래 멘트 */
-{const _vr=vRetired;vRetired=function(){let h=_vr();try{h=h.replace('(헌액 기준 110)',`(헌액 기준 ${(()=>{try{if(!isP())return 105;const r=hofProle(careerTot(PRO).p);return r==='CL'||r==='RP'?74:105}catch(e){return 105}})()})`);const s=retStory();if(s){const box=`<div class="card retstory" style="gap:10px"><span class="lbl">은퇴 카드</span>${s.split('\n\n').map(x=>`<p style="margin:0;line-height:1.7">${esc(x)}</p>`).join('')}</div>`;const k=h.indexOf('<div class="card" style="text-align:center');h=k>=0?h.slice(0,k)+box+h.slice(k):h+box}}catch(e){}return h}}
+{const _vr=vRetired;vRetired=function(){let h=_vr();try{h=h.replace(' (헌액 기준 110)','').replace('(헌액 기준 110)','');return r==='CL'||r==='RP'?74:105}catch(e){return 105}})()})`);const s=retStory();if(s){const box=`<div class="card retstory" style="gap:10px"><span class="lbl">은퇴 카드</span>${s.split('\n\n').map(x=>`<p style="margin:0;line-height:1.7">${esc(x)}</p>`).join('')}</div>`;const k=h.indexOf('<div class="card" style="text-align:center');h=k>=0?h.slice(0,k)+box+h.slice(k):h+box}}catch(e){}return h}}
 /* 커리어 리캡: 마지막 장 앞에 */
 {const _rs=recapSlides;recapSlides=function(){const sl=_rs.apply(this,arguments);try{const s=retStory();if(s&&sl.length){const L=sl[sl.length-1],lf=L&&L.last;if(L)delete L.last;sl.push({th:'green',ey:'은퇴 카드',sub:s,last:lf||true})}}catch(e){}return sl}}
 
