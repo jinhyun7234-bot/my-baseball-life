@@ -1808,16 +1808,16 @@ function intl(rep,cy){
   /* 결승 진출·우승 확률 (내 성적이 좋을수록 bonus 0~0.2만큼 올라감)
      아시안게임: 결승 90%(+최대 7%) · 결승 승리 90%(+최대 8%)
      올림픽: 결승 40% · 결승 승리 45% · 결승 못 가면 동메달 결정전 70% · 동메달 55% → 3위 이상 약 60%
-     프리미어12: 우승 20% · 준우승 22% / WBC: 우승 6% · 준우승 13% (난이도 높음) */
+     WBC: 우승 6% · 준우승 13% (난이도 높음) */
   if(ev.n.includes('아시안게임')){if(R()<Math.min(.97,.9+bn*.35)){stage='final';want=R()<Math.min(.98,.9+bn*.4);force=want}else{stage='semi';want=false}}
   else if(ev.n.includes('올림픽')){if(R()<Math.min(.55,.4+bn*.6)){stage='final';want=R()<Math.min(.6,.45+bn)}else if(R()<.7){stage='bronze';want=R()<Math.min(.7,.55+bn*.5)}else{stage='semi';want=false}if(stage!=='semi')force=want}
-  else{const OD=ev.n.includes('프리미어12')?{w:.2,f:.28,br:1}:{w:.06,f:.14,br:0};const winP=Math.min(.6,OD.w+bn*.6),r=R();
+  else{const OD={w:.06,f:.14,br:0};const winP=Math.min(.6,OD.w+bn*.6),r=R();
     if(r<winP){stage='final';want=true}else if(R()<OD.f+bn*.4){stage='final';want=false}else if(OD.br){stage='bronze';want=R()<.5}else{stage='semi';want=false}}
   const toFinal=stage==='final',milB=(S.mil&&S.mil.status==='none'&&/아시안게임|올림픽/.test(ev.n))?1.5+(nf?nf.bonus*25:0)+Math.max(0,(o-58)*.35):0,KOR={ab:'한국',c:'#c60c30',bR:56+milB,pR:56+milB},on=pick(ev.opp),O=NATS[on];
   const role=isP()?(ME.pos==='SP'?'SP':'CL'):'start';
   const g=followGame({title:`${ev.n} ${toFinal?'결승전':stage==='semi'?'준결승':'동메달 결정전'}`,sub:`대한민국 vs ${on}`,me:KOR,op:{ab:O.ab,c:O.c,bR:O.r-(toFinal?0:3)+(stage==='semi'?10:want===true?-3:want===false?3:0),pR:O.r-(toFinal?0:3)+(stage==='semi'?10:want===true?-3:want===false?3:0)},home:R()<.5,role,lvk:'KBO',L:58,intl:true,forceWin:stage==='semi'?false:force});
   S.queue.push({type:'game',g});
-  const isMedal=!ev.n.includes('WBC')&&!ev.n.includes('프리미어12'),res=toFinal?(g.win?(isMedal?'금메달':'우승'):(isMedal?'은메달':'준우승')):stage==='semi'?'4강 탈락':(g.win?(isMedal?'동메달':'3위'):'메달 획득 실패');
+  const isMedal=!ev.n.includes('WBC'),res=toFinal?(g.win?(isMedal?'금메달':'우승'):(isMedal?'은메달':'준우승')):stage==='semi'?'4강 탈락':(g.win?(isMedal?'동메달':'3위'):'메달 획득 실패');
   rep.lines.push(`${ev.n}: 대한민국 ${res}`);news(`${ev.n} 대표팀 ${res}.`);
   if(res==='우승'){S.awards.push({y:S.y,n:`${ev.n} 우승`});S.rel.fame+=8;celebrate('trophy',`${ev.n} 우승`,`대한민국 국가대표 · 세계 정상`,[]);article(`대한민국, ${ev.n} 우승! 세계 정상에 서다`,`${on}를 꺾고 우승했다. ${ME.name} ${g.mvp?'결승 히어로':'맹활약'}.`,'gold')}
   if(res==='금메달'||res==='은메달'||res==='동메달')celebrate('medal',`${ev.n} ${res}`,`대한민국 국가대표 · 등번호 ${ME.num||'-'}`,exemptLabel(ev,res));
@@ -4633,7 +4633,7 @@ function narrLines(x){const nm=ME.name,gn=giv(nm),opp=x.opp||'상대',win=x.win!
 const INTL_OFF=/구단|프런트|대체자|돈도|돈 없|계약|단장|감독 교체|우리 팀|팀 기둥|홈 팬|원정|가을|정규리그|정규시즌|시리즈|직관 승률/;
 const toIntl=t=>t.replace(/가을야구/g,'국대 경기').replace(/가을에/g,'국대에서').replace(/가을만 되면/g,'큰 대회만 되면').replace(/가을/g,'국대').replace(/정규리그에서만/g,'리그에서만').replace(/포스트시즌/g,'국제대회');
 {const _c12=comments;comments=function(tone,x){let out=_c12(tone,x);try{if(x&&x.intl){out.forEach(c=>{if(c.nar||/국대|국제|대표|태극|대한민국|한국|일본|대만|미국|병역|금메달|은메달|동메달/.test(c.t))c.t=toIntl(c.t)});out=out.filter(c=>c.nar||!INTL_OFF.test(c.t));out.forEach(c=>{c.fl=null;if(c.re)c.re=c.re.filter(r=>!INTL_OFF.test(r.t))})}}catch(e){}return out}}
-/* 병역 특례 후엔 아시안게임·올림픽 미선발 · WBC/프리미어12는 시즌 전 참가 여부 선택 (참가 시 피로↑) */
+/* 병역 특례 후엔 아시안게임·올림픽 미선발 · WBC는 시즌 전 참가 여부 선택 (참가 시 피로↑) */
 function intlUpcoming(y){const L=[];if(y>=2026&&(y-2026)%4===0)L.push(['wbc',`${y} WBC`,'3월','시즌 개막 직전이라 몸을 일찍 끌어올려야 해요 · 피로도↑']);return L}
 {const _ny6=newYear;newYear=function(){const r=_ny6();try{if(S.stage==='pro'&&S.pro&&!S.pro.dev&&S.pro.league==='KBO'){const nf=natForm(),good=(nf&&nf.ok)||ovrE()>=62;
   if(good)for(const [k,n,mo,s] of intlUpcoming(S.y)){S.intlPick=S.intlPick||{};if(S.intlPick[n]!=null)continue;
@@ -4642,7 +4642,7 @@ ACT.intlp=function(a){S.intlPick=S.intlPick||{};S.intlPick[a.n]=!!a.go;if(a.go)r
 CRIT.add('intlp');
 {const _in=intl;intl=function(rep,cy){try{const m=S.m;
   const ag=(m===8&&cy>=2028&&(cy-2028)%4===0)||(m===9&&cy>=2026&&(cy-2026)%4===0);if(ag&&S.mil&&S.mil.status==='exempt')return;
-  const n=m===3&&cy>=2026&&(cy-2026)%4===0?`${cy} WBC`:m===11&&cy>=2027&&(cy-2027)%8===0?`${cy} 프리미어12`:null;
+  const n=m===3&&cy>=2026&&(cy-2026)%4===0?`${cy} WBC`:null;
   if(n&&S.intlPick&&S.intlPick[n]===false)return;
   const before=S.hist.nat;_in(rep,cy);
   if(n&&S.hist.nat>before){const add=n.includes('WBC')?14:11;ME.fat=cl(ME.fat+add,0,100);rep.lines.push(`대표팀 일정으로 몸이 지쳤다. (피로도 +${add})`)}}catch(e){}}}
@@ -8587,7 +8587,7 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.intl||x.win||!Array.isArray(out))return out;const t=String(x.title||''),W=/WBC/.test(t),P12=/프리미어12/.test(t);
   if(!((W||P12)&&/결승전/.test(t))&&!(W&&/준결승/.test(t)))return out;const gn=giv(ME.name),fin=/결승전/.test(t),hero=isP()?((x.ipO||0)>=12&&(x.ra||0)<=2):((x.gH||0)>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2);
   const NEG=/우물|개구리|작아지|벽이 높|할 말 없|부족|망신|거품|볼 낯|수준 얘기|평범|이 꼴|몇 번째|책임|세대교체|늘 이 모양|1000만|나가지 마라|공인구|못 이긴다|탓|TV 끈|정신 차려|아쉬움이 남|운영에서|때문에 졌|역적|먹튀|노답|혈압|기회를 못 살|아쉬운 결승|못 살렸|답답/;out=out.filter(c=>!NEG.test(c.t));out.forEach(c=>{if(c.re)c.re=c.re.filter(r=>!NEG.test(r.t))});
-  const L=fin?[`${W?'WBC':'프리미어12'} 준우승이면 진짜 잘한 거다 다들 수고했다`,'세계 2위다 고개 숙일 필요 하나도 없음','결승까지 간 것 자체가 대단하다 박수 쳐주자',`${W?'메이저리거들 상대로':'세계 강호들 상대로'} 이 정도 했으면 충분히 자랑스럽다`,'끝까지 포기 안 하는 모습 보고 울컥했다','다음 대회는 진짜 우승 노려볼 만하다','이번 대표팀 진짜 멋있었다 고생 많았다','한국 야구 아직 안 죽었다 보여줬다']
+  const L=fin?[`WBC 준우승이면 진짜 잘한 거다 다들 수고했다`,'세계 2위다 고개 숙일 필요 하나도 없음','결승까지 간 것 자체가 대단하다 박수 쳐주자',`${W?'메이저리거들 상대로':'세계 강호들 상대로'} 이 정도 했으면 충분히 자랑스럽다`,'끝까지 포기 안 하는 모습 보고 울컥했다','다음 대회는 진짜 우승 노려볼 만하다','이번 대표팀 진짜 멋있었다 고생 많았다','한국 야구 아직 안 죽었다 보여줬다']
     :['WBC 4강이면 충분히 잘한 거다 수고했다','세계 4강 고개 숙이지 마라','강팀들 사이에서 여기까지 온 게 대단함','이번 대표팀 투지 진짜 좋았다','다음 WBC가 벌써 기대된다'];
   if(hero)L.push(`${gn} 국제무대에서도 통한다는 거 확실히 보여줬다`,`${gn} 이번 대회 진짜 에이스였다`);else L.push(`${gn}도 태극마크 달고 끝까지 뛰어줘서 고맙다`);
   const RE=['ㄹㅇ 박수 쳐줘야 함','고생했다 진짜','인정 이 정도면 잘한 거지','자랑스럽다 진짜','다음엔 우승이다','눈물 남 ㅠㅠ'];
@@ -8996,6 +8996,30 @@ if(typeof CRIT!=='undefined')CRIT.add('toolFix');
 function natFormMLB(){try{const P=isP(),pick=(ls,minB,minP)=>{const c=yearTot(S.y,ls),p=yearTot(S.y-1,ls);return P?(c.p.outs>=minP?c.p:p.p.outs>=minP*1.6?p.p:null):(c.b.PA>=minB?c.b:p.b.PA>=minB*1.6?p.b:null)};
   let s=pick(['MLB'],120,100),mlb=true;if(!s){s=pick(['AAA','AA','fut'],150,120);mlb=false}if(!s)return null;
   if(!P){const o=opsN(s),th=mlb?.72:.85;return{ok:o>=th,bonus:cl((o-th)*1.0,0,.2)}}const e=eraN(s),th=mlb?4.0:3.0;return{ok:e<=th,bonus:cl((th-e)*.1,0,.2)}}catch(e){return null}}
+/* 프리미어12 흔적 제거 (예전 저장 파일의 수상·기사·뉴스·업적 포함) */
+function scrubP12(s){try{if(!s)return;const bad=o=>{try{return /프리미어/.test(typeof o==='string'?o:JSON.stringify(o))}catch(e){return false}};['awards','news','arts','feats','phFeats','featLog','moments'].forEach(k=>{if(Array.isArray(s[k]))s[k]=s[k].filter(x=>!bad(x))});if(s.intlPick)for(const k in s.intlPick)if(/프리미어/.test(k))delete s.intlPick[k]}catch(e){}}
+{const _ld=load;load=function(){const s=_ld.apply(this,arguments);scrubP12(s);return s}}
+/* ===== 고교→MLB 직행(구단 보유 기간) 연봉 구조: 마이너 연봉 → 메이저 최저연봉(서비스 타임 3년 전) → 연봉조정(3~5년차) ===== */
+const MLB_MIN=.78,MLB_MINOR=.04;
+{const _md=ACT.mlbDirect;ACT.mlbDirect=function(a){const r=_md.apply(this,arguments);try{if(S.pro){S.pro.rk=1;S.pro.svc=0;S.pro.rkSal=Math.round(MLB_MIN*USDM)}}catch(e){}return r}}
+{const _ab=ACT.abroad;ACT.abroad=function(a){const r=_ab.apply(this,arguments);try{if(S.pro)S.pro.rk=0}catch(e){}return r}}
+function rkMajor(){try{return S.pro.league==='MLB'&&!S.pro.dev&&!/^f/.test(S.role||'')&&!['off','pre'].includes(S.role)}catch(e){return false}}
+/* 월급: 메이저에 있는 달은 메이저 연봉, 마이너에 있는 달은 마이너 연봉 */
+{const _ms=monthStep;monthStep=function(rep){try{if(S.stage==='pro'&&S.pro&&S.pro.rk&&S.pro.league==='MLB'){const maj=!S.pro.dev&&!/^f/.test(S.role||'');S.pro.salary=maj?(S.pro.rkSal||Math.round(MLB_MIN*USDM)):Math.round(MLB_MINOR*USDM)}}catch(e){}return _ms(rep)}}
+/* 시즌 종료 후: 서비스 타임 집계 + 연봉 갱신 안내 */
+{const _ny=newYear;newYear=function(){const y0=S.y-1;let note=null;try{const p=S.pro;if(S.stage==='pro'&&p&&p.rk&&p.league==='MLB'){const rows=S.rows.filter(r=>r.y===y0&&r.lv==='MLB'),b=blankB(),q=blankP();rows.forEach(r=>{addTo(b,r.b);addTo(q,r.p)});
+    const full=isP()?(q.GS>=15||q.G>=45||q.outs>=360):b.G>=100,part=isP()?(q.G>=12||q.outs>=90):b.G>=40;const add=full?1:part?.5:0;p.svc=Math.round(((p.svc||0)+add)*10)/10;
+    const w=rows.reduce((a,r)=>a+rowWAR(r),0),svc=p.svc;let usd,kind;
+    if(svc<3){usd=MLB_MIN+Math.min(.08,svc*.02);kind='pre';if(w>=5&&add)note={bonus:+(w>=8?2.5:w>=6.5?1.6:1.0).toFixed(1)}}
+    else if(svc<6){const yr=Math.floor(svc)-2,mk=cl(.78+Math.max(0,w)*7.6,.78,60),fr=[.18,.30,.45][Math.min(2,yr-1)];usd=+Math.max(MLB_MIN+.3,mk*fr,(p.rkSal||0)/USDM*1.08).toFixed(2);kind='arb'}
+    if(usd){p.rkSal=Math.round(usd*USDM/100)*100;note=Object.assign(note||{},{usd,kind,svc,w,add})}
+    if(svc<6)p.years=Math.max(p.years||0,Math.ceil(6-svc)+1);else p.rk=0}}catch(e){}
+  const r=_ny.apply(this,arguments);
+  try{if(note){let txt;if(note.bonus){S.money+=Math.round(note.bonus*USDM);}
+    if(note.kind==='pre')txt=`메이저 서비스 타임 ${note.svc}년. 아직 연봉조정 자격(3년)이 없어 구단이 연봉을 일방적으로 갱신했다.\n메이저에 있는 동안 연봉 ${usd2(note.usd)} (약 ${money(Math.round(note.usd*USDM))}) · 마이너에 내려가면 마이너 연봉.${note.bonus?`\n\n뛰어난 활약으로 리그 '젊은 선수 보너스 풀'에서 ${usd2(note.bonus)} (약 ${money(Math.round(note.bonus*USDM))})을 받았다!`:''}\n연봉조정까지 ${Math.max(0,Math.ceil(3-note.svc))}년 · FA까지 ${Math.max(0,Math.ceil(6-note.svc))}년`;
+    else txt=`메이저 서비스 타임 ${note.svc}년 — 연봉조정 자격! 지난 시즌 성적(WAR ${note.w.toFixed(1)})을 근거로 구단과 협상했다.\n새 연봉 ${usd2(note.usd)} (약 ${money(Math.round(note.usd*USDM))}) · FA까지 ${Math.max(0,Math.ceil(6-note.svc))}년`;
+    S.queue.push({title:note.kind==='pre'?'💵 MLB 연봉 갱신':'💵 연봉조정 합의',text:txt,ch:[{t:'확인',s:'',act:'lifeok'}]})}}catch(e){}return r}}
+{const _ld=load;load=function(){const s=_ld.apply(this,arguments);try{const p=s&&s.pro;if(p&&p.league==='MLB'&&p.rk==null&&p.faReq===99&&(p.salary||0)<MLB_MIN*USDM*1.5){p.rk=1;const ys=[...new Set((s.rows||[]).filter(r=>r.lv==='MLB').map(r=>r.y))];p.svc=ys.length;p.rkSal=Math.round(MLB_MIN*USDM)}}catch(e){}return s}}
 
 </script>
 
