@@ -9467,6 +9467,16 @@ function srecFut(y){const mlb=S.pro&&S.pro.league==='MLB',lvs=mlb?['AAA','AA','A
 {const _adv=advance;advance=function(){const r=_adv.apply(this,arguments);try{const Q=S.queue;
   const pi=Q.findIndex(q=>q&&q.type==='phstat'),is2=Q.findIndex(q=>q&&q.type==='intlshow'),ib2=Q.findIndex(q=>q&&q.type==='intlback');if(pi>=0&&is2>pi&&ib2>is2){const ph=Q.splice(pi,1)[0];Q.splice(ib2,0,ph)}
   const si=Q.findIndex(q=>q&&q.type==='srecap');if(si>=0){const mv=[];for(let i=Q.length-1;i>si;i--)if(Q[i]&&Q[i].type==='award')mv.unshift(Q.splice(i,1)[0]);if(mv.length)Q.splice(si,0,...mv)}}catch(e){}return r}}
+/* ===== 가을야구 경기 댓글 최종 점검: 시리즈가 끝난 경기엔 "다음 경기·시리즈 금방 끝" 류 X · 활약 없으면 선수 인터뷰 대신 감독 인터뷰 ===== */
+{const NEXTG=/다음 경기|다음 차전|내일 경기|내일도|시리즈 금방|금방 끝|이 흐름 그대로|기세 가져왔|남은 경기|한 경기만 더|\d차전 잡고|스윕 가자|여기서 끝내자/;
+ const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.ps||x.intl||!Array.isArray(out))return out;const sub=String(x.sub||''),win=!!x.win;
+  const over=(win&&(x.clinch||/이기면 시리즈 승리/.test(sub)))||(!win&&/지면 탈락|마지막 승부/.test(sub));
+  const P=isP(),h=x.gH||0,hr=x.gHR||0,rbi=x.gRBI||0,ra=x.ra||0,o=x.ipO||0;
+  const good=P?((o>=15&&ra<=2)||(o>=3&&o<=9&&ra===0)):(hr>=1||h>=2||rbi>=2);
+  const gn=giv(ME.name);
+  if(over){out=out.filter(c=>!NEXTG.test(String(c&&c.t||'')));out.forEach(c=>{if(c&&c.re)c.re=c.re.filter(q=>!NEXTG.test(String(q&&q.t||'')))})}
+  if(!good&&/한국시리즈|월드시리즈/.test(String(x.title||'')))out=out.filter(c=>!(c&&new RegExp('^"[^"]+" '+gn+' 인터뷰 보소').test(String(c.t||''))));
+  if(!good)out.forEach(c=>{if(!c)return;const t=String(c.t||'');const m=t.match(/^"([^"]+)" (\S+) 인터뷰 보소/);if(m&&m[2]===gn){c.t=t.replace(`" ${gn} 인터뷰 보소`,`" 감독 인터뷰 보소`);if(c.re)c.re=c.re.filter(q=>!/될 놈|목소리 떨리/.test(String(q&&q.t||'')))}})}catch(e){}return out}}
 
 </script>
 
