@@ -8606,7 +8606,7 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
   if(0)put(pick([`${gn} 출루 GOAT ㅋㅋㅋㅋ`,`볼넷 ${bb}개 ㅋㅋㅋ 투수들이 ${gn} 피해 다니네`,`${gn} 오늘 볼넷 ${bb}개 눈야구 장인 ㅋㅋㅋ`,`출루 머신 ${gn} ㅋㅋㅋㅋ 오늘만 ${ob}번 나감`]),[pick(['ㄹㅇ 출루 GOAT','볼 고르는 거 보소','투수들이 승부를 못 함 ㅋㅋ','이게 진짜 4번 대우지'])],ri(2000,6000));
   const L=h===0?[`안타는 없어도 출루 ${ob}번이면 할 건 다 했다`,`볼넷 골라내는 것도 실력이다 ${gn} 오늘 제 몫 함`,`타율은 몰라도 출루율로 보면 오늘 ${gn} 만점`,`무안타라고 까는 사람들 출루율 좀 봐라`,`${ob}번 출루했는데 뭘 더 바라냐 ㅋㅋ`]
     :[`${pa}타석 ${ob}출루면 할 건 했다`,`${gn} 오늘 출루로 제 역할 다 함`,`꾸준히 나가주니까 뒤에서 쳐주는 거지`,`화려하진 않아도 ${gn} 오늘 알짜배기였다`];
-  L.sort(()=>R()-.5).slice(0,2).forEach(t=>put(t,R()<.6?[pick(['ㅇㅈ 출루가 최고','이게 보이지 않는 활약','볼넷도 안타랑 같은 1루임','팀 득점 절반은 ${gn} 출루에서 나옴'.replace('${gn}',gn)])]:[]));
+  if(!(h>=2||(x.gHR||0)>=1))L.sort(()=>R()-.5).slice(0,2).forEach(t=>put(t,R()<.6?[pick(['ㅇㅈ 출루가 최고','이게 보이지 않는 활약','볼넷도 안타랑 같은 1루임','팀 득점 절반은 ${gn} 출루에서 나옴'.replace('${gn}',gn)])]:[]));
   out=add.concat(out)}catch(e){}return out}}
 /* 트레이드 기사 댓글: 트레이드 얘기만 (가서도 잘해라 · 잘하는데 왜 보내냐 · ○○ 보낸 팀 후회할 듯 · 새 팀 개이득 등) */
 function tradeComments(from,to,star,rich,big){const gn=giv(ME.name),cln=v=>String(v||'').replace(/\s*\([^)]*\)/g,'').trim(),sh=v=>{const c=cln(v);return S.pro&&S.pro.league==='MLB'?c:c.split(' ').pop()},fn=sh(from),tn=sh(to),C=[];const A=(t,re)=>C.push([t,re]);
@@ -8719,6 +8719,23 @@ function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${
   article(`${ME.name}, ${tn}와 ${a.yrs}년 ${usd(a.per*a.yrs)} 재계약`,`구단은 그동안의 활약을 인정해 ${a.yrs}년 계약을 안겼다.`,'mix',{});const ar=S.arts[0];if(ar)ar.cm=resignComments(tn,a.yrs,lw>=2);
   const q=S.queue.find(q=>q&&q.type==='contract'&&q.c&&q.c.kind==='abroad');if(q){q.c.stay=1;q.c.quote=pick(['"이 팀에서 계속 뛸 수 있어 기쁩니다. 믿어준 만큼 보답하겠습니다."','"여기가 이제 제 집 같습니다. 우승 반지 끼고 싶습니다."','"구단과 팬들이 저를 붙잡아 주셨습니다. 더 잘하겠습니다."'])}}}catch(e){}return r}}
 {const _vc=vContract;vContract=function(q){let h=_vc(q);try{if(q&&q.c&&q.c.stay)h=h.replace('해외 진출 기자회견','재계약 기자회견').replace(/<br>입단 확정!/,'<br>재계약!')}catch(e){}return h}}
+/* 시리즈 확정 승리(다음 스테이지 진출·우승 확정): 인터뷰·캐스터 멘트를 인용하는 댓글 */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.ps||!x.win||!x.clinch||!Array.isArray(out))return out;const t=String(x.title||''),sub=String(x.sub||''),gn=giv(ME.name),nm=ME.name;
+  const WS=/월드시리즈/.test(t),KS=/한국시리즈/.test(t),fin=WS||KS,m=sub.match(/(\d)승\s*(\d)패/),wl=m?+m[2]:0,g7=/7차전/.test(t)||(m&&+m[1]===3&&+m[2]===3);
+  const city=(()=>{try{return String(S.pro.tname||teamLabel()).replace(/\s*\(.*\)$/,'').split(' ')[0]}catch(e){return''}})(),P=isP();
+  const IV=fin?(WS?[`이 도시에 우승을 안기려고 한국에서 왔습니다`,`이 반지는 한국에서 새벽에 일어나 응원해준 모든 분들 겁니다`,`어릴 때 TV로만 보던 월드시리즈, 오늘 그 마지막 장면에 제가 있었습니다`,`${city} 팬들이 저를 가족처럼 받아줬습니다. 이 우승으로 갚고 싶었어요`]
+      :[`이 우승은 끝까지 믿어준 팬들 겁니다`,`오늘 하루만큼은 울어도 될 것 같습니다`,`프로 와서 꿈꾼 단 하나가 이 순간이었습니다`,`힘들 때마다 팬들 함성 생각하면서 버텼습니다`])
+    :[`아직 끝난 거 아닙니다. 우리 목표는 처음부터 우승이었습니다`,`다음 시리즈도 오늘처럼, 한 경기 한 경기 하겠습니다`,`팬들 함성 덕분에 마지막까지 집중할 수 있었습니다`];
+  const CS=[];if(wl>=2&&!g7)CS.push(`${wl}패를 떠안고도 끝내 이겨낸 시리즈, 그 절망의 끝에서 희망을 찾아낸 오늘 경기였습니다`);
+  if(g7)CS.push(`7차전, 모든 것이 걸린 마지막 승부… 결국 웃은 쪽은 ${String(x.sub||'').split(' ')[0]||'우리'}입니다`);
+  if(fin)CS.push(`마지막 아웃카운트! ${jo(nm,'이','가')} 그토록 기다려온 바로 그 순간입니다!`,WS?`${city}가 기다린 우승, 그 한가운데에 한국에서 온 ${jo(nm,'이','가')} 서 있습니다`:`이 팀이 기다려온 우승, 그 중심에 ${jo(nm,'이','가')} 있었습니다`);
+  else CS.push(`이제 다음 무대로 갑니다! 이 팀의 가을은 아직 끝나지 않았습니다`,`${jo(nm,'이','가')} 팀을 다음 시리즈로 이끕니다!`);
+  const R1=WS?['현지팬들 난리 났겠는데 ㅋㅋ','좀 감동이다 진짜','이거 듣고 새벽에 울었다','이건 영상으로 평생 소장각']:['소름 돋았다','좀 감동이다','울컥했다 진짜','이거 듣고 눈물 남'];
+  const add=[],put=(s,re)=>{s=josaFix(s);if(seenHas(s))return;seenAdd(s);add.push(mkC(s,re?[{nk:pick(NICKS),t:re,up:ri(80,1200)}]:[],{up:ri(3000,9000),must:1}))};
+  put(`"${pick(IV)}" ${gn} 인터뷰 보소 ${pick(R1)}`,pick(['ㄹㅇ 멘트까지 완벽함','이 선수 진짜 될 놈이었다','인터뷰에서 목소리 떨리는 거 들림 ㅠㅠ']));
+  put(`캐스터 "${CS[0]}" 이거 듣고 뭉클했다`,pick(['중계진도 울먹이더라','이 멘트 평생 기억날 듯','소름 쫙']));
+  if(fin&&CS.length>1&&R()<.7)put(`"${CS[1]}" 이 멘트 나올 때 나도 같이 소리 질렀다`,null);
+  out=add.concat(out)}catch(e){}return out}}
 
 </script>
 
