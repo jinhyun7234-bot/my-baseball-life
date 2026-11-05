@@ -9394,6 +9394,13 @@ function amaCtx(){try{if(!S||!ME)return null;if(S.stage==='hs'){const sc=(SCHOOL
       :[`대학 ${gr}학년 ${gn} 무난하다`,`대학 드래프트 노리면 지금부터가 중요하다`,`${w}에서 조용히 크고 있네`]);
    const add=L.filter(t=>!seenHas('ama:'+t)).sort(()=>R()-.5).slice(0,Math.max(1,Math.min(3,n0-out.length+1)));
    add.forEach((t,i)=>{seenAdd('ama:'+t);out.splice(Math.min(i*2,out.length),0,mkC(t,[]))})}catch(e){}return out}}
+/* 고교 시절 부상으로 놓친 훈련: 복귀 후 몇 달 동안 훈련 효율을 조금씩 더 줘서 메워주기 (비공개) */
+{const _tm=trainMonth;trainMonth=function(rep){try{if(S&&ME&&S.stage==='hs'&&ME.inj)S.hsDebt=Math.min(6,(S.hsDebt||0)+1)}catch(e){}
+  const d=S&&ME&&!ME.inj&&(S.hsDebt||0)>0?S.hsDebt:0;let r0=null,p0=null;if(d){r0={...ME.r};p0={...(ME.pt||{})}}
+  const out=_tm(rep);
+  try{if(d){const pay=Math.min(.3,d),bonus=pay;for(const k in ME.r){const g=ME.r[k]-(r0[k]||0);if(g>0)ME.r[k]=cl(ME.r[k]+g*bonus,20,capOf(k))}
+    if(ME.pt)for(const k in ME.pt){if(!p0[k])continue;const g=ME.pt[k]-p0[k];if(g>0)ME.pt[k]=cl(ME.pt[k]+g*bonus,20,capOf(k))}
+    S.hsDebt=Math.max(0,d-pay)}}catch(e){}return out}}
 
 </script>
 
