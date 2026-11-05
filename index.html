@@ -1865,6 +1865,9 @@ function followGame(o){
   const mb=blankB(),mp=blankP();let pitching=false,pc=0,used=false,phUsed=false,ra=0;
   const lim=68+E('sta')*.55+(sk('eater')?10:0),role=o.role,isB=!isP();S._pRole=(role==='SP'||role==='ace')?'SP':'RP';let relInn=0;const bigPS=!o.intl&&/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'');const multiG=role==='CL'?R()<cl(.22+(E('sta')-50)*.006,.12,.42):bigPS&&(role==='SU'||role==='MR')&&R()<cl((role==='MR'?.3:.24)+(E('sta')-50)*.006,.12,.45);
   const psEnt=role==='MR'?ri(5,7):role==='SU'?(R()<.45?7:8):9;let relLead=null;
+  let pendC=false,irLeft=0,ueLeft=0,crisisCont=0;const _pev=(typeof pitEval==='function'&&!isB)?pitEval():null,_tier=_pev?_pev.t:2;G.ent=null;
+  const pCr=(role==='CL'?.36:role==='SU'?.32:role==='MR'?.18:0)*(_tier>=4?1.3:_tier>=3?1.1:_tier<=1?.5:1)*(bigPS?1.15:1);const crisis=!isB&&role!=='SP'&&role!=='none'&&R()<pCr;
+  const crIn=bigPS&&role!=='CL'?psEnt-1:role==='CL'?8:role==='SU'?7:5;
   const st={b:[0,0,0],outs:0,inn:1,half:0,last:null};
   const snap=(t,cls)=>{G.ev.push({t,c:cls||'',line:G.line.map(l=>l.slice()),R:G.R.slice(),Hh:G.Hh.slice(),BBt:G.BBt.slice(),Et:G.Et.slice(),b:st.b.slice(),outs:st.outs,inn:st.inn,half:st.half,last:st.last,pc,mk:mp.K,mo:mp.outs});st.last=null};
   snap(`플레이볼! ${o.sub}`+(role==='none'?` · ${name}는 벤치에서 지켜본다`:isB?(role==='bench'?` · ${name} 대타 대기`:` · ${name} ${spot+1}번 ${POS[ME.pos]}`):role==='SP'?` · 선발 투수 ${name}`:` · ${name} 불펜 대기`));
@@ -1878,14 +1881,17 @@ function followGame(o){
         else if(R()<pe){G.def.e++;G.Et[my]++;const rr=R()<.5?1:0;G.R[bat]+=rr;G.line[bat][inn-1]+=rr;snap(`${it} ${name} 포구 실책…${rr?' 그 사이 1점을 내줬다':' 주자 출루'}`,'me bad')}}
       if(fld===my&&!isB&&role!=='none'){const lead=G.R[my]-G.R[1-my];
         if(role==='SP'){if(inn===1&&!used){pitching=true;used=true}else if(pitching&&(pc>lim||(ra>=(o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'')?4:5)&&inn>=3)||inn>9)){pitching=false;snap(`${it} — ${name} 마운드를 내려간다 (${ip(mp.outs)}이닝 ${ra}실점, 투구수 ${pc})`,'sub')}}
+        else if(!used&&crisis&&!G.crTried&&inn===crIn&&lead>=0&&lead<=3){G.crTried=1;pendC=true}
         else if(!used&&((role==='CL'&&inn>=9&&lead>=1&&lead<=3)||(multiG&&inn===8&&lead>=0&&lead<=3)||(multiG&&inn>=9&&lead===0)||(role==='SU'&&inn===8&&lead>=0&&lead<=3)||(role==='MR'&&inn===6)||(o.intl&&role==='CL'&&inn>=9&&lead>=0&&lead<=4)||(bigPS&&role!=='CL'&&inn===psEnt&&lead>=-3&&lead<=4)||(bigPS&&role==='CL'&&inn>=9&&lead>=-1&&lead<=4)||(bigPS&&inn===9&&(role==='SU'||role==='MR')&&R()<.6)||(bigPS&&role==='CL'&&inn===9&&R()<.35))){pitching=true;used=true;relInn=1;relLead=lead;snap(`${it} — ${name} 마운드에 오른다 (${lead>0?`${lead}점 리드`:lead===0?'동점':`${-lead}점 차`})${multiG&&inn<9?' — 멀티이닝 대기':multiG&&lead===0?' — 연장 승부':''}`,'sub')}
-        else if(role!=='SP'&&pitching){if(multiG&&relInn<2&&ra<=1){relInn++;snap(`${it} — ${name} 한 이닝 더 간다!`,'me')}else pitching=false}}
+        else if(role!=='SP'&&pitching){if(crisisCont){crisisCont=0;relInn++;snap(`${it} — ${name} 이어서 마운드를 지킨다`,'me')}else if(multiG&&relInn<2&&ra<=1){relInn++;snap(`${it} — ${name} 한 이닝 더 간다!`,'me')}else if(role==='CL'&&(bigPS||inn>=10||o.intl)&&relInn===2&&ra===0&&R()<.3){relInn++;G.cl3=1;snap(`${it} — ${name} 3이닝째 마운드에 선다!`,'me')}else pitching=false}}
       while(outs<3){
         const risp=b[1]||b[2];let t,me=false;
-        if(bat===my&&isB&&((role==='start'&&idx[bat]%9===spot)||(role==='bench'&&inn>=7&&!phUsed&&idx[bat]%9===spot))){me=true;st.b=b.slice();st.outs=outs;snap(`${it} ${outs}아웃${b[0]||b[1]||b[2]?` · 주자 ${[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')}루`:''} — ${name} 타석에 들어선다${risp?' (득점권!)':''}`,'meup');if(role==='bench')phUsed=true;S.big=true;S._bctx={outs,inn,my:G.R[bat],op:G.R[fld],b:b.slice()};t=meBatPA(T[fld].pR,risp)}
+        if(pendC&&fld===my&&!pitching){const nb=b[0]+b[1]+b[2];if((outs>=1&&nb>=2)||(outs>=1&&(b[1]||b[2])&&R()<.5)||(outs===2&&nb>=1&&R()<.3)){pendC=false;pitching=true;used=true;relInn=1;relLead=G.R[my]-G.R[1-my];irLeft=nb;const bt=nb===3?'만루':[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')+'루';G.ent={outs,b:b.slice(),bt,inn,ir:nb,lead:relLead,irs:0,irsH:0,irsSF:0,end:null};crisisCont=inn<9&&(role==='CL'||R()<.5)?1:0;
+          snap(`${it} ${outs}사 ${bt} 위기 — ${name} 긴급 등판! (${relLead>0?`${relLead}점 리드`:relLead===0?'동점':`${-relLead}점 차`})`,'sub')}}
+        if(bat===my&&isB&&((role==='start'&&idx[bat]%9===spot)||(role==='bench'&&inn>=7&&!phUsed&&(idx[bat]%9===spot||(risp&&Math.abs(G.R[bat]-G.R[fld])<=2&&R()<.45))))){me=true;if(role==='bench'&&!phUsed)G.phCtx={outs,b:b.slice(),inn,diff:G.R[bat]-G.R[fld],bt:(b[0]&&b[1]&&b[2])?'만루':[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')+(b[0]||b[1]||b[2]?'루':'')};st.b=b.slice();st.outs=outs;snap(`${it} ${outs}아웃${b[0]||b[1]||b[2]?` · 주자 ${[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')}루`:''} — ${name} ${role==='bench'?'대타로 ':''}타석에 들어선다${risp?' (득점권!)':''}`,'meup');if(role==='bench')phUsed=true;S.big=true;S._bctx={outs,inn,my:G.R[bat],op:G.R[fld],b:b.slice()};t=meBatPA(T[fld].pR,risp)}
         else if(fld===my&&pitching){me=true;S.big=true;const tired=Math.max(0,pc-lim*.85)*.35;S._pInn=inn;S._pctx={outs,inn,my:G.R[fld],op:G.R[bat],b:b.slice(),pc};t=mePitPA(T[bat].bR,risp,tired);pc+=t==='K'?ri(4,6):t==='BB'?ri(4,7):ri(1,5)}
         else t=genPA(T[bat].bR,T[fld].pR);
-        let errPA=false;if(!me&&t==='GO'&&outs<2&&R()<.05){t='1B';errPA=true}
+        G._myR=null;let errPA=false;if(!me&&t==='GO'&&outs<2&&R()<.05){t='1B';errPA=true}else if(me&&!isB&&fld===my&&t==='GO'&&R()<.03){t='1B';errPA=true;ueLeft++}
         S.big=false;idx[bat]++;
         const pb=b.slice();const r=resolve(t,b,outs);if(r.t2)t=r.t2;const dOuts=r.outs-outs;b=r.b;outs=r.outs;st.b=b.slice();st.outs=Math.min(3,outs);st.last={t,me,runs:r.runs,pb};
         if(errPA)G.Et[fld]++;else if(['1B','2B','3B','HR'].includes(t))G.Hh[bat]++;if(t==='BB')G.BBt[bat]++;if(t==='HR'){G.HRt=G.HRt||[0,0];G.HRt[bat]++}
@@ -1893,15 +1899,16 @@ function followGame(o){
         const sc=r.runs?` — ${r.runs}점!`:'';
         if(me&&isB){(G.seq=G.seq||[]).push(seqLbl(t,dOuts,r.runs));(G.pl=G.pl||[]).push({i:inn,t,r:r.runs,dp:t==='GO'&&dOuts===2,my:G.R[my],op:G.R[1-my],o:outs});mb.PA++;if(t!=='BB')mb.AB++;if(['1B','2B','3B','HR'].includes(t))mb.H++;if(t==='2B')mb.D++;if(t==='3B')mb.T++;if(t==='HR'){mb.HR++;mb.R++}if(t==='BB')mb.BB++;if(t==='K')mb.K++;mb.RBI+=r.runs;
           snap(`${it} ${name}: ${r.bunt?'기습 번트 안타!':r.inf?'내야안타!':pick(HTXT[t])}${t==='GO'&&dOuts===2?' (병살)':''}${r.d&&r.d.length&&t!=='HR'?' · '+r.d.join(', '):''}${sc}${r.runs?` [${G.ab[0]} ${G.R[0]} : ${G.R[1]} ${G.ab[1]}]`:''}`,r.runs||t==='HR'?'me sc':'me');meIn=true}
-        else if(me){(G.pp=G.pp||[]).push({i:inn,t,r:r.runs,my:G.R[my],op:G.R[1-my]});mp.outs+=dOuts;mp.R+=r.runs;ra+=r.runs;if(t==='K')mp.K++;if(t==='BB')mp.BB++;if(['1B','2B','3B','HR'].includes(t))mp.H++;if(t==='HR')mp.HR++;
-          {const ot=['GO','FO','LO'].includes(t);snap(`${it} ${name}, ${t==='K'?pick(['헛스윙 삼진!','루킹 삼진!','삼진을 잡아낸다!','결정구에 헛스윙 삼진!']):t==='BB'?'볼넷 허용':ot?`${pick(HTXT[t])} 처리${dOuts===2?' (병살!)':''}`:`${pick(HTXT[t])} 허용`}${sc}${r.runs?` [${G.ab[0]} ${G.R[0]} : ${G.R[1]} ${G.ab[1]}]`:''}`,r.runs?'me bad':t==='K'?'me kk':'me')}meIn=true}
-        if(me&&!isB&&pitching&&outs<3){if(G.ibInn!==inn){G.ibInn=inn;G.ib=0;G.hs=0;G.ir=0}const hit=['1B','2B','3B','HR'].includes(t);G.hs=hit?(G.hs||0)+1:t==='BB'?(G.hs||0):0;G.ib+=t==='BB'?1:0;G.ir+=r.runs;const big=!!(o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||''));
+        else if(me){(G.pp=G.pp||[]).push({i:inn,t,r:r.runs,my:G.R[my],op:G.R[1-my]});const irS=Math.min(r.runs,irLeft);irLeft-=irS;const myR=r.runs-irS;G._myR=myR;const ueS=Math.min(myR,ueLeft);ueLeft-=ueS;if(G.ent&&irS){G.ent.irs+=irS;if(['1B','2B','3B','HR','BB'].includes(t)||errPA)G.ent.irsH+=irS;else G.ent.irsSF+=irS}{const onB=b[0]+b[1]+b[2];irLeft=Math.min(irLeft,onB);ueLeft=Math.min(ueLeft,Math.max(0,onB-irLeft))}
+          mp.outs+=dOuts;mp.R+=myR-ueS;mp.UR=(mp.UR||0)+ueS;ra+=myR;if(t==='K')mp.K++;if(t==='BB')mp.BB++;if(['1B','2B','3B','HR'].includes(t)&&!errPA)mp.H++;if(t==='HR')mp.HR++;
+          {const ot=['GO','FO','LO'].includes(t);snap(`${it} ${name}, ${t==='K'?pick(['헛스윙 삼진!','루킹 삼진!','삼진을 잡아낸다!','결정구에 헛스윙 삼진!']):t==='BB'?'볼넷 허용':errPA?'수비 실책으로 타자 출루':ot?`${pick(HTXT[t])} 처리${dOuts===2?' (병살!)':''}${t==='FO'&&r.runs?' (희생플라이)':''}`:`${pick(HTXT[t])} 허용`}${sc}${irS?(myR?` (그중 ${irS}점은 앞 투수 책임주자)`:' (앞 투수 책임주자 득점)'):''}${ueS?' · 비자책':''}${r.runs?` [${G.ab[0]} ${G.R[0]} : ${G.R[1]} ${G.ab[1]}]`:''}`,myR?'me bad':t==='K'?'me kk':'me')}meIn=true}
+        if(me&&!isB&&pitching&&outs<3){if(G.ibInn!==inn){G.ibInn=inn;G.ib=0;G.hs=0;G.ir=0}const hit=['1B','2B','3B','HR'].includes(t);G.hs=hit?(G.hs||0)+1:t==='BB'?(G.hs||0):0;G.ib+=t==='BB'?1:0;G.ir+=(G._myR!=null?G._myR:r.runs);const big=!!(o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||''));
           const why=ra>=(big?5:6)?`${ra}실점`:G.ir>=4?'한 이닝 대량 실점':G.hs>=4?`${G.hs}연속 안타`:G.ib>=3?'제구 난조, 볼넷 남발':role!=='SP'&&ra>=3?`${ra}실점`:'';
           if(why){pitching=false;snap(`${it} ${name}, ${why}… 감독이 직접 마운드에 올라 공을 건네받는다 (${ip(mp.outs)}이닝 ${ra}실점)`,'sub')}}
         else if(r.runs)snap(`${it} ${G.ab[bat]} ${errPA?'상대 실책으로':pick(HTXT[t]).replace('!','')}${sc}`,'sc');
         if(half===1&&inn>=9&&G.R[1]>G.R[0])break}
       if(fld===my&&pitching&&!meIn)snap(`${it} ${name}, 삼자범퇴로 막아낸다`,'me');
-      if(fld===my&&pitching&&role!=='SP'&&!(multiG&&relInn<2&&ra<=1)){pitching=false}
+      if(fld===my&&pitching&&role!=='SP'&&!(multiG&&relInn<2&&ra<=1)&&!crisisCont&&!(role==='CL'&&(bigPS||inn>=9||o.intl)&&relInn===2&&ra===0)){pitching=false}if(fld===my)pendC=false;
       if(inn>=9&&half===1&&G.R[1]>G.R[0]){snap(`${it} 끝내기! ${G.ab[1]} 승리`,'sc');break}
       if(!ran&&!meIn&&inn%3===0&&half===1)snap(`${inn}회까지 ${G.ab[0]} ${G.R[0]} : ${G.R[1]} ${G.ab[1]}`)}
     if(inn>=9&&G.R[0]!==G.R[1])break;
@@ -1913,7 +1920,7 @@ function followGame(o){
   if(isB&&mb.PA)mb.G=1;
   G.mvp=isB?(mb.HR>=1||mb.H>=3||mb.RBI>=3):(mp.outs>=18&&ra<=2)||(mp.SV&&mp.K>=2);
   G.mb=mb;G.mp=mp;
-  const myLine=isB?(mb.PA?`${mb.PA}타석 ${mb.AB}타수 ${mb.H}안타${mb.HR?` ${mb.HR}홈런`:''} ${mb.RBI}타점${mb.BB?` ${mb.BB}볼넷`:''}`:'출전 없음'):(mp.outs?`${ip(mp.outs)}이닝 ${mp.H}피안타 ${ra}실점 ${mp.K}탈삼진${mp.W?' 승리투수':''}${mp.SV?' 세이브':''}`:'등판 없음');
+  const myLine=isB?(mb.PA?`${mb.PA}타석 ${mb.AB}타수 ${mb.H}안타${mb.HR?` ${mb.HR}홈런`:''} ${mb.RBI}타점${mb.BB?` ${mb.BB}볼넷`:''}`:'출전 없음'):(mp.outs?`${ip(mp.outs)}이닝 ${mp.H}피안타 ${ra}실점${mp.UR?`(${ra-mp.UR}자책)`:''} ${mp.K}탈삼진${mp.W?' 승리투수':''}${mp.SV?' 세이브':''}`:'등판 없음');
   snap(`경기 종료 · ${G.ab[0]} ${G.R[0]} : ${G.R[1]} ${G.ab[1]} — ${G.win?'승리!':'패배'}\n${name}: ${myLine}${G.mvp&&G.win?' · 오늘의 히어로!':''}`,G.win?'end win':'end lose');
   G.myLine=myLine;
   if((o.lvk==='KBO'||o.lvk==='MLB'||o.intl)&&/시리즈|플레이오프|와일드카드|결승|동메달|준결승/.test(o.title)&&role!=='none'&&!o.quiet){
@@ -1921,7 +1928,7 @@ function followGame(o){
     const sc=`${G.R[my]}-${G.R[1-my]}`,opp=G.ab[1-my];
     const head=o.clinch&&G.win&&/월드시리즈/.test(o.title)?`${G.ab[my]}, ${S.y} 월드시리즈 우승! ${ME.name} ${myLine}`:o.clinch&&G.win&&/한국시리즈/.test(o.title)?`${G.ab[my]}, ${S.y} 한국시리즈 우승! ${ME.name} ${myLine}`:o.clinch&&G.win?`${G.ab[my]}, ${opp} 꺾고 ${o.title.replace(/ \d+차전/,'')} 통과… ${ME.name} ${myLine}`:G.win?(G.mvp?pick([`'${myLine}' ${ME.name}, ${o.title} 지배했다`,`${ME.name} 원맨쇼… ${o.title} ${sc} 승리`,`가을의 주인공 ${ME.name}`]):`${o.title}, ${opp}에 ${sc} 승리… ${ME.name} ${myLine}`)
       :goat?pick([`${ME.name}, ${o.title}서 침묵… ${myLine}`,`'${myLine}' ${ME.name}, 고개 숙였다`,`${opp}에 ${G.R[1-my]}-${G.R[my]} 패배, ${ME.name}에게 쏟아진 비판`]):`${o.title} ${G.R[my]}-${G.R[1-my]} 석패… ${ME.name} "다음엔 꼭"`;
-    article(head,`${o.sub}. ${ME.name}: ${myLine}.`,tone,{line:myLine,ipO:isB?0:mp.outs,ra:isB?0:ra,sv:mp.SV||0,gH:mb.H,gRBI:mb.RBI,gPA:mb.PA,intl:!!o.intl,title:o.title,...(isB?{gHR:mb.HR,gXB:mb.D+mb.T+mb.HR}:{}),gGreat:G.def?G.def.g:0,gErr:G.def?G.def.e:0,lsc:G.line,mySide:my,ps:o.intl?null:/한국시리즈/.test(o.title)?'KS':'PS',win:G.win,clinch:!!o.clinch,pl:G.pl||[],pp:G.pp||[],gBB:mb.BB||0,gSB:mb.SB||0,gK:mp.K||0,pW:mp.W||0,sub:o.sub||'',inns:G.line[0].length,hrMy:(G.HRt||[0,0])[my],hrLog:G.hrLog||[],hrOp:(G.HRt||[0,0])[1-my],elim:!G.win&&(/지면 탈락|마지막 승부/.test(o.sub||'')||(!!o.intl&&!/동메달/.test(o.title)&&/준결승|결승/.test(o.title))||/결승전|동메달/.test(o.title)),last:/결승|동메달/.test(o.title)||(!!o.clinch&&G.win)||(!G.win&&/지면 탈락|마지막 승부/.test(o.sub||'')),myR:G.R[my],opR:G.R[1-my],opp:G.ab[1-my],home:my===1,role,K:isB?mb.K:mp.K,outs:mp.outs});G.aid=S.artId}
+    article(head,`${o.sub}. ${ME.name}: ${myLine}.`,tone,{ent:G.ent||null,ue:mp.UR||0,cl3:!!G.cl3,phc:G.phCtx||null,line:myLine,ipO:isB?0:mp.outs,ra:isB?0:ra,sv:mp.SV||0,gH:mb.H,gRBI:mb.RBI,gPA:mb.PA,intl:!!o.intl,title:o.title,...(isB?{gHR:mb.HR,gXB:mb.D+mb.T+mb.HR}:{}),gGreat:G.def?G.def.g:0,gErr:G.def?G.def.e:0,lsc:G.line,mySide:my,ps:o.intl?null:/한국시리즈/.test(o.title)?'KS':'PS',win:G.win,clinch:!!o.clinch,pl:G.pl||[],pp:G.pp||[],gBB:mb.BB||0,gSB:mb.SB||0,gK:mp.K||0,pW:mp.W||0,sub:o.sub||'',inns:G.line[0].length,hrMy:(G.HRt||[0,0])[my],hrLog:G.hrLog||[],hrOp:(G.HRt||[0,0])[1-my],elim:!G.win&&(/지면 탈락|마지막 승부/.test(o.sub||'')||(!!o.intl&&!/동메달/.test(o.title)&&/준결승|결승/.test(o.title))||/결승전|동메달/.test(o.title)),last:/결승|동메달/.test(o.title)||(!!o.clinch&&G.win)||(!G.win&&/지면 탈락|마지막 승부/.test(o.sub||'')),myR:G.R[my],opR:G.R[1-my],opp:G.ab[1-my],home:my===1,role,K:isB?mb.K:mp.K,outs:mp.outs});G.aid=S.artId}
   const bigG=/결승|한국시리즈/.test(o.title);
   if(!o.quiet&&G.mvp&&G.win&&isB&&mb.HR)feat(`${o.title} 결정적 홈런`,bigG);
   else if(!o.quiet&&G.mvp&&G.win&&!isB)feat(`${o.title} 호투로 승리 견인`,bigG);
@@ -8902,6 +8909,41 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
   if(pat)setTimeout(()=>haptic(pat),5)}catch(er){}return r}}
 /* 메이저 난이도 아주 살짝↑ (리그 수준 59 → 59.5) */
 LV.MLB=59.5;
+/* ===== 반기마다 컨디션 기복 (성적 범위가 아주 살짝 더 넓어짐) ===== */
+{const _adv=advance;advance=function(){try{const k=S.y+'-'+S.phase;if(S._phFK!==k){S._phFK=k;S.phF=S.phase===0?0:cl(gauss()*.75,-1.6,1.6)}}catch(e){}return _adv.apply(this,arguments)}}
+const phF=()=>{try{return S&&S.stage==='pro'?(S.phF||0):0}catch(e){return 0}};
+{const _b=batPA;batPA=function(L,m,gl){return _b(isP()?L:L-phF(),m,gl)}}
+{const _p=pitchGame;pitchGame=function(L,type){return _p(isP()?L-phF():L,type)}}
+{const _mb=meBatPA;meBatPA=function(pR,risp){return _mb(isP()?pR:pR-phF(),risp)}}
+{const _mp=mePitPA;mePitPA=function(bR,risp,tired){return _mp(isP()?bR-phF():bR,risp,tired)}}
+/* ===== 위기 등판(승계주자) · 분식 · 대타 상황 댓글 ===== */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!Array.isArray(out)||!S||!ME)return out;const gn=giv(ME.name),add=[];const A=(t,re)=>{if(!seenHas(t))add.push([t,re||[]])};
+  const e=x.ent;if(e&&isP()){const o=e.outs,bt=e.bt,sit=`${o}사 ${bt}`,ra=x.ra||0,irs=e.irs||0,ipt=ip(x.ipO||0);
+    if(ra===0&&irs===0){
+      A(`${sit} 등판해서 무표정으로 막고 내려오네 ㅋㅋㅋ 테토남 그 자체`,['심장에 털 났냐','표정 변화가 1도 없음 ㅋㅋ']);A('위기 상황을 즐기는 남자',['이게 필승조지']);A(`${sit}에 올라와서 불 끄고 감 소방수 클라스`,['앞 투수 밥 사야 한다']);
+      if(e.ir===3)A('만루에 올라와서 무실점은 진짜 미쳤다',['만루 등판 무실점은 기록에도 안 남는 게 억울할 정도']);if(o===1)A(`1아웃 ${bt}이면 1점은 준다 생각했는데 그걸 지우네`,[]);
+      A(`앞 투수 ${e.ir}명 깔아둔 거 하나도 안 들여보냄`,['기록엔 안 남는 진짜 홀드']);}
+    else if(ra===0&&irs>0&&e.irsH===0){
+      A(e.b[2]?`${sit}에서 희생플라이 하나 준 걸로 욕하면 양심 없는 거임`:`${sit}에서 범타 하나로 1점 준 걸 갖고 욕하면 양심 없는 거임`,[e.b[2]?'외야플라이도 못 치게 하라는 건 너무하지':'안타 하나 안 맞았는데 뭘 더 바라냐','그 상황 1점이면 선방']);A(`${o===0?'무사':o+'사'} ${bt}에서 ${irs}점이면 잘 막은 거지`,['기록상 그 점수는 앞 투수 거임']);
+      A('결국 점수 줬네… 그래도 큰불은 껐다',['억울하겠다 진짜 할 만큼 했는데']);}
+    else if(irs>0&&ra===0){
+      A(`${gn}이라서 ${sit}여도 막을 줄 알았는데…`,['오늘은 좀 아쉽다','본인 자책은 0이라 더 얄밉 ㅋㅋ']);A('앞 투수 분식회계 제대로 해주네 ㅋㅋㅋ',['본인 ERA는 멀쩡함 ㅋㅋ','앞 투수만 덤터기 씀']);
+      A(irs>=2?`분식 장인 등판… 승계주자 ${irs}명 다 들여보냄`:'분식 장인 등판… 승계주자 그대로 들여보냄',['앞 투수 ERA 무슨 죄냐']);if(x.win)A('분식은 했지만 팀이 이겼으니 넘어간다 ㅋㅋ',['앞 투수만 조용히 ERA 올라감']);else A('자책은 0인데 경기는 넘어갔네 이게 분식이지',[]);}
+    else if(ra>0){
+      A(irs?`승계주자에 본인 주자까지… 불 끄러 와서 기름 부었다`:`${sit} 막고 나서 자기 이닝에 무너지네`,['소방수가 아니라 방화범','오늘은 그냥 안 되는 날']);if(irs)A(`분식에 본인 실점까지 대참사`,[]);
+      A(`위기 막으라고 올렸더니 불을 더 키웠다`,['다음엔 잘하겠지…']);}
+    if((x.ipO||0)>=4&&(x.ipO||0)<=5&&x.sv)A(`${ipt}이닝 세이브 이게 진짜 마무리의 품격`,['8회 위기부터 끝까지 책임짐']);}
+  if(isP()&&(x.ipO||0)>=7&&(x.ps||x.intl)&&!(x.ipO>=15)){const ipt=ip(x.ipO);if((x.ra||0)===0)A(x.cl3||(x.inns||9)>9?`연장 혈투에 ${ipt}이닝을 혼자 버텨줬다 이건 레전드`:`마무리한테 ${ipt}이닝 맡겼는데 그걸 해내네 ㄷㄷ`,['팔 괜찮냐 진짜','오늘 경기 MVP는 무조건 이 선수']);else A(`마무리를 ${ipt}이닝이나 굴리면 팔 남아나냐`,['감독 운용 좀…']);}
+  if(isP()&&x.ue>0){const er=(x.ra||0)-x.ue;A(er===0?'실점은 했는데 자책은 0 수비가 도와주질 않네':`실책만 아니었으면 ${er}실점으로 끝났다`,['투수는 억울하겠다']);}
+  const p=x.phc;if(p&&!isP()&&Array.isArray(x.pl)&&x.pl.length){const r=x.pl[0],sit=`${p.inn}회 ${p.outs}사${p.bt?' '+p.bt:''}`,hit=['1B','2B','3B','HR'].includes(r.t),close=Math.abs(p.diff)<=2;
+    if(hit&&r.r>0){A(`${sit}에서 대타로 나와서 해결 ㄷㄷ`,['감독 촉 미쳤다','벤치에서 몸도 덜 풀렸을 텐데']);A('대타 카드 적중 이게 야구지',[]);if(r.t==='HR')A('대타 홈런은 진짜 영화다',['이 장면 평생 돌려본다'])}
+    else if(hit)A('대타로 나와서 안타 하나 깔끔하게 치고 감',['찬스 이어준 거 크다']);
+    else if(r.t==='BB')A(r.r>0?'대타로 나와서 밀어내기 볼넷 골라냄 침착함 미쳤다':'대타로 나와서 볼넷 골라 찬스 이어줌',['유인구 다 참는 거 보고 놀람']);
+    else if(r.r>0)A(`대타로 나와서 할 일은 했다 ${r.t==='FO'?'희플':'진루타'}로 1타점이면 성공`,['결과로 말했다']);
+    else if(r.t==='K')A(close?`${sit} 대타로 나와서 삼진은 좀…`:'대타 삼진 아쉽다',['벤치 대기하다 바로 치는 게 쉽진 않음','그래도 그 상황에 쓸 카드는 맞았다']);
+    else if(r.dp)A('대타 병살… 최악의 시나리오',['오늘은 운이 없었다']);
+    else A(close?`${sit} 대타 카드 꺼냈는데 결과가 아쉽네`:'대타 범타 아쉽다',['다음엔 해줄 거다'])}
+  if(add.length){const pick3=add.sort(()=>R()-.5).slice(0,3);pick3.forEach(([t,re],i)=>{seenAdd(t);out.splice(Math.min(i,out.length),0,mkC(t,re))})}}catch(er){}return out}}
 
 </script>
 
