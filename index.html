@@ -8155,7 +8155,7 @@ function josaFix(t){try{if(!t||!ME||!ME.name)return t;const names=[ME.name,giv(M
 const vocA=n=>{const c=n.charCodeAt(n.length-1);return n+((c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28)?'아':'야')};
 function myNick(){try{if(S.pro&&S.pro.league==='KBO'&&TEAMS[S.pro.team])return TEAMS[S.pro.team].nick;const t=String(S.pro&&S.pro.tname||teamLabel()||'');return t.split(' ').pop().replace(/\(.*\)/,'')}catch(e){return''}}
 /* 팀 동료 이름: 팀마다 항상 같은 가상의 이름 */
-const MATE_US_F=['Jake','Tyler','Mason','Logan','Carlos','Luis','Austin','Kyle','Bryce','Marcus','Diego','Ryan','Cole','Javier','Trevor','Nolan'],MATE_US_L=['Harper','Ramirez','Miller','Johnson','Ortiz','Walker','Davis','Martinez','Thompson','Garcia','Brooks','Reyes','Collins','Hayes','Castillo','Bennett'];
+const MATE_US_F=['제이크','타일러','메이슨','로건','카를로스','루이스','오스틴','카일','브레이슨','마커스','디에고','라이언','콜','하비에르','트레버','놀런','개빈','헌터','체이스','에이든'],MATE_US_L=['밀러','라미레스','존슨','오르티스','워커','데이비스','마르티네스','톰프슨','가르시아','브룩스','레예스','콜린스','헤이스','카스티요','베넷','하딘','웰스','포터','그레이브스','엘리스'];
 const MATE_JP_F=['하야토','렌','다이키','쇼타','유토','소타','하루키','료'],MATE_JP_L=['다나카','스즈키','야마모토','사토','나카무라','고바야시','와타나베','이토'];
 function mateNames(n,kind){const lg=S.pro&&S.pro.league;if(lg==='MLB'||lg==='NPB'){const key=(myNick()||'t')+(kind||'B'),out=[];for(let i=0;out.length<n&&i<40;i++){const h=_h32(key+i);const nm=lg==='MLB'?MATE_US_F[h%MATE_US_F.length]+' '+MATE_US_L[(h>>>8)%MATE_US_L.length]:MATE_JP_L[h%MATE_JP_L.length]+' '+MATE_JP_F[(h>>>8)%MATE_JP_F.length];if(!out.includes(nm))out.push(nm)}return out}
 const key=(myNick()||'team')+(kind||'B');const out=[];for(let i=0;out.length<n&&i<40;i++){const h=_h32(key+i);const nm=SUR[h%SUR.length]+GIV[(h>>>9)%GIV.length];if(nm!==ME.name&&!out.includes(nm))out.push(nm)}return out}
@@ -8178,7 +8178,7 @@ function psAcc(x){try{const y=S.y;let A=S._psAcc;if(!A||A.y!==y)A=S._psAcc={y,G:
   /* ○○ 호감이면 개추 / MVP면 개추 (잘한 날, 대댓글 "개추 ㅋㅋㅋ") */
   if(good&&R()<(x.ps?.6:.25))put(pick([`${gn} 호감이면 개추 ㅋㅋㅋㅋ`,`${jo(gn,'이','가')} MVP면 개추 ㅋㅋㅋㅋㅋ`,`오늘 ${gn} 미쳤으면 개추 ㅋㅋㅋㅋ`]),['개추 ㅋㅋㅋ','개추 ㅋㅋㅋㅋ','개추 박고 감 ㅋㅋ','ㅇㅈ 개추','개추 누르고 간다 ㅋㅋㅋ','개추 ㅋㅋㅋㅋㅋ','이건 개추지'].sort(()=>R()-.5).slice(0,ri(1,2)));
   /* 역시 ○○ 타자(투수) GOAT ㅋㅋㅋ + 팀 동료 이름 다답글 */
-  if(good&&x.win&&seasonGood()&&nick&&R()<(x.ps?.55:.3)){const ms=mateNames(ri(3,5),P?'P':'B');put(`역시 ${nick} ${P?'투수':'타자'} GOAT ㅋㅋㅋ`,ms.map(m=>`${m} ${pick(['ㅋㅋㅋ','ㅋㅋㅋ','ㅋㅋㅋㅋ','ㅋㅋㅋㅋㅋ'])}`),ri(2000,7000))}
+  if(good&&x.win&&seasonGood()&&nick&&R()<(x.ps?.55:.3)){const ms=mateNames(ri(2,3),P?'P':'B');put(`역시 ${nick} ${P?'투수':'타자'} GOAT ㅋㅋㅋ`,ms.map(m=>`${m} ${pick(['ㅋㅋㅋ','ㅋㅋㅋ','ㅋㅋㅋㅋ','ㅋㅋㅋㅋㅋ'])}`),ri(2000,7000))}
   /* 궁네체고: 주무기 구종이 아주 좋으면 */
   if(P&&good){try{const bp=bestPitch();if(bp&&bp.v>=80&&R()<(x.ps?.5:.25)){const pn=bp.k==='SK'?'씽카볼':bp.k==='FB'?'직구':LBL[bp.k].replace(/^포크$/,'포크볼');put(pick([`궁네체고의 ${pn} 투수죠? ㅋㅋㅋ`,`궁내 체고의 ${pn} 투수 ${gn} ㅋㅋㅋㅋ`]),[pick(['궁네체고 ㅋㅋㅋㅋ','발음 무엇 ㅋㅋㅋ','국내 최고 맞음 ㅇㅈ'])])}}catch(e){}}
   /* 퀄리티스타트 1실점(이하) 패전 */
@@ -9020,6 +9020,10 @@ function rkMajor(){try{return S.pro.league==='MLB'&&!S.pro.dev&&!/^f/.test(S.rol
     else txt=`메이저 서비스 타임 ${note.svc}년 — 연봉조정 자격! 지난 시즌 성적(WAR ${note.w.toFixed(1)})을 근거로 구단과 협상했다.\n새 연봉 ${usd2(note.usd)} (약 ${money(Math.round(note.usd*USDM))}) · FA까지 ${Math.max(0,Math.ceil(6-note.svc))}년`;
     S.queue.push({title:note.kind==='pre'?'💵 MLB 연봉 갱신':'💵 연봉조정 합의',text:txt,ch:[{t:'확인',s:'',act:'lifeok'}]})}}catch(e){}return r}}
 {const _ld=load;load=function(){const s=_ld.apply(this,arguments);try{const p=s&&s.pro;if(p&&p.league==='MLB'&&p.rk==null&&p.faReq===99&&(p.salary||0)<MLB_MIN*USDM*1.5){p.rk=1;const ys=[...new Set((s.rows||[]).filter(r=>r.lv==='MLB').map(r=>r.y))];p.svc=ys.length;p.rkSal=Math.round(MLB_MIN*USDM)}}catch(e){}return s}}
+/* GOAT 드립 댓글은 답글 최대 3개 */
+{const cap=a=>{if(Array.isArray(a))a.forEach(c=>{if(c&&/GOAT/.test(c.t||'')&&Array.isArray(c.re)&&c.re.length>3)c.re=c.re.slice(0,3)});return a};
+ const _cm=comments;comments=function(tone,x){return cap(_cm(tone,x))};
+ const _ar=article;article=function(head,body,tone,x){const r=_ar(head,body,tone,x);try{const a=S.arts&&S.arts[0];if(a)cap(a.cm)}catch(e){}return r}}
 
 </script>
 
