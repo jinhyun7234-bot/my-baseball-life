@@ -8461,7 +8461,13 @@ function wrLetter(){const P=isP(),t=careerTot(PRO),b=t.b,p=t.p,e=S.ended||{},gn=
     else if(sb>=250)L.push(`당신이 1루에 서면 경기장의 공기가 달라졌습니다.`,`${sb}번의 질주, 흙먼지 속에서 일어나던 당신이 우리 팀의 심장이었습니다.`);
     else L.push(`화려한 숫자보다 늘 팀을 먼저 생각하던 당신의 플레이를 우리는 알고 있습니다.`,`${b.G}경기, 그라운드 위의 모든 순간이 진심이었습니다.`)}
   /* 3줄: 함께한 시간 */
-  if(rn&&one)L.push(`평생 ${rnT} 한 유니폼만 입어준 당신, 그 번호 ${rn.num}번은 이제 영원히 우리 곁에 남습니다.`);
+  const kT=(()=>{const m={};S.rows.filter(r=>r.lv==='KBO'&&r.b&&((r.b.G||0)+((r.p&&r.p.G)||0))>0).forEach(r=>{const n=String(r.team).replace(/\s*\(.*\)$/,'').split(' ').pop();m[n]=(m[n]||0)+((r.b.G||0)+((r.p&&r.p.G)||0))});return Object.entries(m).filter(([n,g])=>g>=60).sort((a,b)=>b[1]-a[1]).map(x=>x[0])})();
+  const kList=kT.length===2?`${jo(kT[0],'과','와')} ${kT[1]}`:kT.length>2?`${kT.slice(0,-1).join(', ')} 그리고 ${kT[kT.length-1]}`:'';
+  if(kT.length>=2){const rnN=rn?rnT.split(' ').pop():'';
+    if(rn)L.push(pk([`${kList}, 어느 유니폼을 입어도 당신은 우리의 선수였습니다. 그리고 ${rnN}의 ${rn.num}번은 이제 누구도 달 수 없는 번호가 되었습니다.`,`${kList}의 팬들이 함께 당신의 이름을 불렀습니다. ${jo(rnN,'은','는')} ${rn.num}번과 함께 당신을 영원히 기억할 겁니다.`]));
+    else if(mlb)L.push(`${kList}, 그리고 바다 건너 큰 무대까지. 당신이 입은 모든 유니폼이 우리에겐 자랑이었습니다.`);
+    else L.push(pk([`${kList}, 두 팀의 팬 모두가 당신을 응원했습니다. 어느 유니폼을 입어도 당신은 우리의 선수였습니다.`,`${kList}, 당신이 지나간 모든 구장에 함성이 남아 있습니다.`]).replace('두 팀의',kT.length===2?'두 팀의':`${kT.length}팀의`))}
+  else if(rn&&one)L.push(`평생 ${rnT} 한 유니폼만 입어준 당신, 그 번호 ${rn.num}번은 이제 영원히 우리 곁에 남습니다.`);
   else if(rn)L.push(pk([`${jo(rnT,'은','는')} 당신을 절대 잊지 않을 겁니다. ${rn.num}번은 이제 누구도 달 수 없는 번호가 되었습니다.`,`${rnT}의 ${rn.num}번, 그 숫자는 이제 당신의 이름과 같은 말이 되었습니다.`,`구장에 걸린 ${rn.num}번을 볼 때마다, 우리는 당신과 함께한 모든 밤을 떠올릴 겁니다. ${jo(rnT,'은','는')} 당신을 영원히 기억합니다.`]));
   else if(one)L.push(`데뷔부터 마지막 타석까지 ${team} 한 유니폼만 입어준 당신, 그 의리를 오래 기억하겠습니다.`);
   else if(mlb)L.push(`바다 건너 큰 무대에서도, 다시 돌아와서도 당신은 언제나 우리의 자랑이었습니다.`);
