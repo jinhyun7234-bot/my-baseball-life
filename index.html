@@ -8709,7 +8709,7 @@ function phaseTopHtml(){try{const r=S.report;if(!r||!(r.ph===1||r.ph===2))return
   add('W',sr(rel*P.w*cl(1.2-era/12,.5,1.2))-m.W);add('L',sr(rel*P.l*bad)-m.L)}catch(e){}return r}}
 /* 2군·마이너에서 뛰는 동안의 내 경기·활약 기사엔 머리말: [퓨처스] / [마이너] (리그 용어 그대로) */
 {const LIFE=/wedding|love|baby|famDay|gfbreak|marry|scandal|salary|move|franMove|homeBack|trade|injury|draft|retire|legend|hof|award/;
- const _ar=article;article=function(head,body,tone,x){const prev=S&&S._cmMinor;try{S._cmMinor=null;const mi=artMinor();if(mi&&!LIFE.test(String(tone||''))&&!(x&&(x.ps||x.intl))){S._cmMinor=mi;if(mi.mlb&&typeof head==='string')head=head.replace(/ ?\(MLB\)/g,'');if(typeof head==='string'&&head.indexOf(ME.name)>=0&&!/\[(마이너|퓨처스)/.test(head)&&!/^\[(?!\d{4} )/.test(head)){const m=head.match(/^\[(\d{4} [^\]]*)\] /);if(m)head=`[${m[1]} · ${mi.mlb?mi.ln:'퓨처스'}] `+head.slice(m[0].length);else head=`[${mi.lab}] `+head.replace(/^\[(퓨처스|마이너)\] /,'')}if(mi.mlb&&typeof body==='string')body=body.replace(/ ?\(MLB\)/g,` 산하 ${mi.ln}`)}
+ const _ar=article;article=function(head,body,tone,x){const prev=S&&S._cmMinor;try{S._cmMinor=null;const mi=(typeof head==='string'&&/선언|계약|입단|지명|직행|사인|도전/.test(head))?null:artMinor();if(mi&&!LIFE.test(String(tone||''))&&!(x&&(x.ps||x.intl))){S._cmMinor=mi;if(mi.mlb&&typeof head==='string')head=head.replace(/ ?\(MLB\)/g,'');if(typeof head==='string'&&head.indexOf(ME.name)>=0&&!/\[(마이너|퓨처스)/.test(head)&&!/^\[(?!\d{4} )/.test(head)){const m=head.match(/^\[(\d{4} [^\]]*)\] /);if(m)head=`[${m[1]} · ${mi.mlb?mi.ln:'퓨처스'}] `+head.slice(m[0].length);else head=`[${mi.lab}] `+head.replace(/^\[(퓨처스|마이너)\] /,'')}if(mi.mlb&&typeof body==='string')body=body.replace(/ ?\(MLB\)/g,` 산하 ${mi.ln}`)}
   else if(!mi&&S.stage==='pro'&&S.pro&&!S.pro.dev&&typeof head==='string'&&head.indexOf(ME.name)>=0&&!LIFE.test(String(tone||''))&&!/award|contract|trade|retire|ring|ws|intl/.test(String(tone||''))&&!(x&&(x.ps||x.intl))&&!/^\[(?!\d{4} )/.test(head)&&!/\[(메이저|KBO 1군|1군)/.test(head)&&!/대한민국|국가대표|아시안게임|WBC|올림픽|프리미어|대표팀|전역|입대|은퇴/.test(head)){
     const lv=S._artLv||S.pro.league;const lab=lv==='MLB'?'메이저리그':lv==='KBO'?'KBO 1군':null;if(lab){const m=head.match(/^\[(\d{4} [^\]]*)\] /);head=m?`[${m[1]} · ${lab}] `+head.slice(m[0].length):`[${lab}] `+head}}}catch(e){}try{return _ar(head,body,tone,x)}finally{S._cmMinor=prev||null}}}
 /* 지금 기사가 2군/마이너 경기 내용인지: 결산 기사는 그 기간 실제 뛴 레벨 기준 */
@@ -9370,6 +9370,30 @@ function retStory(){try{
 {const _vr=vRetired;vRetired=function(){let h=_vr();try{h=h.replace('(헌액 기준 110)','(헌액 기준 105)');const s=retStory();if(s){const box=`<div class="card retstory" style="gap:10px"><span class="lbl">은퇴 카드</span>${s.split('\n\n').map(x=>`<p style="margin:0;line-height:1.7">${esc(x)}</p>`).join('')}</div>`;const k=h.indexOf('<div class="card" style="text-align:center');h=k>=0?h.slice(0,k)+box+h.slice(k):h+box}}catch(e){}return h}}
 /* 커리어 리캡: 마지막 장 앞에 */
 {const _rs=recapSlides;recapSlides=function(){const sl=_rs.apply(this,arguments);try{const s=retStory();if(s&&sl.length){sl.splice(Math.max(1,sl.length-1),0,{th:'green',ey:'은퇴 카드',sub:s})}}catch(e){}return sl}}
+
+/* ===================== 고교·대학 시절 기사/댓글: 어디서 뛰는지 머리말 + 아마추어 맥락 댓글 ===================== */
+function amaCtx(){try{if(!S||!ME)return null;if(S.stage==='hs'){const sc=(SCHOOLS[S.school]||{}).n||'고교';return{k:'hs',lab:'고교야구',where:sc,gr:cl(age()-15,1,3)}}
+  if(S.stage==='univ'){return{k:'univ',lab:'대학야구',where:S.univ||'대학',gr:cl(age()-18,1,4)}}return null}catch(e){return null}}
+{const SKIP=/지명|드래프트|입단|계약|사인/;
+ const _ar=article;article=function(head,body,tone,x){const prev=S&&S._ama;try{S._ama=null;const c=amaCtx();
+   if(c&&typeof head==='string'&&!SKIP.test(head)&&!(x&&x.intl)&&!/^\[(고교야구|대학야구)/.test(head)){S._ama=c;
+     if(c.k==='hs')head=head.replace(/(전반기|후반기)/,'주말리그 $1');
+     const m=head.match(/^\[([^\]]*)\] /);head=m?`[${c.lab} · ${c.where} · ${m[1]}] `+head.slice(m[0].length):`[${c.lab} · ${c.where}] `+head;
+     if(typeof body==='string'&&c.k==='hs')body=body.replace(/(전반기|후반기)/,'주말리그 $1')}}catch(e){}
+   try{return _ar(head,body,tone,x)}finally{S._ama=prev||null}}}
+/* 프로 맥락 댓글 걸러내고, 고교/대학 상황에 맞는 댓글로 */
+{const PROISH=/등장곡|응원가|야구장 간다|직관|시즌권|홈구장|우리 팀|1군|2군|퓨처스|국대|연봉|FA|트레이드|이적|계약|가을야구|포스트시즌|순위|연패|연승|메이저|MLB|WPA|OPS|WAR|wRC|출루율만|숫자 없이|세이버|스탯|로테이션|마무리|셋업|필승조|팬서비스|유니폼|레전드|프랜차이즈|문자중계|중계|등번호|구단|감독님 믿음|형들|커리어|베테랑|외국인|용병|타이거스|자이언츠|트윈스|베어스|히어로즈|랜더스|위즈|이글스|라이온스|다이노스|리모컨|퇴근|굿즈|사인회|팬미팅/;
+ const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{const c=S&&S._ama;if(!c||!Array.isArray(out))return out;
+   const n0=out.length;out=out.filter(o=>!PROISH.test(String(o&&o.t||'')));
+   const P=isP(),gn=giv(ME.name),gr=c.gr,hs=c.k==='hs',w=c.where,good=/hype|good|gold/.test(String(tone||'')),bad=/bad/.test(String(tone||''));
+   const L=hs?(good?[`${w} ${gr}학년이 이 정도면 진짜 물건이다`,`백네트 뒤에 프로 스카우트들 쫙 깔렸다던데 ${gn} 보러 온 거 맞지`,`${gr===3?'올해 드래프트 상위 라운드 각':'고'+(gr+1)+' 되면 얼마나 더 클지 무섭다'}`,P?`고교생이 이런 공을 던지면 타자들이 어떻게 치냐`:`고교 레벨에서 이런 타구 질은 처음 본다`,`${w} 몇 년 만에 나온 대어냐 이거`,`동문회 단톡방 난리 났다 ㅋㅋ`,`주말리그 성적이 이 정도면 전국대회도 기대된다`]
+      :bad?[`아직 고${gr}이다 너무 몰아세우지 말자`,`고교 때 부진은 아무것도 아님 몸 크면 달라진다`,`스카우트들은 성적보다 툴을 본다던데`,P?`구속은 좋은데 제구가 아직 들쑥날쑥하네`:`스윙은 괜찮은데 변화구 대처가 아직이다`,`${w} 감독님이 잘 잡아주겠지`,`주말리그 한 번 못 했다고 끝 아님`]
+      :[`${w} ${gr}학년 ${gn} 꾸준하네`,`고${gr}치고는 몸이 벌써 완성형이다`,`스카우트 리포트에 이름 올라가기 시작했다던데`,`${gr===3?'드래프트까지 얼마 안 남았다 화이팅':'아직 성장할 시간 충분함'}`,`학교 후배인데 진짜 연습벌레임`,`전국대회 가서 진짜 실력 보자`])
+     :(good?[`대학리그 씹어먹는 중이네 ${gn}`,`대학 ${gr}학년이 이 정도면 프로 스카우트들 다시 봐야 함`,`고졸 때 안 뽑은 구단들 후회하겠다`,`${w} 에이스 맞네`,`대학 와서 확실히 몸이 커졌다`]
+      :bad?[`대학리그에서 이러면 프로는 더 힘들다 분발하자`,`아직 ${gr}학년이니까 시간은 있다`,`${w} 감독님이 잘 다듬어주길`]
+      :[`대학 ${gr}학년 ${gn} 무난하다`,`대학 드래프트 노리면 지금부터가 중요하다`,`${w}에서 조용히 크고 있네`]);
+   const add=L.filter(t=>!seenHas('ama:'+t)).sort(()=>R()-.5).slice(0,Math.max(1,Math.min(3,n0-out.length+1)));
+   add.forEach((t,i)=>{seenAdd('ama:'+t);out.splice(Math.min(i*2,out.length),0,mkC(t,[]))})}catch(e){}return out}}
 
 </script>
 
