@@ -1910,7 +1910,8 @@ function followGame(o){
       if(fld===my&&pitching&&!meIn)snap(`${it} ${name}, 삼자범퇴로 막아낸다`,'me');
       if(fld===my&&pitching&&role!=='SP'&&!(multiG&&relInn<2&&ra<=1)&&!crisisCont&&!(role==='CL'&&(bigPS||inn>=9||o.intl)&&relInn===2&&ra===0)){pitching=false}if(fld===my)pendC=false;
       if(inn>=9&&half===1&&G.R[1]>G.R[0]){snap(`${it} 끝내기! ${G.ab[1]} 승리`,'sc');break}
-      if(!ran&&!meIn&&inn%3===0&&half===1)snap(`${inn}회까지 ${G.ab[0]} ${G.R[0]} : ${G.R[1]} ${G.ab[1]}`)}
+      if(!ran&&!meIn&&inn%3===0&&half===1)snap(`${inn}회까지 ${G.ab[0]} ${G.R[0]} : ${G.R[1]} ${G.ab[1]}`);
+      else if(!(inn>=9&&half===1&&G.R[1]>G.R[0]&&ran))snap(`${it} 종료 — ${ran?`${G.ab[bat]} ${ran}득점`:'무득점'} · ${G.ab[0]} ${G.R[0]} : ${G.R[1]} ${G.ab[1]}`,'inn')}
     if(inn>=9&&G.R[0]!==G.R[1])break;
     if(inn>=9&&G.R[1]>G.R[0])break}
   if(G.R[0]===G.R[1]){const w=R()<.5?0:1;G.R[w]++;G.line[w][G.line[w].length-1]++;snap(`연장 혈투 끝 ${G.ab[w]} 결승점!`,'sc')}
@@ -3984,7 +3985,7 @@ vFollow=function(g){const e=g.ev[Math.min(g.idx,g.ev.length-1)],n=Math.max(9,e.l
     ${P?`<span class="gs-k" key="k${e.mk}">K <b>${e.mk||0}</b></span><span class="gs-pc">${e.pc||0}구 · ${ip(e.mo||0)}이닝</span>`:`<span class="gs-me">${seq.length?seq.map(s=>`<em class="sq ${seqCls(s)}">${s}</em>`).join(''):'<span class="muted">아직 타석 전</span>'}</span>`}</div>`:'';
   const mine=/\bme\b|meup/.test(e.c),up=/meup/.test(e.c);
   const now=`<div class="gnow ${up?'up':mine?'mine':''} ${/sc/.test(e.c)?'score':''} ${/bad/.test(e.c)?'bad':''} ${/\bkk\b/.test(e.c)?'kk':''}" key="n${g.idx}">${up?'<span class="gn-tag">내 타석</span>':mine&&!P?'<span class="gn-tag">결과</span>':mine&&P?'<span class="gn-tag">마운드</span>':''}<span>${esc(e.t).replace(/\n/g,'<br>')}</span></div>`;
-  const prev=g.ev.slice(Math.max(0,g.idx-4),g.idx).reverse().map(x=>`<div class="gp ${/\bme\b|meup/.test(x.c)?'mine':''}">${esc(x.t.split('\n')[0])}</div>`).join('');
+  const prev=g.ev.slice(0,g.idx).filter(x=>!/\binn\b/.test(x.c)).slice(-4).reverse().map(x=>`<div class="gp ${/\bme\b|meup/.test(x.c)?'mine':''}">${esc(x.t.split('\n')[0])}</div>`).join('');
   const L=e.last,big=L&&L.me&&!P?{HR:['홈런!!','HR','#e23b3b'],'3B':['3루타!','3B','#f59f00'],'2B':['2루타!','2B','#f59f00']}[L.t]:null;
   const fx=big?`<div class="fxbig" style="--fx:${big[2]}" key="${g.idx}"><b>${big[0]}</b><span>${big[1]}</span></div>${ui.fxShown!==g.idx&&L.t==='HR'?`<div class="fxfull hr" key="f${g.idx}"><div class="fxburst"></div><div class="fxtxt">HOME RUN!</div><div class="fxsub">${L.runs>=4?'만루 홈런!!':L.runs>=2?`${L.runs}점 홈런!`:'솔로 홈런!'}</div><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>`:''}`:'';
   return`<div class="row"><span class="lbl sp">${esc(g.sub)}</span><span class="tiny muted">${g.idx+1}/${g.ev.length}</span></div><h2>${esc(g.title)}</h2>
@@ -7357,7 +7358,7 @@ function postRender(app){document.body.classList.toggle('fs',ui.screen==='title'
   gameAuto()}
 function stepGame(g){g.idx=Math.min(g.ev.length-1,g.idx+1);const e=g.ev[g.idx];const ml=e.last&&e.last.me?e.last.t:null,hitT=['1B','2B','3B','HR'].includes(ml);AU.sfx(g.idx===g.ev.length-1?(g.win?'win':'lose'):e.c==='meup'?'tap':hitT&&!isP()?'hit':/sc/.test(e.c)?'run':'tap');if(e.c==='meup')haptic(15);else if(ml&&!isP())haptic(hitT?[18,20,30]:ml==='K'?[8,40,8]:10);else if(ml&&isP())haptic(ml==='K'?0:hitT?[30]:6);if(hitT)setTimeout(()=>{const f=document.querySelector('.fieldw');if(f){f.classList.remove('hitfx');void f.offsetWidth;f.classList.add('hitfx')}},60);if(e.last&&e.last.me&&!isP()&&['HR','2B','3B'].includes(e.last.t)){AU.sfx(e.last.t==='HR'?'hr':e.last.t==='K'?'k':'xbh');haptic(e.last.t==='HR'?[40,30,80,30,120]:[25,30,40]);setTimeout(()=>{if(e.last.t!=='K'){const a=document.getElementById('app');if(a){a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake')}}ui.fxShown=g.idx},e.last.t==='K'?1150:2300);if(e.last.t==='HR'){ui.confDone=false;setTimeout(()=>{try{confetti()}catch(_){}},150)}}save()}
 function gameAuto(){clearTimeout(ui.gt);const q=S&&!ui.simming&&nextQ();if(!q||q.type!=='game'||ui.gpause)return;const g=q.g;if(g.idx>=g.ev.length-1)return;const e=g.ev[g.idx];if(e.c==='meup')return;
-  const bigE=e.last&&e.last.me&&!isP()&&['HR','2B','3B'].includes(e.last.t),d=1.125*(bigE?2400:/\bkk\b/.test(e.c)?1300:/\bme\b/.test(e.c)?(isP()?950:1500):/meup/.test(e.c)?1100:/end/.test(e.c)?1500:g.idx===0?1000:380);
+  const bigE=e.last&&e.last.me&&!isP()&&['HR','2B','3B'].includes(e.last.t),d=1.125*(bigE?2400:/\bkk\b/.test(e.c)?1300:/\bme\b/.test(e.c)?(isP()?950:1500):/meup/.test(e.c)?1100:/end/.test(e.c)?1500:/\binn\b/.test(e.c)?520:g.idx===0?1000:380);
   ui.gt=setTimeout(()=>{if(nextQ()!==q||ui.gpause)return;stepGame(g);render()},d)}
 function doAdvance(){if(!ui.simming)return;ui.simming=false;clearTimeout(ui.st);advance();const f=S.report&&S.report.feats||[];AU.sfx(f.some(x=>x.big)?'feat':'adv');afterQueue();ui.anim=true;render()}
 let tt=null;function toast(m){ui.toast=m;clearTimeout(tt);tt=setTimeout(()=>{ui.toast='';render()},2400);render()}
