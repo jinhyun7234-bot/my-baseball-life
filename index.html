@@ -5890,7 +5890,7 @@ BOOK0.sR=135;BOOKN.sR='시즌 최다 득점';
 {const _ao8=abroadOffers;abroadOffers=function(o){let out=_ao8(o);try{const gg=S.awards.filter(a=>/^골든글러브/.test(a.n)).length;if(!S.rows.some(r=>r.lv==='MLB')&&gg>=4&&!out.some(c=>c.arg&&c.arg.lg==='MLB')&&R()<.98){const w=lastWAR(),wt=weakTools().length,usd=+Math.min(32,mlbUSD(o,w,false)*rn(1,.08)*(wt?.85:1)).toFixed(1),yrs=mlbYears(usd,false),per=Math.round(usd*USDM/1000)*1000,nm=usd>=8&&!wt,tn=pick(ABROAD.MLB);
   out.unshift({t:`${tn} (MLB)`,s:`${yrs}년 총액 ${usd2(usd*yrs)} (연 ${usd2(usd)})`,d:`골든글러브 ${gg}회 수상 경력 · 연봉 ${usd2(usd)} (약 ${money(per)}) · 마이너 거부권 ${nm?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs,per,noMinor:nm,opt:optOf(per*yrs,yrs),tname:tn}})}}catch(e){}return out}}
 /* 4) MLB 마이너행이면 감독(단장)이 이유를 말해줌 */
-{const _dr9=decideRole;decideRole=function(){const k0=S.mlbFarm&&S.mlbFarm.k;const r=_dr9();try{if(S.mlbFarm&&S.mlbFarm.f&&S.mlbFarm.k!==k0&&!(S.farmToldY>=S.y-1)){S.farmToldY=S.y;const w=weakTools().map(k=>TOOLN[k]||LBL[k]);if(w.length)S.queue.push({title:'📋 감독 면담',text:`감독이 조용히 불렀다.\n"${isP()?'공 자체는':'방망이는'} 메이저에서도 통한다. 그런데 ${w.join(', ')}${w.length>1?' 쪽이':jo(w[0],'이','가').slice(-1)} 지금 수준으로는 여기서 쓰기 힘들다. 트리플A에서 그 부분 만들어서 다시 올라와라."`,ch:[{t:'"보완해서 꼭 올라오겠습니다"',s:'멘탈 조금↑',act:'lifeok',fx:{men:1}},{t:'아무 말 없이 고개를 끄덕인다',s:'',act:'lifeok'}]})}}catch(e){}return r}}
+{const _dr9=decideRole;decideRole=function(){const k0=S.mlbFarm&&S.mlbFarm.k;const r=_dr9();try{if(S.mlbFarm&&S.mlbFarm.f&&S.mlbFarm.k!==k0&&!(S.farmToldY>=S.y-1)){S.farmToldY=S.y;const w=weakTools().map(k=>TOOLN[k]||LBL[k]);if(w.length)S.queue.push({title:'📋 감독 면담',text:`감독이 조용히 불렀다.\n"${isP()?'공 자체는':'방망이는'} 메이저에서도 통한다. 그런데 ${w.join(', ')}${w.length>1?' 쪽이':jo(w[0],'이','가').slice(-1)} 지금 수준으로는 여기서 쓰기 힘들다. 트리플A에서 그 부분 만들어서 다시 올라와라."`,ch:(()=>{const wk=weakTools();const n=wk.length,amt=n<=1?1.5:n===2?.7:.5,nm=wk.map(k=>TOOLN[k]||LBL[k]).join('·');return[{t:'"알겠습니다. 보완해서 꼭 올라오겠습니다"',s:`${nm}${n>1?' 각각':''} +${amt} · 멘탈 조금↑`,act:'toolFix',arg:{ks:wk,amt}},{t:'아무 말 없이 고개를 끄덕인다',s:'',act:'lifeok'}]})()})}}catch(e){}return r}}
 /* 5) 투수: 메인 · 서브 + 구종 훈련은 별도 슬롯 (총 훈련량 1.25배) */
 delete MENU_P.brk;
 {const _ba=buildAlloc;buildAlloc=function(){const r=_ba();try{if(S.plan&&S.plan.alloc){if(isP()){S.plan.alloc.brk=(S.plan.alloc.brk||0)+15;S.plan.brkPlus=15}else S.plan.brkPlus=0}}catch(e){}return r}}
@@ -8986,6 +8986,11 @@ const stA=()=>{try{return S&&S.stage==='pro'?(S.stoveAdj||0):0}catch(e){return 0
   if(add.length){add.sort(()=>R()-.5).slice(0,2).forEach(([t,re],i)=>{seenAdd(t);out.splice(Math.min(1+i,out.length),0,mkC(t,re))})}}catch(er){}return out}}
 /* 어깨(송구)·타구처리 훈련 효율 살짝↑ (×1.15) — 예상 성장 표시에도 반영 */
 {const _ba=buildAlloc;buildAlloc=function(){const r=_ba.apply(this,arguments);try{if(S&&S.plan&&!isP()){const m=S.plan.mul=S.plan.mul||{};m.arm=(m.arm||1)*1.15;m.fld=(m.fld||1)*1.15}}catch(e){}return r}}
+/* 감독 면담(툴 부족 지적) → "알겠습니다" : 지적받은 능력치 보너스 (1개 +1.5 · 2개 각 +0.7 · 3개 이상 각 +0.5, 표시 기준) */
+ACT.toolFix=function(a){try{const ks=(a&&a.ks)||[],amt=(a&&a.amt)||.5,r=amt*.75,got=[];ks.forEach(k=>{let key=k;if(k==='pitches'){const own=PITCHES.filter(p=>p!=='FB'&&ME.pt[p]>0).sort((x,y)=>ME.pt[x]-ME.pt[y]);key=own[0];if(!key)return}
+  if(ME.r&&key in ME.r){ME.r[key]=cl(ME.r[key]+r,20,capOf(key));got.push(LBL[key])}else if(ME.pt&&key in ME.pt){ME.pt[key]=cl(ME.pt[key]+r,20,capOf(key));got.push(LBL[key])}});ME.hid.men=cl(ME.hid.men+1,20,80);
+  return`감독실을 나서며 이를 악물었다. 그날부터 ${got.join('·')||'약점'} 훈련에 매달렸다.${got.length?` (${got.join('·')}${got.length>1?' 각각':''} +${amt})`:''}`}catch(e){return'이를 악물었다.'}};
+if(typeof CRIT!=='undefined')CRIT.add('toolFix');
 
 </script>
 
