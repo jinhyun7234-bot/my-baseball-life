@@ -2092,8 +2092,8 @@ function choose(i){const q=S.queue[0];if(!q)return;const c=q.ch[i];S.queue.shift
 /* ===================== RETIRE ===================== */
 function careerTot(lv){const b=blankB(),p=blankP();let w=0;S.rows.forEach(r=>{if(lv&&!lv.includes(r.lv))return;addTo(b,r.b);addTo(p,r.p);if(PRO.includes(r.lv))w+=rowWAR(r)});return{b,p,w}}
 function retire(why){const t=careerTot(PRO),aw=S.awards;
-  const score=t.w+aw.filter(a=>a.n.includes('MVP')).length*6+aw.filter(a=>a.n.includes('골든')).length*2+aw.filter(a=>/왕|최다/.test(a.n)).length*2+S.hist.rings*2+Math.min(6,S.hist.nat)+(S.ach.record?5:0);
-  const hof=score>=110;if(hof)S.ach.hof=S.y;
+  const score=typeof hofScore==='function'?hofScore(t.w):t.w+aw.filter(a=>a.n.includes('MVP')).length*6+aw.filter(a=>a.n.includes('골든')).length*2+aw.filter(a=>/왕|최다/.test(a.n)).length*2+S.hist.rings*2+Math.min(6,S.hist.nat)+(S.ach.record?5:0);
+  const hof=score>=105;if(hof)S.ach.hof=S.y;
   S.ended={y:S.y,age:age(),why,score:Math.round(score),hof};S.stage='ret';S.queue=S.queue.filter(q=>q.type==='game'||q.type==='award');if(hof)celebrate('hof','명예의 전당 헌액',`${S.y} · 커리어 점수 ${Math.round(score)} · 통산 WAR ${t.w.toFixed(1)}`);news(`${why}.${hof?' 명예의 전당 헌액!':''}`);
   article(hof?`'전설' ${ME.name}, 명예의 전당 헌액`:`${ME.name}, ${age()}세에 현역 은퇴`,`프로 통산 WAR ${t.w.toFixed(1)}. ${hof?'첫 투표에서 압도적 지지를 받았다.':'정든 그라운드에 작별을 고했다.'}`,'retire');save()}
 function checkAch(){const A=S.ach,y=S.y,t=careerTot(PRO);
@@ -9118,12 +9118,35 @@ if(typeof CRIT!=='undefined'){CRIT.add('mlbReMinor');CRIT.add('mlbIndy')}
   if(!got.length)return;S.rel.fame=cl(S.rel.fame+3*got.length,0,100);rep.lines.push(`${got.join(' · ')} 수상!`);news(`${ME.name}, ${got.join(' · ')} 수상.`);
   article(`${ME.name}, ${got.map(n=>n.replace(/ \(.+\)/,'')).join('·')} 수상`,`${jo(ME.name,'이','가')} ${got.length===2?'공수 겸장으로 인정받았다.':/골드/.test(got[0])?'메이저리그 최고 수준의 수비를 인정받았다.':'메이저리그 최고 수준의 타격을 인정받았다.'}`,'award')}catch(e){}}}
 /* 타이틀 개수 (개인 타이틀 + 골든글러브·골드글러브·실버슬러거) */
-function titleCount(){try{const TT=/^(타격왕|홈런왕|타점왕|득점왕|출루율왕|도루왕|최다안타|장타율왕|다승왕|평균자책점왕|탈삼진왕|세이브왕|홀드왕)$|^MLB (타격왕|홈런왕|타점왕|득점왕|출루율왕|도루왕|최다안타|장타율왕|다승왕|평균자책점왕|탈삼진왕|세이브왕|홀드왕)$|골든글러브|골드글러브|실버슬러거/;return(S.awards||[]).filter(a=>TT.test(a.n)).length}catch(e){return 0}}
+function titleScore(){try{const P=isP(),M=1.3,A=S.awards||[];let t=0;const TL=/^(MLB )?(타격왕|홈런왕|타점왕|득점왕|출루율왕|도루왕|최다안타|장타율왕|다승왕|평균자책점왕|탈삼진왕|세이브왕|홀드왕)$/,PT=/다승왕|평균자책점왕|탈삼진왕|세이브왕|홀드왕/;
+  const tc={};
+  A.forEach(a=>{const n=a.n||'',mlb=/^MLB |리그 |월드시리즈|챔피언십 시리즈|디비전 시리즈/.test(n)?M:1;let v=0;
+    if(n==='정규시즌 MVP'||/^(아메리칸|내셔널)리그 MVP$/.test(n))v=5;
+    else if(/사이영상/.test(n))v=5;
+    else if(n==='신인왕'||/리그 신인왕$/.test(n))v=2;
+    else if(/^골든글러브/.test(n))v=3;
+    else if(/골드글러브|실버슬러거/.test(n))v=2.5;
+    else if(TL.test(n)){v=PT.test(n)?1.5:1;const k=a.y+(n.startsWith('MLB ')?'M':'K');(tc[k]=tc[k]||[]).push(n.replace(/^MLB /,''))}
+    else if(n==='한국시리즈 MVP'||n==='월드시리즈 MVP')v=3;
+    else if(n==='플레이오프 MVP'||n==='챔피언십 시리즈 MVP')v=2;
+    else if(n==='준플레이오프 MVP'||n==='디비전 시리즈 MVP')v=1.5;
+    else if(n==='와일드카드 MVP'||n==='와일드카드 결정전 MVP')v=1;
+    else if(/WBC MVP$/.test(n))v=3;
+    else if(/올림픽 금메달$/.test(n))v=2;
+    t+=v*mlb});
+  for(const k in tc){const g=tc[k],m=k.endsWith('M')?M:1;if((g.includes('타격왕')&&g.includes('홈런왕')&&g.includes('타점왕'))||(g.includes('다승왕')&&g.includes('평균자책점왕')&&g.includes('탈삼진왕')))t+=3*m}
+  return Math.round(t*10)/10}catch(e){return 0}}
+function titleCount(){return titleScore()}
+/* 명예의 전당 점수 = 통산 WAR + 타이틀 점수 + 우승 + WBC 성적 + 신기록 */
+function hofParts(w){const A=S.awards||[],cnt=re=>A.filter(a=>re.test(a.n||'')).length;
+  const ring=cnt(/^한국시리즈 우승$/)*3+cnt(/^월드시리즈 우승$/)*3*1.3,wbc=cnt(/WBC 우승$/)*4+cnt(/WBC 준우승$/)*2+cnt(/WBC 4강$/)*1,ts=titleScore(),rec=S.ach&&S.ach.record?3:0;
+  return{war:w,ts,ring:Math.round(ring*10)/10,wbc,rec,total:w+ts+ring+wbc+rec}}
+function hofScore(w){try{return hofParts(w).total}catch(e){return w}}
 /* 은퇴(커리어) 카드 오른쪽 위: 타이틀 개수 */
-{const _cd=cardData;cardData=function(){const D=_cd.apply(this,arguments);try{D.titles=titleCount()}catch(e){}return D}}
+{const _cd=cardData;cardData=function(){const D=_cd.apply(this,arguments);try{D.tscore=titleScore()}catch(e){}return D}}
 {const _dw=drawCard;drawCard=function(D){const cv=_dw(D);try{const x=cv.getContext('2d'),W=cv.width,FB='"Noto Sans KR","Apple SD Gothic Neo",sans-serif',FN='"Barlow Condensed","Arial Narrow",sans-serif';
-  const y=432+(D.hof?42:0)+(D.retNo?42:0);x.textAlign='center';x.textBaseline='alphabetic';x.font=`800 30px ${FB}`;x.fillStyle='#d9b44a';x.fillText(`타이틀 ${D.titles||0}개`,890,y+(D.hof||D.retNo?6:0))}catch(e){}return cv}}
-{const _cs=cardSig;cardSig=function(){return _cs()+'|t'+titleCount()}}
+  const y=432+(D.hof?42:0)+(D.retNo?42:0);x.textAlign='center';x.textBaseline='alphabetic';x.font=`800 30px ${FB}`;x.fillStyle='#d9b44a';x.fillText(`타이틀 점수 ${(D.tscore||0)%1?(D.tscore||0).toFixed(1):(D.tscore||0)}`,890,y+(D.hof||D.retNo?6:0))}catch(e){}return cv}}
+{const _cs=cardSig;cardSig=function(){return _cs()+'|t'+titleScore()}}
 
 /* ===================== WBC: 시즌 전(스프링캠프 직후) 대회 전 경기 중계 · 실제 포맷 =====================
    1라운드 5개국 풀리그(조 2위까지 8강) → 8강 → 준결승 → 결승 (단판)
@@ -9174,7 +9197,12 @@ function wbcRun(){const y=S.y,n=wbcName(y),nf=natForm(),bn=nf?nf.bonus:0,o=ovrE(
   if(res==='우승'){S.awards.push({y,n:`${n} 우승`});S.rel.fame=cl(S.rel.fame+8,0,100);celebrate('trophy',`${n} 우승`,'대한민국 국가대표 · 세계 정상',[])}
   else if(res==='준우승'){S.awards.push({y,n:`${n} 준우승`});S.rel.fame=cl(S.rel.fame+5,0,100)}
   else if(res==='4강')S.awards.push({y,n:`${n} 4강`});
-  S.queue.push({type:'wbcend',y,n,res});feat(`${n} 대표팀 ${res}`,res==='우승'||res==='준우승')}
+  let mvp=null;try{const P=isP(),tb=blankB(),tp=blankP();games.forEach(g=>{addTo(tb,g.mb||{});addTo(tp,g.mp||{})});let top=false,ok=false,line='';
+    if(P){const o=tp.outs,ra9=o?tp.R*27/o:99;top=(o>=15&&ra9<=1.6)||(tp.SV>=2&&tp.R<=1&&o>=5)||(o>=9&&tp.R===0);ok=o>=6&&ra9<=3.2;line=`${tp.G}경기 ${ip(o)}이닝 ${tp.K}탈삼진 ${tp.R}실점${tp.SV?` ${tp.SV}세이브`:''}`}
+    else{const ops=tb.PA?(tb.H+tb.BB)/tb.PA+(tb.H+tb.D+2*tb.T+3*tb.HR)/Math.max(1,tb.AB):0;top=tb.PA>=14&&(ops>=1.05||tb.HR>=3||tb.RBI>=9);ok=tb.PA>=10&&ops>=.85;line=`${tb.AB}타수 ${tb.H}안타 ${tb.HR}홈런 ${tb.RBI}타점 · 타율 ${(tb.H/Math.max(1,tb.AB)).toFixed(3).replace(/^0/,'')}`}
+    const pr=res==='우승'?(top?.7:ok?.2:0):res==='준우승'?(top?.12:0):0;
+    if(R()<pr){mvp=line;S.awards.push({y,n:`${n} MVP`});S.ach.wbcmvp=S.ach.wbcmvp||y;S.rel.fame=cl(S.rel.fame+8,0,100);ME.xp+=3;feat(`${n} MVP 선정`,1);celebrate('mvp',`${n} MVP`,`대회 최우수선수 · ${line}`,[]);news(`${ME.name}, ${n} MVP 선정.`)}}catch(e){}
+  S.queue.push({type:'wbcend',y,n,res,mvp});feat(`${n} 대표팀 ${res}`,res==='우승'||res==='준우승')}
 /* ---------- 화면: 대회 소개 · 1라운드 순위 · 대회 결과 ---------- */
 function vWbcIntro(q){return`<div class="srec"><div class="srec-ey">${q.y} WORLD BASEBALL CLASSIC</div><h1 class="srec-tt">🇰🇷 WBC 개막</h1><div class="srec-team">대한민국 국가대표 · 1라운드 C조 (도쿄돔)</div>
   <div class="srec-card"><div class="srec-k">C조</div><div class="srec-sub">${q.pool.join(' · ')}</div><div class="srec-sub" style="margin-top:6px">5개국 풀리그 · 조 2위까지 8강 진출 (마이애미)<br>동률이면 승자승 → 아웃카운트당 실점이 적은 팀</div></div>
@@ -9186,7 +9214,7 @@ function vWbcMid(q){return`<div class="srec"><div class="srec-ey">${q.y} WBC · 
   <div class="srec-card phs-card"><div class="ptop"><div class="tblw"><table class="tbl nv mlbt ptbl"><thead><tr><th>#</th><th class="l">국가</th><th>승</th><th>패</th><th>아웃당 실점</th></tr></thead><tbody>${q.st.map((x,i)=>`<tr class="${x.t==='한국'?'me':''}${i===2?' cut':''}"><td><b>${i+1}</b></td><td class="l">${x.t}</td><td>${x.w}</td><td>${x.l}</td><td>${x.outs?x.rpo.toFixed(3):'-'}</td></tr>`).join('')}</tbody></table></div></div></div>
   ${q.others&&q.others.length?`<div class="srec-card"><div class="srec-k">같은 조 다른 경기</div><div class="srec-sub">${q.others.join('<br>')}</div></div>`:''}
   <div class="srec-card"><div class="srec-k">다음 경기</div><div class="srec-big">대한민국 vs ${q.next}</div><div class="srec-sub">조 2위까지 8강 진출 · 동률이면 승자승 → 아웃카운트당 실점</div></div></div>`}
-function vWbcEnd(q){const t={우승:'🏆 세계 정상!',준우승:'🥈 준우승','4강':'4강 진출','8강':'8강에서 멈췄다','1라운드 탈락':'1라운드 탈락'}[q.res]||q.res;return`<div class="srec"><div class="srec-ey">${q.y} WORLD BASEBALL CLASSIC</div><h1 class="srec-tt">${t}</h1><div class="srec-team">대한민국 국가대표</div><div class="srec-card"><div class="srec-sub">${q.res==='우승'?'세계 야구의 정상에 섰다. 이 기억을 안고 시즌을 시작한다.':q.res==='준우승'?'세계 2위. 고개 숙일 필요 없는 대회였다.':'태극마크의 여정이 끝났다. 이제 소속팀으로 돌아가 시즌을 준비한다.'}</div></div></div>`}
+function vWbcEnd(q){const t={우승:'🏆 세계 정상!',준우승:'🥈 준우승','4강':'4강 진출','8강':'8강에서 멈췄다','1라운드 탈락':'1라운드 탈락'}[q.res]||q.res;return`<div class="srec"><div class="srec-ey">${q.y} WORLD BASEBALL CLASSIC</div><h1 class="srec-tt">${t}</h1><div class="srec-team">대한민국 국가대표</div><div class="srec-card"><div class="srec-sub">${q.res==='우승'?'세계 야구의 정상에 섰다. 이 기억을 안고 시즌을 시작한다.':q.res==='준우승'?'세계 2위. 고개 숙일 필요 없는 대회였다.':'태극마크의 여정이 끝났다. 이제 소속팀으로 돌아가 시즌을 준비한다.'}</div></div>${q.mvp?`<div class="srec-card"><div class="srec-k">🏅 대회 MVP</div><div class="srec-sub">${ME.name} · ${q.mvp}</div></div>`:''}</div>`}
 {const V={wbcmid:[vWbcMid,'⚾ 다음 경기 ▶'],wbcintro:[vWbcIntro,'⚾ WBC 진행 ▶'],wbcpool:[vWbcPool,'다음 ▶'],wbcend:[vWbcEnd,'시즌으로 ▶']};
  const _rd=_render;_render=function(app,nav,bar,ov){try{if(S&&!ui.simming&&ui.screen!=='title'&&ui.recap==null){const q=nextQ();if(q&&V[q.type]){ME=S.me;ui.sheet=null;full(app,nav,bar,ov,V[q.type][0](q),' dark');bar.innerHTML=`<button class="btn pri glow" data-act="wbcok">${q.type==='wbcpool'&&!q.adv?'다음 ▶':V[q.type][1]}</button>`;ov.innerHTML='';return}}}catch(e){}return _rd(app,nav,bar,ov)};
  const _aq=afterQueue;afterQueue=function(){_aq();try{const q=nextQ();if(q&&V[q.type])ui.sheet=null}catch(e){}};
@@ -9225,6 +9253,30 @@ function wbcArticle(g,c){try{const my=g.my,kr=g.R[my],op=g.R[1-my],P=isP(),mb=g.
     LL.sort(()=>R()-.5).slice(0,3).forEach(([t,re])=>A(t,re));if(G)A(`${gn} 혼자 아니었으면 콜드패였다 나머지는 각성해라`,['이 선수만 국대 자격 있음']);if(B)A(`${gn} 오늘 경기력은 국대 자격 없다`,['국내용이었냐','다음 경기 라인업에서 빼라'])}
   else if(!W&&strongOpp){if(x.close){A('졌잘싸 진짜 졌지만 잘 싸웠다',['고개 숙이지 마라']);A(`${o} 상대로 이 정도면 졌잘싸 인정`,['한 끗 차이였다'])}else if(x.mercy){A('상대가 너무 강했다 이건 어쩔 수 없다',['그래도 콜드패는 좀 아프다']);}else A(`${o}는 세계 최강급이다 박수 쳐주자`,['투수 몇 명만 더 있었어도…'])}
   const ad=add.sort(()=>R()-.5).slice(0,take).map(([t,re])=>{seenAdd(t);return mkC(josaFix(t),re)});out=ad.concat(out).slice(0,8)}catch(e){}return out}}
+/* ===== 복무 중 성장 이벤트: 군대 가는 선수 손해 줄이기 (선택형, 장단점 모두) ===== */
+{const _le=lifeEvents;lifeEvents=function(){let out=_le();try{if(S.stage!=='mil'||!S.mil||S.mil.indy)return out;const m=S.mil;m.xpN=m.xpN||0;if(m.xpN>=2||m.xpT===S.turn||R()>.6)return out;
+  const P=isP(),act=m.type==='현역',sw=P?'섀도 피칭':'빈 스윙',L=act?[
+   {title:'🌙 연등 시간 개인 훈련',text:`취침 전 연등 시간. 다들 휴대폰을 보는데, 창고 뒤 공터가 비어 있다. ${sw} 할 공간은 충분하다.`,ch:[
+    {t:'매일 밤 한 시간씩 몰래 훈련한다',s:'성장 포인트 +7 · 피로↑ · 멘탈 조금↓',act:'famXp',arg:{xp:7,fat:10,men:-2,r:`잠은 줄었지만 몸은 기억을 잃지 않았다. 전역하면 바로 ${P?'던질':'칠'} 수 있을 것 같다.`}},
+    {t:'푹 자는 게 남는 거다',s:'피로↓ · 멘탈↑',act:'famXp',arg:{fat:-6,men:2,r:'군대에서 제일 잘한 건 잠이었다.'}}]},
+   {title:'📦 간부가 구해온 장비',text:`야구 좋아하는 중대장이 어디서 ${P?'포수 미트랑 공 한 박스':'배팅 티랑 공 한 박스'}를 구해왔다. "주말에 써. 대신 부대 야구팀 코치도 좀 해주고."`,ch:[
+    {t:'주말마다 훈련하고 부대원도 가르친다',s:'성장 포인트 +8 · 휴가 반납 (멘탈↓) · 피로↑',act:'famXp',arg:{xp:8,men:-3,fat:6,r:'남을 가르치면서 내 기본기를 다시 뜯어봤다. 대신 외박은 거의 못 나갔다.'}},
+    {t:'정중히 사양하고 휴식한다',s:'멘탈↑',act:'famXp',arg:{men:3,r:'"그래, 쉴 땐 쉬어야지." 중대장이 아쉬운 얼굴로 돌아섰다.'}}]},
+   {title:'📚 야구 영상 공부',text:`사이버지식정보방에서 시간이 남는다. 리그 경기 영상이랑 분석 자료가 눈에 들어온다.`,ch:[
+    {t:'개인정비 시간을 전부 영상 분석에 쓴다',s:'성장 포인트 +6 · 멘탈 조금↓ · 인기 조금↓',act:'famXp',arg:{xp:6,men:-2,fame:-2,r:`${P?'타자들 성향':'투수들 볼배합'}을 노트 한 권에 정리했다. 대신 동기들과 어울릴 시간은 없었다.`}},
+    {t:'동기들이랑 어울린다',s:'멘탈↑ · 컨디션↑',act:'famXp',arg:{men:2,form:1,r:'평생 갈 친구 몇 명이 생겼다.'}}]}
+  ]:[
+   {title:'🏋️ 체력단련 집중 기간',text:`${m.type} 트레이닝 파트에서 "이번 시즌 몸 제대로 만들어볼 사람"을 받는다. 프로그램이 지옥이라고 소문났다.`,ch:[
+    {t:'신청한다',s:'성장 포인트 +8 · 피로↑↑',act:'famXp',arg:{xp:8,fat:14,r:'몇 번은 토할 뻔했다. 거울 속 몸이 달라졌다.'}},
+    {t:'지금 루틴을 유지한다',s:'피로↓ · 컨디션↑',act:'famXp',arg:{fat:-5,form:1,r:'무리하지 않고 경기 감각을 지켰다.'}}]},
+   {title:'🔁 폼 전면 수정 제안',text:`코치가 "여긴 성적 압박 없잖아. 지금 아니면 ${P?'투구폼':'타격폼'} 못 고친다"며 대수술을 제안한다.`,ch:[
+    {t:'과감하게 뜯어고친다',s:'성장 포인트 +8 · 당분간 컨디션↓ · 멘탈 조금↓',act:'famXp',arg:{xp:8,form:-3,men:-1,r:'한동안 엉망이었다. 그런데 어느 날 갑자기 몸에 붙었다.'}},
+    {t:'미세 조정만 한다',s:'성장 포인트 +2 · 컨디션 유지',act:'famXp',arg:{xp:2,r:'큰 변화는 없지만 안정감은 그대로다.'}}]},
+   {title:'🌙 야간 자율 훈련',text:`부대 실내 연습장이 밤에도 열려 있다. 다른 팀 출신 선수들이 매일 밤 모인다.`,ch:[
+    {t:'매일 밤 합류한다',s:'성장 포인트 +7 · 피로↑ · 멘탈 조금↓',act:'famXp',arg:{xp:7,fat:10,men:-2,r:'서로의 노하우를 나눴다. 전역 후가 기대된다.'}},
+    {t:'일찍 쉰다',s:'피로↓ · 멘탈↑',act:'famXp',arg:{fat:-6,men:2,r:'몸이 가볍다.'}}]}];
+  const ev=pick(L.filter(e=>!(m.xpSeen||[]).includes(e.title)).length?L.filter(e=>!(m.xpSeen||[]).includes(e.title)):L);
+  (m.xpSeen=m.xpSeen||[]).push(ev.title);m.xpN++;m.xpT=S.turn;out.push(ev)}catch(e){}return out}}
 
 </script>
 
