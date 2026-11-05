@@ -9642,7 +9642,7 @@ const EASE=.9;
 {const _mb=meBatPA;meBatPA=function(pR,risp){return _mb(isP()?pR:pR-EASE,risp)}}
 {const _p=pitchGame;pitchGame=function(L,type){return _p(isP()?L-EASE:L,type)}}
 {const _mp=mePitPA;mePitPA=function(bR,risp,tired){return _mp(isP()?bR-EASE:bR,risp,tired)}}
-{const _adv=advance;advance=function(){try{const k=S.y+'-'+S.phase;if(S._phFK!==k){S._phFK=k;let f=S.phase===0?0:cl(gauss()*.9,-2,2);if(S.stage==='pro'&&S.phase!==0&&age()>=33&&(S._lateHotY||0)<S.y-2&&R()<.07){f+=1.3;S._lateHotY=S.y}S.phF=f}}catch(e){}return _adv.apply(this,arguments)}}
+{const _adv=advance;advance=function(){try{const k=S.y+'-'+S.phase;if(S._phFK!==k){S._phFK=k;let f=S.phase===0?0:(()=>{let g=gauss()*.9;if(g<0)g*=.72;return cl(g,-1.35,2)})();if(S.stage==='pro'&&S.phase!==0&&age()>=36&&(S._lateHotY||0)<S.y-2&&R()<.07){f+=1.3;S._lateHotY=S.y}S.phF=f}}catch(e){}return _adv.apply(this,arguments)}}
 
 </script>
 
