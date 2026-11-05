@@ -2453,11 +2453,11 @@ function ensurePlan(){const p=S.plan,M=menus();p.int=1;p.lv=p.lv||{};
 function buildAlloc(){const p=S.plan,M=menus(),ks=isP()?[...PIT,'brk']:[...BAT],rw={};ks.forEach(k=>rw[k]=15/ks.length);rw.rest=10;if(isP())rw.brk=(rw.brk||0)+12;
   const add=(id,amt)=>{if(!id||id==='rest'){rw.rest+=amt;return}const m=M[id];for(const k in m.w)rw[k]=(rw[k]||0)+amt*m.w[k]};add(p.main,50);add(p.sub,25);
   const keys=Object.keys(rw),fl=distrib(keys,keys.map(k=>rw[k]),100);p.alloc={};keys.forEach((k,i)=>p.alloc[k]=fl[i]);
-  p.mul={};[p.main,p.sub].forEach(id=>{if(!id||id==='rest')return;const b=1+Math.min(10,p.lv[id]||0)*.04;for(const k in M[id].w)p.mul[k]=Math.max(p.mul[k]||1,b)})}
+  p.mul={};[p.main,p.sub].forEach(id=>{if(!id||id==='rest')return;const b=id===p.main?1.3:1.2;for(const k in M[id].w)p.mul[k]=Math.max(p.mul[k]||1,b)})}
 function syncW(){ensurePlan()}
 function trainLevels(rep){const p=S.plan,M=menus();p.lv=p.lv||{};if(ME.inj)return;
   for(const id in M){if(id==='rest')continue;const old=p.lv[id]||0;let nv=id===p.main?old+1:id===p.sub?old+.5:Math.max(0,old-.25);nv=Math.min(10,nv);p.lv[id]=nv;
-    if(Math.floor(nv)>Math.floor(old))rep.lines.push(`${M[id].ic} ${M[id].n} 연습 레벨 ${Math.floor(nv)} 달성! (효율 +${Math.floor(nv)*4}%)`)}
+}
   if(p.useCard&&p.card){rep.lines.push(`⭐ 특별 훈련 「${p.card.n}」${jo(p.card.n,'을','를').slice(p.card.n.length)} 소화했다`);if(p.card.men)ME.hid.men=cl(ME.hid.men+p.card.men,20,80)}
   [p.main,p.sub].forEach(id=>{if(id&&M[id]&&M[id].men)ME.hid.men=cl(ME.hid.men+.5,20,80)})}
 function newCard(){const p=S.plan;p.useCard=false;p.card=null;if(S.stage==='ret'||(S.stage==='mil'&&S.mil.type==='현역'))return;if(R()<.4)p.card={...pick(isP()?CARDS_P:CARDS_B)}}
@@ -2491,10 +2491,10 @@ function vTrainPlan(){ensurePlan();const p=S.plan,M=menus(),al=p.alloc,months=PM
   const fl=(12.5*(1-al.rest/100)-al.rest*.3+(p.useCard&&p.card?p.card.f/months:0)+(S.phase?14:0))/.58,lv=ME.inj?['재활 중','dn']:fl<25?['낮음','up']:fl<50?['보통','']:fl<65?['높음 · 부상 주의','dn']:['매우 높음 · 장기 부상 위험','dn'];
   const pickSlot=ui.tpick||'main';
   const tile=([id,m])=>{const role=p.main===id?'main':p.sub===id?'sub':'',l=Math.floor(p.lv[id]||0),st=id==='rest'?'피로 회복':Object.keys(m.w).map(k=>k==='brk'?`변화구(${LBL[p.pitch]})`:LBL[k]).join(' · ');
-    return`<div class="tmenu ${role}"><div class="row" style="gap:6px"><span class="tm-ic">${m.ic}</span><b class="sp">${m.n}</b>${l?`<span class="tm-lv2">Lv.${l}</span>`:''}</div><span class="tm-st">${st}</span><div class="tm-btns"><button class="${role==='main'?'on':''}" data-act="tset" data-v="${id}" data-s="main">메인</button><button class="${role==='sub'?'on sub':''}" data-act="tset" data-v="${id}" data-s="sub">서브</button></div></div>`};
+    return`<div class="tmenu ${role}"><div class="row" style="gap:6px"><span class="tm-ic">${m.ic}</span><b class="sp">${m.n}</b></div><span class="tm-st">${st}</span><div class="tm-btns"><button class="${role==='main'?'on':''}" data-act="tset" data-v="${id}" data-s="main">메인</button><button class="${role==='sub'?'on sub':''}" data-act="tset" data-v="${id}" data-s="sub">서브</button></div></div>`};
   const neg=Object.keys(S.neglHit||{});
   return`<div class="card"><div class="row"><span class="lbl sp">${PHASE[S.phase]} 훈련</span><span class="tiny muted">${months}개월</span></div>
-    <div class="hint">각 훈련의 <b>메인</b>(집중)·<b>서브</b> 버튼을 눌러 골라요. 같은 훈련을 계속하면 연습 레벨이 올라요.  <button class="linkb" data-act="guide" data-v="train">자세히</button></div>
+    <div class="hint">각 훈련의 <b>메인</b>(집중)·<b>서브</b> 버튼을 눌러 골라요.  <button class="linkb" data-act="guide" data-v="train">자세히</button></div>
     <div class="tgrid">${Object.entries(M).map(tile).join('')}</div>
     ${isP()?`<div class="pbx"><div class="pbx-h"><b>🎯 변화구 연마</b><span>연마 중 · <em>${LBL[p.pitch]||'-'}</em></span></div><div class="pbx-g">${PITCHES.filter(x=>x!=='FB').map(x=>{const v=ME.pt[x],dv=v?Math.round(DV(v)):0,fast=['FB','TS','SL'].includes(x);return`<button class="pbx-t ${p.pitch===x?'on':''} ${v?'':'new'}" data-act="pp" data-v="${x}"><span class="pbx-n">${LBL[x]}</span>${v?`<b class="${gcls(v)}">${dv}</b>`:'<b class="pbx-new">NEW</b>'}</button>`}).join('')}</div><div class="pbx-f">구종이 많고 볼배합이 좋을수록 시너지↑ · 선발은 쓸만한 구종 3개 이상, 불펜은 2개 이상</div></div>`:''}
     <div><div class="tiny muted" style="margin-bottom:6px">이번 기간 예상 성장</div><div class="row wrap">${ests.length?ests.map(([k,v])=>v===-1?`<span class="chip up">새 구종 ${LBL[p.pitch]} 습득</span>`:`<span class="chip ${v>=.6?'up':''}">${k==='brk'?LBL[p.pitch]:LBL[k]} ▲${(v*4/3).toFixed(1)}</span>`).join(''):'<span class="tiny muted">휴식 위주라 성장은 거의 없어요</span>'}</div></div>
@@ -5993,7 +5993,7 @@ const DEFB={rng:[{rng:.75,fld:.25},'수비범위 위주'],bal:[{rng:.5,fld:.5},'
 {const _ep=ensurePlan;ensurePlan=function(){if(S&&S.plan){const b=DEFB[S.plan.defBias||'bal']||DEFB.bal;MENU_B.def.w=b[0];const M=menus();if(S.plan.main&&!M[S.plan.main])S.plan.main=null;if(S.plan.sub&&!M[S.plan.sub])S.plan.sub=undefined;if(!S.plan.main)S.plan.main=isP()?'stf':'con';if(S.plan.sub===undefined)S.plan.sub=isP()?'ctl':'pow'}return _ep()}}
 {const _vtp=vTrainPlan;vTrainPlan=function(){let h=_vtp();try{if(!isP()){const cur=S.plan.defBias||'bal',box=`<div class="pitchbox"><div class="row"><b class="sp">🧤 수비 훈련 비중</b><span class="tiny muted">수비 훈련을 고를 때 적용</span></div><div class="row wrap">${Object.entries(DEFB).map(([k,v])=>`<button class="chip ${cur===k?'on':''}" data-defb="${k}">${v[1]}</button>`).join('')}</div></div>`;
   h=h.replace('<div><div class="tiny muted" style="margin-bottom:6px">이번 기간 예상 성장',box+'<div><div class="tiny muted" style="margin-bottom:6px">이번 기간 예상 성장')}
-  h=h.replace('각 훈련의 <b>메인</b>(집중)·<b>서브</b> 버튼을 눌러 골라요. 같은 훈련을 계속하면 연습 레벨이 올라요.','키우고 싶은 능력치 훈련을 <b>메인</b>(집중)·<b>서브</b>로 하나씩 골라요. 같은 훈련을 계속하면 연습 레벨이 올라요.')}catch(e){}return h}}
+  h=h.replace('각 훈련의 <b>메인</b>(집중)·<b>서브</b> 버튼을 눌러 골라요.','키우고 싶은 능력치 훈련을 <b>메인</b>(집중)·<b>서브</b>로 하나씩 골라요.')}catch(e){}return h}}
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-defb]');if(!b||!S)return;S.plan.defBias=b.dataset.defb;ensurePlan();save();render()});
 
 /* ===================== 특성(확률형) 시스템 — 능력치 직접 올리기·고정 보너스 특성 제거 ===================== */
@@ -7277,7 +7277,7 @@ function vSheet(){
     <button class="btn sm" data-act="closeq">나중에 결정</button></div></div>`}
 const GUIDE=[
  ['flow','시작하기',[['한 해는 3번','스프링캠프 → 전반기 → 후반기. 아래 노란 버튼을 누르면 그 기간이 진행돼요.'],['목표','고교에서 잘해서 프로 지명 → 1군 주전 → FA·메이저리그 → 명예의 전당까지.'],['선택','계약·병역·이벤트 같은 선택이 가끔 떠요. 감독 신뢰와 인기, 커리어 방향이 달라져요.']]],
- ['train','훈련',[['훈련 탭','아래 메뉴의 훈련 탭에서 키우고 싶은 능력치 훈련을 메인 1개, 서브 1개 골라요.'],['꾸준히','같은 훈련을 이어가면 효율이 올라가요. 오래 안 한 능력치는 조금씩 떨어질 수 있어요.'],['투수','투수는 아래쪽 변화구 연마에서 다듬을 변화구를 따로 골라요. 직구는 구위·구속 훈련으로 같이 올라가요. 선발은 쓸만한 구종 3개 이상, 불펜은 2개 이상이 목표예요.'],['피곤하면','피로가 높으면 서브를 휴식으로 바꾸세요.']]],
+ ['train','훈련',[['훈련 탭','아래 메뉴의 훈련 탭에서 키우고 싶은 능력치 훈련을 메인 1개, 서브 1개 골라요.'],['메인·서브','메인으로 고른 훈련이 가장 크게 오르고, 서브도 꽤 많이 올라요. 오래 안 한 능력치는 조금씩 떨어질 수 있어요.'],['투수','투수는 아래쪽 변화구 연마에서 다듬을 변화구를 따로 골라요. 직구는 구위·구속 훈련으로 같이 올라가요. 선발은 쓸만한 구종 3개 이상, 불펜은 2개 이상이 목표예요.'],['피곤하면','피로가 높으면 서브를 휴식으로 바꾸세요.']]],
  ['xp','성장 포인트·특성',[['얻는 법','활약, 수상·대기록, 성실한 훈련, 이벤트로 얻어요.'],['쓰는 법','능력치 탭 아래 특성을 배워요. "득점권에서 안타 +5%"처럼 특정 상황에서 유리해져요. 비쌀수록 효과가 넓어요.']]],
  ['body','몸 관리',[['피로','60을 넘으면 경고, 75를 넘으면 큰 부상 위험이 커요. 휴식과 상점 관리 서비스로 조절하세요.'],['워크에식','높을수록 훈련 효율이 커져요. 같은 훈련을 해도 능력치가 더 많이 올라요.'],['멘탈','높을수록 큰 경기 활약이 좋아요. 포스트시즌·국제대회, 득점권 같은 중요한 순간에 강해져요.'],['내구성','좋을수록 피로가 덜 쌓여요. 부상도 덜 당하고 회복도 빨라요.'],['올리는 법','워크에식·멘탈·내구성은 이벤트 선택과 상점으로 올릴 수 있어요.']]],
  ['career','커리어 팁',[['메이저리그','종합 실력만큼 툴(능력치)이 고르게 좋아야 제안이 와요. 약점이 있으면 마이너에서 시작해요. 댓글 힌트를 참고하세요.'],['연봉·FA','잘하면 연봉 협상과 FA에서 크게 대우받아요.'],['병역','아시안게임 금메달·올림픽 메달이면 면제. 아니면 만 28세까지 상무·경찰청·현역 중 선택해요.'],['큰 경기','포스트시즌·국제대회는 문자중계로 직접 봐요. 결과까지 건너뛸 수도 있어요.']]]];
