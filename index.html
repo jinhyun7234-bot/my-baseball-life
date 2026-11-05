@@ -9203,7 +9203,12 @@ function wbcArticle(g,c){try{const my=g.my,kr=g.R[my],op=g.R[1-my],P=isP(),mb=g.
   if(x.st==='final'&&W)A('대한민국 WBC 우승!!! 이게 꿈이냐 생시냐',['평생 잊지 못할 밤']);if(x.st==='final'&&!W)A('세계 2위다 고개 숙일 필요 하나도 없다',['다들 진짜 수고했다']);
   if(x.st==='qf'&&W)A('마이애미에서 4강!!! 이게 되네',['다음은 준결승이다']);
   if(!x.played&&P&&ME.pos==='SP')A(`${jo(gn,'은','는')} 투구수 규정 때문에 다음 등판 대기 중`,['WBC는 투구수 제한이 빡세다']);
-  const ad=add.sort(()=>R()-.5).slice(0,4).map(([t,re])=>{seenAdd(t);return mkC(josaFix(t),re)});out=ad.concat(out).slice(0,8)}catch(e){}return out}}
+  /* 전력 차이 반영: 약체에게 지면 후폭풍 · 강팀에게 지면 졌잘싸 */
+  const oR=WBC_R[o]||55,weakOpp=oR<55.5,strongOpp=oR>=59;let take=4;
+  if(!W&&weakOpp){take=6;const LL=[[`${o}한테 지는 게 말이 되냐 KBO 리그 우물안 개구리 맞네`,['할 말이 없다','국내 리그 수준이 이거다']],['국내에서만 잘하는 우물안 개구리들 ㅋㅋ',['WBC 볼 때마다 혈압 오름']],['이게 국가대표냐 동네 야구냐',['이번 대표팀 전원 반성해라']],['대표팀 선발 기준부터 다시 봐라',['이름값으로 뽑으니까 이렇게 된다']],['야구 인기 이러다 진짜 끝난다',['아이들이 이걸 보고 야구 하겠냐']],[`${o} 상대로 이 경기력이면 8강은 꿈도 꾸지 마라`,[]]];
+    LL.sort(()=>R()-.5).slice(0,3).forEach(([t,re])=>A(t,re));if(G)A(`${gn} 혼자 아니었으면 콜드패였다 나머지는 각성해라`,['이 선수만 국대 자격 있음']);if(B)A(`${gn} 오늘 경기력은 국대 자격 없다`,['국내용이었냐','다음 경기 라인업에서 빼라'])}
+  else if(!W&&strongOpp){if(x.close){A('졌잘싸 진짜 졌지만 잘 싸웠다',['고개 숙이지 마라']);A(`${o} 상대로 이 정도면 졌잘싸 인정`,['한 끗 차이였다'])}else if(x.mercy){A('상대가 너무 강했다 이건 어쩔 수 없다',['그래도 콜드패는 좀 아프다']);}else A(`${o}는 세계 최강급이다 박수 쳐주자`,['투수 몇 명만 더 있었어도…'])}
+  const ad=add.sort(()=>R()-.5).slice(0,take).map(([t,re])=>{seenAdd(t);return mkC(josaFix(t),re)});out=ad.concat(out).slice(0,8)}catch(e){}return out}}
 
 </script>
 
