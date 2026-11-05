@@ -2657,7 +2657,7 @@ function lifeFm(){let v=BUD[S.budget||'norm'].fm*(S.stage==='pro'?1:0);if(S.marr
 const GFN=['지은','서연','하은','민서','수아','지민','예린','채원','유나','다은','소윤','나연'],GFM=['구단 행사에서 만난 아나운서','친구 소개로 만난 대학원생','단골 카페 사장님','동창회에서 다시 만난 첫사랑','재활 센터 물리치료사','팬 사인회에서 눈이 마주친 사람'];
 function lifeEvents(){const out=[];if(S.stage==='ret')return out;S.gfCool=Math.max(0,(S.gfCool||0)-1);
   if(S.gf&&!S.married){const g=S.gf;
-    if(g.aff<20){S.gf=null;S.gfCool=4;ME.form=cl(ME.form-3,-6,6);out.push({title:'💔 이별',text:`"요즘 우리 얼굴 본 지 얼마나 됐는지 알아?"\n${jo(g.n,'과','와')} 헤어졌다. 한동안 마음이 무거울 것 같다.`,ch:[{t:'야구에 더 집중하자',s:'컨디션 일시 하락',act:'lifeok'}]});return out}
+    if(g.aff<20){S.gf=null;S.gfCool=4;ME.form=cl(ME.form-3,-6,6);ME.hid.we=cl(ME.hid.we+2,20,80);out.push({title:'💔 이별',text:`"요즘 우리 얼굴 본 지 얼마나 됐는지 알아?"\n${jo(g.n,'과','와')} 헤어졌다. 한동안 마음이 무거울 것 같다.`,ch:[{t:'야구에 더 집중하자',s:'컨디션 일시 하락 · 워크에식↑',act:'lifeok'}]});return out}
     if(g.aff>=75&&S.y-g.since>=3&&age()>=26&&R()<.5){const cost=Math.min(15000,Math.max(2000,Math.round((S.pro?S.pro.salary:5000)*.05/100)*100));out.push({title:'💍 프러포즈',text:`${jo(g.n,'과','와')} 만난 지 ${S.y-g.since}년. 이제 평생을 함께하고 싶다는 생각이 든다.\n(결혼식·신혼집 비용 약 ${money(cost)})`,ch:[{t:'프러포즈한다',s:`−${money(cost)} · 안정된 가정 (컨디션 상승 확률↑↑, 멘탈↑)`,act:'marry',arg:{cost}},{t:'아직은 이르다',s:'호감 −10 · 반지 비용 아낌 · 야구에 집중',act:'gfaff',arg:{d:-10}}]});return out}
     if(R()<.55){const big=Math.min(1500,Math.max(300,Math.round((S.pro?S.pro.salary:3000)*.006/10)*10)),nm=jo(g.n,'이','가'),kind=pick(S.phase===0?['gift','trip','trip','parents','fight','date']:['gift','away','away','fight','date','park','parents']);
       if(kind==='gift')out.push({title:'🎁 기념일',text:`곧 ${jo(g.n,'과','와')}의 ${pick(['100일','1주년','생일','크리스마스'])}이다.`,ch:[{t:'명품 선물',s:`−${money(big)} · 호감 크게↑`,act:'gift',arg:{c:big,d:20}},{t:'직접 요리한 저녁 + 손편지',s:'돈 거의 안 듦 · 호감↑ · 피로↑',act:'lv',arg:{d:12,f:3,c:10}},{t:'바빠서 그냥 넘어간다',s:'호감 크게↓ · 돈·시간 아낌 (피로↓)',act:'lv',arg:{d:-16,f:-3}}]});
@@ -2980,7 +2980,7 @@ EV.push(
    {t:'둘 다 챙긴다',s:'멘탈↑ · 피로↑↑',fx:{men:2,fat:8},r:'가족들이 무척 기뻐했다. 몸은 천근만근이다.'},
    {t:'영상통화로 인사드린다',s:'피로 변화 없음',fx:{},r:'마음이 조금 무겁다.'}]})},
  {c:()=>S.stage==='pro'&&S.gf,f:()=>({title:'😞 연인과의 냉전',text:'며칠째 연락이 뜸하다. 경기 중에도 휴대폰이 신경 쓰인다.',ch:[
-   {t:'밤늦게라도 찾아가 대화한다',s:'호감↑ · 피로↑',act:'lv',arg:{d:8,f:6}},{t:'시즌 끝나고 얘기하자',s:'호감↓ · 경기에 집중 (컨디션↑)',act:'lv',arg:{d:-8,fm:1}}].concat(R()<.35?[{t:'이쯤에서 헤어지자',s:'이별 · 마음은 아프지만 야구에만 집중 (피로↓)',act:'gfbreak'}]:[])})});
+   {t:'밤늦게라도 찾아가 대화한다',s:'호감↑ · 피로↑',act:'lv',arg:{d:8,f:6}},{t:'시즌 끝나고 얘기하자',s:'호감↓ · 경기에 집중 (컨디션↑)',act:'lv',arg:{d:-8,fm:1}}].concat(R()<.35?[{t:'이쯤에서 헤어지자',s:'이별 · 마음은 아프지만 야구에만 집중 (피로↓ · 워크에식↑)',act:'gfbreak'}]:[])})});
 
 {const _tl=trainLevels;trainLevels=function(rep){_tl(rep);if(S.pendLines&&S.pendLines.length){rep.lines.push(...[...new Set(S.pendLines)]);S.pendLines=[]}}}
 /* 한 턴 팝업 총량 제한: 커리어 결정은 항상, 나머지는 최대 2개 */
@@ -7350,7 +7350,7 @@ function postRender(app){document.body.classList.toggle('fs',ui.screen==='title'
   gameAuto()}
 function stepGame(g){g.idx=Math.min(g.ev.length-1,g.idx+1);const e=g.ev[g.idx];const ml=e.last&&e.last.me?e.last.t:null,hitT=['1B','2B','3B','HR'].includes(ml);AU.sfx(g.idx===g.ev.length-1?(g.win?'win':'lose'):e.c==='meup'?'tap':hitT&&!isP()?'hit':/sc/.test(e.c)?'run':'tap');if(e.c==='meup')haptic(15);else if(ml&&!isP())haptic(hitT?[18,20,30]:ml==='K'?[8,40,8]:10);else if(ml&&isP())haptic(ml==='K'?0:hitT?[30]:6);if(hitT)setTimeout(()=>{const f=document.querySelector('.fieldw');if(f){f.classList.remove('hitfx');void f.offsetWidth;f.classList.add('hitfx')}},60);if(e.last&&e.last.me&&!isP()&&['HR','2B','3B'].includes(e.last.t)){AU.sfx(e.last.t==='HR'?'hr':e.last.t==='K'?'k':'xbh');haptic(e.last.t==='HR'?[40,30,80,30,120]:[25,30,40]);setTimeout(()=>{if(e.last.t!=='K'){const a=document.getElementById('app');if(a){a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake')}}ui.fxShown=g.idx},e.last.t==='K'?1150:2300);if(e.last.t==='HR'){ui.confDone=false;setTimeout(()=>{try{confetti()}catch(_){}},150)}}save()}
 function gameAuto(){clearTimeout(ui.gt);const q=S&&!ui.simming&&nextQ();if(!q||q.type!=='game'||ui.gpause)return;const g=q.g;if(g.idx>=g.ev.length-1)return;const e=g.ev[g.idx];if(e.c==='meup')return;
-  const bigE=e.last&&e.last.me&&!isP()&&['HR','2B','3B'].includes(e.last.t),d=1.25*(bigE?2400:/\bkk\b/.test(e.c)?1300:/\bme\b/.test(e.c)?(isP()?950:1500):/meup/.test(e.c)?1100:/end/.test(e.c)?1500:g.idx===0?1000:380);
+  const bigE=e.last&&e.last.me&&!isP()&&['HR','2B','3B'].includes(e.last.t),d=1.125*(bigE?2400:/\bkk\b/.test(e.c)?1300:/\bme\b/.test(e.c)?(isP()?950:1500):/meup/.test(e.c)?1100:/end/.test(e.c)?1500:g.idx===0?1000:380);
   ui.gt=setTimeout(()=>{if(nextQ()!==q||ui.gpause)return;stepGame(g);render()},d)}
 function doAdvance(){if(!ui.simming)return;ui.simming=false;clearTimeout(ui.st);advance();const f=S.report&&S.report.feats||[];AU.sfx(f.some(x=>x.big)?'feat':'adv');afterQueue();ui.anim=true;render()}
 let tt=null;function toast(m){ui.toast=m;clearTimeout(tt);tt=setTimeout(()=>{ui.toast='';render()},2400);render()}
@@ -7855,7 +7855,7 @@ function vibOn(){try{return localStorage.getItem('bb_vib')!=='0'}catch(e){return
   const key='aria-label="효과음"></button></div>',j=h.indexOf(key);if(j>=0){const k=j+key.length;h=h.slice(0,k)+'\n    '+row+h.slice(k)}}catch(e){}return h}}
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-st="vib"]');if(!b)return;e.stopPropagation();e.preventDefault();try{localStorage.setItem('bb_vib',vibOn()?'0':'1')}catch(er){}if(vibOn())haptic(20);render()},true);
 /* 연애: 직접 이별을 고르는 선택지 */
-ACT.gfbreak=function(){const g=S.gf;if(!g)return'';const n=g.n;S.gf=null;S.gfCool=4;ME.fat=cl(ME.fat-6,0,100);ME.hid.men=cl(ME.hid.men-1,20,80);try{news(`${n} 씨와 결별.`)}catch(e){}return`${jo(n,'과','와')} 헤어졌다. 한동안 허전하겠지만, 당분간은 야구만 생각하기로 했다.`};
+ACT.gfbreak=function(){const g=S.gf;if(!g)return'';const n=g.n;S.gf=null;S.gfCool=4;ME.fat=cl(ME.fat-6,0,100);ME.hid.men=cl(ME.hid.men-1,20,80);ME.hid.we=cl(ME.hid.we+2,20,80);try{news(`${n} 씨와 결별.`)}catch(e){}return`${jo(n,'과','와')} 헤어졌다. 한동안 허전하겠지만, 당분간은 야구만 생각하기로 했다.`};
 /* 결혼: 결과 문구 팝업 없이 바로 '결혼 · 백년가약' 화면 · 멘탈 +5 표시 */
 {const _mr=ACT.marry;ACT.marry=function(a){const n0=S.queue.length,m0=S.married;const r=_mr(a);try{if(S.married&&S.married!==m0){ME.hid.men=cl(ME.hid.men+1,20,80);
   const aw=S.queue.find(q=>q&&q.type==='award'&&q.a&&q.a.title==='결혼');if(aw){aw.a.sub=`${S.married.y} · ${S.married.n} 씨와 백년가약`;aw.a.extra=(aw.a.extra||[]).filter(x=>!/멘탈/.test(x));aw.a.extra.push('멘탈 +5')}return''}}catch(e){}return r}}
@@ -8881,14 +8881,19 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
   if(g.late&&g.aff>=62&&S.y-g.since>=1&&(S.propY||0)<S.y&&R()<.55&&!out.length){S.propY=S.y;const cost=Math.max(2000,Math.round((S.pro?S.pro.salary:5000)*.1/100)*100),p=cl((g.aff-40)/38,.25,.97);
     out.push({title:'💍 프러포즈',text:`${jo(g.n,'과','와')} 만난 지 ${Math.max(1,S.y-g.since)}년. 서로 나이도 있고, 이 사람이다 싶은 확신이 든다.\n(결혼식·신혼집 비용 약 ${money(cost)})`,ch:[{t:'프러포즈한다',s:`−${money(cost)} · 성공하면 결혼 (호감이 높을수록 성공 확률↑)`,act:'prop',arg:{cost,p}},{t:'조금 더 만나보자',s:'변화 없음',act:'lifeok'}]});return out}
   /* 연애 중 이별 가능성 */
-  const p=g.aff<40?.14:g.aff<60?.05:g.aff<80?.015:.004;if(!out.length&&S.y-g.since>=1&&R()<p){const n=g.n;S.gf=null;S.gfCool=3;ME.hid.men=cl(ME.hid.men-2,20,80);ME.fat=cl(ME.fat-6,0,100);try{news(`${n} 씨와 결별.`)}catch(e){}
+  const p=g.aff<40?.14:g.aff<60?.05:g.aff<80?.015:.004;if(!out.length&&S.y-g.since>=1&&R()<p){const n=g.n;S.gf=null;S.gfCool=3;ME.hid.men=cl(ME.hid.men-2,20,80);ME.fat=cl(ME.fat-6,0,100);ME.hid.we=cl(ME.hid.we+2,20,80);try{news(`${n} 씨와 결별.`)}catch(e){}
     const why=pick([`"우리, 서로 너무 다른 곳을 보고 있는 것 같아."`,`"난 늘 기다리기만 하는 것 같아. 이제 좀 지쳤어."`,`"너는 야구가 먼저잖아. 그게 나쁜 건 아닌데… 나는 아니야."`,`긴 대화 끝에 서로를 위해 각자의 길을 가기로 했다.`]);
-    out.push({title:'💔 이별',text:`${why}\n${jo(n,'과','와')} 헤어졌다. 마음은 무겁지만, 혼자 쓰는 시간은 늘었다.`,ch:[{t:'받아들이고 야구에 집중한다',s:'멘탈↓ · 피로↓',act:'lifeok'}]})}}catch(e){}return out}}
+    out.push({title:'💔 이별',text:`${why}\n${jo(n,'과','와')} 헤어졌다. 마음은 무겁지만, 남는 시간은 전부 훈련장에서 보내기로 했다.`,ch:[{t:'받아들이고 야구에 집중한다',s:'멘탈↓ · 피로↓ · 워크에식↑',act:'lifeok'}]})}}catch(e){}return out}}
 {const _pt=phaseTopHtml;phaseTopHtml=function(){const r=S.report,_mg=mlbGames;try{if(r&&(r.ph===1||r.ph===2))mlbGames=()=>r.ph===1?105:162;return _pt()}finally{mlbGames=_mg}}}
 /* 고교→MLB 직행: KBO 팀 인덱스가 없어 일부 댓글 생성이 멈추던 문제 방지 (연고 팀 하나 지정, 표시에는 안 쓰임) */
 {const _md=ACT.mlbDirect;if(_md)ACT.mlbDirect=function(a){const r=_md.apply(this,arguments);try{if(S.pro&&S.pro.team==null)S.pro.team=S.school!=null?(S.school%10):ri(0,9)}catch(e){}return r}}
 {const _ld=load;load=function(){const s=_ld.apply(this,arguments);try{if(s&&s.pro&&s.pro.team==null)s.pro.team=0}catch(e){}return s}}
 {const _ms=monthStep;monthStep=function(rep){try{if(S.pro&&S.pro.team==null)S.pro.team=0}catch(e){}return _ms(rep)}}
+/* 진동 손맛: 투수 삼진·병살 길게 / 타자 장타·홈런은 안타보다 길게 */
+{const _sg=stepGame;stepGame=function(g){const r=_sg(g);try{const e=g&&g.ev&&g.ev[g.idx];if(!e)return r;let pat=null;const c=e.c||'',t=e.t||'';
+  if(isP()&&/\bme\b/.test(c)){if(/\bkk\b/.test(c)||/삼진/.test(t))pat=[70,40,110];else if(/\(병살!?\)/.test(t))pat=[50,35,50,35,110]}
+  else if(!isP()&&e.last&&e.last.me){const k=e.last.t;pat=k==='HR'?[90,40,130,40,220]:k==='2B'||k==='3B'?[60,30,100]:k==='1B'?[30,20,40]:null}
+  if(pat)setTimeout(()=>haptic(pat),5)}catch(er){}return r}}
 
 </script>
 
