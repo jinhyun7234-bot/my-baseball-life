@@ -8910,7 +8910,7 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
 {const _ms=monthStep;monthStep=function(rep){try{if(S.pro&&S.pro.team==null)S.pro.team=0}catch(e){}return _ms(rep)}}
 /* 진동 손맛: 투수 삼진·병살 길게 / 타자 장타·홈런은 안타보다 길게 */
 {const _sg=stepGame;stepGame=function(g){const r=_sg(g);try{const e=g&&g.ev&&g.ev[g.idx];if(!e)return r;let pat=null;const c=e.c||'',t=e.t||'';
-  if(!isP()&&/\bdef\b/.test(c)&&/\bme\b/.test(c))pat=[90,40,130,40,180];
+  if(!isP()&&/\bdef\b/.test(c)&&/\bme\b/.test(c))pat=[55];
   else if(isP()&&/\bme\b/.test(c)){if(/\bkk\b/.test(c)||/삼진/.test(t))pat=[70,40,110];else if(/\(병살!?\)/.test(t))pat=[50,35,50,35,110]}
   else if(!isP()&&e.last&&e.last.me){const k=e.last.t;pat=k==='HR'?[90,40,130,40,220]:k==='2B'||k==='3B'?[60,30,100]:k==='1B'?[30,20,40]:null}
   if(pat)setTimeout(()=>haptic(pat),5)}catch(er){}return r}}
@@ -9048,6 +9048,25 @@ function csRate(){return cl(.13+(DV(E('arm'))-50)*.0065,.08,.5)}
   /* 시즌 도루 저지율 */
   if(S.stage==='pro'&&S.pro&&R()<.25){const {b}=yearTot(S.y,[S.pro.league]),a=(b.CSO||0)+(b.SBA||0);if(a>=20){const p=(b.CSO||0)/a;if(p>=.35)A(`도루 저지율 ${Math.round(p*100)}%… 상대 팀들 ${gn} 나오면 아예 안 뜀`,['리그 최고 강견 포수']);else if(p<=.15)A(`도루 저지율 ${Math.round(p*100)}%면 주자들한테 프리패스임`,['어깨 훈련 좀 하자'])}}
   if(add.length)add.sort(()=>R()-.5).slice(0,3).forEach(([t,re],i)=>{seenAdd(t);out.splice(Math.min(i,out.length),0,mkC(t,re))})}catch(e){}return out}}
+/* ===== 육아·가정 이벤트: 가끔 성장 포인트 (선택형, 모든 선택에 장단점) ===== */
+ACT.famXp=function(a){try{const f=a||{};if(f.xp)ME.xp+=f.xp;if(f.fat)ME.fat=cl(ME.fat+f.fat,0,100);if(f.men)ME.hid.men=cl(ME.hid.men+f.men,20,80);if(f.fame)S.rel.fame=cl(S.rel.fame+f.fame,0,100);if(f.form)ME.form=cl(ME.form+f.form,-6,6);
+  if(f.bond){const k=(S.children||[])[f.ki|0];if(k)k.bond=cl((k.bond||50)+f.bond,0,100)}if(f.sp&&S.married)S.married.aff=cl((S.married.aff??70)+f.sp,0,100);if(f.money)S.money=Math.max(0,S.money-f.money);return f.r||''}catch(e){return''}};
+if(typeof CRIT!=='undefined')CRIT.add('famXp');
+{const _le=lifeEvents;lifeEvents=function(){let out=_le();try{if(out.length||S.stage!=='pro'||!S.married||(S.famXpY||0)>=S.y&&R()<.6)return out;const ks=(S.children||[]).filter(k=>kidAge(k)>=3);
+  const sn=S.married.n,s=x=>Object.assign({},x);let ev=null;
+  if(ks.length&&R()<.22){const ki=(S.children||[]).indexOf(pick(ks)),k=S.children[ki],kn=k.n||'아이',ka=kidAge(k),kj=jo(kn,'이','가');
+    const L=[
+     {title:'⚾ 아이와 캐치볼',text:`쉬는 날 아침, ${kj} 글러브를 들고 왔다. "아빠, 캐치볼 하자!"`,ch:[{t:'제대로 폼 잡아주며 같이 던진다',s:'성장 포인트 +2 · 유대↑ · 피로 조금↑',act:'famXp',arg:{xp:2,bond:6,fat:3,ki,r:`아이한테 기본기를 설명하다 보니 내 폼도 다시 보였다.`}},{t:'오늘은 푹 쉬고 다음에 하자',s:'피로↓ · 유대 조금↓',act:'famXp',arg:{fat:-4,bond:-3,ki,r:'아이가 시무룩하게 글러브를 내려놨다.'}}]},
+     {title:'🎨 "우리 아빠 홈런왕"',text:`${kn}${ka<8?'의 어린이집':'의 학교'} 숙제 그림을 봤다. 큼지막하게 '우리 아빠 ${isP()?'삼진왕':'홈런왕'}'이라고 적혀 있다.`,ch:[{t:'그림을 사물함에 붙이고 각오를 다진다',s:'성장 포인트 +2 · 멘탈↑ · 부담 (컨디션 조금↓)',act:'famXp',arg:{xp:2,men:2,form:-1,ki,r:'라커 문을 열 때마다 그 그림이 보인다. 이 악물고 훈련했다.'}},{t:'웃으며 아이를 꼭 안아준다',s:'유대↑↑ · 컨디션↑',act:'famXp',arg:{bond:10,form:1,ki,r:'"아빠 진짜 홈런왕 될게." 아이가 까르르 웃었다.'}}]},
+     {title:'📺 아이와 경기 영상 보기',text:`${kj} 내 경기 하이라이트를 보다가 묻는다. "아빠, 여기서 왜 ${isP()?'이 공 던졌어?':'이 공 쳤어?'}"`,ch:[{t:'같이 영상 돌려보며 하나하나 설명해준다',s:'성장 포인트 +2 · 유대↑ · 피로 조금↑',act:'famXp',arg:{xp:2,bond:5,fat:2,ki,r:'아이에게 설명하다가 내가 놓친 습관 하나를 찾아냈다.'}},{t:'"그건 아빠도 몰라 ㅋㅋ" 하고 넘어간다',s:'멘탈 조금↑',act:'famXp',arg:{men:1,ki,r:'둘이 한참 웃었다.'}}]},
+     {title:'🏃 아이 운동회',text:`${kn} 운동회 날. 아빠 달리기 대회에 나가 달라고 한다.`,ch:[{t:'전력으로 달린다 (프로는 다르다)',s:'성장 포인트 +1 · 인기↑ · 피로↑ · 부상 걱정',act:'famXp',arg:{xp:1,fame:3,fat:5,bond:6,ki,r:'1등. 다른 아빠들의 원성이 자자했다. 다음 날 허벅지가 땅긴다.'}},{t:'적당히 뛰고 아이 응원에 집중한다',s:'유대↑ · 피로 조금↑',act:'famXp',arg:{bond:7,fat:2,ki,r:'아이가 목이 쉬도록 응원했다.'}}]},
+     {title:'🧒 리틀야구 체험',text:`${kj} 리틀야구 체험 교실에 가고 싶다고 한다. 주말 훈련 시간과 겹친다.`,ch:[{t:'같이 가서 일일 코치를 해준다',s:'성장 포인트 +2 · 유대↑ · 인기↑ · 피로↑',act:'famXp',arg:{xp:2,bond:6,fame:2,fat:4,ki,r:'아이들 가르치다가 기본기의 중요성을 다시 느꼈다.'}},{t:'훈련 끝나고 데리러만 간다',s:'유대 조금↑',act:'famXp',arg:{bond:3,ki,r:'아이가 신나서 오늘 배운 걸 쉬지 않고 얘기했다.'}}]}];
+    ev=pick(L)}
+  else if(R()<.12){const L=[
+     {title:'🍱 배우자의 식단 관리',text:`${sn} 씨가 시즌 식단표를 짜왔다. 기름진 건 전부 빠져 있다.`,ch:[{t:'군말 없이 따른다',s:'성장 포인트 +1 · 피로↓ · 먹는 낙이 사라짐 (멘탈 조금↓)',act:'famXp',arg:{xp:1,fat:-4,men:-1,sp:4,r:'몸이 가벼워졌다. 치킨이 그립다.'}},{t:'"주말엔 치킨 먹자" 협상한다',s:'멘탈↑ · 배우자 호감 조금↓',act:'famXp',arg:{men:2,sp:-2,r:'타협안: 주 1회 치킨.'}}]},
+     {title:'🌙 늦은 밤 스윙 연습',text:`밤늦게 거실에서 ${isP()?'섀도 피칭':'빈 스윙'}을 하는데 ${sn} 씨가 물을 떠다 준다. "오늘 경기 생각나서 그래?"`,ch:[{t:'고민을 털어놓고 같이 이야기한다',s:'성장 포인트 +1 · 멘탈↑ · 피로 조금↑',act:'famXp',arg:{xp:1,men:2,fat:2,sp:3,r:'말로 꺼내니 머릿속이 정리됐다.'}},{t:'"괜찮아, 먼저 자" 하고 혼자 연습한다',s:'피로↑ · 배우자 호감 조금↓',act:'famXp',arg:{fat:4,sp:-2,r:'새벽까지 혼자 연습했다.'}}]}];
+    ev=pick(L)}
+  if(ev){S.famXpY=S.y;out.push(ev)}}catch(e){}return out}}
 
 </script>
 
