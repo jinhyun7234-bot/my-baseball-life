@@ -2194,7 +2194,7 @@ function phaseArticle(g,ps){const m=g.m,t=shortTeam(),pn=PHASE[S.phase],nm=ME.na
   if(g.kind==='B'){
     if(ps>=1.2)article(pick([`${nm}, ${pn} ${m.HR}홈런 ${m.RBI}타점 폭발… ${t} 상승세 이끈다`,`'타율 ${avg(m)}' ${nm}, 물오른 타격감`,`${nm} ${pn} OPS ${ops(m)}… "지금이 최고의 컨디션"`]),`${jo(nm,'은','는')} ${pn} ${lineTxt(g)}를 기록했다.`,'hype',{avg:avg(m),hr:m.HR,ops:ops(m)});
     else if(ps<=-1.2)article(pick([`${nm}, 깊어지는 부진… 반등 카드는?`,`'타율 ${avg(m)}' ${nm}, ${t}의 고민`,`침묵하는 ${nm}의 방망이`]),`${jo(nm,'은','는')} ${pn} ${lineTxt(g)}에 그쳤다.`,'bad',{avg:avg(m),hr:m.HR,ops:ops(m)});
-    else article(`${nm}, ${pn} 결산: 타율 ${avg(m)} ${m.HR}홈런`,`무난한 ${pn}을 보냈다. ${lineTxt(g)}.`,'mix',{avg:avg(m),hr:m.HR,ops:ops(m)})}
+    else article(`${nm}, ${pn} 결산: 타율 ${avg(m)} ${m.HR}홈런`,`무난한 ${jo(pn,"을","를")} 보냈다. ${lineTxt(g)}.`,'mix',{avg:avg(m),hr:m.HR,ops:ops(m)})}
   else{const x={era:era(m),k:m.K,w:m.W};
     if(ps>=1.2)article(pick([`${nm}, ${pn} 평균자책점 ${era(m)}… 마운드의 지배자`,`'${m.K}탈삼진' ${nm}, ${t} 마운드의 핵`,`${nm} ${m.W}승 ${m.SV?m.SV+'세이브 ':''}— 믿고 보는 투수`]),`${jo(nm,'은','는')} ${pn} ${lineTxt(g)}를 기록했다.`,'hype',x);
     else if(ps<=-1.2)article(pick([`${nm}, 흔들리는 마운드… ERA ${era(m)}`,`${nm}의 부진, ${t} 마운드에 먹구름`]),`${jo(nm,'은','는')} ${pn} ${lineTxt(g)}로 고전했다.`,'bad',x);
@@ -8704,7 +8704,9 @@ function phaseTopHtml(){try{const r=S.report;if(!r||!(r.ph===1||r.ph===2))return
   add('W',sr(rel*P.w*cl(1.2-era/12,.5,1.2))-m.W);add('L',sr(rel*P.l*bad)-m.L)}catch(e){}return r}}
 /* 2군·마이너에서 뛰는 동안의 내 경기·활약 기사엔 머리말: [퓨처스] / [마이너] (리그 용어 그대로) */
 {const LIFE=/wedding|love|baby|famDay|gfbreak|marry|scandal|salary|move|franMove|homeBack|trade|injury|draft|retire|legend|hof|award/;
- const _ar=article;article=function(head,body,tone,x){const prev=S&&S._cmMinor;try{S._cmMinor=null;const mi=artMinor();if(mi&&!LIFE.test(String(tone||''))&&!(x&&(x.ps||x.intl))){S._cmMinor=mi;if(mi.mlb&&typeof head==='string')head=head.replace(/ ?\(MLB\)/g,'');if(typeof head==='string'&&head.indexOf(ME.name)>=0&&!/\[(마이너|퓨처스)/.test(head)&&!/^\[(?!\d{4} )/.test(head)){const m=head.match(/^\[(\d{4} [^\]]*)\] /);if(m)head=`[${m[1]} · ${mi.mlb?mi.ln:'퓨처스'}] `+head.slice(m[0].length);else head=`[${mi.lab}] `+head.replace(/^\[(퓨처스|마이너)\] /,'')}if(mi.mlb&&typeof body==='string')body=body.replace(/ ?\(MLB\)/g,` 산하 ${mi.ln}`)}}catch(e){}try{return _ar(head,body,tone,x)}finally{S._cmMinor=prev||null}}}
+ const _ar=article;article=function(head,body,tone,x){const prev=S&&S._cmMinor;try{S._cmMinor=null;const mi=artMinor();if(mi&&!LIFE.test(String(tone||''))&&!(x&&(x.ps||x.intl))){S._cmMinor=mi;if(mi.mlb&&typeof head==='string')head=head.replace(/ ?\(MLB\)/g,'');if(typeof head==='string'&&head.indexOf(ME.name)>=0&&!/\[(마이너|퓨처스)/.test(head)&&!/^\[(?!\d{4} )/.test(head)){const m=head.match(/^\[(\d{4} [^\]]*)\] /);if(m)head=`[${m[1]} · ${mi.mlb?mi.ln:'퓨처스'}] `+head.slice(m[0].length);else head=`[${mi.lab}] `+head.replace(/^\[(퓨처스|마이너)\] /,'')}if(mi.mlb&&typeof body==='string')body=body.replace(/ ?\(MLB\)/g,` 산하 ${mi.ln}`)}
+  else if(!mi&&S.stage==='pro'&&S.pro&&!S.pro.dev&&typeof head==='string'&&head.indexOf(ME.name)>=0&&!LIFE.test(String(tone||''))&&!/award|contract|trade|retire|ring|ws|intl/.test(String(tone||''))&&!(x&&(x.ps||x.intl))&&!/^\[(?!\d{4} )/.test(head)&&!/\[(메이저|KBO 1군|1군)/.test(head)&&!/대한민국|국가대표|아시안게임|WBC|올림픽|프리미어|대표팀|전역|입대|은퇴/.test(head)){
+    const lv=S._artLv||S.pro.league;const lab=lv==='MLB'?'메이저리그':lv==='KBO'?'KBO 1군':null;if(lab){const m=head.match(/^\[(\d{4} [^\]]*)\] /);head=m?`[${m[1]} · ${lab}] `+head.slice(m[0].length):`[${lab}] `+head}}}catch(e){}try{return _ar(head,body,tone,x)}finally{S._cmMinor=prev||null}}}
 /* 지금 기사가 2군/마이너 경기 내용인지: 결산 기사는 그 기간 실제 뛴 레벨 기준 */
 const MLV={AAA:'트리플A',AA:'더블A',A:'싱글A'};
 function artMinor(){try{if(!S||S.stage!=='pro'||!S.pro)return null;let lv=S._artLv;
