@@ -8951,6 +8951,17 @@ const phF=()=>{try{return S&&S.stage==='pro'?(S.phF||0):0}catch(e){return 0}};
 {const _hp=hofProle;hofProle=function(p){try{const L=typeof PRO!=='undefined'?PRO:['KBO','MLB'];const by={};(S.rows||[]).forEach(r=>{if(!L.includes(r.lv)||!r.p)return;const k=r.y;by[k]=by[k]||blankP();addTo(by[k],r.p)});
   let tot=0,sp=0,sv=0,hld=0;Object.values(by).forEach(q=>{tot+=q.outs;if(q.G&&(q.GS||0)>=q.G/2)sp+=q.outs;sv+=q.SV||0;hld+=q.HLD||0});if(!tot)return _hp(p);
   if(sp>=tot*.6)return'SP';return sv>=hld*1.5&&sv>0?'CL':'RP'}catch(e){return _hp(p)}}}
+/* ===== 20대 스토브리그 보너스: 훈련 안 한 능력치도 아주 살짝씩 오름 (오른 만큼 상대 수준도 같이 올려 성적 인플레 방지) ===== */
+function stoveOn(){try{const a=age();return S&&S.stage==='pro'&&S.phase===0&&a>=20&&a<=29&&!ME.inj&&S.stage!=='mil'}catch(e){return false}}
+{const _tm=trainMonth;trainMonth=function(rep){const r=_tm(rep);try{if(stoveOn()){const ks=isP()?[...PIT,...PITCHES.filter(k=>ME.pt[k]>0)]:[...BAT];const a=age(),amt=a<=25?.08:.065;let sum=0,n=0;
+  ks.forEach(k=>{const b=raw(k);grow(k,amt);const d=raw(k)-b;if(d>0){sum+=d;n++}});const avg=ks.length?sum/ks.length:0;S.stoveAdj=(S.stoveAdj||0)+avg*.85;if(rep){rep.stoveG=(rep.stoveG||0)+avg}}}catch(e){}return r}}
+const stA=()=>{try{return S&&S.stage==='pro'?(S.stoveAdj||0):0}catch(e){return 0}};
+{const _b=batPA;batPA=function(L,m,gl){return _b(isP()?L:L+stA(),m,gl)}}
+{const _p=pitchGame;pitchGame=function(L,type){return _p(isP()?L+stA():L,type)}}
+{const _mb=meBatPA;meBatPA=function(pR,risp){return _mb(isP()?pR:pR+stA(),risp)}}
+{const _mp=mePitPA;mePitPA=function(bR,risp,tired){return _mp(isP()?bR+stA():bR,risp,tired)}}
+{const _vt=vTrainPlan;vTrainPlan=function(){let h=_vt();try{if(stoveOn()){const tag=`<span class="chip up">🔥 스토브리그 보너스 · 훈련 안 한 능력치도 전부 소폭↑</span>`;h=h.replace('이번 기간 예상 성장</div><div class="row wrap">','이번 기간 예상 성장</div><div class="row wrap">'+tag)}}catch(e){}return h}}
+{const _vs=vStats;vStats=function(){let h=_vs();try{h=h.replace(/(최대치(?:<span class="qi">\?<\/span>)?<\/button>) 100/,'$1 100 (장비 효과로 최대 103)');if(!/장비 효과로 최대 103/.test(h)){const i=h.indexOf('<div class="card xpc">');if(i>=0){const j=h.indexOf('</div></div>',i);if(j>0)h=h.slice(0,j)+' · 능력치 최대 100 (장비 효과로 최대 103)'+h.slice(j)}}}catch(e){}return h}}
 
 </script>
 
