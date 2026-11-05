@@ -9501,6 +9501,12 @@ function sbAnimate(){try{if(typeof document==='undefined'||!S||ui.simming)return
 {const _tm=trainMonth;trainMonth=function(rep){const inj=ME&&ME.inj;const p0=ME&&ME.pt?{...ME.pt}:null;const out=_tm(rep);
   try{if(!isP()||inj||!p0)return out;const a=age(),am=a<=23?1.1:a<=27?.9:a<=30?.55:a<=33?.35:.2,int=[.7,1,1.25][S.plan.int]||1,brk=(S.plan.alloc||{}).brk||0;
     PITCHES.forEach(k=>{if(!(p0[k]>0)||!(ME.pt[k]>0))return;const g=ME.pt[k]-p0[k];if(g>0&&brk)ME.pt[k]=cl(ME.pt[k]+g*.15,20,capOf(k));grow(k,.05*am*int)})}catch(e){}return out}}
+/* ===== 타자 의외의 천재성: 19~25세, 스프링캠프에 송구(어깨) 훈련 중이면 매년 30% 파워 소폭 상승 (중복 가능) ===== */
+{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(isP()||!S||!ME||S.m!==2||S.bGenY===S.y||ME.inj)return;const a=age();if(a<19||a>25)return;if(!(S.stage==='pro'||S.stage==='univ'||S.stage==='hs'))return;
+  const pl=S.plan||{};if(!(pl.main==='arm'||pl.sub==='arm'))return;S.bGenY=S.y;if(R()>=.3)return;
+  const d0=DV(ME.r.pow),add=ri(2,3)*.75;ME.r.pow=cl(ME.r.pow+add,20,capOf('pow'));const d1=DV(ME.r.pow);
+  const how=pick([`송구 훈련으로 어깨를 쓰는 법을 몸에 익히다 보니, 타석에서도 어깨가 먼저 열리지 않고 끝까지 버텨준다. 배팅 케이지에서 타구 소리가 달라졌다.`,`멀리 던지기를 반복하던 어느 날, 스윙할 때도 어깨 회전이 훨씬 부드러워진 걸 느꼈다. 타격코치가 "요즘 공이 왜 이렇게 멀리 나가냐"며 고개를 갸웃했다.`,`어깨 보강 운동을 꾸준히 했더니 스윙 끝에서 힘이 한 번 더 실린다. 펜스 앞에서 잡히던 타구가 담장을 넘어가기 시작했다.`]);
+  feat('의외의 천재성 — 어깨를 쓰는 스윙',false);S.queue.push({title:'✨ 의외의 천재성',text:`${how}\n\n파워 ${Math.round(d0)} → ${Math.round(d1)}`})}catch(e){}}}
 
 </script>
 
