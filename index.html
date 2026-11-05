@@ -1445,7 +1445,7 @@ function batPA(L,m,gl){const dv=x=>x>L?(x-L)*BATC:(x-L),dvp=x=>x>L?(x-L)*.85:(x-
   const bb=cl(.082+dv(eff('eye'))*.0018+(sk('eyem')?.015:0),.02,.2);
   const r=R(),sp=eff('spd');m.PA++;if(risp&&S.rsp)S.rsp.pa++;
   const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<(E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)*(sk('thief')?1.4:1)){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.06:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
-    if(R()<cl([0,.3,.48,.7][b]+dv(sp)*.006,.1,.9))m.R++};
+    if(R()<cl([0,.22,.37,.56][b]+dv(sp)*.005,.07,.82))m.R++};
   if(r<k){m.AB++;m.K++;return}
   if(r<k+bb+.01){m.BB++;gl.ob++;reach(1);if(on[0]&&on[1]&&on[2])m.RBI++;return}
   m.AB++;
@@ -3761,8 +3761,8 @@ const nmL=()=>{const n=ME.name,z=n.slice(1);return{pos:[`${n} 진짜 미쳤다`,
 /* 조용히 시뮬하는 포스트시즌 경기의 내 역할 */
 function psQuietRole(r,gn){if(!r||r==='none')return'none';if(r==='SP'||r==='ace')return gn%4===1?r:'none';if(['CL','SU','MR','RP'].includes(r))return R()<.5?r:'none';return r}
 /* 시리즈 MVP: 기본 30%, 시리즈 성적에 따라 5~50% */
-function serMVPProb(sB,sP){if(isP()){if(sP.outs<4)return .05;const e=sP.R*27/sP.outs,ip=sP.outs/3;let sc=(3-e)/2.4+Math.min(ip,20)/20*.35+(sP.SV||0)*.12+(sP.K/Math.max(1,ip))*.08-.15;if(sP.R>=6)sc-=.4;return cl(.30+cl(sc,-1,1)*.20,.05,.50)}
-  if(sB.PA<4)return .05;const o=opsN(sB);let sc=(o-.85)/.45+sB.HR*.15+sB.RBI/Math.max(1,sB.G)*.15;return cl(.30+cl(sc,-1,1)*.20,.05,.50)}
+function serMVPProb(sB,sP){if(isP()){if(sP.outs<4)return .05;const e=sP.R*27/sP.outs,ip=sP.outs/3;let sc=(3-e)/2.4+Math.min(ip,20)/20*.35+(sP.SV||0)*.12+(sP.K/Math.max(1,ip))*.08-.15;if(sP.R>=6)sc-=.4;return cl(.14+cl(sc,-1,1.5)*.2,.02,.45)}
+  if(sB.PA<4)return .05;const o=opsN(sB);let sc=(o-.85)/.45+sB.HR*.15+sB.RBI/Math.max(1,sB.G)*.15;return cl(.14+cl(sc,-1,1.5)*.2,.02,.45)}
 const SERMVP={준플레이오프:'준플레이오프 MVP',플레이오프:'플레이오프 MVP','챔피언십 시리즈':'챔피언십 시리즈 MVP'};
 function serEnd(rep,name,won,sB,sP){if(!won)return;const p=serMVPProb(sB,sP),hit=R()<p;
   if(name==='한국시리즈'){S._ksOK=hit;return}if(name==='월드시리즈'){S._wsOK=hit;return}
@@ -5447,7 +5447,7 @@ const fieldPos=()=>!isP()&&ME.pos!=='DH';
   else if(tone==='bad'&&!G&&age()<=26&&cmX('believeY'))add.push(mkC(pick([`그래도 난 ${gn} 믿는다 포텐 보면 알잖아`,`지금 못해도 ${gn}는 터진다 나는 믿을거야`]),[pick(['스윙 궤적 보면 언젠간 터짐','유망주는 기다려 주는 거임'])],{up:ri(200,900)}));
 
   /* 7.7) 고산병: 시즌 중반 리그 1위 */
-  if(!G&&S.m>=5&&S.m<=8&&myTeamRank()===1&&R()<.6&&cmX('gosan'))add.push(mkC(pick(['1위라니 고산병 걸리겠네 숨이 안 쉬어짐','너무 높이 올라와서 머리 아프다 고산병 옴 ㅠ','산소통 챙겨라 우리 팀 너무 높이 있음 ㅋㅋ',`${nick} 팬들 단체로 고산병 걸림`]),[pick(['설레발 노노 아직 시즌 반 남았다','곧 DTD 하는데 지금 즐기셈 ㅋㅋ','작년에도 이맘때 이 소리 했던 거 기억함','설레발은 과학이다 조용히 해']),pick(['내려갈 팀은 내려간다 ㅋㅋ','그래도 올해는 다르다 (매년 하는 말)','1위 사진 캡처해둠 나중에 보려고'])],{up:ri(400,1800)}));
+  if(!G&&S.m>=5&&S.m<=8&&myTeamRank()===1&&R()<.6&&!(S.pro&&S.pro.league==='KBO'&&(((S.champs||{})[S.pro.team]??-99)>=S.y-3||S.awards.filter(a=>a.n==='한국시리즈 우승'&&a.y>=S.y-5).length>=2))&&cmX('gosan'))add.push(mkC(pick(['1위라니 고산병 걸리겠네 숨이 안 쉬어짐','너무 높이 올라와서 머리 아프다 고산병 옴 ㅠ','산소통 챙겨라 우리 팀 너무 높이 있음 ㅋㅋ',`${nick} 팬들 단체로 고산병 걸림`]),[pick(['설레발 노노 아직 시즌 반 남았다','곧 DTD 하는데 지금 즐기셈 ㅋㅋ','작년에도 이맘때 이 소리 했던 거 기억함','설레발은 과학이다 조용히 해']),pick(['내려갈 팀은 내려간다 ㅋㅋ','그래도 올해는 다르다 (매년 하는 말)','1위 사진 캡처해둠 나중에 보려고'])],{up:ri(400,1800)}));
 
   /* 8) 포스트시즌 2차전 뜬금 댓글 */
   if(G&&x.ps&&/2차전/.test(x.title||'')&&R()<.35&&cmX('offtopic'))add.push(mkC(pick(['아 여친 사귀고 싶다','치어리더 이쁘네','오늘 야식 뭐 먹지','내일 출근하기 싫다','중계 카메라 앞 커플 부럽다']),['마 갱기에 집중 안하나'],{up:ri(80,500),dn:ri(5,40),troll:1}));
@@ -6221,7 +6221,7 @@ function interp(T,x){if(x<=T[0][0])return T[0][1];for(let i=1;i<T.length;i++)if(
   const C=L.filter(t=>!seenHas(t)&&!(S.cmY&&S.cmY['ph:'+t]===S.y));const n=Math.min(C.length,R()<.5?2:3);
   for(let i=0;i<n;i++){const t=C.splice(ri(0,C.length-1),1)[0];seenAdd(t);S.cmY=S.cmY||{};S.cmY['ph:'+t]=S.y;add.push(mkC(t,[],{up:ri(150,1500),nk:pick(['삼갤러','ㅇㅇ','갤러','야갤러'])+(R()<.6?ri(1,30):'')}))}
   /* 대·이·름 한 글자씩 릴레이 (1년에 한 번) */
-  if(gn.length>=2&&gn.length<=3&&cmX('relay'+S.y)&&R()<.6){const nk=pick(['데카유방','야구도사','직관러','가을전사']);[`대`,...gn.split('')].forEach((ch,i)=>add.push(mkC(ch,[],{nk,up:ri(30,300),ago:'방금'})))}
+  if(gn.length>=2&&gn.length<=3&&cmX('relay'+S.y)&&R()<.6){const nk=pick(['데카유방','야구도사','직관러','가을전사']);const base=ri(400,1200);[`대`,...gn.split('')].forEach((ch,i)=>add.push(mkC(ch,[],{nk,up:base-i,ago:'방금'})))}
   const pos=Math.min(out.length,1);out.splice(pos,0,...add);let seenPk=0;out=out.filter(c=>{if(pk&&c.t.includes(pk)){seenPk++;return seenPk<=1}return true})}catch(e){}return out}}
 /* 센 욕·팀 비하 걸러내기 (ㅅも 수준은 허용) */
 const HARSH=/씨발|시발|씨바|좆|병신|ㅄ|개새끼|느금|니애미|애미|애비|꼴데|꼴쥐|칰|기레기|쓰레기 ?(팀|구단)|(팀|구단|팬) ?쓰레기|망해라|뒤져라|뒤지십시오|나가 뒤|팬들 ?(수준|병)/;
@@ -6806,6 +6806,7 @@ const TM={
  comeback2:[["끌려가던 시리즈를 결국 뒤집었다 ㄷㄷ",["이건 진짜 명승부였다"]],["벼랑 끝에서 다 이겨버렸네 ㄷㄷ",[]]],
  elim:[["올해 야구도 여기까지구나",["내년에 보자"]],["이제 야구 대신 스토브리그가 메인 이벤트다",[]],["내년에는 제발 봄부터 잘하자",[]],["오늘 잘한 선수들은 욕먹지 않았으면 좋겠다",[]],["중요한 순간 선수 기용이 아쉽다",["결과론이지 뭐"]]],
  half1:[["전반기 상위권 마무리 후반기도 이대로만 가자",["아직 설레발 금지"]],["이 페이스면 올해 진짜 해볼 만하다",[]]],
+ half1C:[["역시 우승 DNA는 어디 안 간다 전반기부터 상위권",["가을에 올라가기만 하면 우리 거"]],["디펜딩 챔피언답게 순위표 꼭대기가 익숙하네",[]],["이 팀은 이제 상위권이 기본값임 ㅋㅋ",["목표는 무조건 우승"]],["전반기 상위권? 우리한텐 당연한 거고 목표는 반지다",[]]],
  halfMid:[["전반기 중위권… 후반기에 치고 올라가야 한다",[]],["가을야구 커트라인 싸움 빡세겠다",[]]],
  halfLow:[["전반기 하위권은 좀 심했다 후반기엔 달라져야지",["올해도 가을은 쉬나…"]]],
  regTop:[["오늘 승리로 1위 경쟁 다시 불붙었다",["아직 설레발 금지"]],["1위 자리 비워놔라 ㅋㅋ",[]],["올해는 진짜 우승이다",["벌써 행복회로 돌리네"]]],
@@ -6832,7 +6833,7 @@ const TM={
       if(!win&&l===need&&!/결승/.test(t))put('elim')}
     if(P){const ipO=x.ipO||0,ra=x.ra||0;if(ipO>=27&&!ra)put('pCG');else if((x.gK||0)>=10)put('pK10');else if(ipO>=18&&ra<=3)put('pQS')}}
   else if(S.pro&&S.pro.league==='KBO'&&S.m>=6&&S.m<=8&&cmX('tmHalf'+S.y)){/* 전반기 결산 즈음 팀 순위 한 줄만 */
-    try{const st=standings(),i=st.findIndex(z=>z.i===S.pro.team);if(i<=1)put('half1');else if(i<=4)put('halfMid');else put('halfLow')}catch(e){}}
+    try{const st=standings(),i=st.findIndex(z=>z.i===S.pro.team);if(i<=1){const my=S.pro.team,ch=(S.champs||{})[my],recent=(ch!=null&&S.y-ch<=3)||S.awards.filter(a=>a.n==='한국시리즈 우승'&&a.y>=S.y-5).length>=2;put(recent?'half1C':'half1')}else if(i<=4)put('halfMid');else put('halfLow')}catch(e){}}
   if(add.length)out.splice(Math.min(out.length,2),0,...add.slice(0,2))}catch(e){}return out}}
 
 /* ===================== 내 기록을 짚는 댓글: 이번 가을 누적·시리즈 누적·가을 통산 / 정규시즌 페이스 ===================== */
@@ -6897,7 +6898,7 @@ function f3m(v){return v.toFixed(3).replace(/^0/,"")}
   /* 가을 최고 시즌 */
   const py=Object.entries(S.postY||{}).map(([y,v])=>({y:+y,b:v.b||{},p:v.p||{}})).filter(v=>P?v.p.outs>=15:v.b.AB>=8);
   if(py.length){const bp=P?py.sort((a,b)=>(a.p.R*27/a.p.outs)-(b.p.R*27/b.p.outs))[0]:py.sort((a,b)=>((b.b.HR||0)*3+(b.b.H||0)/Math.max(1,b.b.AB)*20)-((a.b.HR||0)*3+(a.b.H||0)/Math.max(1,a.b.AB)*20))[0];
-    if(P)A(`${bp.y}년 가을 ERA ${(bp.p.R*27/bp.p.outs).toFixed(2)} 그 가을의 ${gn}는 진짜 무적이었다`,[]);else A(`${bp.y}년 가을 ${bp.b.HR}홈런 타율 ${(bp.b.H/Math.max(1,bp.b.AB)).toFixed(3).replace(/^0/,'')} 그 가을 잊을 수가 없다`,['가을의 남자였다'])}
+    if(P)A(`${bp.y}년 가을 ERA ${(bp.p.R*27/bp.p.outs).toFixed(2)} 그 가을의 ${gn}는 진짜 무적이었다`,[]);else A(`${bp.y}년 가을 ${bp.b.HR?bp.b.HR+'홈런 ':''}타율 ${(bp.b.H/Math.max(1,bp.b.AB)).toFixed(3).replace(/^0/,'')} 그 가을 잊을 수가 없다`,['가을의 남자였다'])}
   /* 대기록 */
   const fts=featsClean(S.feats||[]).filter(f=>/사이클링|노히트|퍼펙트|트리플 크라운|40-40|30-30|50홈런|신기록|1점대|20승/.test(f.t));
   fts.slice(0,2).forEach(f=>A(`${f.y}년 ${f.t.replace(/^\d{4} /,'')} 그 경기 직관 갔었다 평생 자랑거리`,['나도 중계로 봤는데 소름이었다']));
@@ -8334,7 +8335,7 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
   out=out.filter(c=>!(c&&NEG.test(c.t)&&!(poor&&/버스/.test(c.t))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!NEG.test(typeof r==='string'?r:r&&r.t))});
   if(!poor)out=out.filter(c=>!(c&&/버스|조용했지만|못 쳐도|감사해라|업혀|묻어|무임승차/.test(c.t)));
   const gn=giv(ME.name),mlb=S.pro&&S.pro.league==='MLB',ser=t.replace(/\s*\d+차전.*$/,''),add=[];const put=(tt,re,up)=>{tt=josaFix(tt);if(seenHas(tt))return;seenAdd(tt);add.push(mkC(tt,re.map(r=>({nk:pick(NICKS),t:r,up:ri(100,1500)})),{up:up||ri(6000,16000),must:1}))};
-  if(strong){const line=P?`가을 평균자책 ${era.toFixed(2)}`:`가을 타율 ${avg.toFixed(3).replace(/^0/,'')} ${b.HR||0}홈런 ${b.RBI||0}타점`;
+  if(strong){const line=P?`가을 평균자책 ${era.toFixed(2)}`:`가을 타율 ${avg.toFixed(3).replace(/^0/,'')}${b.HR?` ${b.HR}홈런`:''}${b.RBI?` ${b.RBI}타점`:''}`;
     const L=[`이번 가을 MVP는 무조건 ${gn}`,`${line}… 이 우승은 ${gn}가 하드캐리했다`,`${gn} 없었으면 이 반지 없다`,`${ser} 우승의 주인공은 ${gn}`];
     if(mlb)L.push(`한국인 선수가 월드시리즈에서 이 정도로 하드캐리하다니`,`월드시리즈 우승 반지 낀 한국인 ${P?'투수':'타자'} ${gn} 국뽕 MAX`,`메이저 우승팀 핵심이 한국인이라니 꿈인가 싶다`);
     L.sort(()=>R()-.5).slice(0,3).forEach(tt=>put(tt,[pick(['반박 불가','ㄹㅇ 우승 청부사','이건 역사다','개추 박고 간다','눈물 난다 진짜'])]))}
@@ -8813,7 +8814,7 @@ function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${
   const bd=Math.round(DV(best))-ri(10,15),v=cl(20+(bd-20)*.75,20,capOf(k));ME.pt[k]=v;const nm=LBL[k];
   const how=pick([`불펜 캐치볼 중에 장난삼아 던져본 ${nm}. 포수가 미트를 내려놓고 물었다. "방금 뭐야? 다시 던져봐."`,`스프링캠프 숙소에서 영상을 돌려보다 그립을 살짝 바꿔봤다. 다음 날 불펜에서 던진 ${nm}이 말도 안 되게 꺾였다.`,`손가락 물집 때문에 그립을 바꿔 잡았는데, 그게 오히려 ${nm}의 각을 만들어냈다. 투수코치가 한참 웃었다.`]);
   feat(`의외의 천재성 — 새 구종 ${nm} 장착`,true);S.queue.push({title:'✨ 의외의 천재성',text:`${josaFix(how)}\n\n몇 년을 붙잡고 있어도 안 되던 게, 어느 날 갑자기 손에 붙는다.\n새 구종 ${jo(nm,'이','가')} 레퍼토리에 추가됐다. (${nm} ${Math.round(DV(v))})`});
-  news(`${nmFull()} 캠프에서 새 구종 ${nm} 장착…"갑자기 됐다"`)}catch(e){}}}
+  news(`${ME.name}, 캠프에서 새 구종 ${nm} 장착…"갑자기 됐다"`)}catch(e){}}}
 /* ===== 불펜 보직: 시즌 ERA 기준 (2.5↓ 특급 / ~3.8 필승·추격 혼용 / ~4.9 추격조 / 그 이상 패전처리) ===== */
 function relEra(){const sum=y=>{let o=0,r=0;S.rows.forEach(w=>{if(w.y===y&&PRO.includes(w.lv)&&w.lv!=='fut'){o+=w.p.outs;r+=w.p.R}});return{o,r}};let c=sum(S.y);if(c.o<30){const p=sum(S.y-1);if(p.o>=30)c={o:p.o+c.o,r:p.r+c.r}}return c.o>=30?c.r*27/c.o:null}
 {const _dr=decideRole;decideRole=function(){let r=_dr();S.mopNow=0;try{if(!isP()||S.stage!=='pro'||!S.pro||S.pro.dev||!['CL','SU','MR'].includes(r))return r;const pf=S.rolePref;if(pf&&pf.force&&pf.y===S.y)return r;
@@ -9208,7 +9209,7 @@ function wbcRun(){const y=S.y,n=wbcName(y),nf=natForm(),bn=nf?nf.bonus:0,o=ovrE(
     if(i<pool.length-1){const tb=table();S.queue.push({type:'wbcmid',y,n,st:tb,rk:tb.findIndex(x=>x.t==='한국')+1,res:`대한민국 ${kr}:${op} ${t} ${g.win?'승':'패'}`,others:done.map(x=>x.replace(/(\S+) 승 (\S+)/,'$1 승 vs $2').replace(/(\S+) 패 (\S+)/,'$2 승 vs $1')),next:pool[i+1],gi:i+1})}});
   others.splice(0).forEach(simO);
   const st=table();
-  const rk=st.findIndex(x=>x.t==='한국')+1,adv=rk<=2;S.queue.push({type:'wbcpool',y,n,st,rk,adv});try{if(!adv)wbcPostCm(games[games.length-1],st,pool.length-1,pool.length,true)}catch(e){}
+  const rk=st.findIndex(x=>x.t==='한국')+1,adv=rk<=2;S._wbcPL=(st.find(x=>x.t==='한국')||{}).l||0;S.queue.push({type:'wbcpool',y,n,st,rk,adv});try{if(!adv)wbcPostCm(games[games.length-1],st,pool.length-1,pool.length,true)}catch(e){}
   let res=adv?'8강':'1라운드 탈락',last=games[games.length-1];
   if(adv){const qo=rk===1?pick(['베네수엘라','푸에르토리코']):pick(['도미니카','베네수엘라']);const g=play(qo,`${n} 8강`,`대한민국 vs ${qo} · 마이애미`,'qf',80,true,sp?(spGame===0?'SP':'none'):null);last=g;
     if(g.win){res='4강';const so=pick(['미국','일본','도미니카'].filter(x=>x!==qo));const g2=play(so,`${n} 준결승`,`대한민국 vs ${so} · 마이애미`,'sf',95,false,sp?'none':null);last=g2;
@@ -9314,6 +9315,20 @@ function wbcPostCm(g,tb,gi,np,fin){const a=(S.arts||[]).find(x=>x.id===g.aid);if
   const add=pk.map(([t,re])=>{seenAdd('wpc:'+t);return mkC(josaFix(t),re.length&&R()<.6?[{nk:pick(NICKS),t:pick(re),up:ri(60,900)}]:[],{up:ri(800,5000)})});
   if(elim){a.cm=(a.cm||[]).filter(c=>!/진출|8강|조 1위|이 기세|다음 경기도|국뽕|이 맛에|우승 가자|우승까지|마이애미|희망/.test(String(c&&c.t||'')))}
   a.cm=add.concat(a.cm||[])}
+
+/* WBC 토너먼트(8강·4강·결승) 승리 / 조 막판 통과: 밋밋한 댓글 대신 '역대급 경기' 반응 */
+{const BLAND=/평타|무난|그럭저럭|밥값|나쁘지 않|딱 평균|이 정도면 됐|할 만큼/;
+ const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.wbc||!x.win||!Array.isArray(out))return out;const st=x.st,ko=st==='qf'||st==='sf'||st==='final';if(!ko&&!(x.strong&&x.close))return out;
+  const gn=giv(ME.name),P=isP(),opp=x.opp||'상대',pl=S._wbcPL||0,L=[];
+  L.push(`진짜 역대급 경기였다 ㅋㅋㅋㅋ 1회부터 9회까지 매 이닝 집중해서 본 경기는 처음이다`,`도파민 때문에 머리 터질 것 같은 10개 구단 팬들 다 개추 ㅋㅋㅋ`,`많은 선수들이 골고루 칭찬받는 거 보면 이건 레전드 경기 맞다`,`국대 선수들이 이렇게 간절하게 플레이하는 거 진짜 오랜만에 본다… 간절함이 느껴져서 더 감동`,`하 이게 스포츠지… 끝까지 몸 던지는 투지 보고 울컥했다`,`왜 마지막에 막아준 불펜 칭찬은 없냐 8~9회 지킨 게 진짜 제일 컸다`,`마무리 투수 마운드에서 정말 외로웠을 텐데 그 압박감 이겨낸 게 대단하다`,`축구에 당한 상처 야구로 치유받으러 온 사람들 개추`,`${opp} 상대로 이걸 해내네 ㄷㄷ 오늘 밤 잠 다 잤다`);
+  if(pl>=1)L.push(`기적 같은 경우의 수를 뚫고 올라온 모든 선수들에게 박수를`,`경우의 수 계산하던 게 엊그제 같은데 여기까지 왔다 ㅋㅋㅋ`);
+  if(x.good)L.push(P?`${gn} 오늘 마운드에서 진짜 이 악물고 던지더라`:`${gn} 오늘 타석마다 집중력이 달랐다 국대 클래스`,`${gn} 이런 큰 경기에서 해주는 게 진짜 스타다`);
+  if(st==='final')L.push(`세계 정상이다!!!! 이 순간을 살아서 보네`,`결승전을 이렇게 이기다니 평생 돌려볼 경기`);
+  else if(st==='sf')L.push(`결승 간다!!! 이 멤버로 여기까지 온 거 실화냐`);
+  else if(st==='qf')L.push(`마이애미에서 4강이라니 ㅋㅋㅋ 이게 되네`);
+  out=out.filter(c=>!BLAND.test(String(c&&c.t||'')));
+  const add=L.filter(t=>!seenHas('wko:'+t)).sort(()=>R()-.5).slice(0,ko?5:3).map((t,i)=>{seenAdd('wko:'+t);return mkC(josaFix(t),R()<.5?[{nk:pick(NICKS),t:pick(['ㄹㅇ 인정','이건 박제','눈물 난다 진짜','개추 박고 감']),up:ri(100,1500)}]:[],{up:ri(3000,9600)})});
+  out=add.concat(out)}catch(e){}return out}}
 
 /* ===================== 은퇴 카드 멘트: 그 선수의 가장 특출난 3~5가지를 엮기 (합니다체 · 비유) ===================== */
 function retStory(){try{
@@ -9548,6 +9563,61 @@ const isOF=()=>['LF','CF','RF'].includes(ME&&ME.pos);
   const panel=document.querySelector('.vscut')?'vs':document.querySelector('.fieldw')?'field':'';
   if(inGame&&ui._fdG===gk){if(ui._fdP===panel)document.querySelectorAll('.fieldw,.vscut').forEach(el=>{if(!el.classList.contains('hitfx'))el.classList.add('nofade')});document.querySelectorAll('.gnow,.board').forEach(el=>el.classList.add('nofade'))}
   ui._fdG=gk;ui._fdP=panel}catch(e){}}}
+/* ===== 같은 기사 안 중복 댓글 제거 (최종) ===== */
+{const _ar=article;article=function(){const r=_ar.apply(this,arguments);try{const a=S.arts&&S.arts[0];if(a&&Array.isArray(a.cm)){const seen=new Set();a.cm=a.cm.filter(c=>{const k=String(c&&c.t||'');if(k.length>=2&&seen.has(k))return false;seen.add(k);return true})}}catch(e){}return r}}
+/* ===== 이벤트 선택 결과가 다음 화면(성적표·결산·경기 등) 위에 겹쳐 뜨던 문제: 결과 확인 전까지는 다음 화면을 그리지 않음 ===== */
+{const _rd=_render;_render=function(app,nav,bar,ov){if(S&&ui.res!=null&&Array.isArray(S.queue)&&S.queue.length){const Q=S.queue;S.queue=[];try{return _rd(app,nav,bar,ov)}finally{S.queue=Q}}return _rd(app,nav,bar,ov)}}
+/* ===== 한국시리즈 우승: 3연속 이상이면 왕조 멘트 · 오랜만의 우승이면 구단 역사 담은 캐스터 멘트/댓글 · 캐스터 멘트 반응 변주 ===== */
+const KS_CITY={트윈스:['잠실','서울'],베어스:['잠실','서울'],히어로즈:['고척','서울'],랜더스:['문학','인천'],위즈:['수원','수원'],이글스:['대전','대전'],라이온스:['라팍','대구'],타이거스:['광주','광주'],자이언츠:['사직','부산'],다이노스:['창원','창원']};
+const KS_HIST={
+ 자이언츠:d=>[`부산 시민들이 그토록 바라왔던 한국시리즈 챔피언!!!`,`사직이 울립니다! 부산이 울립니다!`,`${d}년의 기다림, 부산갈매기가 다시 날아오릅니다!`,`부산 앞바다가 오늘 밤 눈물로 넘실댑니다!`],
+ 이글스:d=>[`대전이 울립니다! ${d}년을 기다린 이글스 팬들의 함성!`,`보살 팬들의 그 긴 기다림이 마침내 끝났습니다!`,`독수리가 다시 날아올랐습니다! 대전 하늘이 열립니다!`],
+ 히어로즈:d=>[`창단 첫 우승! 고척 하늘이 열립니다!`,`영웅들이 마침내 정상에 섰습니다! 히어로즈 역사상 첫 번째 우승!`],
+ 트윈스:d=>[`잠실의 주인이 돌아왔습니다! ${d}년 만의 정상!`,`무적 트윈스! 줄무늬 유니폼이 다시 정상에 섰습니다!`],
+ 베어스:d=>[`잠실 곰들의 포효! ${d}년 만에 다시 정상입니다!`,`허슬 베어스, 그 뜨거운 야구가 다시 우승을 만들어냈습니다!`],
+ 라이온스:d=>[`라팍이 푸른 물결로 뒤덮입니다! ${d}년 만의 우승!`,`사자 군단이 돌아왔습니다! 대구가 다시 야구의 도시가 됩니다!`],
+ 타이거스:d=>[`광주가 붉게 물듭니다! 호랑이가 다시 포효합니다!`,`${d}년 만의 우승, 타이거즈의 V가 다시 새겨집니다!`],
+ 랜더스:d=>[`인천 문학이 축제입니다! ${d}년 만의 정상!`,`인천 야구의 자존심이 다시 우승기를 들어 올립니다!`],
+ 위즈:d=>[`수원이 마법에 걸렸습니다! ${d}년 만의 우승!`,`마법사 군단이 다시 한 번 기적을 만들어냅니다!`],
+ 다이노스:d=>[`창원 공룡들이 다시 포효합니다! ${d}년 만의 정상!`,`창원NC파크가 오늘 밤 거대한 함성으로 흔들립니다!`]};
+const CASTER_RE=['이거 듣고 뭉클했다','이 멘트 소름','캐스터 멘트 뽕차네','멘트 기깔나네 ㅋㅋ','괜히 탑티어 캐스터가 아님','이 멘트 하나로 소주 한 병 깐다','캐스터 목소리 떨리는 거 들림 ㅠ','이건 레전드 멘트로 남는다','중계진 오늘 멘트 준비 제대로 해왔네','이 멘트 듣고 소리 질렀다 ㅋㅋ','이거 듣고 울컥함','멘트 맛깔나네 진짜','캐스터도 팬이었네 ㅋㅋ 진심이 느껴짐'];
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!Array.isArray(out)||!S||S.stage!=='pro')return out;
+  if(x&&x.ps&&x.win&&x.clinch&&/한국시리즈/.test(String(x.title||''))&&S.pro&&S.pro.league==='KBO'){const nick=TEAMS[S.pro.team].nick,[park,city]=KS_CITY[nick]||['홈구장',''],d=S.drought;
+    let st=1;for(let y=S.y-1;S.awards.some(a=>a.y===y&&a.n==='한국시리즈 우승');y--)st++;
+    const add=[],caster=s=>add.push(mkC(`캐스터 "${s}" ${pick(CASTER_RE)}`,R()<.6?[pick(['ㄹㅇ 소름','중계 다시 돌려봄','이건 박제각'])]:[],{up:ri(4000,12000),must:1}));
+    if(st>=3){caster(pick([`${st}년 연속 한국시리즈 제패! 이제 누구도 부정할 수 없습니다, ${nick} 왕조의 시대입니다!`,`${city} 하늘 아래 또 한 번 우승기가 펄럭입니다. ${nick} 왕조는 계속됩니다!`,`${st}연패! 한국 프로야구 역사에 ${nick}이라는 이름이 또렷하게 새겨집니다!`]));
+      [`${nick} 왕조 세우자 아니 이미 세웠다`,`${st}연패면 왕조 맞지 ㅋㅋ 반박 불가`,`다른 팀 팬들 이제 지겹다고 하겠다 ㅋㅋㅋ`,`우승 반지 낄 손가락이 모자람`,`${park} 우승 퍼레이드도 이제 연례행사네`,`왕조의 중심에 ${giv(ME.name)}가 있다`].sort(()=>R()-.5).slice(0,3).forEach(t=>add.push(mkC(josaFix(t),[],{up:ri(1500,6000)})))}
+    else if(d==='never'||d>=15){const H=(KS_HIST[nick]||(()=>[`${d==='never'?'창단 첫':d+'년 만의'} 우승! ${city}가 울립니다!`]))(d==='never'?'창단 이후':d);
+      caster(pick(H));if(R()<.6){const H2=H.filter(h=>!add.some(a=>a.t.includes(h)));if(H2.length)caster(pick(H2))}
+      [d==='never'?'창단 첫 우승을 내 눈으로 보다니':`${d}년 기다린 보람이 있다`,`${park}에서 이 장면 보려고 ${d==='never'?'창단 때부터':d+'년'} 버텼다`,`우리 아버지가 제일 좋아하시겠다 ㅠㅠ`,`${city} 오늘 밤 아무도 안 잔다`,`이 우승은 ${city} 사람들 전부의 우승이다`].sort(()=>R()-.5).slice(0,2).forEach(t=>add.push(mkC(t,[],{up:ri(2000,7000)})))}
+    if(add.length)out=add.concat(out)}
+  /* 캐스터 멘트 인용 댓글 반응 변주 */
+  const used=new Set();out.forEach(c=>{if(!c||typeof c.t!=='string')return;const m=c.t.match(/^(캐스터 "[^"]+")\s*(.*)$/);if(!m)return;let tail;let g=0;do{tail=pick(CASTER_RE)}while(used.has(tail)&&g++<8);used.add(tail);c.t=`${m[1]} ${tail}`})}catch(e){}return out}}
+/* ===== 특성 밸런스 조정 (가성비 너무 낮던 특성 상향) ===== */
+try{const T=(id,o)=>{const t=TR.find(x=>x.id===id);if(t)Object.assign(t,o)};
+ T('b_pow',{c:45,a:{hr:1.22},d:'장타가 홈런으로 이어질 확률 +22%'});
+ T('b_load',{c:10,a:{hit:.10},d:'만루에서 안타 확률 +10%'});
+ T('b_gap',{a:{gap:.14},d:'단타가 2루타로 바뀔 확률 +14%'});
+ T('b_con',{a:{k:-.04},d:'삼진 확률 −4%'});
+ T('b_brk',{c:22});
+ T('p_k',{a:{k:.04},d:'삼진 확률 +4%'});
+ T('p_whiff',{c:18});
+ T('p_late',{a:{hit:-.04,k:.015},d:'6회 이후 피안타 −4% · 삼진 +1.5%'});
+ T('p_load',{c:10,a:{hit:-.10},d:'만루 피안타 확률 −10%'});
+ T('p_hr',{c:15});}catch(e){}
+/* ===== 고교·대학·군 복무 중엔 프로 구단 전용 피로 이벤트(구단 행사·스폰서·원정 숙소 등) 제외 ===== */
+{const PROEV=/구단|홍보팀|스폰서|원정|1군|연봉|FA|트레이드|용병|외국인 선수|팬 사인회|등장곡/;
+ const _pf=pickFev;pickFev=function(){if(!S||S.stage==='pro')return _pf();const keep=FEV.slice();try{const L=FEV.filter(e=>!PROEV.test((e.t||'')+' '+(e.x||'')+' '+JSON.stringify(e.ok||'')+JSON.stringify(e.no||'')));FEV.length=0;L.forEach(e=>FEV.push(e));return L.length?_pf():null}finally{FEV.length=0;keep.forEach(e=>FEV.push(e))}}}
+/* ===== 오랜만에 1위 달리는 팀: '그거' 가능하냐 + 설레발 금지 답글 ===== */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!S.pro||S.pro.league!=='KBO'||(x&&(x.ps||x.intl))||S.m<5||S.m>9)return out;
+  if(typeof myTeamRank!=='function'||myTeamRank()!==1)return out;const my=S.pro.team,ch=(S.champs||{})[my];if((ch!=null&&S.y-ch<=3)||S.awards.filter(a=>a.n==='한국시리즈 우승'&&a.y>=S.y-5).length>=2)return out;
+  if(R()>.35||(S._geuY===S.y&&R()<.7))return out;S._geuY=S.y;
+  const t=pick([`올해 아직까지 리그 1등.... 올해 "그거" 가능하냐?`,`${S.m}월인데 아직 1위다… 올해는 진짜 "그거" 하는 거 아니냐`,`1위 팀 팬 된 기분 처음이라 어색함 ㅋㅋ 올해 "그거" 되나?`]);
+  const RE=['설레발 금지','쉿 그 단어 꺼내지 마라 부정 탄다','입 다물어 시즌 아직 반이나 남았다','설레발은 과학이다… 조용히 응원만 하자','작년에도 이맘때 이 소리 했던 거 기억함 ㅋㅋ','"그거" 소리 나올 때마다 연패 하던데 ㅋㅋ'];
+  out.splice(Math.min(1,out.length),0,mkC(t,RE.sort(()=>R()-.5).slice(0,ri(2,3)),{up:ri(1500,5000)}))}catch(e){}return out}}
+/* ===== 시즌 중 기록 축하(트리플 크라운 등)가 오프시즌 선택 이벤트·계약 뒤로 밀리던 문제: 진행 직후 생긴 축하 화면은 첫 선택 이벤트보다 앞으로 ===== */
+{const _adv=advance;advance=function(){const r=_adv.apply(this,arguments);try{const Q=S.queue;let la=-1;Q.forEach((q,i)=>{if(q&&['game','srecap','regend','psflow','phstat','intlback','wbcend'].includes(q.type))la=i});let fi=-1;for(let i=la+1;i<Q.length;i++){const q=Q[i];if(q&&((!q.type&&q.ch)||q.type==='contract')){fi=i;break}}if(fi<0)return r;
+  const mv=[];for(let i=Q.length-1;i>fi;i--){const q=Q[i];if(q&&q.type==='award'&&q.a&&!/결혼|입단|계약|프러포즈/.test(String(q.a.title||'')))mv.unshift(Q.splice(i,1)[0])}if(mv.length)Q.splice(fi,0,...mv)}catch(e){}return r}}
 
 </script>
 
