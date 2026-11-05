@@ -1219,6 +1219,7 @@ html[data-gt="light"]{--good:#08875a;--g6:#08875a}
 <nav class="nav" id="nav" hidden><div class="nav-in" id="navin"></div></nav>
 <div id="abar" class="abar"></div>
 <div id="ov"></div>
+<style>.lp-note p.lp-note-sign{text-align:right;font-size:.78rem;color:var(--ink3,var(--ink2));opacity:.8;font-style:italic;margin-top:2px;letter-spacing:.02em}</style>
 <script>
 /* ===================== CORE ===================== */
 const SK='bb_career_v2';
@@ -7523,7 +7524,7 @@ vTitle=(function(_v){return function(){const keep=S;S=null;let slots='';try{slot
   <section class="lp-card lp-hero"><h1>나의 야구 인생</h1><p>고교 야구부에서 드래프트, KBO, 메이저리그까지.<br>매 시즌의 선택이 내 기록과 팬들의 반응을 바꿔요.</p></section>
   <section class="lp-card lp-ill">${lpBench()}</section>
   <section class="lp-card lp-slots">${slots}</section>
-  <section class="lp-card lp-note"><div class="lp-note-h">💌 개발자의 한마디</div><p>안녕하세요! 16년차 롯데 팬입니다.<br>취미로 시작한 야구 게임인데, 만들수록 너무 재밌어서 틈틈이 계속 다듬고 있어요.</p><p>아직 부족한 점이 많지만 너그럽게 봐주시면 감사하겠습니다. 버그나 아이디어는 언제든 편하게 알려주세요.</p><p class="lp-note-end">나의 야구 인생을 즐겨주셔서 진심으로 고맙습니다! ⚾</p></section>
+  <section class="lp-card lp-note"><div class="lp-note-h">💌 개발자의 한마디</div><p>안녕하세요!<br>취미로 시작한 야구 게임인데, 만들수록 너무 재밌어서 틈틈이 계속 다듬고 있어요.</p><p>아직 부족한 점이 많지만 너그럽게 봐주시면 감사하겠습니다. 버그나 아이디어는 언제든 편하게 알려주세요.</p><p class="lp-note-end">나의 야구 인생을 즐겨주셔서 진심으로 고맙습니다! ⚾</p><p class="lp-note-sign">made by 16년차 롯데팬</p></section>
   <footer class="lp-ft"><b>나의 야구 인생</b><span>드래프트부터 가을야구, 은퇴식까지 — 한 선수의 야구 일대기.</span><div class="lp-links"><button data-act="guide">게임 가이드</button><button data-fb="open">건의하기</button></div><span>건의·버그 제보: jinhyun7234@naver.com (스크린샷 첨부 환영)</span><small>© 2026 나의 야구 인생. 등장하는 팀·리그 명칭의 권리는 각 권리자에게 있습니다.</small></footer></div>`}})(vTitle);
 {const _vb3=vBar;vBar=function(){if(ui.screen==='title'){const n=slotsGet().list.length;return`<button class="btn lp-start" data-sl="new">새 커리어 시작 ▶</button>${n>=SLOT_MAX?'<div class="lp-warn">슬롯이 가득 차면 가장 오래된 커리어를 덮어써요</div>':''}`}return _vb3()}}
 {const _pr5=postRender;postRender=function(app){const r=_pr5(app);try{document.body.classList.toggle('lp-on',!!document.querySelector('.lp'))}catch(e){}return r}}
