@@ -9457,6 +9457,16 @@ function srecFut(y){const mlb=S.pro&&S.pro.league==='MLB',lvs=mlb?['AAA','AA','A
   h=h.replace('<div class="srec-k">나의 시즌</div>',`<div class="srec-k">나의 시즌 · ${q.upLab}</div>`);const i=h.indexOf('srec-tiles');if(i<0)return h;const j=h.indexOf('</div></div>',i)+12;return h.slice(0,j)+fb+h.slice(j)}catch(e){return h}}}
 {const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(S.m===10&&S.stage==='pro'&&S.pro&&S.pro.debut<=S.y&&(S.pro.league==='KBO'||S.pro.league==='MLB')&&S.srecapY!==S.y&&srecFut(S.y)){
   S.srecapY=S.y;const R0=buildSeasonRecap();let idx=0;S.queue.forEach((q,i)=>{if(q&&(q.type==='game'||q.type==='award'))idx=i+1});S.queue.splice(idx,0,R0)}}catch(e){}}}
+/* ===== 국제대회(아시안게임·올림픽, 8~9월)는 정규시즌 종료·가을야구·시상·시즌 결산보다 먼저 ===== */
+{const PSRE=/와일드카드|준플레이오프|플레이오프|한국시리즈|시리즈|포스트시즌|가을야구/;
+ const _ms=monthStep;monthStep=function(rep){_ms(rep);try{const Q=S.queue,is=Q.findIndex(q=>q&&q.type==='intlshow');if(is<0)return;let ib=-1;for(let i=is;i<Q.length;i++)if(Q[i]&&Q[i].type==='intlback'){ib=i;break}if(ib<0)return;
+  const late=q=>q&&(q.type==='regend'||q.type==='psflow'||q.type==='srecap'||(q.type==='game'&&q.g&&PSRE.test(q.g.title||''))||(q.type==='award'&&q.a&&!/아시안게임|올림픽|메달/.test(String(q.a.title||''))&&/MVP|신인왕|골든글러브|골드글러브|실버슬러거|사이영|왕|타이틀|시리즈|우승/.test(String(q.a.title||''))));
+  const fl=Q.findIndex(late);if(fl>=0&&fl<is){const blk=Q.splice(is,ib-is+1);Q.splice(fl,0,...blk)}
+}catch(e){}}}
+/* 후반기 성적표는 국제대회 다음에 · 시즌 중 기록 축하(award)는 시즌 결산보다 먼저 */
+{const _adv=advance;advance=function(){const r=_adv.apply(this,arguments);try{const Q=S.queue;
+  const pi=Q.findIndex(q=>q&&q.type==='phstat'),is2=Q.findIndex(q=>q&&q.type==='intlshow'),ib2=Q.findIndex(q=>q&&q.type==='intlback');if(pi>=0&&is2>pi&&ib2>is2){const ph=Q.splice(pi,1)[0];Q.splice(ib2,0,ph)}
+  const si=Q.findIndex(q=>q&&q.type==='srecap');if(si>=0){const mv=[];for(let i=Q.length-1;i>si;i--)if(Q[i]&&Q[i].type==='award')mv.unshift(Q.splice(i,1)[0]);if(mv.length)Q.splice(si,0,...mv)}}catch(e){}return r}}
 
 </script>
 
