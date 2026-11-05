@@ -8944,6 +8944,10 @@ const phF=()=>{try{return S&&S.stage==='pro'?(S.phF||0):0}catch(e){return 0}};
     else if(r.dp)A('대타 병살… 최악의 시나리오',['오늘은 운이 없었다']);
     else A(close?`${sit} 대타 카드 꺼냈는데 결과가 아쉽네`:'대타 범타 아쉽다',['다음엔 해줄 거다'])}
   if(add.length){const pick3=add.sort(()=>R()-.5).slice(0,3);pick3.forEach(([t,re],i)=>{seenAdd(t);out.splice(Math.min(i,out.length),0,mkC(t,re))})}}catch(er){}return out}}
+/* 명예의 전당 투수 부문: ① 선발 시즌(선발 등판이 절반 이상) 이닝이 커리어 이닝의 60% 이상이면 선발 ② 아니면 세이브 ≥ 홀드×1.5 → 마무리, 그 외 불펜 */
+{const _hp=hofProle;hofProle=function(p){try{const L=typeof PRO!=='undefined'?PRO:['KBO','MLB'];const by={};(S.rows||[]).forEach(r=>{if(!L.includes(r.lv)||!r.p)return;const k=r.y;by[k]=by[k]||blankP();addTo(by[k],r.p)});
+  let tot=0,sp=0,sv=0,hld=0;Object.values(by).forEach(q=>{tot+=q.outs;if(q.G&&(q.GS||0)>=q.G/2)sp+=q.outs;sv+=q.SV||0;hld+=q.HLD||0});if(!tot)return _hp(p);
+  if(sp>=tot*.6)return'SP';return sv>=hld*1.5&&sv>0?'CL':'RP'}catch(e){return _hp(p)}}}
 
 </script>
 
