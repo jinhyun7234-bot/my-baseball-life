@@ -9076,6 +9076,34 @@ if(typeof CRIT!=='undefined')CRIT.add('famXp');
 {const _cd=contractDec;contractDec=function(rep){const p=S.pro;let o=null;try{if(p&&S.milBackY===S.y&&p.opt){o=p.opt;p.opt=0;if(rep)rep.lines.push('복귀 시즌이라 계약 옵션 평가는 건너뛴다.')}}catch(e){}try{return _cd(rep)}finally{if(o!=null)p.opt=o}}}
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(tone!=='milback'||!Array.isArray(out))return out;const gn=giv(ME.name),L=[['군대 다녀와도 계약은 그대로 ㅋㅋ 구단 입장에선 1년 반 쉰 셈',['계약 기간 연장 조항 있어서 다행이다']],[`전역하자마자 남은 계약 소화 시작이네 ${gn} 몸값 해라`,['복귀 시즌 적응만 잘하면 된다']],[`${gn} 군대에서 몸 더 커져서 온 듯`,['상무 밥이 그렇게 좋다던데 ㅋㅋ']],['연봉 안 받고 1년 반 버틴 것도 대단하다',['군 급여로 어떻게 살았냐 ㅋㅋ']]];
   out=L.sort(()=>R()-.5).slice(0,3).map(([t,re])=>mkC(t,re)).concat(out.slice(0,4))}catch(e){}return out}}
+/* ===================== MLB 소속 병역 처리 · 경찰 야구단(해체) 삭제 ===================== */
+{const _md=militaryDec;militaryDec=function(){const n0=S.queue.length;const r=_md.apply(this,arguments);try{const q=S.queue.slice(n0).find(x=>x&&/병역/.test(x.title||'')&&Array.isArray(x.ch));if(!q)return r;
+  q.ch=q.ch.filter(c=>!(c.arg&&c.arg.type==='경찰청'));
+  if(S.pro&&S.pro.league==='MLB'){const forced=age()>=28;q.text=(forced?'만 28세. 이번 겨울 입대해야 한다.':`만 ${age()}세. 언제 군 복무를 할지 정해야 한다.`)+'\nMLB 구단 소속이라 상무에는 지원할 수 없다. 입대하면 1년 반 동안 야구를 거의 못 하고, 연봉과 서비스 타임도 멈춘다. 전역 후 구단이 계약 유지 여부를 결정한다.\n아시안게임 금메달이나 올림픽 메달을 따면 병역 특례를 받는다.';
+    q.ch=[{t:'현역(사회복무) 입대',s:'1년 반 야구 공백 · 연봉·서비스 타임 정지 · 전역 후 구단이 계약 유지/방출 결정',act:'mil',arg:{type:'현역'}}].concat(forced?[]:[{t:'입대를 미룬다',s:'국제대회 특례를 노린다 (만 28세까지)',fx:{},r:'아직은 미국 무대에 남기로 했다. 태극마크가 절실해졌다.'}])}}catch(e){}return r}}
+{const _ml=ACT.mil;ACT.mil=function(a){try{if(S.pro&&S.pro.league==='MLB'){a=Object.assign({},a,{type:'현역'});const p=S.pro;const hold={tname:p.tname,dev:!!p.dev,years:p.years||0};const r=_ml.call(this,a);if(S.stage==='mil'){S.mil.mlb=hold;return`${p.tname} 구단에 입대 사실을 알리고 제한 선수 명단에 올랐다. 1년 반 뒤 돌아온다.\n📄 복무 중엔 MLB 연봉과 서비스 타임이 멈춘다.`}return r}}catch(e){}return _ml.apply(this,arguments)}}
+{const _dc=discharge;discharge=function(){try{const m=S.mil||{};
+  if(m.indy){S.mil={status:'done'};S.stage='pro';const o=ovrE(),t=ri(0,9),sal=Math.round(Math.max(3000,Math.min(30000,3000+(o-55)*900))/100)*100;
+    if(o>=LV.KBO-10||R()<.5){S.pro={league:'KBO',team:t,salary:sal,years:1,service:S.pro&&S.pro.service||0,faReq:8,dev:false,debut:S.y,m1y:0};S.rel.coach=45;S.rel.chem=45;S.coach=mkName()+' 감독';news(`해외파 유예 기간을 마치고 ${TEAMS[t].city} ${TEAMS[t].nick} 입단.`);
+      article(`[오피셜] '해외파 유턴' ${ME.name}, ${TEAMS[t].nick} 입단`,`독립리그에서 2년을 버틴 ${jo(ME.name,'이','가')} 마침내 KBO 유니폼을 입는다. 연봉 ${money(sal)}.`,'contract');contractQ({kind:'basic',title:'선수 계약서',team:t,years:1,salary:sal,bonus:0,note:'해외파 2년 유예 후 입단'})}
+    else{retire('KBO 입단 실패 후 은퇴')}return}
+  if(m.mlb&&S.pro&&S.pro.league==='MLB'){const was=m.type;S.mil={status:'done'};S.stage='pro';news(`${was} 복무를 마치고 전역했다.`);
+    const recent=S.rows.filter(r=>r.lv==='MLB'&&r.y>=S.y-4),maj=recent.some(r=>(r.b&&r.b.PA>=250)||(r.p&&r.p.outs>=240)),keepP=maj?.85:m.mlb.dev?.3:.55;
+    if(R()<keepP){S.pro.dev=m.mlb.dev;article(`${ME.name}, 전역 후 ${S.pro.tname} 복귀… "실전 감각부터 되찾겠다"`,`군 복무를 마친 ${jo(ME.name,'이','가')} 소속팀 ${S.pro.tname}에 돌아갔다. 구단은 마이너에서 실전 감각을 끌어올린 뒤 콜업할 계획이다.`,'return');
+      S.queue.push({title:'✈️ 미국 복귀',text:`${S.pro.tname} 구단이 계약을 유지하기로 했다.\n1년 반의 공백. 다시 경쟁이 시작된다.`,ch:[{t:'"다시 메이저로 올라가겠습니다"',s:'멘탈↑',act:'famXp',arg:{men:2,r:'짐을 싸서 다시 미국행 비행기에 올랐다.'}}]})}
+    else{S.queue.push({title:'📄 방출 통보',text:`전역하자마자 ${S.pro.tname} 구단에서 연락이 왔다.\n"공백이 너무 길었다. 미안하지만 함께하기 어렵겠다."\n\n해외 구단과 계약했던 선수는 KBO에 바로 돌아갈 수 없다(2년 유예).`,ch:[
+      {t:'다른 MLB 구단과 마이너 계약',s:'미국에 남는다 · 마이너부터 다시',act:'mlbReMinor'},
+      {t:'독립리그에서 2년 버티고 KBO 복귀',s:'2년간 독립리그 · 이후 KBO 입단 도전',act:'mlbIndy'}]})}
+    return}}catch(e){}return _dc.apply(this,arguments)}}
+ACT.mlbReMinor=function(){const p=S.pro;p.tname=pick(ABROAD.MLB.filter(t=>t!==p.tname));p.dev=true;p.minor=true;p.years=2;p.salary=Math.round(MLB_MINOR*USDM);p.rk=1;S.rel.coach=45;S.rel.chem=45;S.coach='감독';news(`${p.tname}와 마이너 계약.`);article(`${ME.name}, ${p.tname}와 마이너 계약… 다시 바닥부터`,`방출의 아픔을 딛고 ${jo(ME.name,'이','가')} 새 팀을 찾았다.`,'contract');return`${p.tname}와 마이너 계약을 맺었다. 다시 바닥부터 시작이다.`};
+ACT.mlbIndy=function(){S.stage='mil';S.mil={status:'done',type:'독립리그',left:6,indy:1};news('독립리그 입단 — KBO 복귀를 위해 2년을 버틴다.');return'독립리그 유니폼을 입었다. 2년 뒤 KBO 문을 두드린다.'};
+if(typeof CRIT!=='undefined'){CRIT.add('mlbReMinor');CRIT.add('mlbIndy')}
+/* 예전 저장: MLB 소속인데 상무·경찰청 복무 중이면 현역(야구 공백)으로 정리 */
+{const _ld=load;load=function(){const s=_ld.apply(this,arguments);try{if(s&&s.stage==='mil'&&s.pro&&s.pro.league==='MLB'&&s.mil&&!s.mil.indy&&s.mil.type!=='현역'){s.mil.type='현역';s.mil.mlb=s.mil.mlb||{tname:s.pro.tname,dev:!!s.pro.dev,years:s.pro.years||0}}}catch(e){}return s}}
+/* 병역 미필 MLB 선수: 특례 걸린 대회 긴장감 */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.intl||!Array.isArray(out)||!S.pro||S.pro.league!=='MLB'||!S.mil||S.mil.status!=='none')return out;if(!/아시안게임|올림픽/.test(String(x.title||'')))return out;const gn=giv(ME.name);
+  const L=x.win?[[`${gn} 메이저리거인데 병역 특례 걸린 대회라 눈빛부터 다르다`,['여기서 금메달 못 따면 커리어가 끊긴다']],['오늘 이 경기는 병역이 걸린 경기다 진짜 목숨 걸고 뛰네',['보는 내가 다 떨림']]]:[[`${gn} 이번 대회 메달 못 따면 군대 가야 되는데…`,['메이저 커리어 끊기면 너무 아깝다','다음 경기 무조건 이겨야 함']],['병역 걸린 대회에서 지니까 표정이 굳었다',[]]];
+  L.forEach(([t,re])=>{if(!seenHas(t)&&R()<.6){seenAdd(t);out.splice(0,0,mkC(t,re))}})}catch(e){}return out}}
 
 </script>
 
