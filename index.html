@@ -8991,6 +8991,8 @@ ACT.toolFix=function(a){try{const ks=(a&&a.ks)||[],amt=(a&&a.amt)||.5,r=amt*.75,
   if(ME.r&&key in ME.r){ME.r[key]=cl(ME.r[key]+r,20,capOf(key));got.push(LBL[key])}else if(ME.pt&&key in ME.pt){ME.pt[key]=cl(ME.pt[key]+r,20,capOf(key));got.push(LBL[key])}});ME.hid.men=cl(ME.hid.men+1,20,80);
   return`감독실을 나서며 이를 악물었다. 그날부터 ${got.join('·')||'약점'} 훈련에 매달렸다.${got.length?` (${got.join('·')}${got.length>1?' 각각':''} +${amt})`:''}`}catch(e){return'이를 악물었다.'}};
 if(typeof CRIT!=='undefined')CRIT.add('toolFix');
+/* 툴 부족 판정: 포지션 툴 중요도 3순위까지 + 선구안·동체시력만 (예: 1루수 주력(4순위) 부족으로는 마이너행 X) */
+{const _wt=weakTools;weakTools=function(){const w=_wt();try{if(isP())return w;const pr=(typeof POSPRIO!=='undefined'&&POSPRIO[ME.pos])||null;if(!pr)return w;const ok=new Set([...pr.slice(0,3).flat(),'eye','vis']);return w.filter(k=>ok.has(k))}catch(e){return w}}}
 
 </script>
 
