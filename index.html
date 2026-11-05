@@ -8726,7 +8726,7 @@ function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${
   const IV=fin?(WS?[`이 도시에 우승을 안기려고 한국에서 왔습니다`,`이 반지는 한국에서 새벽에 일어나 응원해준 모든 분들 겁니다`,`어릴 때 TV로만 보던 월드시리즈, 오늘 그 마지막 장면에 제가 있었습니다`,`${city} 팬들이 저를 가족처럼 받아줬습니다. 이 우승으로 갚고 싶었어요`]
       :[`이 우승은 끝까지 믿어준 팬들 겁니다`,`오늘 하루만큼은 울어도 될 것 같습니다`,`프로 와서 꿈꾼 단 하나가 이 순간이었습니다`,`힘들 때마다 팬들 함성 생각하면서 버텼습니다`])
     :[`아직 끝난 거 아닙니다. 우리 목표는 처음부터 우승이었습니다`,`다음 시리즈도 오늘처럼, 한 경기 한 경기 하겠습니다`,`팬들 함성 덕분에 마지막까지 집중할 수 있었습니다`];
-  const CS=[];if(wl>=2&&!g7)CS.push(`${wl}패를 떠안고도 끝내 이겨낸 시리즈, 그 절망의 끝에서 희망을 찾아낸 오늘 경기였습니다`);
+  const CS=[],elim=/지면 탈락|마지막 승부/.test(sub);if(elim&&!g7)CS.push(`지면 끝나는 경기, 그 절망의 끝에서 희망을 찾아낸 오늘이었습니다`);
   if(g7)CS.push(`7차전, 모든 것이 걸린 마지막 승부… 결국 웃은 쪽은 ${String(x.sub||'').split(' ')[0]||'우리'}입니다`);
   if(fin)CS.push(`마지막 아웃카운트! ${jo(nm,'이','가')} 그토록 기다려온 바로 그 순간입니다!`,WS?`${city}가 기다린 우승, 그 한가운데에 한국에서 온 ${jo(nm,'이','가')} 서 있습니다`:`이 팀이 기다려온 우승, 그 중심에 ${jo(nm,'이','가')} 있었습니다`);
   else CS.push(`이제 다음 무대로 갑니다! 이 팀의 가을은 아직 끝나지 않았습니다`,`${jo(nm,'이','가')} 팀을 다음 시리즈로 이끕니다!`);
@@ -8735,6 +8735,19 @@ function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${
   put(`"${pick(IV)}" ${gn} 인터뷰 보소 ${pick(R1)}`,pick(['ㄹㅇ 멘트까지 완벽함','이 선수 진짜 될 놈이었다','인터뷰에서 목소리 떨리는 거 들림 ㅠㅠ']));
   put(`캐스터 "${CS[0]}" 이거 듣고 뭉클했다`,pick(['중계진도 울먹이더라','이 멘트 평생 기억날 듯','소름 쫙']));
   if(fin&&CS.length>1&&R()<.7)put(`"${CS[1]}" 이 멘트 나올 때 나도 같이 소리 질렀다`,null);
+  out=add.concat(out)}catch(e){}return out}}
+
+/* 가을야구·국제대회: 지면 탈락인 경기에서 살아남음 · 접전 결정적 순간 활약 → 캐스터 멘트 인용 댓글 */
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!(x.ps||x.intl)||!x.win||!Array.isArray(out))return out;const sub=String(x.sub||''),nm=ME.name,P=isP(),add=[];
+  const put=(s,re)=>{s=josaFix(s);if(seenHas(s)||out.some(c=>c.t===s))return;seenAdd(s);add.push(mkC(s,re?[{nk:pick(NICKS),t:re,up:ri(80,1200)}]:[],{up:ri(2500,8000),must:1}))};
+  const m=sub.match(/(\d)승\s*(\d)패/),wa=m?+m[1]:-1,wb=m?+m[2]:-1,elim=/지면 탈락|마지막 승부/.test(sub);
+  if(elim&&!x.clinch){const L=wa===0&&wb===3?[`0승 3패, 모두가 끝났다고 했던 시리즈. 그 절망의 끝에서 희망을 찾아내는 오늘 경기였습니다`,`벼랑 끝 0승 3패, 아직 이 팀의 가을은 끝나지 않았습니다`]:[`지면 끝나는 경기, 벼랑 끝에서 살아남았습니다!`,`탈락 위기에서 다시 일어섭니다. 이 시리즈, 아직 끝나지 않았습니다`];put(`캐스터 "${pick(L)}" 이 멘트 소름`,pick(['진짜 끝까지 봐야 한다','이게 가을야구지','아직 안 끝났다!!']))}
+  /* 결정적 순간: 7회 이후 3점 차 이내에서 내 타점·홈런 / 접전 7회 이후 무실점 투구 / 결승타·끝내기 */
+  const pl=x.pl||[],pp=x.pp||[];const bat=!P&&(x._wo||x._dhr||pl.some(p=>p.i>=7&&p.r>0&&Math.abs((p.my-p.r)-p.op)<=2));
+  const late=pp.filter(p=>p.i>=7),pit=P&&late.length>=3&&late.every(p=>!p.r)&&late.some(p=>Math.abs(p.my-p.op)<=3);
+  if(bat||pit){const L=P?[`가장 뜨거운 순간, 마운드 위에는 ${jo(nm,'이','가')} 있었습니다`,`승부처마다 ${nm}, 오늘도 그 이름이 경기를 지켜냅니다`,`가장 큰 압박 속에서, ${jo(nm,'은','는')} 흔들리지 않았습니다`]
+    :[`결정적인 순간에는 언제나 ${jo(nm,'이','가')} 있었습니다`,`가장 필요한 순간, 가장 필요한 한 방을 ${jo(nm,'이','가')} 해냅니다`,`이 팀이 가장 필요로 할 때, ${nm}의 방망이가 응답합니다`,`승부처의 남자, 오늘도 ${nm}입니다`];
+    put(`캐스터 "${pick(L)}" 이 멘트 나올 때 소름 돋았다`,pick(['ㄹㅇ 그 순간 ${nm}밖에 안 보였음'.replace('${nm}',giv(nm)),'중계진도 흥분함 ㅋㅋ','이 장면 하이라이트 1순위']))}
   out=add.concat(out)}catch(e){}return out}}
 
 </script>
