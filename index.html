@@ -1249,7 +1249,8 @@ const GM={hs:{3:4,4:6,5:6,6:5,7:6,8:6,9:2},univ:{3:4,4:6,5:6,6:5,8:4,9:4},fut:{3
 const SUR='김이박최정강조윤장임한오서신권황안송류홍전고문양손배백허노'.split('');
 const GIV=['민수','지훈','현우','도윤','서준','준호','성민','재원','태양','동현','승우','영훈','우진','건우','시우','하준','정훈','상현','준영','민재','진혁','형준','대호','석진','경민','창민','주원','은호','재훈','태민','성호','한결','지성','동욱','세진','규민','찬희','도현','이준','시헌'];
 const jo=(w,a,b)=>{const ch=w.charCodeAt(w.length-1);return w+((ch>=0xAC00&&ch<=0xD7A3&&(ch-0xAC00)%28)?a:b)};
-const mkName=()=>pick(SUR)+pick(GIV);
+const REALN2=new Set(['이대호','박건우','김민재','오재원','이재원','김건우','최지훈','김도현','김주원','박세진','안우진','이도윤','김동현','조현우','정준영','이승우','손준호','김재원','박준영','이정훈','정우진']);
+const mkName=()=>{let n;for(let i=0;i<30;i++){n=pick(SUR)+pick(GIV);let bad=REALN2.has(n);try{bad=bad||REALN.test(n)}catch(e){}if(!bad)return n}return n};
 const ROLEN={start:'주전',bench:'백업',reserve:'벤치 멤버',ace:'에이스',hsP:'투수진',hsBench:'벤치',SP:'선발 로테이션',CL:'마무리',SU:'필승조',MR:'추격조',fB:'퓨처스(2군)',fP:'퓨처스(2군)',off:'비시즌',inj:'부상 재활',army:'현역 복무',pre:'입단 대기'};
 const ONE=['start','bench','SP','CL','SU','MR'];
 const PRO=['KBO','NPB','MLB'];
@@ -6797,9 +6798,12 @@ const TM={
  s11:[["1승 1패 원점이다 다시 시작이다",[]],["한 판씩 주고받았네 이제부터가 진짜다",[]]],
  s20:[["먼저 2승 챙겼다 분위기 완전 넘어왔다",["상대 팀 벼랑 끝으로 몰았다"]]],
  s02:[["먼저 2패… 이제 지면 끝이다",["아직 안 끝났다 역스윕 가자"]],["시리즈 분위기가 너무 안 좋다",[]]],
- s22:[["2승 2패 끝장 승부 간다",["이게 가을야구지","마지막 경기 심장 버틸 수 있을까"]]],
+ s22:[["{n} 끝장 승부 간다",["이게 가을야구지","마지막 경기 심장 버틸 수 있을까"]],["{n}, 이제 진짜 마지막 한 판이다",["심장 약한 사람 내일 중계 보지 마라"]]],
+ rev3:[["0승 3패에서 3연승… 역스윕 각 나온다",["이 흐름이면 마지막 경기도 우리 거다"]],["3연패 할 때 TV 끈 사람들 다시 켜라 ㅋㅋ",["나 끈 사람인데 다시 켬"]],["0-3에서 여기까지 끌고 온 것만으로도 미쳤다",["마지막 경기 직관 간다"]]],
+ revS:[["벼랑 끝에서 {n}연승, 분위기 완전히 넘어왔다",["상대 덕아웃 표정 봐라"]],["탈락 직전에서 {n}연승 ㄷㄷ 이 팀 아직 안 죽었다",[]]],
  cliffW:[["아직 안 끝났다!",["관짝에서 다시 살아났다 ㅋㅋ"]],["아직 장례식장 예약 취소하지 마라 ㅋㅋ",[]],["이런 경기 하나가 사람 미치게 한다",[]],["그래도 다음 경기까지 이겨야 의미가 있다",["현실주의자 등판"]]],
- comeback:[["0승 2패에서 시리즈를 뒤집었다고? 역스윕 미쳤다",["이건 진짜 역사다"]],["벼랑 끝에서 다 이겨버렸네 ㄷㄷ",[]]],
+ comeback:[["{n}에서 시리즈를 뒤집었다고? 역스윕 미쳤다",["이건 진짜 역사다"]],["벼랑 끝에서 다 이겨버렸네 ㄷㄷ",[]]],
+ comeback2:[["끌려가던 시리즈를 결국 뒤집었다 ㄷㄷ",["이건 진짜 명승부였다"]],["벼랑 끝에서 다 이겨버렸네 ㄷㄷ",[]]],
  elim:[["올해 야구도 여기까지구나",["내년에 보자"]],["이제 야구 대신 스토브리그가 메인 이벤트다",[]],["내년에는 제발 봄부터 잘하자",[]],["오늘 잘한 선수들은 욕먹지 않았으면 좋겠다",[]],["중요한 순간 선수 기용이 아쉽다",["결과론이지 뭐"]]],
  half1:[["전반기 상위권 마무리 후반기도 이대로만 가자",["아직 설레발 금지"]],["이 페이스면 올해 진짜 해볼 만하다",[]]],
  halfMid:[["전반기 중위권… 후반기에 치고 올라가야 한다",[]],["가을야구 커트라인 싸움 빡세겠다",[]]],
@@ -6821,9 +6825,10 @@ const TM={
     if(diff!=null){if(win){if(op===0)put('shutW');else if(diff>=6)put('blowW');else if((x.inns||9)>9)put('extraW');else if(diff===1)put('closeW')}else{if(my===0)put('shutL');else if(diff<=-6)put('blowL');else if((x.inns||9)>9)put('extraL');else if(diff===-1)put('closeL')}}
     /* 시리즈 흐름 (경기 후 전적) */
     const m=(x.sub||'').match(/(\d)승 (\d)패/);if(m){const w0=+m[1],l0=+m[2],w=w0+(win?1:0),l=l0+(win?0:1),t=x.title||'',need=/한국시리즈|월드시리즈|챔피언십/.test(t)?4:/와일드카드/.test(t)?2:3;
-      if(w<need&&l<need){if(w+l===1)put(win?'s1W':'s1L');else if(w===1&&l===1)put('s11');else if(w===2&&l===0&&need>=3)put('s20');else if(w===0&&l===2&&need>=3)put('s02');else if(w===2&&l===2&&need===3)put('s22');else if(w===need-1&&l===need-1)put('s22')}
-      if(win&&/지면 탈락/.test(x.sub||'')&&w<need)put('cliffW');
-      if(win&&w===need&&l>=2&&w0<=l0)put('comeback');
+      const sk=S.y+':'+t.replace(/\s*\d+차전.*$/,'');S.serH=S.serH&&S.serH.y===S.y?S.serH:{y:S.y};let hs=S.serH[sk]||'';if(hs.length===w0+l0)hs+=win?'W':'L';else if(hs.length!==w+l)hs='';S.serH[sk]=hs;const stk=(hs.match(/W+$/)||[''])[0].length;
+      if(w<need&&l<need){if(w+l===1)put(win?'s1W':'s1L');else if(w===1&&l===1)put('s11');else if(w===2&&l===0&&need>=3)put('s20');else if(w===0&&l===2&&need>=3)put('s02');else if(w===need-1&&l===need-1&&!(hs==='LLLWWW'))put('s22',`${w}승 ${l}패`)}
+      if(hs==='LLLWWW')put('rev3');else if(win&&/지면 탈락/.test(x.sub||'')&&w<need){if(stk>=2)put('revS',String(stk));else put('cliffW')}
+      if(win&&w===need&&l>=2&&w0<=l0){const lead=(hs.match(/^L+/)||[''])[0].length;if(lead>=2)put('comeback',`0승 ${lead}패`);else put('comeback2')}
       if(!win&&l===need&&!/결승/.test(t))put('elim')}
     if(P){const ipO=x.ipO||0,ra=x.ra||0;if(ipO>=27&&!ra)put('pCG');else if((x.gK||0)>=10)put('pK10');else if(ipO>=18&&ra<=3)put('pQS')}}
   else if(S.pro&&S.pro.league==='KBO'&&S.m>=6&&S.m<=8&&cmX('tmHalf'+S.y)){/* 전반기 결산 즈음 팀 순위 한 줄만 */
@@ -8780,7 +8785,7 @@ function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${
       :[`이 우승은 끝까지 믿어준 팬들 겁니다`,`오늘 하루만큼은 울어도 될 것 같습니다`,`프로 와서 꿈꾼 단 하나가 이 순간이었습니다`,`힘들 때마다 팬들 함성 생각하면서 버텼습니다`])
     :[`아직 끝난 거 아닙니다. 우리 목표는 처음부터 우승이었습니다`,`다음 시리즈도 오늘처럼, 한 경기 한 경기 하겠습니다`,`팬들 함성 덕분에 마지막까지 집중할 수 있었습니다`];
   const CS=[],elim=/지면 탈락|마지막 승부/.test(sub);if(elim&&!g7)CS.push(`지면 끝나는 경기, 그 절망의 끝에서 희망을 찾아낸 오늘이었습니다`);
-  if(g7)CS.push(`7차전, 모든 것이 걸린 마지막 승부… 결국 웃은 쪽은 ${String(x.sub||'').split(' ')[0]||'우리'}입니다`);
+  if(g7)CS.push(`7차전, 모든 것이 걸린 마지막 승부… 결국 웃은 쪽은 ${(()=>{try{return myTeamNick()}catch(e){return'우리 팀'}})()}입니다`);
   if(fin)CS.push(`마지막 아웃카운트! ${jo(nm,'이','가')} 그토록 기다려온 바로 그 순간입니다!`,WS?`${city}가 기다린 우승, 그 한가운데에 한국에서 온 ${jo(nm,'이','가')} 서 있습니다`:`이 팀이 기다려온 우승, 그 중심에 ${jo(nm,'이','가')} 있었습니다`);
   else CS.push(`이제 다음 무대로 갑니다! 이 팀의 가을은 아직 끝나지 않았습니다`,`${jo(nm,'이','가')} 팀을 다음 시리즈로 이끕니다!`);
   const R1=WS?['현지팬들 난리 났겠는데 ㅋㅋ','좀 감동이다 진짜','이거 듣고 새벽에 울었다','이건 영상으로 평생 소장각']:['소름 돋았다','좀 감동이다','울컥했다 진짜','이거 듣고 눈물 남'];
