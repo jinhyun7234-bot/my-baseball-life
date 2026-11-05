@@ -1456,7 +1456,7 @@ function batPA(L,m,gl){const dv=x=>x>L?(x-L)*BATC:(x-L),dvp=x=>x>L?(x-L)*.85:(x-
     if(q<hr+tr){m.T++;gl.T++;m.RBI+=n;gl.RBI+=n;reach(3);return}
     if(q<hr+tr+db){m.D++;gl.D++;const x=(on[2]?1:0)+(on[1]?1:0)+(on[0]&&R()<.4?1:0);m.RBI+=x;gl.RBI+=x;reach(2);return}
     gl.S1++;const x=(on[2]?1:0)+(on[1]&&R()<.6?1:0);m.RBI+=x;gl.RBI+=x;reach(1);return}
-  if(on[0]&&R()<.13*cl(1+(50-eff('spd'))/35,.4,1.8)){m.GDP=(m.GDP||0)+1;return}
+  if(on[0]&&R()<.13*cl(1+(50-eff('spd'))/35,.4,1.8)*(typeof eyeDP==='function'?eyeDP():1)){m.GDP=(m.GDP||0)+1;return}
   if(on[2]&&R()<.22){m.RBI++;gl.RBI++}}
 function simBat(role,tg,L,row,lvk){
   const od=(role==='start'||role==='fB')?(S.order=batOrder(L)):0,share={start:.95,bench:.45,reserve:.18,fB:.92}[role],paG={start:od?[4.65,4.55,4.45,4.35,4.25,4.15,4.0,3.9,3.8][od-1]:4.25,bench:1.5,reserve:1.1,fB:4.2}[role];S.onMul=od?[.7,.85,1.15,1.3,1.2,1,.95,.9,.85][od-1]:1;
@@ -1854,7 +1854,7 @@ function resolve(t,b,outs){b=b.slice();let runs=0;
   const fast=S._lastMeSpd&&!isP(),bunt=!!S._bunt;S._lastMeSpd=0;S._bunt=0;
   if(t==='1B'){if(bunt||((b[0]||b[1]||b[2]||fast)&&R()<(fast?cl(.13+Math.max(0,DV(eff('spd'))-60)*.006,.13,.35):.13))){const d=[];let r2=0;const nb=[1,0,0];if(b[0]){nb[1]=1;if(b[1]){nb[2]=1;if(b[2]){r2=1;d.push('3루 주자 밀려 홈인')}}else if(b[2])nb[2]=1}else{if(b[1])nb[1]=1;if(b[2])nb[2]=1}if(b[0]||b[1]||b[2])d.unshift(bunt?'기습 번트 — 주자들 한 베이스씩':'내야안타 — 주자들 한 베이스씩');return{b:nb,outs,runs:r2,d,inf:1,bunt:bunt?1:0}}
     const x=b[1]&&R()<.75,y=b[0]&&!(b[1]&&!x)&&R()<.3,d=[b[2]&&'3루 주자 홈인',b[1]&&(x?'2루 주자 홈까지 쇄도!':'2루 주자 3루까지'),b[0]&&(y?'1루 주자 3루까지':'1루 주자 2루로')].filter(Boolean);runs=b[2]+(x?1:0);return{b:[1,y?0:b[0],(b[1]&&!x)||y?1:0],outs,runs,d}}
-  if(t==='GO'){if(b[0]&&outs<2&&R()<.3){const o=outs+2;if(o<3&&b[2]){runs++;b[2]=0}b[0]=0;return{b,outs:o,runs}}const o=outs+1;if(o<3&&b[2]&&R()<.4){runs++;b[2]=0}if(o<3&&b[1]&&!b[2]&&R()<.5){b[2]=1;b[1]=0}return{b,outs:o,runs}}
+  if(t==='GO'){if(b[0]&&outs<2&&R()<.3*(S._dpM||1)){const o=outs+2;if(o<3&&b[2]){runs++;b[2]=0}b[0]=0;return{b,outs:o,runs}}const o=outs+1;if(o<3&&b[2]&&R()<.4){runs++;b[2]=0}if(o<3&&b[1]&&!b[2]&&R()<.5){b[2]=1;b[1]=0}return{b,outs:o,runs}}
   const o=outs+1;if(o<3&&b[2]&&R()<.5){runs++;b[2]=0}return{b,outs:o,runs}}
 function followGame(o){
   const my=o.home?1:0,A=o.home?o.op:o.me,H=o.home?o.me:o.op,name=ME.name;
@@ -9416,6 +9416,26 @@ function amaCtx(){try{if(!S||!ME)return null;if(S.stage==='hs'){const sc=(SCHOOL
   try{if(d){const pay=Math.min(.3,d),bonus=pay;for(const k in ME.r){const g=ME.r[k]-(r0[k]||0);if(g>0)ME.r[k]=cl(ME.r[k]+g*bonus,20,capOf(k))}
     if(ME.pt)for(const k in ME.pt){if(!p0[k])continue;const g=ME.pt[k]-p0[k];if(g>0)ME.pt[k]=cl(ME.pt[k]+g*bonus,20,capOf(k))}
     S.hsDebt=Math.max(0,d-pay)}}catch(e){}return out}}
+/* ===== 포지션 툴 우선순위 반영 (비공개) ===== */
+/* 수비 핵심 능력: 좌익수는 수비범위(3순위)가 어깨(5순위)보다, 우익수는 어깨(3순위) 중심 */
+POSKEY.LF=[['rng',.7],['arm',.3]];POSKEY.RF=[['arm',.75],['rng',.25]];
+/* 감독 평가 문구: 실제로 부족한(또는 뛰어난) 능력 중 포지션 우선순위 1~3위인 것만 언급 */
+{const _ms=monthStep;monthStep=function(rep){const n0=rep&&rep.lines?rep.lines.length:0;_ms(rep);try{if(!rep||!rep.lines||isP())return;const pr=POSPRIO[ME.pos]||POSPRIO.DH,top=new Set(pr.slice(0,3).flat()),L=S.pro?LV[S.pro.league]:50;
+  for(let i=n0;i<rep.lines.length;i++){const ln=rep.lines[i];if(!/^감독이 .*(부족하다고 본다|높게 평가하고 있다) \(감독 신뢰/.test(ln))continue;const neg=/부족하다고/.test(ln);
+    const ks=(POSKEY[ME.pos]||[]).map(([k])=>k).filter(k=>top.has(k)&&(neg?E(k)<L:E(k)>L)).map(k=>LBL[k]);
+    if(!ks.length){rep.lines.splice(i,1);i--;continue}const kt=ks.slice(0,2).join('·');
+    rep.lines[i]=neg?`감독이 ${jo(POS[ME.pos],"으로서","로서")} ${jo(kt,"이","가")} 부족하다고 본다 (감독 신뢰↓)`:`감독이 ${POS[ME.pos]} ${jo(kt,"을","를")} 높게 평가하고 있다 (감독 신뢰↑)`}}catch(e){}}}
+/* 우선순위 1~3위 툴이 모두 좋으면 살짝 더 잘함 · MLB에선 4~5위 툴이 심각하게 낮으면 살짝 못함 */
+function toolAdj(){try{if(isP()||!S||S.stage!=='pro'||!S.pro)return 0;const k0=S.turn+':'+ME.pos;if(S._taK===k0)return S._taV||0;
+  const pr=POSPRIO[ME.pos]||POSPRIO.DH,top=pr.slice(0,3).flat(),low=pr.slice(3).flat(),dv=k=>DV(prioVal(k));let v=0;
+  const mn=Math.min(...top.map(dv));if(mn>=78)v+=.7;else if(mn>=70)v+=.4;
+  if(S.pro.league==='MLB'){let pen=0;low.forEach(k=>{const d=dv(k);if(d<40)pen+=.4;else if(d<45)pen+=.2});v-=Math.min(.8,pen)}
+  S._taK=k0;S._taV=v;return v}catch(e){return 0}}
+{const _b=batPA;batPA=function(L,m,gl){return _b(isP()?L:L-toolAdj(),m,gl)}}
+{const _mb=meBatPA;meBatPA=function(pR,risp){return _mb(isP()?pR:pR-toolAdj(),risp)}}
+/* 선구안이 나쁘면 병살타 살짝 증가 */
+function eyeDP(){try{if(isP())return 1;const d=DV(E('eye'));return d<55?Math.min(1.3,1+(55-d)*.012):1}catch(e){return 1}}
+{const _rs=resolve;resolve=function(t,b,outs){const pv=S._dpM;try{S._dpM=(typeof _meBat!=='undefined'&&_meBat&&!isP())?eyeDP():1}catch(e){S._dpM=1}try{return _rs(t,b,outs)}finally{S._dpM=pv}}}
 
 </script>
 
