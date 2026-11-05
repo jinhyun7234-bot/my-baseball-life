@@ -1368,7 +1368,7 @@ const turnName=()=>`${S.y} ${PHASE[S.phase]}`;
 /* ===================== CREATION ===================== */
 function rollZ(){const z={};[...BAT,...PIT,'FB','we','men','dur','pot'].forEach(k=>z[k]=gauss());z.tal=gauss()*.7;z.gt=pick(['조숙형','평균형','평균형','만성형','꾸준형']);
   z.sec=shuffle(['SL','CB','CH','TS','FK','CT','SW','SPL','SK']).slice(0,R()<.5?1:2);z.secq=[gauss(),gauss()];z.ceil={};[...BAT,...PIT,...PITCHES].forEach(k=>z.ceil[k]=gauss());return z}
-const BODY={마른:{spd:4,rng:2,pow:-4,velo:-2,ctl:2,sta:-1},표준:{},거구:{pow:5,spd:-4,rng:-2,velo:4,sta:2,stf:1}};
+const BODY={마른:{spd:3,rng:2,fld:1,pow:-2,velo:-1,ctl:1},표준:{},거구:{pow:3,velo:3,stf:1,spd:-2,rng:-1}};
 const POSA={SS:{rng:3,arm:2},'2B':{rng:2,fld:1},'3B':{arm:3},CF:{rng:3,spd:2},RF:{arm:3},LF:{},'1B':{pow:2,fld:1,rng:-3},C:{fld:2,arm:2,spd:-3},SP:{sta:4},RP:{velo:2,sta:-4}};
 function buildMe(cr){
   const z=cr.z,me={name:cr.name||'이름 없음',type:cr.type,pos:cr.pos,hand:cr.hand,body:cr.body,look:cr.look?{...cr.look}:null,r:{},pt:{},ceil:{},hid:{},xp:0,skills:[],items:{},fat:10,form:0,inj:null,pot:0,lb:{}};
@@ -3877,7 +3877,7 @@ const FEV=[{t:'선배의 심부름',x:'숙소에서 쉬려는데 선배가 부�
  {t:'구단 행사 동원',x:'휴식일에 구단 팬 행사와 스폰서 촬영이 잡혔다. 홍보팀이 꼭 와달라고 한다.',ok:['참석한다',{fame:4,fat:12},'팬들이 엄청 좋아했다. 집에 오니 녹초다.'],no:['휴식일이라 정중히 거절한다',{fame:-2,chem:-1,fat:-4},'홍보팀이 아쉬워했다.']},
  {t:'라커룸 군기',x:'최근 팀 성적이 나쁘자 고참들이 저연차 선수들만 따로 불러 야간 러닝을 시킨다.',ok:['묵묵히 뛴다',{chem:3,fat:18},'다리가 후들거린다. 그래도 고참들 눈 밖에 나진 않았다.'],no:['코치에게 상황을 알린다',{chem:-6,coach:2},'코치가 정리해줬지만 고참들 시선이 차갑다.']}];
 {const _ms4=monthStep;monthStep=function(rep){const inj0=ME.inj;_ms4(rep);try{const g=S.lastGame;
-  if(g&&!ME.inj){let add=0;if(g.kind==='B')add+=g.m.G*.28;else add+=(g.m.G||0)*.55+(g.pc||0)*.012;add*=cl(1-(ME.hid.dur-50)/120,.6,1.4);ME.fat=cl(ME.fat+add,0,100)}
+  if(g&&!ME.inj){let add=0;if(g.kind==='B')add+=g.m.G*.28;else add+=(g.m.G||0)*.47+(g.pc||0)*.0102;add*=cl(1-(ME.hid.dur-50)/120,.6,1.4);ME.fat=cl(ME.fat+add,0,100)}
   if(S.stage==='pro'||S.stage==='hs'){const r=S.rel,add=Math.max(0,45-r.chem)*.14+Math.max(0,38-r.coach)*.1;if(add>0)ME.fat=cl(ME.fat+add,0,100);if(add>=2.5)rep.lines.push('팀 분위기가 불편해서 쉬어도 쉰 것 같지 않다. (피로↑)')}
   if(!['off','pre','inj','army'].includes(S.role)&&(S.fevY!==S.y||(S.fevN||0)<2)&&R()<.056){if(S.fevY!==S.y){S.fevY=S.y;S.fevN=0}S.fevN++;const e=pickFev();if(!e)return;
     S.queue.push({title:`😮‍💨 ${e.t}`,text:e.x,ch:[{t:e.ok[0],s:fevS(e.ok[1]),act:'fev',arg:{f:e.ok[1],m:e.ok[2]}},{t:e.no[0],s:fevS(e.no[1]),act:'fev',arg:{f:e.no[1],m:e.no[2]}}]})}
@@ -6063,7 +6063,7 @@ function avaMe(i){const a=AVA[i],cr=ui.cr,look={...(cr.look||randLook()),shs:a[1
   return`<div class="lkstep"><div class="lkhead"><span class="eb">STEP 1 · 아바타</span><h1>나만의 선수 만들기</h1><p class="small muted">16명 중 마음에 드는 선수를 골라요. 은퇴할 때까지 이 얼굴로 뛰고, 은퇴 카드에도 나와요.</p></div>
   <div class="lkstage two"><div class="lkbig">${spBust(me,130,null)}</div><div class="lkbig">${spBody(me,170,null)}</div></div>
   <div class="avname">${AVA[cr.ava][0]}</div>
-  <div class="avbody"><span>체형</span>${[['마른','마른형','주력·수비↑ 파워↓'],['표준','보통형','균형'],['거구','근육형','파워·구속↑ 주력↓']].map(([k,n,d])=>`<button class="avb ${cr.body===k?'on':''}" data-avb="${k}"><b>${n}</b><small>${d}</small></button>`).join('')}</div>
+  <div class="avbody"><span>체형</span>${[['마른','마른형',''],['표준','보통형',''],['거구','근육형','']].map(([k,n,d])=>`<button class="avb ${cr.body===k?'on':''}" data-avb="${k}"><b>${n}</b><small>${d}</small></button>`).join('')}</div>
   <div class="avgrid">${AVA.map((a,i)=>`<button class="avc ${cr.ava===i?'on':''}" data-ava="${i}" aria-label="${a[0]}">${spBust(avaMe(i),64,null)}<span>${a[0]}</span></button>`).join('')}</div></div>`}}
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-ava]');if(!b||!ui.cr)return;const i=+b.dataset.ava,a=AVA[i],cr=ui.cr;cr.ava=i;cr.look={...cr.look,shs:a[1],shc:a[2]};if(!cr.bodySet)cr.body=a[3];haptic&&haptic(8);render()});
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-avb]');if(!b||!ui.cr)return;ui.cr.body=b.dataset.avb;ui.cr.bodySet=1;haptic&&haptic(8);render()});
@@ -7764,7 +7764,7 @@ const NSPR={"np0_0": "data:image/webp;base64,UklGRkxEAABXRUJQVlA4WAoAAAAQAAAAkQA
 
 /* ===================== 새 캐릭터 일러스트: 헤어 8 × 체형 3 · 여자친구 8 ===================== */
 const NS_HAIR=['반곱슬','가르마','리프컷','울프컷','뽀글머리','반묶음','투블럭','장발'];
-const NS_BODY=[['마른','마른형','주력·수비↑ 파워↓'],['표준','보통형','균형'],['거구','근육형','파워·구속↑ 주력↓']];
+const NS_BODY=[['마른','마른형',''],['표준','보통형',''],['거구','근육형','']];
 const NSI={};
 if(typeof document!=='undefined'&&typeof NSPR!=='undefined'){let left=Object.keys(NSPR).length;for(const k in NSPR){const im=new Image();im.onload=im.onerror=()=>{if(--left===0){try{render()}catch(e){}}};im.src=NSPR[k];NSI[k]=im}}
 function nsHas(me){try{const L=me&&me.look;return !!(L&&L.nh!=null&&typeof NSPR!=='undefined')}catch(e){return false}}
@@ -7798,7 +7798,7 @@ vLookStep=(function(_old){return function(){const cr=ui.cr;if(typeof NSPR==='und
   return`<div class="lkstep"><div class="lkhead"><span class="eb">STEP 1 · 외모</span><h1>나만의 선수 만들기</h1><p class="small muted">헤어스타일과 체형을 골라요. 은퇴할 때까지 이 모습으로 뛰고, 은퇴 카드에도 나와요.</p></div>
   <div class="lkstage"><div class="lkbig nsbig">${nsImg(nsURL(`np${bi}_${nh}`),236)}</div></div>
   <div class="avname">${NS_HAIR[nh]} · ${NS_BODY[bi][1]}</div>
-  <div class="avbody"><span>체형</span>${NS_BODY.map(([k,n,d])=>`<button class="avb ${cr.body===k?'on':''}" data-nb="${k}"><b>${n}</b><small>${d}</small></button>`).join('')}</div>
+  <div class="avbody"><span>체형</span>${NS_BODY.map(([k,n,d])=>`<button class="avb ${cr.body===k?'on':''}" data-nb="${k}"><b>${n}</b>${d?`<small>${d}</small>`:''}</button>`).join('')}</div>
   <div class="avbody"><span>헤어</span></div>
   <div class="avgrid">${NS_HAIR.map((n,i)=>`<button class="avc ${nh===i?'on':''}" data-nh="${i}" aria-label="${n}">${nsImg(nsURL(`np${bi}_${i}`,{bust:true}),56)}<span>${n}</span></button>`).join('')}</div></div>`}})(vLookStep);
 if(typeof document!=='undefined'){document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-nh],[data-nb]');if(!b||!ui.cr)return;e.stopPropagation();const cr=ui.cr;if(!cr.look)cr.look=randLook();
@@ -8749,6 +8749,40 @@ function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${
     :[`결정적인 순간에는 언제나 ${jo(nm,'이','가')} 있었습니다`,`가장 필요한 순간, 가장 필요한 한 방을 ${jo(nm,'이','가')} 해냅니다`,`이 팀이 가장 필요로 할 때, ${nm}의 방망이가 응답합니다`,`승부처의 남자, 오늘도 ${nm}입니다`];
     put(`캐스터 "${pick(L)}" 이 멘트 나올 때 소름 돋았다`,pick(['ㄹㅇ 그 순간 ${nm}밖에 안 보였음'.replace('${nm}',giv(nm)),'중계진도 흥분함 ㅋㅋ','이 장면 하이라이트 1순위']))}
   out=add.concat(out)}catch(e){}return out}}
+/* ===== 의외의 천재성: 27~35세 투수, 매년 5% 새 변화구 발견 ===== */
+{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(!isP()||S.stage!=='pro'||!S.pro||S.m!==2||S.genY===S.y)return;const a=age();if(a<27||a>35)return;S.genY=S.y;if(R()>=.05)return;
+  const cand=PITCHES.filter(k=>k!=='FB'&&!ME.pt[k]);if(!cand.length)return;const k=pick(cand),have=PITCHES.filter(x=>x!=='FB'&&ME.pt[x]).map(x=>ME.pt[x]),best=have.length?Math.max(...have):50;
+  const v=Math.round(cl(Math.max(best-ri(3,8),52)+ri(0,4),48,capOf(k)));ME.pt[k]=v;const nm=LBL[k];
+  const how=pick([`불펜 캐치볼 중에 장난삼아 던져본 ${nm}. 포수가 미트를 내려놓고 물었다. "방금 뭐야? 다시 던져봐."`,`스프링캠프 숙소에서 영상을 돌려보다 그립을 살짝 바꿔봤다. 다음 날 불펜에서 던진 ${nm}이 말도 안 되게 꺾였다.`,`손가락 물집 때문에 그립을 바꿔 잡았는데, 그게 오히려 ${nm}의 각을 만들어냈다. 투수코치가 한참 웃었다.`]);
+  feat(`의외의 천재성 — 새 구종 ${nm} 장착`,true);S.queue.push({title:'✨ 의외의 천재성',text:`${josaFix(how)}\n\n몇 년을 붙잡고 있어도 안 되던 게, 어느 날 갑자기 손에 붙는다.\n새 구종 ${nm}이(가) 레퍼토리에 추가됐다. (${nm} ${DV(v)})`});
+  news(`${nmFull()} 캠프에서 새 구종 ${nm} 장착…"갑자기 됐다"`)}catch(e){}}}
+/* ===== 불펜 보직: 시즌 ERA 기준 (2.5↓ 특급 / ~3.8 필승·추격 혼용 / ~4.9 추격조 / 그 이상 패전처리) ===== */
+function relEra(){const sum=y=>{let o=0,r=0;S.rows.forEach(w=>{if(w.y===y&&PRO.includes(w.lv)&&w.lv!=='fut'){o+=w.p.outs;r+=w.p.R}});return{o,r}};let c=sum(S.y);if(c.o<30){const p=sum(S.y-1);if(p.o>=30)c={o:p.o+c.o,r:p.r+c.r}}return c.o>=30?c.r*27/c.o:null}
+{const _dr=decideRole;decideRole=function(){let r=_dr();S.mopNow=0;try{if(!isP()||S.stage!=='pro'||!S.pro||S.pro.dev||!['CL','SU','MR'].includes(r))return r;const pf=S.rolePref;if(pf&&pf.force&&pf.y===S.y)return r;
+  const e=relEra();if(e==null)return r;if(e<=2.5)return r==='CL'?'CL':(r==='SU'&&e<=1.9&&R()<.25?'CL':'SU');
+  if(e<=3.8){if(r==='CL'&&e<=3.2)return'CL';return R()<cl(1.2-(e-2.5)/1.3*.8,.35,.85)?'SU':'MR'}
+  if(e<=4.9)return'MR';S.mopNow=1;return'MR'}catch(e){}return r}}
+{const _sp=simPit;simPit=function(role,tg,L,row,lvk){const r=_sp(role,tg,L,row,lvk);try{const m=r&&r.m;if(!m||!S.mopNow||role!=='MR')return r;if(row&&row.p){row.p.HLD=Math.max(0,(row.p.HLD||0)-m.HLD);row.p.SV=Math.max(0,(row.p.SV||0)-(m.SV||0))}m.HLD=0;m.SV=0;
+  if(m.W>0&&R()<.6){m.W--;if(row&&row.p)row.p.W=Math.max(0,row.p.W-1)}}catch(e){}return r}}
+ROLEN.MOP='패전처리';
+{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(S.mopNow&&rep&&rep.roles){const i=rep.roles.lastIndexOf('MR');if(i>=0&&!rep.roles.includes('MOP'))rep.roles.splice(i,1,'MOP')}}catch(e){}}}
+/* 생활 기사(결혼·연애·출산 등)에는 성적/사고 댓글 최종 차단 (모든 댓글 래퍼 이후) */
+{const LT=['wedding','love','baby','famDay','gfbreak','marry'];const ST=/\d+\s?(타점|홈런|안타|도루|승|세이브|홀드|탈삼진|이닝|득점|경기|K\b)|타율|OPS|ERA|WAR|평균자책|찬스|음주|사고만|타석|등판|멀티히트|홈런|타점|폼 미쳤|MVP|연봉|FA|먹튀|슬럼프|2군|트레이드|레전드 확정|잘하는데/;
+ const _ar=article;article=function(head,body,tone,x){const id0=S.artId;const r=_ar(head,body,tone,x);try{if(LT.includes(tone)){const a=S.arts&&S.arts[0];if(a&&Array.isArray(a.cm)){a.cm=a.cm.filter(c=>!ST.test(c.t||''));a.cm.forEach(c=>{if(c.re)c.re=c.re.filter(q=>!ST.test(q.t||''))})}}}catch(e){}return r}}
+/* ===== MLB 30개 구단 엠블럼 (기존 엠블럼과 같은 모노그램 스타일) — KBO와 이름 겹치는 타이거스·트윈스·자이언츠 분리 ===== */
+const MCREST={양키스:['NY','#0c2340','#ffffff','round'],레드삭스:['B','#bd3039','#0c2340','shield'],블루제이스:['T','#134a8e','#e8291c','round'],오리올스:['B','#df4601','#111111','hex'],레이스:['TB','#092c5c','#8fbce6','round'],
+ 가디언스:['C','#0c2340','#e50022','shield'],타이거스:['D','#0c2340','#fa4616','shield'],로열스:['KC','#004687','#bd9b60','round'],트윈스:['M','#002b5c','#d31145','hex'],화이트삭스:['SX','#27251f','#c4ced4','round'],
+ 애스트로스:['H','#002d62','#eb6e1f','shield'],레인저스:['TX','#003278','#c0111f','shield'],매리너스:['S','#0c2c56','#16a39b','round'],에인절스:['LA','#ba0021','#c4ced4','hex'],애슬레틱스:['A','#003831','#efb21e','hex'],
+ 브레이브스:['A','#13274f','#ce1141','shield'],필리스:['P','#e81828','#ffffff','round'],메츠:['NY','#002d72','#ff5910','round'],말린스:['M','#00a3e0','#111111','hex'],내셔널스:['W','#ab0003','#ffffff','shield'],
+ 컵스:['C','#0e3386','#cc3433','round'],브루어스:['M','#12284b','#ffc52f','hex'],카디널스:['STL','#c41e3a','#ffffff','shield'],레즈:['C','#c6011f','#ffffff','round'],파이리츠:['P','#27251f','#fdb827','hex'],
+ 다저스:['LA','#005a9c','#ffffff','round'],파드리스:['SD','#2f241d','#ffc425','shield'],자이언츠:['SF','#27251f','#fd5a1e','round'],다이아몬드백스:['AZ','#a71930','#e3d4ad','hex'],로키스:['CO','#33006f','#c4ced4','shield']};
+const MC_CITY={시애틀:'매리너스',샌디에이고:'파드리스',토론토:'블루제이스',텍사스:'레인저스',디트로이트:'타이거스',피츠버그:'파이리츠',애리조나:'다이아몬드백스',뉴욕:'양키스',보스턴:'레드삭스',미네소타:'트윈스',샌프란시스코:'자이언츠',클리블랜드:'가디언스',볼티모어:'오리올스',휴스턴:'애스트로스',애틀랜타:'브레이브스',필라델피아:'필리스',시카고:'컵스',밀워키:'브루어스',세인트루이스:'카디널스',신시내티:'레즈',콜로라도:'로키스',캔자스시티:'로열스',탬파베이:'레이스',마이애미:'말린스',워싱턴:'내셔널스'};
+const KBO_DUP=['타이거스','트윈스','자이언츠'];
+{const _cd=crestData;crestData=function(name,fb){try{const n=String(name||'');if(!n)return _cd(name,fb);
+  let key=Object.keys(MCREST).find(k=>n===k)||Object.keys(MCREST).find(k=>n.includes(k))||(MC_CITY[n]||'');
+  if(!key){const c=Object.keys(MC_CITY).find(c=>n.startsWith(c));if(c)key=MC_CITY[c]}
+  if(key){const dup=KBO_DUP.includes(key)&&n===key;const mlbCtx=(S&&S.stage==='pro'&&S.pro&&S.pro.league==='MLB')||/MLB|디트로이트|미네소타|샌프란시스코/.test(n)||(S&&S._mlbCrest);
+    if(!dup||mlbCtx){const m=MCREST[key];return{k:[key],m:m[0],c1:m[1],c2:m[2],sh:m[3]}}}}catch(e){}return _cd(name,fb)}}
 
 </script>
 
