@@ -1793,15 +1793,14 @@ function awards(rep){
 
 /* ===================== INTERNATIONAL ===================== */
 const NATS={일본:{ab:'일본',c:'#1d2088',r:60},미국:{ab:'미국',c:'#0a3161',r:61},대만:{ab:'대만',c:'#0b3a8c',r:54},도미니카:{ab:'도미니카',c:'#002d62',r:60},쿠바:{ab:'쿠바',c:'#cf142b',r:55},멕시코:{ab:'멕시코',c:'#006847',r:56}};
-function natForm(){const cur=yearTot(S.y,['KBO']),prv=yearTot(S.y-1,['KBO']);
+function natForm(){if(S.pro&&S.pro.league==='MLB')return natFormMLB();const cur=yearTot(S.y,['KBO']),prv=yearTot(S.y-1,['KBO']);
   if(!isP()){const b=cur.b.PA>=150?cur.b:prv.b.PA>=250?prv.b:null;if(!b)return null;return{ok:opsN(b)>=.8,bonus:cl((opsN(b)-.8)*1.0,0,.2)}}
   const p=cur.p.outs>=120?cur.p:prv.p.outs>=200?prv.p:null;if(!p)return null;const e=eraN(p);return{ok:e<=3.6,bonus:cl((3.6-e)*.1,0,.2)}}
 function intl(rep,cy){
-  const m=S.m;if(!(S.stage==='pro'&&!S.pro.dev&&S.pro.debut<=S.y&&S.pro.league==='KBO'))return;
+  const m=S.m;if(!(S.stage==='pro'&&((S.pro.league==='KBO'&&!S.pro.dev&&S.pro.debut<=S.y)||S.pro.league==='MLB')))return;
   const o=ovrE(),nf=natForm(),good=(nf&&nf.ok)||o>=62;let ev=null;
   if(m===8&&cy>=2028&&(cy-2028)%4===0&&good)ev={n:`${cy} 올림픽`,opp:['일본','미국','도미니카']};
   if(m===9&&cy>=2026&&(cy-2026)%4===0&&good)ev={n:`${cy} 아시안게임`,opp:['대만','일본']};
-  if(m===11&&cy>=2027&&(cy-2027)%8===0&&good)ev={n:`${cy} 프리미어12`,opp:['일본','대만','미국','멕시코']};
   if(m===3&&cy>=2026&&(cy-2026)%4===0&&good)ev={n:`${cy} WBC`,opp:['일본','미국','도미니카']};
   if(!ev)return;
   S.hist.nat++;S.ach.nat=S.ach.nat||cy;S.rel.fame+=5;ME.xp+=4;rep.lines.push(`${ev.n} 국가대표 발탁! (성장 포인트 +4)`);
@@ -4635,7 +4634,7 @@ const INTL_OFF=/구단|프런트|대체자|돈도|돈 없|계약|단장|감독 �
 const toIntl=t=>t.replace(/가을야구/g,'국대 경기').replace(/가을에/g,'국대에서').replace(/가을만 되면/g,'큰 대회만 되면').replace(/가을/g,'국대').replace(/정규리그에서만/g,'리그에서만').replace(/포스트시즌/g,'국제대회');
 {const _c12=comments;comments=function(tone,x){let out=_c12(tone,x);try{if(x&&x.intl){out.forEach(c=>{if(c.nar||/국대|국제|대표|태극|대한민국|한국|일본|대만|미국|병역|금메달|은메달|동메달/.test(c.t))c.t=toIntl(c.t)});out=out.filter(c=>c.nar||!INTL_OFF.test(c.t));out.forEach(c=>{c.fl=null;if(c.re)c.re=c.re.filter(r=>!INTL_OFF.test(r.t))})}}catch(e){}return out}}
 /* 병역 특례 후엔 아시안게임·올림픽 미선발 · WBC/프리미어12는 시즌 전 참가 여부 선택 (참가 시 피로↑) */
-function intlUpcoming(y){const L=[];if(y>=2026&&(y-2026)%4===0)L.push(['wbc',`${y} WBC`,'3월','시즌 개막 직전이라 몸을 일찍 끌어올려야 해요 · 피로도↑']);if(y>=2027&&(y-2027)%8===0)L.push(['p12',`${y} 프리미어12`,'11월','시즌 끝나고 쉬지 못하고 바로 떠나요 · 피로도↑']);return L}
+function intlUpcoming(y){const L=[];if(y>=2026&&(y-2026)%4===0)L.push(['wbc',`${y} WBC`,'3월','시즌 개막 직전이라 몸을 일찍 끌어올려야 해요 · 피로도↑']);return L}
 {const _ny6=newYear;newYear=function(){const r=_ny6();try{if(S.stage==='pro'&&S.pro&&!S.pro.dev&&S.pro.league==='KBO'){const nf=natForm(),good=(nf&&nf.ok)||ovrE()>=62;
   if(good)for(const [k,n,mo,s] of intlUpcoming(S.y)){S.intlPick=S.intlPick||{};if(S.intlPick[n]!=null)continue;
     S.queue.push({title:`🇰🇷 ${n} 대표팀 예비 명단`,text:`대표팀 감독이 연락했다. "${mo}에 열리는 ${n}, 함께 가자." 국가대표로 뛰면 이름값이 오르지만 몸은 더 지친다.`,ch:[{t:'태극마크 단다',s:`인기·성장↑ · ${s}`,act:'intlp',arg:{n,go:1}},{t:'이번엔 고사한다',s:'시즌에 집중 · 대표팀 감독 서운함',act:'intlp',arg:{n,go:0}}]})}}}catch(e){}return r}}
@@ -8993,6 +8992,10 @@ ACT.toolFix=function(a){try{const ks=(a&&a.ks)||[],amt=(a&&a.amt)||.5,r=amt*.75,
 if(typeof CRIT!=='undefined')CRIT.add('toolFix');
 /* 툴 부족 판정: 포지션 툴 중요도 3순위까지 + 선구안·동체시력만 (예: 1루수 주력(4순위) 부족으로는 마이너행 X) */
 {const _wt=weakTools;weakTools=function(){const w=_wt();try{if(isP())return w;const pr=(typeof POSPRIO!=='undefined'&&POSPRIO[ME.pos])||null;if(!pr)return w;const ok=new Set([...pr.slice(0,3).flat(),'eye','vis']);return w.filter(k=>ok.has(k))}catch(e){return w}}}
+/* 고교→MLB 직행 등 MLB 소속(마이너 포함)도 국가대표(WBC·올림픽·아시안게임) 발탁 대상 — 메이저 성적은 조금 낮은 기준, 마이너 성적은 높은 기준 */
+function natFormMLB(){try{const P=isP(),pick=(ls,minB,minP)=>{const c=yearTot(S.y,ls),p=yearTot(S.y-1,ls);return P?(c.p.outs>=minP?c.p:p.p.outs>=minP*1.6?p.p:null):(c.b.PA>=minB?c.b:p.b.PA>=minB*1.6?p.b:null)};
+  let s=pick(['MLB'],120,100),mlb=true;if(!s){s=pick(['AAA','AA','fut'],150,120);mlb=false}if(!s)return null;
+  if(!P){const o=opsN(s),th=mlb?.72:.85;return{ok:o>=th,bonus:cl((o-th)*1.0,0,.2)}}const e=eraN(s),th=mlb?4.0:3.0;return{ok:e<=th,bonus:cl((th-e)*.1,0,.2)}}catch(e){return null}}
 
 </script>
 
