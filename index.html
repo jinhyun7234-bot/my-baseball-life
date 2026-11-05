@@ -1437,7 +1437,7 @@ function bookCheck(key,val,fmt){if(val>S.book[key]){const old=S.book[key];S.book
 
 /* ===================== BATTING ===================== */
 const BATC=.7;let PITB=8,PITC=.5;const pitB=L=>L<45?5:L<50?6.5:PITB;
-const softUp=(d,k)=>d<=7?d*k:7*k+(d-7)*k*.4;
+const softUp=(d,k)=>d<=8?d*k:8*k+(d-8)*k*.47;
 function batPA(L,m,gl){const dv=x=>x>L?softUp(x-L,BATC):(x-L),dvp=x=>x>L?softUp(x-L,.85):(x-L);
   const om=S.onMul||1,on=(()=>{const T=[[.19,[1,0,0]],[.06,[0,1,0]],[.02,[0,0,1]],[.068,[1,1,0]],[.03,[1,0,1]],[.02,[0,1,1]],[.024,[1,1,1]]];let x=R();for(const [p,st] of T){x-=p*om;if(x<0)return st.map(Boolean)}return[false,false,false]})(),risp=on[1]||on[2];
   let con=eff('con');if(risp){if(sk('chance'))con+=6;if(sk('weakch'))con-=6;if(sk('clutch')&&S.big)con+=4;con+=(ME.hid.men-50)*.06}
@@ -2095,7 +2095,7 @@ function choose(i){const q=S.queue[0];if(!q)return;const c=q.ch[i];S.queue.shift
 function careerTot(lv){const b=blankB(),p=blankP();let w=0;S.rows.forEach(r=>{if(lv&&!lv.includes(r.lv))return;addTo(b,r.b);addTo(p,r.p);if(PRO.includes(r.lv))w+=rowWAR(r)});return{b,p,w}}
 function retire(why){const t=careerTot(PRO),aw=S.awards;
   const score=typeof hofScore==='function'?hofScore(t.w):t.w+aw.filter(a=>a.n.includes('MVP')).length*6+aw.filter(a=>a.n.includes('골든')).length*2+aw.filter(a=>/왕|최다/.test(a.n)).length*2+S.hist.rings*2+Math.min(6,S.hist.nat)+(S.ach.record?5:0);
-  const hof=score>=105;if(hof)S.ach.hof=S.y;
+  const hofLine=(()=>{try{if(!isP())return 105;const r=hofProle(t.p);return r==='CL'||r==='RP'?74:105}catch(e){return 105}})(),hof=score>=hofLine;if(hof)S.ach.hof=S.y;
   S.ended={y:S.y,age:age(),why,score:Math.round(score),hof};S.stage='ret';S.queue=S.queue.filter(q=>q.type==='game'||q.type==='award');if(hof)celebrate('hof','명예의 전당 헌액',`${S.y} · 커리어 점수 ${Math.round(score)} · 통산 WAR ${t.w.toFixed(1)}`);news(`${why}.${hof?' 명예의 전당 헌액!':''}`);
   article(hof?`'전설' ${ME.name}, 명예의 전당 헌액`:`${ME.name}, ${age()}세에 현역 은퇴`,`프로 통산 WAR ${t.w.toFixed(1)}. ${hof?'첫 투표에서 압도적 지지를 받았다.':'정든 그라운드에 작별을 고했다.'}`,'retire');save()}
 function checkAch(){const A=S.ach,y=S.y,t=careerTot(PRO);
@@ -9421,7 +9421,7 @@ function retStory(){try{
   else out.push([hof?HOFL:seasons>=10?pk('gbc',['오래도록 꾸준히 잘한다는 것은 야구에서 가장 어려운 재능인데, 그는 그것을 커리어 내내 증명해 보였습니다.','이제 정든 그라운드를 떠나지만, 그가 남긴 시간들은 팬들의 기억 속에서 오래도록 꺼지지 않는 불빛으로 남을 것입니다.']):'길지 않은 시간이었지만 그라운드 위에서 보여준 진심은 충분히 전해졌으며, 그동안 정말 수고 많으셨습니다.']);
   return out.map(x=>x.join(' ')).join('\n\n')}catch(e){return''}}
 /* 은퇴 화면: 카드 바로 아래 멘트 */
-{const _vr=vRetired;vRetired=function(){let h=_vr();try{h=h.replace('(헌액 기준 110)','(헌액 기준 105)');const s=retStory();if(s){const box=`<div class="card retstory" style="gap:10px"><span class="lbl">은퇴 카드</span>${s.split('\n\n').map(x=>`<p style="margin:0;line-height:1.7">${esc(x)}</p>`).join('')}</div>`;const k=h.indexOf('<div class="card" style="text-align:center');h=k>=0?h.slice(0,k)+box+h.slice(k):h+box}}catch(e){}return h}}
+{const _vr=vRetired;vRetired=function(){let h=_vr();try{h=h.replace('(헌액 기준 110)',`(헌액 기준 ${(()=>{try{if(!isP())return 105;const r=hofProle(careerTot(PRO).p);return r==='CL'||r==='RP'?74:105}catch(e){return 105}})()})`);const s=retStory();if(s){const box=`<div class="card retstory" style="gap:10px"><span class="lbl">은퇴 카드</span>${s.split('\n\n').map(x=>`<p style="margin:0;line-height:1.7">${esc(x)}</p>`).join('')}</div>`;const k=h.indexOf('<div class="card" style="text-align:center');h=k>=0?h.slice(0,k)+box+h.slice(k):h+box}}catch(e){}return h}}
 /* 커리어 리캡: 마지막 장 앞에 */
 {const _rs=recapSlides;recapSlides=function(){const sl=_rs.apply(this,arguments);try{const s=retStory();if(s&&sl.length){const L=sl[sl.length-1],lf=L&&L.last;if(L)delete L.last;sl.push({th:'green',ey:'은퇴 카드',sub:s,last:lf||true})}}catch(e){}return sl}}
 
@@ -9631,7 +9631,7 @@ try{const T=(id,o)=>{const t=TR.find(x=>x.id===id);if(t)Object.assign(t,o)};
   if(!kb.length){try{if(typeof faScaleOffer==='function')faScaleOffer(c,age())}catch(e){}}
   const ri2=q.ch.findIndex(x=>x.act==='retire');q.ch.splice(ri2>=0?ri2:q.ch.length,0,c);try{if(typeof tagHome==='function'){q._ht=0;tagHome(q)}}catch(e){}}catch(e){}return q}}
 /* ===== 노쇠: 만 35세부터 경기력 서서히 하락 (능력치와 별개로 체감 노화) ===== */
-const ageDrop=()=>{try{const a=age();return a>=35?(a-34)*.45:0}catch(e){return 0}};
+const ageDrop=()=>{try{const a=age();return a>=35?(a-34)*.35:0}catch(e){return 0}};
 {const _b=batPA;batPA=function(L,m,gl){return _b(isP()?L:L+ageDrop(),m,gl)}}
 {const _mb=meBatPA;meBatPA=function(pR,risp){return _mb(isP()?pR:pR+ageDrop(),risp)}}
 {const _p=pitchGame;pitchGame=function(L,type){return _p(isP()?L+ageDrop():L,type)}}
