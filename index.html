@@ -9204,11 +9204,11 @@ function wbcRun(){const y=S.y,n=wbcName(y),nf=natForm(),bn=nf?nf.bonus:0,o=ovrE(
   const table=()=>['한국',...pool].map(t=>({t,...T[t],rpo:T[t].ra/Math.max(1,T[t].outs)})).sort((a,b)=>b.w-a.w||a.l-b.l||a.rpo-b.rpo);
   pool.forEach((t,i)=>{const g=play(t,`${n} 1라운드 C조 ${i+1}차전`,`대한민국 vs ${t} · 도쿄돔`,'pool',65,true,sp?(i===spGame?'SP':'none'):null);const my=g.my,kr=g.R[my],op=g.R[1-my];
     if(g.win){T.한국.w++;T[t].l++}else{T.한국.l++;T[t].w++}T.한국.ra+=op;T.한국.outs+=27;T[t].ra+=kr;T[t].outs+=27;
-    const left=pool.length-i,k=Math.ceil(others.length/left),done=others.splice(0,k).map(simO);
+    const left=pool.length-i,k=Math.ceil(others.length/left),done=others.splice(0,k).map(simO);try{wbcPostCm(g,table(),i,pool.length)}catch(e){}
     if(i<pool.length-1){const tb=table();S.queue.push({type:'wbcmid',y,n,st:tb,rk:tb.findIndex(x=>x.t==='한국')+1,res:`대한민국 ${kr}:${op} ${t} ${g.win?'승':'패'}`,others:done.map(x=>x.replace(/(\S+) 승 (\S+)/,'$1 승 vs $2').replace(/(\S+) 패 (\S+)/,'$2 승 vs $1')),next:pool[i+1],gi:i+1})}});
   others.splice(0).forEach(simO);
   const st=table();
-  const rk=st.findIndex(x=>x.t==='한국')+1,adv=rk<=2;S.queue.push({type:'wbcpool',y,n,st,rk,adv});
+  const rk=st.findIndex(x=>x.t==='한국')+1,adv=rk<=2;S.queue.push({type:'wbcpool',y,n,st,rk,adv});try{if(!adv)wbcPostCm(games[games.length-1],st,pool.length-1,pool.length,true)}catch(e){}
   let res=adv?'8강':'1라운드 탈락',last=games[games.length-1];
   if(adv){const qo=rk===1?pick(['베네수엘라','푸에르토리코']):pick(['도미니카','베네수엘라']);const g=play(qo,`${n} 8강`,`대한민국 vs ${qo} · 마이애미`,'qf',80,true,sp?(spGame===0?'SP':'none'):null);last=g;
     if(g.win){res='4강';const so=pick(['미국','일본','도미니카'].filter(x=>x!==qo));const g2=play(so,`${n} 준결승`,`대한민국 vs ${so} · 마이애미`,'sf',95,false,sp?'none':null);last=g2;
@@ -9297,6 +9297,23 @@ function wbcArticle(g,c){try{const my=g.my,kr=g.R[my],op=g.R[1-my],P=isP(),mb=g.
     {t:'일찍 쉰다',s:'피로↓ · 멘탈↑',act:'famXp',arg:{fat:-6,men:2,r:'몸이 가볍다.'}}]}];
   const ev=pick(L.filter(e=>!(m.xpSeen||[]).includes(e.title)).length?L.filter(e=>!(m.xpSeen||[]).includes(e.title)):L);
   (m.xpSeen=m.xpSeen||[]).push(ev.title);m.xpN++;m.xpT=S.turn;out.push(ev)}catch(e){}return out}}
+
+/* 1라운드 경기 후 댓글 보강: 탈락 확정이면 탈락 확정 반응 · 1~2차전 뒤 패배가 있으면 '경우의 수' 드립 */
+function wbcPostCm(g,tb,gi,np,fin){const a=(S.arts||[]).find(x=>x.id===g.aid);if(!a)return;const K=tb.find(x=>x.t==='한국');if(!K)return;const rem=np-(gi+1),maxW=K.w+rem;
+  const above=tb.filter(x=>x.t!=='한국'&&x.w>maxW).length,elim=fin||above>=2,gn=giv(ME.name),win=!!g.win,lead=tb.filter(x=>x.t!=='한국')[0],ldn=lead?lead.t:'일본';
+  const others=tb.filter(x=>x.t!=='한국').map(x=>x.t),o1=others[0]||'일본',o2=others[1]||'대만';const L=[];
+  if(elim){const done=a.cmElim;if(done)return;a.cmElim=1;
+    if(win)L.push(['이겼는데 탈락 확정이라니 허무하다…',['이기고도 짐 싸는 기분 최악']],['마지막에 이겨봤자 이미 늦었다',['유종의 미라도 거둔 걸로 치자']]);
+    L.push([`탈락 확정… 또 1라운드에서 짐 싼다`,['비행기표 예매하러 감 ㅠ']],['이제 남은 경기는 그냥 자존심 싸움이다',['유종의 미라도 거두자']],['다음 WBC까지 또 4년 기다려야 하냐',['4년 뒤엔 다를까…']],['리그 수준 이게 현실이다 진지하게 반성하자',['국내에서만 잘하면 뭐하냐']],['국대 세대교체 이번엔 진짜 해야 한다',[]],[`${gn}는 할 만큼 했다 혼자서 어떻게 하냐`,[]]);
+    if(fin)L.unshift(['결국 1라운드 탈락 확정이네… 할 말이 없다',['이번 대회는 그냥 지우자']]);}
+  else if(gi<=1&&K.l>=1){
+    L.push(['경우의 수 계산기 다시 꺼낸다 ㅋㅋㅋ',['또 시작이네 ㅋㅋ']],['또 경우의 수냐… WBC만 오면 수학 공부함',['국대 덕분에 확통 마스터함 ㅋㅋ']],['수학의 정석 펴라 경우의 수 단원 나간다',['선생님 진도 너무 빨라요 ㅋㅋ']],['경우의 수 따지기 시작하면 이미 끝난 거라던데',['그래도 희망은 있다']],[`일단 남은 경기 다 이기고 ${o1}가 ${o2} 잡아주길 기도하자`,['희망회로 풀가동 중']],['이제 실점도 줄여야 함 아웃카운트당 실점까지 따지게 생겼다',['콜드승 하면 계산 편해짐 ㅋㅋ']],['자력 진출은 물 건너가는 분위기… 남의 경기 응원하게 생겼다',['남의 집 경기 이렇게 열심히 보긴 처음']]);
+    if(K.l>=2)L.unshift(['2패면 이제 경우의 수도 거의 안 남았다…',['그래도 산술적으로는 가능함 ㅋㅋ']],['경우의 수가 아니라 기적의 수가 필요함',['기적 한 번만 ㄱㄱ']]);
+    if(win)L.push(['이겨서 일단 경우의 수는 살렸다',['아직 안 끝났다']]);}
+  if(!L.length)return;const pk=L.filter(c=>!seenHas('wpc:'+c[0])).sort(()=>R()-.5).slice(0,elim?3:2);
+  const add=pk.map(([t,re])=>{seenAdd('wpc:'+t);return mkC(josaFix(t),re.length&&R()<.6?[{nk:pick(NICKS),t:pick(re),up:ri(60,900)}]:[],{up:ri(800,5000)})});
+  if(elim){a.cm=(a.cm||[]).filter(c=>!/진출|8강|조 1위|이 기세|다음 경기도|국뽕|이 맛에|우승 가자|우승까지|마이애미|희망/.test(String(c&&c.t||'')))}
+  a.cm=add.concat(a.cm||[])}
 
 /* ===================== 은퇴 카드 멘트: 그 선수의 가장 특출난 3~5가지를 엮기 (합니다체 · 비유) ===================== */
 function retStory(){try{
@@ -9525,6 +9542,12 @@ const isOF=()=>['LF','CF','RF'].includes(ME&&ME.pos);
   if(d>=80)L.push(`올해만 보살 ${n}개… 이쯤 되면 상대 팀 주루코치 연구 대상`,`${gn} 어깨 보려고 외야석 예매함 ㅋㅋ`);
   const RE=['ㄹㅇ 레이저빔','중계로 봐도 소름','주자 표정 봐라 ㅋㅋ','이건 하이라이트 각'];
   const add=L.filter(t=>!seenHas('oa:'+t)).sort(()=>R()-.5).slice(0,R()<.4?2:1);add.forEach((t,i)=>{seenAdd('oa:'+t);out.splice(Math.min(1+i*2,out.length),0,mkC(t,R()<.4?[{nk:pick(NICKS),t:pick(RE),up:ri(30,400)}]:[]))})}catch(e){}return out}}
+/* ===== 경기 화면 깜빡임 완화: 이벤트마다 필드/VS/중계 박스가 투명→불투명으로 다시 페이드되던 것 → 화면 종류가 바뀔 때만 페이드 ===== */
+{const _r=render;render=function(){_r.apply(this,arguments);try{if(typeof document==='undefined')return;if(!document.getElementById('nofadecss')){const st=document.createElement('style');st.id='nofadecss';st.textContent='.nofade:not(.hitfx){animation:none!important}';document.head.appendChild(st)}
+  const q=S&&!ui.simming&&nextQ(),inGame=!!(q&&q.type==='game'),gk=inGame?(q.g.title||'')+'|'+q.g.ev.length:null;
+  const panel=document.querySelector('.vscut')?'vs':document.querySelector('.fieldw')?'field':'';
+  if(inGame&&ui._fdG===gk){if(ui._fdP===panel)document.querySelectorAll('.fieldw,.vscut').forEach(el=>{if(!el.classList.contains('hitfx'))el.classList.add('nofade')});document.querySelectorAll('.gnow,.board').forEach(el=>el.classList.add('nofade'))}
+  ui._fdG=gk;ui._fdP=panel}catch(e){}}}
 
 </script>
 
