@@ -1438,7 +1438,7 @@ function bookCheck(key,val,fmt){if(val>S.book[key]){const old=S.book[key];S.book
 /* ===================== BATTING ===================== */
 const BATC=.7;let PITB=8,PITC=.5;const pitB=L=>L<45?5:L<50?6.5:PITB;
 function batPA(L,m,gl){const dv=x=>x>L?(x-L)*BATC:(x-L),dvp=x=>x>L?(x-L)*.85:(x-L);
-  const om=S.onMul||1,on=[R()<.3*om,R()<.18*om,R()<.1*om],risp=on[1]||on[2];
+  const om=S.onMul||1,on=(()=>{const T=[[.19,[1,0,0]],[.06,[0,1,0]],[.02,[0,0,1]],[.068,[1,1,0]],[.03,[1,0,1]],[.02,[0,1,1]],[.024,[1,1,1]]];let x=R();for(const [p,st] of T){x-=p*om;if(x<0)return st.map(Boolean)}return[false,false,false]})(),risp=on[1]||on[2];
   let con=eff('con');if(risp){if(sk('chance'))con+=6;if(sk('weakch'))con-=6;if(sk('clutch')&&S.big)con+=4;con+=(ME.hid.men-50)*.06}
   const lefty=ME.hand.includes('좌타')||ME.hand.includes('양타')?.004:0;
   const k=cl(.205-dv(con)*.0042-dv(eff('eye'))*.0008-(sk('eyem')?.01:0)+(sk('kprone')?.03:0),.05,.42);
