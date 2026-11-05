@@ -9497,6 +9497,10 @@ function sbAnimate(){try{if(typeof document==='undefined'||!S||ui.simming)return
   pend.forEach(([i,k,v],j)=>{ui.sbT.push(setTimeout(()=>{const c=cell(i,k);if(!c||!c.isConnected)return;c.textContent=v;c.classList.remove('sbpop');void c.offsetWidth;c.classList.add('sbpop');run[i]+=+v||0;const r=rc(i);if(r&&r.isConnected)r.textContent=run[i];if(+v>0)try{AU.sfx('run')}catch(er){}},step*(j+1)))});
   ui.sbT.push(setTimeout(()=>{for(let i=0;i<2;i++){const r=rc(i);if(r&&r.isConnected)r.textContent=e.R[i];for(let j=0;j<3;j++){const c=xc(i,j);if(c&&c.isConnected)c.textContent=XN[i][j]}}},step*(pend.length+1)))}catch(er){}}
 {const _r=render;render=function(){_r.apply(this,arguments);try{sbAnimate()}catch(e){}}}
+/* ===== 투수 변화구: 변화구 훈련을 안 해도 아는 구종은 조금씩 자람 · 변화구 훈련 시에도 살짝 더 (비공개) ===== */
+{const _tm=trainMonth;trainMonth=function(rep){const inj=ME&&ME.inj;const p0=ME&&ME.pt?{...ME.pt}:null;const out=_tm(rep);
+  try{if(!isP()||inj||!p0)return out;const a=age(),am=a<=23?1.1:a<=27?.9:a<=30?.55:a<=33?.35:.2,int=[.7,1,1.25][S.plan.int]||1,brk=(S.plan.alloc||{}).brk||0;
+    PITCHES.forEach(k=>{if(!(p0[k]>0)||!(ME.pt[k]>0))return;const g=ME.pt[k]-p0[k];if(g>0&&brk)ME.pt[k]=cl(ME.pt[k]+g*.15,20,capOf(k));grow(k,.05*am*int)})}catch(e){}return out}}
 
 </script>
 
