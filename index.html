@@ -1437,7 +1437,8 @@ function bookCheck(key,val,fmt){if(val>S.book[key]){const old=S.book[key];S.book
 
 /* ===================== BATTING ===================== */
 const BATC=.7;let PITB=8,PITC=.5;const pitB=L=>L<45?5:L<50?6.5:PITB;
-function batPA(L,m,gl){const dv=x=>x>L?(x-L)*BATC:(x-L),dvp=x=>x>L?(x-L)*.85:(x-L);
+const softUp=(d,k)=>d<=7?d*k:7*k+(d-7)*k*.4;
+function batPA(L,m,gl){const dv=x=>x>L?softUp(x-L,BATC):(x-L),dvp=x=>x>L?softUp(x-L,.85):(x-L);
   const om=S.onMul||1,on=(()=>{const T=[[.19,[1,0,0]],[.06,[0,1,0]],[.02,[0,0,1]],[.068,[1,1,0]],[.03,[1,0,1]],[.02,[0,1,1]],[.024,[1,1,1]]];let x=R();for(const [p,st] of T){x-=p*om;if(x<0)return st.map(Boolean)}return[false,false,false]})(),risp=on[1]||on[2];
   let con=eff('con');if(risp){if(sk('chance'))con+=6;if(sk('weakch'))con-=6;if(sk('clutch')&&S.big)con+=4;con+=(ME.hid.men-50)*.06}
   const lefty=ME.hand.includes('좌타')||ME.hand.includes('양타')?.004:0;
@@ -1777,7 +1778,7 @@ function awards(rep){
   /* 개인 타이틀 1개당 MVP·골든글러브 확률 아주 살짝↑ (MVP: WAR +0.12 효과, 골글: WAR +0.08 효과 · 최소 WAR 조건은 그대로) */
   const _top=(c,pt)=>{try{if(S.pro.league!=='KBO')return false;const r=ranking(c,pt).list;return!!(r.length&&(r[0].me||r.some(x=>x.me&&x.v===r[0].v)))}catch(e){return false}};
   const tcnt=isP()?[_top('w',1)&&p.W>0,_top('era',1),_top('k',1)&&p.K>0,_top('sv',1)&&p.SV>0,_top('hld',1)&&p.HLD>0].filter(Boolean).length:[_top('avg',0),_top('hr',0)&&b.HR>0,_top('rbi',0)&&b.RBI>0,_top('sb',0)&&b.SB>0,_top('h',0)&&b.H>0,_top('r',0)&&b.R>0,_top('obp',0),_top('slg',0)].filter(Boolean).length;
-  if(w>=(isP()?6:6.3)&&w+tcnt*.12>rn(isP()?6.9:7.2,.7)){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
+  const mvN=S.awards.filter(a=>a.n==='정규시즌 MVP').length,mvL=S.awards.some(a=>a.n==='정규시즌 MVP'&&a.y===S.y-1);if(w>=(isP()?6:6.3)&&w+tcnt*.12>rn((isP()?6.9:7.2)+(mvL?.7:0)+Math.min(1.2,mvN*.25),.7)){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
   const prior=S.rows.filter(r=>r.lv==='KBO'&&r.y<S.y),priorPA=prior.reduce((s,r)=>s+r.b.PA,0),priorO=prior.reduce((s,r)=>s+r.p.outs,0);
   if(!S.ach.roy&&S.y-S.pro.debut<5&&priorPA<60&&priorO<90&&(b.PA>=150||p.outs>=120)&&w>rn(2.4,.8)){give('신인왕');S.ach.roy=S.y}
   if(isP()){if(w>3.7&&R()<ggProb(w+tcnt*.08,'P'))give('골든글러브 (투수)')}else if(b.G>=100&&w>3.7&&R()<ggProb(w+tcnt*.08,ME.pos))give(`골든글러브 (${POS[ME.pos]})`);
@@ -1834,7 +1835,7 @@ function genPA(bR,pR){const d=bR-pR,k=cl(.2-d*.0045,.07,.38),bb=cl(.082+d*.0012,
   if(r<k)return'K';if(r<k+bb+.009)return'BB';
   if(R()<cl(.325+d*.0028,.2,.45)){const hr=cl(.09+d*.004,.02,.3),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.2?'2B':'1B'}
   return pick(['GO','GO','FO','FO','LO'])}
-function meBatPA(pR,risp){let con=eff('con')+(sk('clutch')?4:0)+(ME.hid.men-50)*.12+(risp?(sk('chance')?6:0)-(sk('weakch')?6:0)+(ME.hid.men-50)*.06:0);const L=pR,dv=x=>x>L?(x-L)*BATC:(x-L),dvp=x=>x>L?(x-L)*.85:(x-L);
+function meBatPA(pR,risp){let con=eff('con')+(sk('clutch')?4:0)+(ME.hid.men-50)*.12+(risp?(sk('chance')?6:0)-(sk('weakch')?6:0)+(ME.hid.men-50)*.06:0);const L=pR,dv=x=>x>L?softUp(x-L,BATC):(x-L),dvp=x=>x>L?softUp(x-L,.85):(x-L);
   const k=cl(.205-dv(con)*.0042-dv(eff('eye'))*.0008+(sk('kprone')?.03:0),.05,.42),bb=cl(.082+dv(eff('eye'))*.0018,.02,.2),r=R();
   if(r<k)return'K';if(r<k+bb+.01)return'BB';
   {const sv=DV(eff('spd'));if(sv>=70&&R()<.012+(sv-70)*.0008){if(R()<cl(.4+(sv-70)*.012,.4,.75)){S._lastMeSpd=1;S._bunt=1;return'1B'}return'GO'}}
@@ -2393,7 +2394,7 @@ function lpSimP(p,n){const m=p.s,str=S.lg.str[p.t],era0=cl(4.4-(p.r-56)*.17,1.5,
   else{const apps=Math.round(n*(p.k==='CL'?.42:.46)*rn(1,.12));for(let i=0;i<apps;i++){m.G++;const outs=R()<.85?3:ri(1,5);m.outs+=outs;const er=pois(era0*.92*outs/27);m.R+=er;m.K+=pois(outs/3*(1+(p.r-56)*.02));m.BB+=pois(outs/3*.38);m.H+=pois(outs/3*cl(.9-(p.r-56)*.014,.55,1.3));
     const opp=R()<(p.k==='CL'?.66:.62)*(1+(str-50)*.012);if(opp){if(!er||R()<.35){if(p.k==='CL')m.SV++;else m.HLD++}else if(R()<.4)m.L++}else if(R()<.08)m.W++}}}
 function simLeague(g,ps){ensureLP();const n=GM.KBO[S.m],avgS=S.lg.str.reduce((a,b)=>a+b)/10,my=S.stage==='pro'&&S.pro.league==='KBO'?S.pro.team:-1;
-  S.lg.str.forEach((s,i)=>{const p=.5+(s-avgS)*.014+(i===my&&g&&ONE.includes(S.role)?ps*.012+(S.rel.coach-50)*.0004+(S.rel.chem-50)*.0006:0);let w=0,d=0;
+  S.lg.str.forEach((s,i)=>{const p=.5+(s-avgS)*.014+(i===my&&g&&ONE.includes(S.role)?ps*.008+(S.rel.coach-50)*.0004+(S.rel.chem-50)*.0006:0);let w=0,d=0;
     for(let k=0;k<n;k++){const r=R();if(r<.015){d++;S.lg.rec[i].push('D')}else if(r<p){w++;S.lg.rec[i].push('W')}else S.lg.rec[i].push('L')}
     S.lg.rec[i]=S.lg.rec[i].slice(-20);S.lg.w[i]+=w;S.lg.d[i]+=d;S.lg.l[i]+=n-w-d});
   S.lp.forEach(p=>p.k==='B'?lpSimB(p,n):lpSimP(p,n))}
@@ -3767,7 +3768,7 @@ const SERMVP={준플레이오프:'준플레이오프 MVP',플레이오프:'플�
 function serEnd(rep,name,won,sB,sP){if(!won)return;const p=serMVPProb(sB,sP),hit=R()<p;
   if(name==='한국시리즈'){S._ksOK=hit;return}if(name==='월드시리즈'){S._wsOK=hit;return}
   const an=SERMVP[name];if(!an||!hit)return;S.awards.push({y:S.y,n:an});S.rel.fame=cl(S.rel.fame+4,0,100);ME.xp+=3;
-  const ln=isP()?`${ip(sP.outs)}이닝 ${sP.R}실점 ${sP.K}탈삼진`:`타율 ${avg(sB)} ${sB.HR}홈런 ${sB.RBI}타점`;rep.lines.push(`${an} 수상! (${ln})`);news(`${S.y} ${an}: ${ME.name} — ${ln}`);
+  const ln=isP()?`${ip(sP.outs)}이닝 ${sP.R}실점 ${sP.K}탈삼진`:`타율 ${avg(sB)}${sB.HR?` ${sB.HR}홈런`:''}${sB.RBI?` ${sB.RBI}타점`:''}${!sB.HR&&!sB.RBI?` ${sB.H}안타`:''}`;rep.lines.push(`${an} 수상! (${ln})`);news(`${S.y} ${an}: ${ME.name} — ${ln}`);
   feat(`${an} 수상`,1);article(`${ME.name}, ${an} 선정… ${ln}`,`${name} 내내 ${jo(ME.name,'이','가')} 팀을 이끌었다.`,'psHero',{ps:'PS',great:1,line:ln,win:true,title:name,ipO:sP.outs,ra:sP.R,gH:sB.H,gRBI:sB.RBI,gPA:sB.PA,gHR:sB.HR})}
 
 /* ---------- 큰 경기 댓글 ---------- */
@@ -5264,7 +5265,7 @@ function batOPS(){try{const lg=S.pro.league,{b}=yearTot(S.y,[lg]);return{ops:b.P
   else{const {p}=yearTot(S.y,[S.pro.league]),e=p.outs>=90?p.R*27/p.outs:null;if(ME.pos==='SP'&&S.role==='SP'&&e!=null&&e>=5.2)L=[`${nm} 감독 약점 잡은 거 아니냐 ERA ${e.toFixed(2)}에 계속 선발이네`,`${gn} 선발 나오는 날은 그냥 불펜데이임`,`로테이션 자리 ${gn} 전용석이냐 ㅋㅋ`]}
   L=L.filter(t=>!seenHas(t));if(!L.length)return out;const t=pick(L);seenAdd(t);S.weakY=S.y;out.splice(Math.min(out.length,ri(0,2)),0,{nk:pick(NICKS),fl:null,t,up:Math.round(ri(200,1100)*(1+S.rel.fame/30)),dn:ri(5,60),ago:pick(AGO),re:R()<.5?[{nk:pick(NICKS),t:pick(['ㄹㅇ 의문임','감독이 믿는 데는 이유가 있겠지','이건 반박 불가','진짜 무슨 사연 있냐 ㅋㅋ']),up:ri(20,300)}]:[]})}catch(e){}return out}}
 /* 포스트시즌 팀 보정: 상위 시드 유리(업셋 드묾) + 팀 케미·감독 신뢰 */
-function psTeamAdj(meA){try{return(meA?1.7:-1.7)+(S.rel.chem-50)*.03+(S.rel.coach-50)*.02}catch(e){return 0}}
+function psTeamAdj(meA){try{return(meA?.9:-.9)+(S.rel.chem-50)*.03+(S.rel.coach-50)*.02}catch(e){return 0}}
 
 /* ===================== MLB 포스트시즌: 순위표 기준 진출·시드(1~2위 디비전 직행) · 정규시즌 종료 화면 · MLB 타자/끝내기 댓글 ===================== */
 function myMLBLg(){return MLB30.AL.includes(myMLBNick())?'AL':'NL'}
@@ -9629,6 +9630,12 @@ try{const T=(id,o)=>{const t=TR.find(x=>x.id===id);if(t)Object.assign(t,o)};
   const c={t:`KBO 복귀: ${T.city} ${T.nick}`,s:`${yrs}년 최대 ${money(tot)}`,d:`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/yrs)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상)`,act:'fa',arg:{team:lt,yrs,tot,ret:1}};
   if(!kb.length){try{if(typeof faScaleOffer==='function')faScaleOffer(c,age())}catch(e){}}
   const ri2=q.ch.findIndex(x=>x.act==='retire');q.ch.splice(ri2>=0?ri2:q.ch.length,0,c);try{if(typeof tagHome==='function'){q._ht=0;tagHome(q)}}catch(e){}}catch(e){}return q}}
+/* ===== 노쇠: 만 35세부터 경기력 서서히 하락 (능력치와 별개로 체감 노화) ===== */
+const ageDrop=()=>{try{const a=age();return a>=35?(a-34)*.45:0}catch(e){return 0}};
+{const _b=batPA;batPA=function(L,m,gl){return _b(isP()?L:L+ageDrop(),m,gl)}}
+{const _mb=meBatPA;meBatPA=function(pR,risp){return _mb(isP()?pR:pR+ageDrop(),risp)}}
+{const _p=pitchGame;pitchGame=function(L,type){return _p(isP()?L+ageDrop():L,type)}}
+{const _mp=mePitPA;mePitPA=function(bR,risp,tired){return _mp(isP()?bR+ageDrop():bR,risp,tired)}}
 
 </script>
 
