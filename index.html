@@ -9507,6 +9507,19 @@ function sbAnimate(){try{if(typeof document==='undefined'||!S||ui.simming)return
   const d0=DV(ME.r.pow),add=ri(2,3)*.75;ME.r.pow=cl(ME.r.pow+add,20,capOf('pow'));const d1=DV(ME.r.pow);
   const how=pick([`송구 훈련으로 어깨를 쓰는 법을 몸에 익히다 보니, 타석에서도 어깨가 먼저 열리지 않고 끝까지 버텨준다. 배팅 케이지에서 타구 소리가 달라졌다.`,`멀리 던지기를 반복하던 어느 날, 스윙할 때도 어깨 회전이 훨씬 부드러워진 걸 느꼈다. 타격코치가 "요즘 공이 왜 이렇게 멀리 나가냐"며 고개를 갸웃했다.`,`어깨 보강 운동을 꾸준히 했더니 스윙 끝에서 힘이 한 번 더 실린다. 펜스 앞에서 잡히던 타구가 담장을 넘어가기 시작했다.`]);
   feat('의외의 천재성 — 어깨를 쓰는 스윙',false);S.queue.push({title:'✨ 의외의 천재성',text:`${how}\n\n파워 ${Math.round(d0)} → ${Math.round(d1)}`})}catch(e){}}}
+/* ===== 어깨 좋은 외야수: 시즌 보살 누적(비공개) + 보살 칭찬 댓글 ===== */
+const isOF=()=>['LF','CF','RF'].includes(ME&&ME.pos);
+{const _adv=advance;advance=function(){const r=_adv.apply(this,arguments);try{const rp=S.report;if(!rp||isP()||!isOF()||S.stage!=='pro'||!(rp.ph===1||rp.ph===2))return r;
+  const k=rp.y+'-'+rp.ph;if(S._oaK===k)return r;S._oaK=k;const G=Object.values(rp.games||{}).reduce((a,g)=>a+((g.m&&g.m.G)||0),0);if(!G)return r;
+  const d=DV(E('arm')),rate=cl((d-60)*.0025,.003,.08)*(ME.pos==='RF'?1.15:ME.pos==='LF'?.9:1);let n=0;for(let i=0;i<G;i++)if(R()<rate)n++;
+  S.oa=S.oa||{};S.oaWO=S.oaWO||{};S.oa[rp.y]=(S.oa[rp.y]||0)+n;let w=0;for(let i=0;i<n;i++)if(R()<.06)w++;S.oaWO[rp.y]=(S.oaWO[rp.y]||0)+w}catch(e){}return r}}
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!Array.isArray(out)||isP()||!isOF()||S.stage!=='pro'||!/^(hype|mix|bad)$/.test(String(tone||''))&&!(x&&(x.gPA!=null||x.ps)))return out;
+  const d=DV(E('arm')),y=S.y,n=(S.oa||{})[y]||0,wo=(S.oaWO||{})[y]||0;if(d<70||n<1||R()>.4)return out;const gn=giv(ME.name),gE=jo(gn,'은','는');
+  const L=[`시즌 ${n}호 보살 ㅋㅋㅋㅋ ${gE} 그냥 미친놈이다`,`요 근래 본 가장 완벽한 홈 보살 같음 ㄹㅇ`,`진짜 봐도 봐도 신기하네 어째 공이 저래 날아가노 ㅋㅋㅋ 중력 영향을 전혀 안 받는 듯 거의 발사가 되네`,`레이저처럼 날아감 ㅋㅋㅋ ${gn} 이렇게 대단한 선수였어?`,`${gn} 어깨는 ㄹㅇ 명품임`,`3루 코치가 ${gn} 쪽으로 타구 가면 팔 돌리다가 멈춤 ㅋㅋ`,`외야에서 노바운드로 홈 송구 ㄷㄷ 포수 미트에 그대로 꽂힘`,`${gn} 쪽으로 타구 가면 주자들이 알아서 멈춘다 ㅋㅋ`];
+  if(wo>=1)L.unshift(`시즌 ${wo}호 끝내기 저지 보살 ㅋㅋㅋㅋ ${gE} 그냥 미친놈이다`);
+  if(d>=80)L.push(`올해만 보살 ${n}개… 이쯤 되면 상대 팀 주루코치 연구 대상`,`${gn} 어깨 보려고 외야석 예매함 ㅋㅋ`);
+  const RE=['ㄹㅇ 레이저빔','중계로 봐도 소름','주자 표정 봐라 ㅋㅋ','이건 하이라이트 각'];
+  const add=L.filter(t=>!seenHas('oa:'+t)).sort(()=>R()-.5).slice(0,R()<.4?2:1);add.forEach((t,i)=>{seenAdd('oa:'+t);out.splice(Math.min(1+i*2,out.length),0,mkC(t,R()<.4?[{nk:pick(NICKS),t:pick(RE),up:ri(30,400)}]:[]))})}catch(e){}return out}}
 
 </script>
 
