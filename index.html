@@ -9618,6 +9618,16 @@ try{const T=(id,o)=>{const t=TR.find(x=>x.id===id);if(t)Object.assign(t,o)};
 /* ===== 시즌 중 기록 축하(트리플 크라운 등)가 오프시즌 선택 이벤트·계약 뒤로 밀리던 문제: 진행 직후 생긴 축하 화면은 첫 선택 이벤트보다 앞으로 ===== */
 {const _adv=advance;advance=function(){const r=_adv.apply(this,arguments);try{const Q=S.queue;let la=-1;Q.forEach((q,i)=>{if(q&&['game','srecap','regend','psflow','phstat','intlback','wbcend'].includes(q.type))la=i});let fi=-1;for(let i=la+1;i<Q.length;i++){const q=Q[i];if(q&&((!q.type&&q.ch)||q.type==='contract')){fi=i;break}}if(fi<0)return r;
   const mv=[];for(let i=Q.length-1;i>fi;i--){const q=Q[i];if(q&&q.type==='award'&&q.a&&!/결혼|입단|계약|프러포즈/.test(String(q.a.title||'')))mv.unshift(Q.splice(i,1)[0])}if(mv.length)Q.splice(fi,0,...mv)}catch(e){}return r}}
+/* ===== MLB에서 잘하고 KBO 복귀 시장: 마지막 KBO 소속(원소속)팀은 98% 확률로 제안 ===== */
+{const _ax=abroadExpire;abroadExpire=function(o,w){const q=_ax(o,w);try{if(!q||!q.ch||!S.pro||S.pro.league!=='MLB')return q;const lt=typeof lastKBOTeam==='function'?lastKBOTeam():-1;if(lt<0)return q;
+  const good=(typeof mlbW==='function'?mlbW():0)>=3||(lastLgWAR('MLB')||0)>=1.5,p=good?.98:.6;
+  const kb=q.ch.filter(c=>c.act==='fa'&&c.arg&&c.arg.ret);if(kb.some(c=>c.arg.team===lt))return q;if(R()>=p)return q;
+  let base=kb.slice().sort((a,b)=>(b.arg.tot||0)-(a.arg.tot||0))[0];
+  if(!base){const per=kboReturnPer(o,lastLgWAR('MLB')||w),yrs=age()<=33?4:age()<=36?3:age()<=39?(R()<.5?3:2):1,tot=Math.round(per*yrs*rn(1,.06)/10000)*10000;base={arg:{yrs,tot}}}
+  const yrs=base.arg.yrs,tot=Math.round((base.arg.tot||0)*rn(1.05,.03)/10000)*10000,T=TEAMS[lt];
+  const c={t:`KBO 복귀: ${T.city} ${T.nick}`,s:`${yrs}년 최대 ${money(tot)}`,d:`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/yrs)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상)`,act:'fa',arg:{team:lt,yrs,tot,ret:1}};
+  if(!kb.length){try{if(typeof faScaleOffer==='function')faScaleOffer(c,age())}catch(e){}}
+  const ri2=q.ch.findIndex(x=>x.act==='retire');q.ch.splice(ri2>=0?ri2:q.ch.length,0,c);try{if(typeof tagHome==='function'){q._ht=0;tagHome(q)}}catch(e){}}catch(e){}return q}}
 
 </script>
 
