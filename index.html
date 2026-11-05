@@ -9472,11 +9472,31 @@ function srecFut(y){const mlb=S.pro&&S.pro.league==='MLB',lvs=mlb?['AAA','AA','A
  const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.ps||x.intl||!Array.isArray(out))return out;const sub=String(x.sub||''),win=!!x.win;
   const over=(win&&(x.clinch||/이기면 시리즈 승리/.test(sub)))||(!win&&/지면 탈락|마지막 승부/.test(sub));
   const P=isP(),h=x.gH||0,hr=x.gHR||0,rbi=x.gRBI||0,ra=x.ra||0,o=x.ipO||0;
-  const good=P?((o>=15&&ra<=2)||(o>=3&&o<=9&&ra===0)):(hr>=1||h>=2||rbi>=2);
+  const pl=Array.isArray(x.pl)?x.pl:[],bb=pl.filter(q=>q.t==='BB').length,clutch=pl.some(q=>['1B','2B','3B','HR','BB'].includes(q.t)&&(q.r>0||(q.i>=7&&Math.abs((q.my||0)-(q.op||0))<=2)));
+  const good=P?((o>=15&&ra<=2)||(o>=3&&o<=9&&ra===0)):(hr>=1||h>=2||rbi>=2||h+bb>=2||clutch);
   const gn=giv(ME.name);
   if(over){out=out.filter(c=>!NEXTG.test(String(c&&c.t||'')));out.forEach(c=>{if(c&&c.re)c.re=c.re.filter(q=>!NEXTG.test(String(q&&q.t||'')))})}
   if(!good&&/한국시리즈|월드시리즈/.test(String(x.title||'')))out=out.filter(c=>!(c&&new RegExp('^"[^"]+" '+gn+' 인터뷰 보소').test(String(c.t||''))));
   if(!good)out.forEach(c=>{if(!c)return;const t=String(c.t||'');const m=t.match(/^"([^"]+)" (\S+) 인터뷰 보소/);if(m&&m[2]===gn){c.t=t.replace(`" ${gn} 인터뷰 보소`,`" 감독 인터뷰 보소`);if(c.re)c.re=c.re.filter(q=>!/될 놈|목소리 떨리/.test(String(q&&q.t||'')))}})}catch(e){}return out}}
+
+/* ===================== 경기 화면 스코어보드: 여러 이닝이 한꺼번에 채워질 때 이닝별로 빠르게 차례차례 입력 ===================== */
+function sbAnimate(){try{if(typeof document==='undefined'||!S||ui.simming)return;const q=nextQ();if(!q||q.type!=='game'||!q.g)return;const g=q.g,e=g.ev[Math.min(g.idx,g.ev.length-1)];if(!e||!e.line)return;
+  const key=(g.title||'')+'|'+g.ev.length+'|'+(g.ab||[]).join('-');const P0=ui.sbP&&ui.sbP.key===key?ui.sbP:{key,line:[[],[]],R:[0,0],X:null};
+  const XN=[0,1].map(i=>[e.Hh[i],(e.Et||[0,0])[i],(e.BBt||[0,0])[i]]);ui.sbP={key,line:[e.line[0].slice(),e.line[1].slice()],R:[e.R[0],e.R[1]],X:XN};
+  (ui.sbT||[]).forEach(clearTimeout);ui.sbT=[];
+  const rows=document.querySelectorAll('.lscore table tbody tr');if(rows.length<2)return;
+  const n=Math.max(e.line[0].length,e.line[1].length),pend=[];
+  for(let k=0;k<n;k++)for(let i=0;i<2;i++){const nv=e.line[i][k],ov=P0.line[i][k];if(nv!=null&&nv!==''&&(ov==null||ov===''))pend.push([i,k,nv])}
+  if(pend.length<2)return;
+  if(!document.getElementById('sbcss')){const st=document.createElement('style');st.id='sbcss';st.textContent='.lscore td.sbpop{animation:sbpop .32s ease-out}@keyframes sbpop{0%{background:rgba(255,206,64,.55);transform:scale(1.25)}100%{background:transparent;transform:none}}';document.head.appendChild(st)}
+  const cell=(i,k)=>rows[i]&&rows[i].children[1+k],rc=i=>rows[i]&&rows[i].children[1+Math.max(9,n)];
+  const run=[0,0];for(let i=0;i<2;i++){for(let k=0;k<n;k++){const ov=P0.line[i][k];if(ov!=null&&ov!=='')run[i]+=+ov||0}}
+  pend.forEach(([i,k])=>{const c=cell(i,k);if(c)c.textContent=''});for(let i=0;i<2;i++){const c=rc(i);if(c&&pend.some(p=>p[0]===i))c.textContent=run[i]}
+  const xc=(i,j)=>rows[i]&&rows[i].children[2+Math.max(9,n)+j];if(P0.X)for(let i=0;i<2;i++)for(let j=0;j<3;j++){const c=xc(i,j);if(c)c.textContent=P0.X[i][j]}
+  const step=Math.max(55,Math.min(110,900/pend.length));
+  pend.forEach(([i,k,v],j)=>{ui.sbT.push(setTimeout(()=>{const c=cell(i,k);if(!c||!c.isConnected)return;c.textContent=v;c.classList.remove('sbpop');void c.offsetWidth;c.classList.add('sbpop');run[i]+=+v||0;const r=rc(i);if(r&&r.isConnected)r.textContent=run[i];if(+v>0)try{AU.sfx('run')}catch(er){}},step*(j+1)))});
+  ui.sbT.push(setTimeout(()=>{for(let i=0;i<2;i++){const r=rc(i);if(r&&r.isConnected)r.textContent=e.R[i];for(let j=0;j<3;j++){const c=xc(i,j);if(c&&c.isConnected)c.textContent=XN[i][j]}}},step*(pend.length+1)))}catch(er){}}
+{const _r=render;render=function(){_r.apply(this,arguments);try{sbAnimate()}catch(e){}}}
 
 </script>
 
