@@ -1536,9 +1536,9 @@ function simPit(role,tg,L,row,lvk){
         if(!g.H){m.NH++;if(!g.BB&&R()<.45){feat(`${d} 퍼펙트게임!!! 27타자 연속 아웃`,1);if(pro){S.ach.perfect=S.ach.perfect||S.y;S.ach.nh=S.ach.nh||S.y}}else{feat(`${d} 노히트노런 달성!`,1);if(pro)S.ach.nh=S.ach.nh||S.y}}
         else feat(`${d} ${g.K}탈삼진 완봉승`)}else feat(`${d} 완투승 역투`)}
       const pw=g.outs>=15?cl(.42-(g.R-3)*.09+tadj,.08,.8):.04,pl=cl(.3+(g.R-3)*.1-tadj,.08,.75),rr=R();if(rr<pw)W=1;else if(rr<pw+pl)Lo=1}
-    else{let svd=false;const svB=m.outs>=30?cl((3.6-m.R*27/m.outs)*.02,-.06,.075):0;const svF=svFac();
-      if(t==='CL'&&R()<(.58+svB)*svF.sv){if(!g.R||(g.R===1&&R()<.4)){m.SV++;st.sv++;svd=true}else st.sv=0}
-      else if(t==='SU'&&R()<(.54+svB)*svF.hd&&!g.R){m.HLD++;svd=true}
+    else{let svd=false;const svB=m.outs>=30?cl((3.6-m.R*27/m.outs)*.022,-.06,.085):0;const svF=svFac();
+      if(t==='CL'&&R()<(.645+svB)*svF.sv){if(!g.R||(g.R===1&&R()<.4)){m.SV++;st.sv++;svd=true}else st.sv=0}
+      else if(t==='SU'&&R()<(.59+svB)*svF.hd&&!g.R){m.HLD++;svd=true}
       if(!svd){const dr=reliefDec(t,g,row,m);W=dr===1?1:0;Lo=dr===-1?1:0}}
     m.W+=W;m.L+=Lo;if(W)st.win++;if(Lo)st.win=0;
     if(g.K>=12)feat(`${d} 한 경기 ${g.K}탈삼진`,g.K>=15);if(pro&&g.K>S.pb.gK)S.pb.gK=g.K;
@@ -2397,7 +2397,7 @@ function lpSimP(p,n){const m=p.s,str=S.lg.str[p.t],era0=cl(4.4-(p.r-56)*.17,1.5,
   if(p.k==='SP'){const st=Math.round(n/5+rn(0,.35));for(let i=0;i<st;i++){m.G++;m.GS++;const ip=cl(5.7+(p.r-56)*.06+rn(0,1.2),1.5,9),outs=Math.round(ip*3),er=pois(era0*ip/9);m.outs+=outs;m.R+=er;m.K+=pois(ip*(.82+(p.r-56)*.018));m.BB+=pois(ip*cl(.36-(p.r-56)*.006,.15,.6));m.H+=pois(ip*cl(.95-(p.r-56)*.014,.6,1.3));
     if(outs>=27){m.CG++;if(!er)m.SHO++}const wp=cl(.6+(str-50)*.012-er*.09+(ip-5)*.04,.05,.92);if(ip>=5&&R()<wp)m.W++;else if(R()<cl(.18+er*.08-(str-50)*.008,.05,.8))m.L++}}
   else{const apps=Math.round(n*(p.k==='CL'?.42:.46)*rn(1,.12));for(let i=0;i<apps;i++){m.G++;const outs=R()<.85?3:ri(1,5);m.outs+=outs;const er=pois(era0*.92*outs/27);m.R+=er;m.K+=pois(outs/3*(1+(p.r-56)*.02));m.BB+=pois(outs/3*.38);m.H+=pois(outs/3*cl(.9-(p.r-56)*.014,.55,1.3));
-    const opp=R()<(p.k==='CL'?.66:.62)*(1+(str-50)*.012);if(opp){if(!er||R()<.35){if(p.k==='CL')m.SV++;else m.HLD++}else if(R()<.4)m.L++}else if(R()<.08)m.W++}}}
+    const opp=R()<(p.k==='CL'?.6:.52)*(1+(str-50)*.012);if(opp){if(!er||R()<.35){if(p.k==='CL')m.SV++;else m.HLD++}else if(R()<.4)m.L++}else if(R()<.08)m.W++}}}
 function simLeague(g,ps){ensureLP();const n=GM.KBO[S.m],avgS=S.lg.str.reduce((a,b)=>a+b)/10,my=S.stage==='pro'&&S.pro.league==='KBO'?S.pro.team:-1;
   S.lg.str.forEach((s,i)=>{const p=.5+(s-avgS)*.014+(i===my&&g&&ONE.includes(S.role)?ps*.008+(S.rel.coach-50)*.0004+(S.rel.chem-50)*.0006:0);let w=0,d=0;
     for(let k=0;k<n;k++){const r=R();if(r<.015){d++;S.lg.rec[i].push('D')}else if(r<p){w++;S.lg.rec[i].push('W')}else S.lg.rec[i].push('L')}
@@ -8908,7 +8908,7 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
   if(S.awards.some(a=>a.y===S.y&&/^MLB (다승|평균자책|탈삼진|세이브|홀드|홈런|타격|타점|도루|최다안타|득점|출루율|장타율)/.test(a.n)))return;const P=isP(),got=[];
   const give=n=>{got.push(n);S.awards.push({y:S.y,n:'MLB '+n});S.rel.fame=cl(S.rel.fame+3,0,100);feat(`${S.y} MLB ${n} 타이틀 획득`,1)};
   if(P){const p=rows.reduce((a,r)=>(addTo(a,r.p),a),blankP()),ip=p.outs/3,era=p.outs?p.R*27/p.outs:99;
-    if(p.W>=Math.round(rn(17.5,1.6)))give('다승왕');if(ip>=162&&era<=rn(2.45,.28))give('평균자책점왕');if(p.K>=Math.round(rn(255,18)))give('탈삼진왕');if((p.SV||0)>=Math.round(rn(43,3.5)))give('세이브왕');if((p.HLD||0)>=Math.round(rn(36,3.5)))give('홀드왕')}
+    if(p.W>=Math.round(rn(17.5,1.6)))give('다승왕');if(ip>=162&&era<=rn(2.45,.28))give('평균자책점왕');if(p.K>=Math.round(rn(255,18)))give('탈삼진왕');const ML=(S.mlbLead=S.mlbLead||{})[S.y]||(S.mlbLead[S.y]={sv:Math.round(rn(41,3)),hd:Math.round(rn(35,3))});if((p.SV||0)>=ML.sv)give('세이브왕');if((p.HLD||0)>=ML.hd)give('홀드왕')}
   else{const b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB()),avg=b.AB?b.H/b.AB:0;
     const obp=b.PA?(b.H+b.BB)/b.PA:0,slg=b.AB?(b.H+(b.D||0)+2*(b.T||0)+3*b.HR)/b.AB:0,q=b.PA>=502;
     if(q&&avg>=rn(.33,.012))give('타격왕');if(b.HR>=Math.round(rn(46,4)))give('홈런왕');if(b.RBI>=Math.round(rn(125,8)))give('타점왕');if(b.SB>=Math.round(rn(50,7)))give('도루왕');
