@@ -1321,7 +1321,7 @@ const E=k=>{const v=raw(k);return v>0?v+itemBonus(k):0};
 const eff=k=>{const v=E(k);return v>0?v+ME.form*.8-Math.max(0,ME.fat-60)/3-mlbPen(k)+spBonus(k):0};
 function ars(f=E){const q=PITCHES.map(k=>f(k)).filter(v=>v>0).sort((a,b)=>b-a);const g=i=>q[i]??20;return g(0)*.5+g(1)*.3+g(2)*.2+(q.length>=4?2:0)}
 const pSyn=(f=E)=>{const n=PITCHES.filter(k=>f(k)>=40).length,pc=f('pcl')||45;return(pc-50)*.09*Math.max(.5,n/3)};
-const stuffC=(f=E)=>f('velo')*.33+f('stf')*.335+ars(f)*.335+pSyn(f)+(sk('spin')?3:0);
+const stuffC=(f=E)=>f('velo')*.31+f('stf')*.32+ars(f)*.37+pSyn(f)+(sk('spin')?3:0);
 const DEFW={C:[0,.35,.65],'1B':[.2,.7,.1],'2B':[.5,.35,.15],SS:[.45,.3,.25],'3B':[.25,.4,.35],LF:[.45,.25,.3],CF:[.65,.2,.15],RF:[.35,.25,.4]};
 const defScore=(f=E)=>{const w=DEFW[ME.pos]||[.4,.35,.25];return f('rng')*w[0]+f('fld')*w[1]+f('arm')*w[2]};
 function ovrE(){
@@ -1437,20 +1437,20 @@ function bookCheck(key,val,fmt){if(val>S.book[key]){const old=S.book[key];S.book
 
 /* ===================== BATTING ===================== */
 const BATC=.7;let PITB=8,PITC=.5;const pitB=L=>L<45?5:L<50?6.5:PITB;
-const softUp=(d,k)=>d<=8?d*k:8*k+(d-8)*k*.47;
-function batPA(L,m,gl){const dv=x=>x>L?softUp(x-L,BATC):(x-L),dvp=x=>x>L?softUp(x-L,.85):(x-L);
+const softUp=(d,k)=>d<=8?d*k:8*k+(d-8)*k*.47,softUpC=(d,k)=>d<=8?d*k:8*k+(d-8)*k*.68;
+function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp(x-L,BATC):(x-L),dvp=x=>x>L?softUp(x-L,.85):(x-L);
   const om=S.onMul||1,on=(()=>{const T=[[.19,[1,0,0]],[.06,[0,1,0]],[.02,[0,0,1]],[.068,[1,1,0]],[.03,[1,0,1]],[.02,[0,1,1]],[.024,[1,1,1]]];let x=R();for(const [p,st] of T){x-=p*om;if(x<0)return st.map(Boolean)}return[false,false,false]})(),risp=on[1]||on[2];
   let con=eff('con');if(risp){if(sk('chance'))con+=6;if(sk('weakch'))con-=6;if(sk('clutch')&&S.big)con+=4;con+=(ME.hid.men-50)*.06}
   const lefty=ME.hand.includes('좌타')||ME.hand.includes('양타')?.004:0;
-  const k=cl(.205-dv(con)*.0042-dv(eff('eye'))*.0008-(sk('eyem')?.01:0)+(sk('kprone')?.03:0),.05,.42);
+  const k=cl(.205-dvc(con)*.0042-dv(eff('eye'))*.0008-(sk('eyem')?.01:0)+(sk('kprone')?.03:0),.05,.42);
   const bb=cl(.082+dv(eff('eye'))*.0018+(sk('eyem')?.015:0),.02,.2);
   const r=R(),sp=eff('spd');m.PA++;if(risp&&S.rsp)S.rsp.pa++;
-  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<Math.min(.27,((E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)+Math.max(0,DV(E('spd'))-78)*.004)*(sk('thief')?1.4:1))){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.06:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
+  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<Math.min(.31,((E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)+Math.max(0,DV(E('spd'))-78)*.004)*(sk('thief')?1.4:1))){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.06:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
     if(R()<cl([0,.18,.31,.48][b]+Math.min(5,dv(sp))*.004,.05,.55))m.R++};
   if(r<k){m.AB++;m.K++;return}
   if(r<k+bb+.01){m.BB++;gl.ob++;reach(1);if(on[0]&&on[1]&&on[2])m.RBI++;return}
   m.AB++;
-  const hit=cl(.325+dv(con)*.0028+Math.min(8,dv(sp))*.0007+Math.min(15,Math.max(0,DV(sp)-60))*.0009+(sk('hitm')?.012:0)+lefty,.18,.47);
+  const hit=cl(.325+dvc(con)*.0028+Math.min(8,dv(sp))*.0007+Math.min(15,Math.max(0,DV(sp)-60))*.0009+(sk('hitm')?.012:0)+lefty,.18,.47);
   if(R()<hit){m.H++;gl.H++;if(risp&&S.rsp)S.rsp.h++;
     const hr=cl(.09+dvp(eff('pow'))*.0045+Math.max(0,eff('pow')-80)*.0045,.005,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1),tr=cl(.015+dv(sp)*.0008,.002,.06),db=cl(.19+dvp(eff('pow'))*.0015+dv(sp)*.001,.06,.34),q=R();
     const n=on.filter(Boolean).length;
@@ -1835,11 +1835,11 @@ function genPA(bR,pR){const d=bR-pR,k=cl(.2-d*.0045,.07,.38),bb=cl(.082+d*.0012,
   if(r<k)return'K';if(r<k+bb+.009)return'BB';
   if(R()<cl(.325+d*.0028,.2,.45)){const hr=cl(.09+d*.004,.02,.3),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.2?'2B':'1B'}
   return pick(['GO','GO','FO','FO','LO'])}
-function meBatPA(pR,risp){let con=eff('con')+(sk('clutch')?4:0)+(ME.hid.men-50)*.12+(risp?(sk('chance')?6:0)-(sk('weakch')?6:0)+(ME.hid.men-50)*.06:0);const L=pR,dv=x=>x>L?softUp(x-L,BATC):(x-L),dvp=x=>x>L?softUp(x-L,.85):(x-L);
-  const k=cl(.205-dv(con)*.0042-dv(eff('eye'))*.0008+(sk('kprone')?.03:0),.05,.42),bb=cl(.082+dv(eff('eye'))*.0018,.02,.2),r=R();
+function meBatPA(pR,risp){let con=eff('con')+(sk('clutch')?4:0)+(ME.hid.men-50)*.12+(risp?(sk('chance')?6:0)-(sk('weakch')?6:0)+(ME.hid.men-50)*.06:0);const L=pR,dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp(x-L,BATC):(x-L),dvp=x=>x>L?softUp(x-L,.85):(x-L);
+  const k=cl(.205-dvc(con)*.0042-dv(eff('eye'))*.0008+(sk('kprone')?.03:0),.05,.42),bb=cl(.082+dv(eff('eye'))*.0018,.02,.2),r=R();
   if(r<k)return'K';if(r<k+bb+.01)return'BB';
   {const sv=DV(eff('spd'));if(sv>=70&&R()<.012+(sv-70)*.0008){if(R()<cl(.4+(sv-70)*.012,.4,.75)){S._lastMeSpd=1;S._bunt=1;return'1B'}return'GO'}}
-  if(R()<cl(.325+dv(con)*.0028+dv(eff('spd'))*.0007+Math.max(0,DV(eff('spd'))-60)*.0009+(sk('hitm')?.012:0),.18,.47)){S._lastMeSpd=1;const hr=cl(.09+dvp(eff('pow'))*.0045+Math.max(0,eff('pow')-80)*.0045,.005,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
+  if(R()<cl(.325+dvc(con)*.0028+Math.min(8,dv(eff('spd')))*.0007+Math.min(15,Math.max(0,DV(eff('spd'))-60))*.0009+(sk('hitm')?.012:0),.18,.47)){S._lastMeSpd=1;const hr=cl(.09+dvp(eff('pow'))*.0045+Math.max(0,eff('pow')-80)*.0045,.005,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
   return pick(['GO','GO','FO','FO','LO'])}
 function mePitPA(bR,risp,tired){const L=bR,pv=x=>{const d=x-L-pitB(L);return d>0?d*PITC:d},st=stuffC(eff)+roleAdj(S._pRole||'SP')-tired+(sk('clutch')?2:0)+(ME.hid.men-50)*.12,ctl=eff('ctl'),stf=eff('stf');
   const PM=pitMods(S._pRole||'SP'),tto=PM.tto*Math.max(0,(S._pInn||1)-2),k=PM.k*cl(.185+pv(st-tto-PM.st)*.0036+pv(ctl)*.0012+(sk('kmach')?.025:0),.05,.42),bb=cl(.085-pv(ctl)*.0021+tired*.002,.02,.2),r=R();
@@ -6222,7 +6222,7 @@ function interp(T,x){if(x<=T[0][0])return T[0][1];for(let i=1;i<T.length;i++)if(
   const C=L.filter(t=>!seenHas(t)&&!(S.cmY&&S.cmY['ph:'+t]===S.y));const n=Math.min(C.length,R()<.5?2:3);
   for(let i=0;i<n;i++){const t=C.splice(ri(0,C.length-1),1)[0];seenAdd(t);S.cmY=S.cmY||{};S.cmY['ph:'+t]=S.y;add.push(mkC(t,[],{up:ri(150,1500),nk:pick(['삼갤러','ㅇㅇ','갤러','야갤러'])+(R()<.6?ri(1,30):'')}))}
   /* 대·이·름 한 글자씩 릴레이 (1년에 한 번) */
-  if(gn.length>=2&&gn.length<=3&&cmX('relay'+S.y)&&R()<.6){const nk=pick(['데카유방','야구도사','직관러','가을전사']);const base=ri(400,1200);[`대`,...gn.split('')].forEach((ch,i)=>add.push(mkC(ch,[],{nk,up:base-i,ago:'방금'})))}
+  if(gn.length>=2&&gn.length<=3&&cmX('relay'+S.y)&&R()<.6){const nk=pick(['데카유방','야구도사','직관러','가을전사']);const base=ri(400,1200);const rl=[`대`,...gn.split('')].map((ch,i)=>{const c=mkC(ch,[],{nk,up:base-i,ago:'방금'});c.rl=1;return c});S._relayAdd=rl}
   const pos=Math.min(out.length,1);out.splice(pos,0,...add);let seenPk=0;out=out.filter(c=>{if(pk&&c.t.includes(pk)){seenPk++;return seenPk<=1}return true})}catch(e){}return out}}
 /* 센 욕·팀 비하 걸러내기 (ㅅも 수준은 허용) */
 const HARSH=/씨발|시발|씨바|좆|병신|ㅄ|개새끼|느금|니애미|애미|애비|꼴데|꼴쥐|칰|기레기|쓰레기 ?(팀|구단)|(팀|구단|팬) ?쓰레기|망해라|뒤져라|뒤지십시오|나가 뒤|팬들 ?(수준|병)/;
@@ -7032,7 +7032,7 @@ function psSlot(){try{const lg=S.pro&&S.pro.league,{p}=yearTot(S.y,[lg]);if(!p||
 /* ===================== VIEW HELPERS ===================== */
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function reqOk(s){if(s.t!=='A'&&s.t!==ME.type)return false;for(const k in s.req){const v=['we','men','dur'].includes(k)?ME.hid[k]:E(k);if(v<s.req[k])return false}return true}
-function spendCost(k){const v=raw(k);let c=Math.max(1,Math.ceil((v-15)/9*.75));if(v>=75)c*=2;return c}
+function spendCost(k){const v=raw(k);let c=Math.max(1,Math.ceil((v-15)/9*.75));if(v>=75)c*=2;if(ME&&ME.pt&&k in ME.pt)c=Math.max(1,Math.round(c*.55));return c}
 const spendMax=k=>Math.min(capOf(k),ceilAt(k));
 const bar=(v,cls,max=100)=>`<div class="bar ${cls||''}"><b style="width:${cl(v/max*100,0,100)}%"></b></div>`;
 const SVG={turn:'<path d="M6 4l12 8-12 8z"/>',train:'<path d="M3 10v4M6 7v10M18 7v10M21 10v4M6 12h12"/>',stats:'<path d="M5 20V10M12 20V4M19 20v-7"/>',rec:'<path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6M9 16h4"/>',news:'<path d="M4 5h13v14H6a2 2 0 0 1-2-2z"/><path d="M17 9h3v8a2 2 0 0 1-2 2M8 9h5M8 13h5"/>',shop:'<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>'};
@@ -8051,7 +8051,7 @@ function trCross(){const out={};try{if(isP()||!S.plan)return out;const p=S.plan,
    (예: 출루율 .420 · 38홈런 · 40도루 · 발 빠른 3번 타자 ≈ 140득점) */
 const RUN_ORD=[1.08,1.05,1.02,1,.97,.94,.92,.9,.88];
 function runTarget(m){if(!m||!m.PA)return 0;const obp=(m.H+m.BB)/m.PA,f=600/m.PA,hr6=m.HR*f,sb6=(m.SB||0)*f;
-  const ob=obp>.42?.42+(obp-.42)*.5:obp;let r=58+(ob-.3)*400+.4*(hr6-15)+.2*Math.min(sb6,60);r*=Math.min(1.12,1+(DV(eff('spd'))-55)*.004);const od=S.order||0;if(od>=1&&od<=9)r*=RUN_ORD[od-1];r=Math.min(r,138+Math.max(0,r-138)*.3);return Math.max(0,r)*m.PA/600}
+  const ob=obp>.42?.42+(obp-.42)*.5:obp;let r=58+(ob-.3)*400+.4*(hr6-15)+.2*Math.min(sb6,75);r*=Math.min(1.12,1+(DV(eff('spd'))-55)*.004);const od=S.order||0;if(od>=1&&od<=9)r*=RUN_ORD[od-1];r=Math.min(r,146+Math.max(0,r-146)*.35);return Math.max(0,r)*m.PA/600}
 {const _sb=simBat;simBat=function(role,tg,L,row,lvk){const r=_sb(role,tg,L,row,lvk);try{if(isP()||!r||!r.m||!r.m.PA)return r;const m=r.m,t=runTarget(m);
   let nr=Math.floor(t)+(R()<t%1?1:0);nr=Math.max(m.HR,Math.round(nr*.8+m.R*.2));const d=nr-m.R;if(d){m.R+=d;if(row&&row.b)row.b.R=Math.max(0,(row.b.R||0)+d)}}catch(e){}return r}}
 /* 타점 보정: KBO 기록 기준 '타구별 타점' 표로 맞춤
@@ -9643,6 +9643,13 @@ const EASE=.9;
 {const _p=pitchGame;pitchGame=function(L,type){return _p(isP()?L-EASE:L,type)}}
 {const _mp=mePitPA;mePitPA=function(bR,risp,tired){return _mp(isP()?bR-EASE:bR,risp,tired)}}
 {const _adv=advance;advance=function(){try{const k=S.y+'-'+S.phase;if(S._phFK!==k){S._phFK=k;let f=S.phase===0?0:(()=>{let g=gauss()*.9;if(g<0)g*=.72;return cl(g,-1.35,2)})();if(S.stage==='pro'&&S.phase!==0&&age()>=36&&(S._lateHotY||0)<S.y-2&&R()<.07){f+=1.3;S._lateHotY=S.y}S.phF=f}}catch(e){}return _adv.apply(this,arguments)}}
+
+/* 대·이·름 릴레이 댓글: 중간 필터·정렬에 일부만 남는 문제 → 마지막에 통째로 붙임 */
+{const _cR=comments;comments=function(tone,x){S._relayAdd=null;let out=_cR(tone,x);try{const rl=S._relayAdd;S._relayAdd=null;if(Array.isArray(out)){const sn=new Set();out=out.filter(c=>{if(!c||c.rl||(typeof c.t==='string'&&c.t.length<=1))return false;if(sn.has(c.t))return false;sn.add(c.t);if(Array.isArray(c.re)){const rs=new Set();c.re=c.re.filter(r=>{const t=typeof r==='string'?r:r&&r.t;if(!t||rs.has(t)||t===c.t)return false;rs.add(t);return true})}return true});if(rl&&rl.length)out.splice(Math.min(out.length,1),0,...rl)}}catch(e){}return out}}
+/* 프러포즈 이벤트 두 개가 겹쳐 뜨면 이미 결혼한 뒤 두 번째 선택에서 멈추던 문제 */
+{const _mr2=ACT.marry;ACT.marry=function(a){if(!S.gf||S.married)return '';return _mr2(a)}}
+{const _pr2=ACT.prop;ACT.prop=function(a){if(!S.gf||S.married)return '';return _pr2(a)}}
+{const _le2=lifeEvents;lifeEvents=function(){const out=_le2();try{let seen=false;return out.filter(q=>{if(/프러포즈/.test(q.title||'')){if(seen||(S.queue||[]).some(z=>z&&/프러포즈/.test((z.q&&z.q.title)||z.title||'')))return false;seen=true}return true})}catch(e){return out}}}
 
 </script>
 
