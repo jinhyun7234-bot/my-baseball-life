@@ -1799,7 +1799,7 @@ function natForm(){if(S.pro&&S.pro.league==='MLB')return natFormMLB();const cur=
   if(!isP()){const b=cur.b.PA>=150?cur.b:prv.b.PA>=250?prv.b:null;if(!b)return null;return{ok:opsN(b)>=.8,bonus:cl((opsN(b)-.8)*1.0,0,.2)}}
   const p=cur.p.outs>=120?cur.p:prv.p.outs>=200?prv.p:null;if(!p)return null;const e=eraN(p);return{ok:e<=3.6,bonus:cl((3.6-e)*.1,0,.2)}}
 function intl(rep,cy){
-  const m=S.m;if(!(S.stage==='pro'&&((S.pro.league==='KBO'&&!S.pro.dev&&S.pro.debut<=S.y)||S.pro.league==='MLB')))return;
+  const m=S.m;if(ME.inj)return;if(!(S.stage==='pro'&&((S.pro.league==='KBO'&&!S.pro.dev&&S.pro.debut<=S.y)||S.pro.league==='MLB')))return;
   const o=ovrE(),nf=natForm(),good=(nf&&nf.ok)||o>=62;let ev=null;
   if(m===8&&cy>=2028&&(cy-2028)%4===0&&good)ev={n:`${cy} 올림픽`,opp:['일본','미국','도미니카']};
   if(m===9&&cy>=2026&&(cy-2026)%4===0&&(good||o>=55||(nf&&nf.bonus>0)))ev={n:`${cy} 아시안게임`,opp:['대만','일본']};
@@ -9186,7 +9186,7 @@ const WBC_R={일본:61.5,미국:62,도미니카:62,베네수엘라:60,푸에르�
 const WBC_STRONG=['일본','미국','도미니카','베네수엘라','푸에르토리코','멕시코'];
 function wbcYear(y){return y>=2026&&(y-2026)%4===0}
 function wbcName(y){return`${y} WBC`}
-function wbcEligible(){try{if(S.stage!=='pro'||!S.pro)return false;if(S.pro.league==='KBO'&&S.pro.dev)return false;const nf=natForm(),o=ovrE();return(nf&&nf.ok)||o>=62}catch(e){return false}}
+function wbcEligible(){try{if(S.stage!=='pro'||!S.pro||ME.inj)return false;if(S.pro.league==='KBO'&&S.pro.dev)return false;const nf=natForm(),o=ovrE();return(nf&&nf.ok)||o>=62}catch(e){return false}}
 /* 예비 명단 질문: MLB 선수(마이너 포함)도 대상 */
 {const _ny=newYear;newYear=function(){const r=_ny.apply(this,arguments);try{const n=wbcName(S.y);S.intlPick=S.intlPick||{};if(wbcYear(S.y)&&S.intlPick[n]==null&&S.pro&&S.pro.league==='MLB'&&wbcEligible()&&!S.queue.some(q=>q&&/WBC/.test(q.title||'')))
   S.queue.push({title:`🇰🇷 ${n} 대표팀 예비 명단`,text:`대표팀 감독이 연락했다. "스프링캠프 끝나고 바로 ${n}다. 함께 가자." 국가대표로 뛰면 이름값이 오르지만 몸은 더 지친다.`,ch:[{t:'태극마크 단다',s:'인기·성장↑ · 시즌 개막 직전이라 피로도↑',act:'intlp',arg:{n,go:1}},{t:'이번엔 고사한다',s:'시즌에 집중 · 대표팀 감독 서운함',act:'intlp',arg:{n,go:0}}]})}catch(e){}return r}}
@@ -9270,7 +9270,7 @@ function wbcArticle(g,c){try{const my=g.my,kr=g.R[my],op=g.R[1-my],P=isP(),mb=g.
     if(W){A('대만한테 제대로 갚아줬다',['오늘은 치킨 시킨다']);A(x.close?'대만전은 언제나 끝까지 피 말린다':'대만 상대로 이렇게 시원하게 이기는 거 오랜만이다',[]);if(G)A(`대만전 해결사 ${gn}`,['국대 체질이다'])}
     else{A(x.close?'또 대만한테 접전에서 발목 잡히냐…':'대만한테 이렇게 지면 할 말이 없다',['이제 경우의 수 계산해야 함','대만이 이제 진짜 강해졌다']);if(B)A(`${jo(gn,'이','가')} 대만 투수한테 완전히 막혔다`,[]);if(G)A(`${jo(gn,'은','는')} 할 만큼 했다`,[])}}
   else{
-    if(W){A(x.mercy?`${o} 상대로 콜드승 ㅋㅋㅋ 실점률 관리 완벽`:`${o} 상대로 이기는 건 당연하고 점수 차 더 벌렸어야 했다`,[x.mercy?'이게 나중에 동률 계산에서 크다':'동률 되면 실점률 싸움이다']);if(G)A(P?`약팀 상대로 깔끔하게 막아냈다 ${gn} 국대 마운드 든든하다`:`약팀 상대로 확실하게 몰아쳤다 ${gn} 오늘 국대 해결사`,[]);if(B)A(`${gn} 국대 와서 감이 안 올라오네`,['적응 시간 필요할 듯'])}
+    if(W){A(x.mercy?`${o} 상대로 콜드승 ㅋㅋㅋ 실점률 관리 완벽`:`${o} 상대로 이기는 건 당연하고 점수 차 더 벌렸어야 했다`,[x.mercy?'이게 나중에 동률 계산에서 크다':'동률 되면 실점률 싸움이다']);if(G)A(P?`약팀 상대로 깔끔하게 막아냈다 ${gn} 국대 마운드 든든하다`:`약팀 상대로 확실하게 몰아쳤다 ${gn} 오늘 국대 해결사`,[]);if(B&&!(S._iT&&S._iT.k===intlKey(x)&&S._iT.g.some(v=>v==='g'||v==='a')))A(`${gn} 국대 와서 감이 안 올라오네`,['적응 시간 필요할 듯'])}
     else{A(x.close?`${o}한테 지는 건 진짜 아니지… ${o==='대만'?'또 대만한테 발목 잡히냐':'이러다 또 1라운드 탈락 각'}`:`${o}한테 ${x.kr}-${x.op}?? 이게 무슨 일이냐`,['2013·2017·2023 악몽 재현이냐','이제 경우의 수 계산해야 함']);if(G)A(`${jo(gn,'은','는')} 잘했는데 팀이 졌다`,[]);if(B)A(`${gn} 국대에선 왜 이러냐 오늘은 할 말 없다`,['다음 경기에서 갚아라'])}}
   if(x.rival&&W&&o==='일본')A('한일전 승리는 언제나 짜릿하다',['오늘은 치킨 시킨다']);
   if(x.st==='final'&&W)A('대한민국 WBC 우승!!! 이게 꿈이냐 생시냐',['평생 잊지 못할 밤']);if(x.st==='final'&&!W)A('세계 2위다 고개 숙일 필요 하나도 없다',['다들 진짜 수고했다']);
@@ -9698,7 +9698,7 @@ function relQ(){try{if(!isP())return 0;const e=relEra();if(e==null)return 0;retu
 /* 인터뷰 인용·캐스터 인용 댓글 살짝 줄이기: 기사당 각각 최대 1개 + 일부 확률로 생략 */
 {const _cI=comments;comments=function(tone,x){let out=_cI(tone,x);try{if(!Array.isArray(out))return out;let iv=0,cs=0;const big=!!(x&&x.clinch&&x.win&&/한국시리즈|월드시리즈|결승/.test(String(x.title||'')))||tone==='ring'||tone==='ws',fun=!!(x&&x.win&&((x.inns||9)>9||x._wo||x.cl3||/역전|끝내기/.test(String(x.sub||'')+String(x.line||'')))),mx=(big||fun)&&R()<.4?2:1;
   out=out.filter(c=>{if(!c||typeof c.t!=='string'||c.rl)return true;const t=c.t;
-    if(/캐스터 "|^"[^"]+"|^“|캐스터 멘트|해설 멘트|인터뷰 보소|인터뷰에서 "|인터뷰 울먹|수훈 인터뷰|인터뷰[^"]{0,6}"/.test(t)){iv++;return iv<=mx&&R()<.9}
+    if(/캐스터 "|^"[^"]+"|^“|캐스터 멘트|해설 멘트|인터뷰 보소|인터뷰에서 "|인터뷰 울먹|수훈 인터뷰|인터뷰[^"]{0,6}"/.test(t)){iv++;return iv<=mx&&R()<(big||fun?.8:.4)}
     return true})}catch(e){}return out}}
 
 /* ===== 국제대회: 대회 내 내 성적 흐름 반영 댓글 + 연속 부진 시 출전 기회↓ ===== */
@@ -9712,7 +9712,7 @@ function intlBench(){try{if(!S._iT||S._iT.k.indexOf(String(S.y))!==0)return 0;co
   const prevG=T.g.filter(v=>v==='g').length,prevStreak=intlStreak();T.g.push(!played?'n':bad?'b':good?'g':'a');if(!played)return out;
   const gn=giv(ME.name),act=P?'투구':'타석';let L=[],re=[];
   if(bad){const st=prevStreak+1;
-    if(st===1&&prevG>=1){L=[`${gn} 오늘은 안 풀렸네 앞에서 해준 게 있으니까 넘어간다`,`한 경기 못 했다고 너무 까지 말자 ${gn} 이번 대회 지분 크다`,`${gn}도 사람이다 오늘은 그냥 그런 날`,`그래도 오늘 ${gn} ${act}는 좀 아쉬웠다`];re=['ㅇㅇ 다음 경기 믿는다','앞 경기 생각하면 쉴드 가능'];}
+    if(st===1&&prevG>=1){L=[`${gn} 오늘은 안 풀렸네 앞에서 해준 게 있으니까 넘어간다`,`한 경기 못 했다고 너무 까지 말자 ${gn} 이번 대회 지분 크다`,`${gn}도 사람이다 오늘은 그냥 그런 날`,`그래도 오늘 ${gn} ${jo(act,'은','는')} 좀 아쉬웠다`];re=['ㅇㅇ 다음 경기 믿는다','앞 경기 생각하면 쉴드 가능'];}
     else if(st===1){L=[`${gn} 국대 첫 경기라 긴장했나`,`기대 많이 했는데 ${gn} 오늘은 아니었다`,`${gn} 오늘 ${act} 보고 한숨 나왔다`,`${gn} 이 정도 선수 아닌데 오늘은 실망이다`];re=['다음 경기에서 보여주면 된다','국대 압박감이 다르긴 하다'];}
     else if(st===2){L=[`${gn} 두 경기 연속 이러면 곤란하다`,`${gn} 컨디션 안 좋으면 다른 선수 써라`,`${gn} 이번 대회 영 안 맞는 듯`,`${gn} 소속팀에서 하던 거 반만 해도 되는데`,`${gn} 나올 때마다 불안하다 진짜`];re=['ㄹㅇ 바꿔야 함','감독은 뭐 하냐','이건 쉴드 불가'];}
     else{L=[`${gn} 이제 진짜 빼라 볼 만큼 봤다`,`${gn} 대표팀 자리 아깝다 이름값으로 뽑힌 거냐`,`${gn} 이번 대회 최대 구멍`,`감독은 ${gn} 언제까지 쓸 거냐`,`${gn} 국대 다시 안 뽑혀도 할 말 없다`,`${gn} 나오는 순간 채널 돌렸다`];re=['ㄹㅇ 할 말 없음','혈압 오른다','이건 감독 책임도 크다'];}}
@@ -9767,6 +9767,38 @@ function myPerfX(x){const P=isP();if(P){const o=x.ipO||0,ra=x.ra||0;if(!o&&!ra)r
     if(x.win&&LOSS.test(t))return false;if(!x.win&&WIN.test(t))return false;
     if(pf==='bad'&&PRAISE.test(t))return false;if(!x.win&&pf!=='good'&&/DNA|다르긴 하다|역시 경험|베테랑을 쓰는|품격|몸값 증명|돈값은 큰 경기/.test(t))return false;if(pf==='good'&&CRIT.test(t))return false;if(pf==='none'&&(PRAISE.test(t)||CRIT.test(t))&&(t.includes(gn)||t.includes(nm)||/\{n\}/.test(t)))return false;
     if(!elim&&/^아직 안 끝났다/.test(t))return false;return true})}catch(e){}return out}}
+
+/* ===== 부상 중: 훈련·대표팀 이벤트 X / 가족·연인과 보내는 회복 이벤트 (훈련 못 하는 보상) ===== */
+const INJ_TRAIN_EV=/훈련|특타|피칭|캠프|연습|타격 이론|투구|웨이트|구종|그립|변화구|러닝|펑고|불펜 세션|천재성|대표팀|WBC|국가대표/;
+const INJ_OK=/부상|재활|수술|회복/;
+{const _reI=randEvent;randEvent=function(){if(!ME||!ME.inj)return _reI();for(let i=0;i<8;i++){const e=_reI();if(!e)return null;const txt=(e.title||'')+(e.text||'')+JSON.stringify((e.ch||[]).map(c=>c.t+(c.s||'')));if(!INJ_TRAIN_EV.test(txt)||INJ_OK.test(e.title||''))return e}return null}}
+ACT.injLife=function(a){try{if(a.aff&&S.gf)S.gf.aff=cl((S.gf.aff||50)+a.aff,0,100);if(a.wk&&ME.inj)ME.inj.wk=Math.max(1,ME.inj.wk+a.wk)}catch(e){}return ''};
+function injLifeEvent(){const P=isP(),gf=S.gf&&S.gf.n,sp=S.married&&S.married.n,kids=(S.children||[]).length||S.kids||0,L=[];
+  if(gf&&!sp)L.push({title:'💕 재활 중 데이트',text:`재활이 끝나는 날마다 ${gf} 씨가 병원 앞에서 기다려 준다. "오늘은 야구 얘기 금지야."`,ch:[
+    {t:'근교로 하루 여행 간다',s:'멘탈↑ 성장 포인트↑ 호감↑ · 비용 −150만원 · 피로 조금↑',fx:{men:3,xp:6,money:-150,fat:4},act:'injLife',arg:{aff:8},r:'오랜만에 야구 생각 없이 웃었다. 머리가 맑아졌다.'},
+    {t:'집에서 같이 재활 운동을 한다',s:'성장 포인트↑ 재활 기간 조금↓ · 데이트가 심심해 호감은 조금만↑',fx:{xp:5,men:1},act:'injLife',arg:{aff:3,wk:-1},r:'같이 땀 흘리니 지루한 재활도 버틸 만했다.'}]});
+  if(sp)L.push({title:'💍 곁을 지키는 사람',text:`${sp} 씨가 매일 재활 일정을 챙기고 식단까지 짜 왔다. "이번 기회에 몸 제대로 만들자."`,ch:[
+    {t:'둘이서 짧은 여행을 다녀온다',s:'멘탈↑↑ 성장 포인트↑ · 비용 −200만원',fx:{men:4,xp:6,money:-200},r:'바다를 보며 오래 이야기했다. 조급함이 조금 사라졌다.'},
+    {t:'식단·재활을 전부 맡긴다',s:'성장 포인트↑ 피로↓ 재활 기간↓ · 외식 금지라 멘탈 조금↓',fx:{xp:6,fat:-10,men:-1},act:'injLife',arg:{wk:-1},r:'몸이 눈에 띄게 가벼워졌다. 치킨이 그립긴 하다.'}]});
+  if(kids>0)L.push({title:'👶 아이와 보내는 하루',text:`"아빠 언제 다시 ${P?'공 던져':'야구해'}?" 아이가 무릎에 앉아 물었다. 시즌 중엔 늘 미안했던 시간이다.`,ch:[
+    {t:'하루 종일 아이와 놀아준다',s:'멘탈↑↑ 성장 포인트↑ · 체력 소모로 피로↑',fx:{men:5,xp:5,fat:6},r:'아이가 그린 내 유니폼 그림을 라커에 붙이기로 했다.'},
+    {t:'아이 재우고 밤에 재활 루틴',s:'성장 포인트↑ 재활 기간 조금↓ · 잠이 부족해 피로↑',fx:{xp:6,men:2,fat:5},act:'injLife',arg:{wk:-.5},r:'조용한 거실에서 혼자 재활을 했다. 이유가 분명하니 힘들지 않았다.'}]});
+  L.push({title:'👨‍👩‍👦 본가에서 보내는 시간',text:`부상 소식을 들은 부모님이 밥 먹으러 오라고 몇 번이고 전화했다.`,ch:[
+    {t:'며칠 본가에 내려간다',s:'멘탈↑↑ 피로↓ 성장 포인트↑ · 구단 재활 일정 빠져 코치 신뢰↓',fx:{men:4,fat:-15,xp:5,coach:-2},r:'어머니 밥을 먹으니 마음이 편해졌다. 야구를 왜 시작했는지 다시 떠올렸다.'},
+    {t:'가족을 재활센터로 초대한다',s:'멘탈↑ 성장 포인트↑ 재활 기간 조금↓ · 비용 −80만원',fx:{men:2,xp:5,money:-80},act:'injLife',arg:{wk:-1},r:'가족이 지켜보니 재활 운동에 더 힘이 들어갔다.'}]});
+  L.push({title:'📺 경기 영상 공부',text:`몸은 못 움직여도 눈은 쓸 수 있다. 전력분석팀이 영상 자료를 한가득 보내왔다.`,ch:[
+    {t:'하루 종일 영상을 분석한다',s:'성장 포인트↑↑ · 답답해서 멘탈 조금↓',fx:{xp:8,men:-1},r:P?'타자들의 약점이 하나씩 보이기 시작했다.':'상대 투수들의 볼 배합이 머릿속에 그려지기 시작했다.'},
+    {t:'적당히 보고 푹 쉰다',s:'성장 포인트↑ 피로↓ · 분석은 얕게',fx:{xp:4,fat:-12,men:1},r:'쉴 때 쉬어야 몸이 빨리 돌아온다.'}]});
+  L.push({title:'🤝 재활 중 봉사활동',text:`구단 사회공헌팀에서 연락이 왔다. 경기에 못 나가는 동안 팬들을 만나보는 게 어떠냐고.`,ch:[
+    {t:'소아병동을 찾아간다',s:'인기↑ 멘탈↑ 성장 포인트↑ · 이동이 많아 피로↑',fx:{fame:4,men:3,xp:4,fat:5},r:'병실 아이들이 내 이름을 외쳤다. 꼭 다시 그라운드에 서야 할 이유가 생겼다.'},
+    {t:'짧은 사인회만 한다',s:'인기↑ 성장 포인트↑ · 홍보팀이 조금 아쉬워함',fx:{fame:2,xp:3,chem:-1},r:'줄이 끝까지 이어졌다. 기다려 주는 사람이 이렇게 많았다.'}]});
+  if(gf&&!sp&&R()<.4)L.push({title:'🍲 연인의 병문안',text:`${gf} 씨가 직접 끓인 죽을 들고 왔다. "다치면 제일 먼저 나한테 말하라고 했지."`,ch:[
+    {t:'솔직하게 불안하다고 털어놓는다',s:'멘탈↑↑ 호감↑ 성장 포인트↑ · 약한 모습 보여 조금 민망',fx:{men:4,xp:4},act:'injLife',arg:{aff:6},r:'이야기하고 나니 불안이 반으로 줄었다.'},
+    {t:'괜찮은 척 웃어 보인다',s:'성장 포인트↑ · 속으로 끙끙 앓아 멘탈 조금↑만',fx:{xp:5,men:1},act:'injLife',arg:{aff:2},r:'걱정 끼치기 싫었다. 그래도 죽은 정말 맛있었다.'}]});
+  S.injEv=S.injEv||{};const fresh=L.filter(e=>!(S.injEv[e.title]>=(S.y*12+S.m)-8));const pool=fresh.length?fresh:L;const e=pick(pool);S.injEv[e.title]=S.y*12+S.m;return e}
+{const _msInj=monthStep;monthStep=function(rep){const r=_msInj(rep);try{if(ME&&ME.inj&&S.stage!=='ret'){
+  S.queue=S.queue.filter(q=>!(q&&!q.type&&q.title&&INJ_TRAIN_EV.test(q.title)&&!INJ_OK.test(q.title)));
+  const key=S.y*12+S.m;if(S._injEvK!==key&&R()<.6&&!S.queue.some(q=>q&&q._inj)){S._injEvK=key;const e=injLifeEvent();e._inj=1;S.queue.push(e)}}}catch(e){}return r}}
 
 </script>
 
