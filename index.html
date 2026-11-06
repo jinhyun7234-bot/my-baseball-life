@@ -1685,7 +1685,7 @@ function phaseEnd(rep,tot0){
   if(S.mood&&S.mood.bold&&main){if(ps<0){S.rel.fame-=6;news('"큰소리치더니…" 지난 인터뷰가 역풍을 맞았다.')}else S.rel.fame+=3;S.mood.bold=0}
   // one event per phase at most
   if(S.stage!=='ret'&&!S.queue.length&&R()<.42){
-    if(main&&S.stage==='pro'&&S.pro.league!=='MLB'&&Math.abs(ps)>=1.2&&R()<.5)S.queue.push(interview(ps,main));
+    if(main&&S.stage==='pro'&&S.pro.league!=='MLB'&&Math.abs(ps)>=(isP()&&ME.pos==='RP'&&(S.rel.fame||0)<45?1.8:1.2)&&R()<(isP()&&ME.pos==='RP'?.3:.5))S.queue.push(interview(ps,main));
     else{const ev=randEvent();if(ev)S.queue.push(ev)}}
   if(!ME.inj&&ME.fat>=65&&S.stage!=='ret')S.queue.push({title:'⚠️ 피로 경고',text:`피로도 ${Math.round(ME.fat)}. 이대로 쉬지 않고 훈련하거나 계속 출전하면 장기 부상 위험이 크게 올라간다.\n(내구성 ${Math.round(ME.hid.dur)} · 피로 75 이상이면 큰 부상 확률↑)`,ch:[{t:'서브 훈련을 휴식으로 (권장)',act:'restplan'},{t:'괜찮다, 그대로 간다',s:'부상 위험 감수',r:'무리하는 만큼 위험도 커진다.'}]});
   if(S.phCel){const t=S.phCel.t.replace(/^\d+월 /,'').replace(/!+$/,'');celebrate(/신기록/.test(t)?'record':'feat',t,`${S.y} ${PHASE[S.phase]} · ${shortTeam()}`);S.phCel=null}
@@ -8165,7 +8165,7 @@ function cmFill(s,gn){return s.replace(/\{g\}/g,gn).replace(/\{f\}/g,ME.name)}
   const ipO=x.ipO||0,ra=x.ra||0,pa=x.gPA||0,h=x.gH||0,hr=x.gHR||0,rbi=x.gRBI||0,played=P?ipO>0:pa>0;if(!played&&lv<4)return out;
   const good=P?((ipO>=15&&ra<=2)||(ipO>=3&&ra===0)||(x.gK||0)>=8):(h>=2||hr>=1||rbi>=2),bad=P?(ipO>=3&&ra>=4)||(ipO<9&&ra>=3)||(ipO<6&&ra>=2)||(ipO<3&&ra>=1):(pa>=4&&h===0&&rbi===0),hero=P?(ipO>=21&&ra<=1)||(ipO>=6&&ra===0&&lv>=3):(hr>=2||(h>=3&&rbi>=2)||rbi>=4);
   const win=!!x.win,ring=lv===4&&win;
-  let n=[0,2,3,5,8][lv]+(fame>=60?2:fame>=30?1:0);const add=[],pick2=(L,k,re)=>{L.filter(s=>!seenHas(cmFill(s,gn))).sort(()=>R()-.5).slice(0,k).forEach(s=>{const t=cmFill(s,gn);seenAdd(t);add.push(mkC(t,R()<.55?[pick(re)]:[],{up:Math.round(ri(400,2600)*(1+lv*.6)*(1+fame/60)),must:1}))})};
+  let n=[0,2,3,5,8][lv]+(fame>=60?2:fame>=30?1:0);if(P&&ME.pos==='RP'&&fame<45&&!hero)n=Math.max(1,Math.round(n*.45));const add=[],pick2=(L,k,re)=>{L.filter(s=>!seenHas(cmFill(s,gn))).sort(()=>R()-.5).slice(0,k).forEach(s=>{const t=cmFill(s,gn);seenAdd(t);add.push(mkC(t,R()<.55?[pick(re)]:[],{up:Math.round(ri(400,2600)*(1+lv*.6)*(1+fame/60)),must:1}))})};
   const mine=P?{g:CMB.goodP,b:CMB.badP,h:CMB.ksHeroP}:{g:CMB.goodB,b:CMB.badB,h:CMB.ksHeroB};
   if(ring){pick2(good||!played?CMB.ringA:CMB.ringPoor.concat(CMB.ringA),Math.ceil(n*.6),CMB_RE.ring);n-=Math.ceil(n*.6)}
   if(good&&!win&&!hero){pick2(CMB.loseGood.filter(t=>!/원맨쇼|혼자 야구/.test(t)),2,['고생했다','할 만큼 했다','팀이 문제다 오늘은']);pick2(CMB.loseOk,Math.max(1,Math.ceil(n/2)),CMB_RE.bad)}
@@ -9682,6 +9682,12 @@ psOutReason=(function(_o){return function(){try{if(!ME.inj&&psSlump()){const lv=
 
 /* 불펜 기용 질: 시즌 ERA 좋을수록 멀티이닝·가을 등판↑, 나쁠수록↓ (설명 노노) */
 function relQ(){try{if(!isP())return 0;const e=relEra();if(e==null)return 0;return cl((3.8-e)*.04,-.12,.1)}catch(e){return 0}}
+
+/* 인기 낮은 불펜(신인 등): 한 경기 '개잘한' 게 아니면 댓글 수·주인공급 칭찬 줄이기 */
+{const HYPE=/MVP|지배|레전드|영구결번|연봉 두 배|업고 튀|심장|없었으면|시대 개막|갓|다큐|폼 미쳤|사랑하면 개추|인터뷰 보소|주역|에이스의 품격/;
+ const _cL=comments;comments=function(tone,x){let out=_cL(tone,x);try{if(!Array.isArray(out)||!x||!isP()||ME.pos!=='RP'||(S.rel.fame||0)>=45)return out;if(x.ipO==null&&x.ra==null)return out;
+  const o=x.ipO||0,ra=x.ra||0,hero=(o>=6&&ra===0)||(o>=3&&ra===0&&(x.gK||0)>=3)||(x.clinch&&x.win&&o>=3&&ra===0);if(hero)return out;
+  out=out.filter(c=>!(c&&typeof c.t==='string'&&HYPE.test(c.t)));const cap=x.ps?5:4;let k=0;out=out.filter(c=>c&&c.rl?true:(k++<cap))}catch(e){}return out}}
 
 </script>
 
