@@ -7389,7 +7389,7 @@ function postRender(app){document.body.classList.toggle('fs',ui.screen==='title'
   gameAuto()}
 function stepGame(g){g.idx=Math.min(g.ev.length-1,g.idx+1);const e=g.ev[g.idx];const ml=e.last&&e.last.me?e.last.t:null,hitT=['1B','2B','3B','HR'].includes(ml);AU.sfx(g.idx===g.ev.length-1?(g.win?'win':'lose'):e.c==='meup'?'tap':hitT&&!isP()?'hit':/sc/.test(e.c)?'run':'tap');if(e.c==='meup')haptic(15);else if(ml&&!isP())haptic(hitT?[18,20,30]:ml==='K'?[8,40,8]:10);else if(ml&&isP())haptic(ml==='K'?0:hitT?[30]:6);if(hitT)setTimeout(()=>{const f=document.querySelector('.fieldw');if(f){f.classList.remove('hitfx');void f.offsetWidth;f.classList.add('hitfx')}},60);if(e.last&&e.last.me&&!isP()&&['HR','2B','3B'].includes(e.last.t)){AU.sfx(e.last.t==='HR'?'hr':e.last.t==='K'?'k':'xbh');haptic(e.last.t==='HR'?[40,30,80,30,120]:[25,30,40]);setTimeout(()=>{if(e.last.t!=='K'){const a=document.getElementById('app');if(a){a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake')}}ui.fxShown=g.idx},e.last.t==='K'?1150:2300);if(e.last.t==='HR'){ui.confDone=false;setTimeout(()=>{try{confetti()}catch(_){}},150)}}save()}
 function gameAuto(){clearTimeout(ui.gt);const q=S&&!ui.simming&&nextQ();if(!q||q.type!=='game'||ui.gpause)return;const g=q.g;if(g.idx>=g.ev.length-1)return;const e=g.ev[g.idx];if(e.c==='meup')return;
-  const bigE=e.last&&e.last.me&&!isP()&&['HR','2B','3B'].includes(e.last.t),d=1.125*(bigE?2400:/\bkk\b/.test(e.c)?1300:/\bme\b/.test(e.c)?(isP()?950:1500):/meup/.test(e.c)?1100:/end/.test(e.c)?1500:/\binn\b/.test(e.c)?520:g.idx===0?1000:380);
+  const bigE=e.last&&e.last.me&&!isP()&&['HR','2B','3B'].includes(e.last.t),d=(/시리즈|플레이오프|와일드카드|챔피언십|디비전|결승|8강|WBC|아시안게임|프리미어/.test(String(g.title||''))||g.clinch?1.28:1.125)*(bigE?2400:/\bkk\b/.test(e.c)?1300:/\bme\b/.test(e.c)?(isP()?950:1500):/meup/.test(e.c)?1100:/end/.test(e.c)?1500:/\binn\b/.test(e.c)?520:g.idx===0?1000:380);
   ui.gt=setTimeout(()=>{if(nextQ()!==q||ui.gpause)return;stepGame(g);render()},d)}
 function doAdvance(){if(!ui.simming)return;ui.simming=false;clearTimeout(ui.st);advance();const f=S.report&&S.report.feats||[];AU.sfx(f.some(x=>x.big)?'feat':'adv');afterQueue();ui.anim=true;render()}
 let tt=null;function toast(m){ui.toast=m;clearTimeout(tt);tt=setTimeout(()=>{ui.toast='';render()},2400);render()}
@@ -8165,7 +8165,7 @@ function cmFill(s,gn){return s.replace(/\{g\}/g,gn).replace(/\{f\}/g,ME.name)}
   const ipO=x.ipO||0,ra=x.ra||0,pa=x.gPA||0,h=x.gH||0,hr=x.gHR||0,rbi=x.gRBI||0,played=P?ipO>0:pa>0;if(!played&&lv<4)return out;
   const good=P?((ipO>=15&&ra<=2)||(ipO>=3&&ra===0)||(x.gK||0)>=8):(h>=2||hr>=1||rbi>=2),bad=P?(ipO>=3&&ra>=4)||(ipO<9&&ra>=3)||(ipO<6&&ra>=2)||(ipO<3&&ra>=1):(pa>=4&&h===0&&rbi===0),hero=P?(ipO>=21&&ra<=1)||(ipO>=6&&ra===0&&lv>=3):(hr>=2||(h>=3&&rbi>=2)||rbi>=4);
   const win=!!x.win,ring=lv===4&&win;
-  let n=[0,2,3,5,8][lv]+(fame>=60?2:fame>=30?1:0);if(P&&ME.pos==='RP'&&fame<45&&!hero)n=Math.max(1,Math.round(n*.45));const add=[],pick2=(L,k,re)=>{L.filter(s=>!seenHas(cmFill(s,gn))).sort(()=>R()-.5).slice(0,k).forEach(s=>{const t=cmFill(s,gn);seenAdd(t);add.push(mkC(t,R()<.55?[pick(re)]:[],{up:Math.round(ri(400,2600)*(1+lv*.6)*(1+fame/60)),must:1}))})};
+  let n=[0,2,3,5,8][lv]+(fame>=60?2:fame>=30?1:0);if(P&&ME.pos==='RP'&&fame<45&&!hero)n=Math.max(1,Math.round(n*.45));else if(!hero)n=Math.max(1,Math.round(n*.8));const add=[],pick2=(L,k,re)=>{L.filter(s=>!seenHas(cmFill(s,gn))).sort(()=>R()-.5).slice(0,k).forEach(s=>{const t=cmFill(s,gn);seenAdd(t);add.push(mkC(t,R()<.55?[pick(re)]:[],{up:Math.round(ri(400,2600)*(1+lv*.6)*(1+fame/60)),must:1}))})};
   const mine=P?{g:CMB.goodP,b:CMB.badP,h:CMB.ksHeroP}:{g:CMB.goodB,b:CMB.badB,h:CMB.ksHeroB};
   if(ring){pick2(good||!played?CMB.ringA:CMB.ringPoor.concat(CMB.ringA),Math.ceil(n*.6),CMB_RE.ring);n-=Math.ceil(n*.6)}
   if(good&&!win&&!hero){pick2(CMB.loseGood.filter(t=>!/원맨쇼|혼자 야구/.test(t)),2,['고생했다','할 만큼 했다','팀이 문제다 오늘은']);pick2(CMB.loseOk,Math.max(1,Math.ceil(n/2)),CMB_RE.bad)}
@@ -8790,7 +8790,7 @@ function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.ps||!x.win||!x.clinch||!Array.isArray(out))return out;const t=String(x.title||''),sub=String(x.sub||''),gn=giv(ME.name),nm=ME.name;
   const WS=/월드시리즈/.test(t),KS=/한국시리즈/.test(t),fin=WS||KS,m=sub.match(/(\d)승\s*(\d)패/),wl=m?+m[2]:0,g7=/7차전/.test(t)||(m&&+m[1]===3&&+m[2]===3);
   const city=(()=>{try{return String(S.pro.tname||teamLabel()).replace(/\s*\(.*\)$/,'').split(' ')[0]}catch(e){return''}})(),P=isP();
-  const IV=fin?(WS?[`이 도시에 우승을 안기려고 한국에서 왔습니다`,`이 반지는 한국에서 새벽에 일어나 응원해준 모든 분들 겁니다`,`어릴 때 TV로만 보던 월드시리즈, 오늘 그 마지막 장면에 제가 있었습니다`,`${city} 팬들이 저를 가족처럼 받아줬습니다. 이 우승으로 갚고 싶었어요`]
+  const IV=fin?(WS?[`이 도시에 우승을 안기려고 한국에서 왔습니다`,`이 도시에게 우승반지를 가져다주러 왔습니다`,`이 반지는 한국에서 새벽에 일어나 응원해준 모든 분들 겁니다`,`어릴 때 TV로만 보던 월드시리즈, 오늘 그 마지막 장면에 제가 있었습니다`,`${city} 팬들이 저를 가족처럼 받아줬습니다. 이 우승으로 갚고 싶었어요`]
       :[`이 우승은 끝까지 믿어준 팬들 겁니다`,`오늘 하루만큼은 울어도 될 것 같습니다`,`프로 와서 꿈꾼 단 하나가 이 순간이었습니다`,`힘들 때마다 팬들 함성 생각하면서 버텼습니다`])
     :[`아직 끝난 거 아닙니다. 우리 목표는 처음부터 우승이었습니다`,`다음 시리즈도 오늘처럼, 한 경기 한 경기 하겠습니다`,`팬들 함성 덕분에 마지막까지 집중할 수 있었습니다`];
   const CS=[],elim=/지면 탈락|마지막 승부/.test(sub);if(elim&&!g7)CS.push(`지면 끝나는 경기, 그 절망의 끝에서 희망을 찾아낸 오늘이었습니다`);
@@ -9688,6 +9688,13 @@ function relQ(){try{if(!isP())return 0;const e=relEra();if(e==null)return 0;retu
  const _cL=comments;comments=function(tone,x){let out=_cL(tone,x);try{if(!Array.isArray(out)||!x||!isP()||ME.pos!=='RP'||(S.rel.fame||0)>=45)return out;if(x.ipO==null&&x.ra==null)return out;
   const o=x.ipO||0,ra=x.ra||0,hero=(o>=6&&ra===0)||(o>=3&&ra===0&&(x.gK||0)>=3)||(x.clinch&&x.win&&o>=3&&ra===0);if(hero)return out;
   out=out.filter(c=>!(c&&typeof c.t==='string'&&HYPE.test(c.t)));const cap=x.ps?5:4;let k=0;out=out.filter(c=>c&&c.rl?true:(k++<cap))}catch(e){}return out}}
+
+/* 인터뷰 인용·캐스터 인용 댓글 살짝 줄이기: 기사당 각각 최대 1개 + 일부 확률로 생략 */
+{const _cI=comments;comments=function(tone,x){let out=_cI(tone,x);try{if(!Array.isArray(out))return out;let iv=0,cs=0;const big=!!(x&&x.clinch&&x.win&&/한국시리즈|월드시리즈/.test(String(x.title||'')))||tone==='ring'||tone==='ws',mx=big?2:1;
+  out=out.filter(c=>{if(!c||typeof c.t!=='string'||c.rl)return true;const t=c.t;
+    if(/^캐스터 "|^"[^"]+" 이 멘트|캐스터 멘트/.test(t)){cs++;return cs<=mx&&R()<.85}
+    if(/인터뷰 보소|인터뷰에서 "|인터뷰 울먹|수훈 인터뷰/.test(t)){iv++;return iv<=mx&&R()<.85}
+    return true})}catch(e){}return out}}
 
 </script>
 
