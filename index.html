@@ -1453,7 +1453,7 @@ function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp
   m.AB++;
   const hit=cl(.325+dvc(con)*.00295+Math.min(8,dv(sp))*.0006+Math.min(15,Math.max(0,DV(sp)-60))*.00055+(sk('hitm')?.012:0)+lefty,.18,.47),hitNS=cl(.325+dvc(con)*.00295+(sk('hitm')?.012:0)+lefty,.18,.47);
   if(R()<hit){m.H++;gl.H++;if(risp&&S.rsp)S.rsp.h++;
-    const hr=(hitNS/hit)*cl(.086+(dvp(hrStat())>0?dvp(hrStat())*.0056:dvp(hrStat())*.0057)+Math.max(0,hrStat()-80)*.0055,.015,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1)*(DV(eff('spd'))>=70&&(DV(eff('con'))+DV(eff('pow')))/2<65?.93:1),tr=cl(.015+dv(sp)*.0008,.002,.06),db=cl(.19+dvp(eff('pow'))*.0015+dv(sp)*.001,.06,.34),q=R();
+    const hr=(hitNS/hit)*Math.pow(.325/hitNS,.3)*1.04*cl(.086+(dvp(hrStat())>0?dvp(hrStat())*.0056:dvp(hrStat())*.0057)+Math.max(0,hrStat()-80)*.0055,.015,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1)*(DV(eff('spd'))>=70&&(DV(eff('con'))+DV(eff('pow')))/2<65?.93:1),tr=cl(.015+dv(sp)*.0008,.002,.06),db=cl(.19+dvp(eff('pow'))*.0015+dv(sp)*.001,.06,.34),q=R();
     const n=on.filter(Boolean).length;
     if(q<hr){m.HR++;gl.HR++;m.R++;const x=1+n;m.RBI+=x;gl.RBI+=x;if(n===3)gl.GS=1;if(sp>=60&&R()<(sp-57)*.0012)gl.iphr=1;return}
     if(q<hr+tr){m.T++;gl.T++;m.RBI+=n;gl.RBI+=n;reach(3);return}
@@ -1840,7 +1840,7 @@ function meBatPA(pR,risp){let con=eff('con')+(sk('clutch')?4:0)+(ME.hid.men-50)*
   const k=cl(.205-dvc(con)*.0042-dv(eff('eye'))*.0008+(sk('kprone')?.03:0),.05,.42),bb=cl(.082+dv(eff('eye'))*.0018+dvc(con)*.0004,.02,.2),r=R();
   if(r<k)return'K';if(r<k+bb+.01)return'BB';
   {const sv=DV(eff('spd'));if(sv>=70&&R()<.012+(sv-70)*.0008){if(R()<cl(.4+(sv-70)*.012,.4,.75)){S._lastMeSpd=1;S._bunt=1;return'1B'}return'GO'}}
-  const _hit=cl(.325+dvc(con)*.00295+Math.min(8,dv(eff('spd')))*.0006+Math.min(15,Math.max(0,DV(eff('spd'))-60))*.00055+(sk('hitm')?.012:0),.18,.47),_hitNS=cl(.325+dvc(con)*.00295+(sk('hitm')?.012:0),.18,.47);if(R()<_hit){S._lastMeSpd=1;const hr=(_hitNS/_hit)*cl(.086+(dvp(hrStat())>0?dvp(hrStat())*.0056:dvp(hrStat())*.0057)+Math.max(0,hrStat()-80)*.0055,.015,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1)*(DV(eff('spd'))>=70&&(DV(eff('con'))+DV(eff('pow')))/2<65?.93:1),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
+  const _hit=cl(.325+dvc(con)*.00295+Math.min(8,dv(eff('spd')))*.0006+Math.min(15,Math.max(0,DV(eff('spd'))-60))*.00055+(sk('hitm')?.012:0),.18,.47),_hitNS=cl(.325+dvc(con)*.00295+(sk('hitm')?.012:0),.18,.47);if(R()<_hit){S._lastMeSpd=1;const hr=(_hitNS/_hit)*Math.pow(.325/_hitNS,.3)*1.04*cl(.086+(dvp(hrStat())>0?dvp(hrStat())*.0056:dvp(hrStat())*.0057)+Math.max(0,hrStat()-80)*.0055,.015,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1)*(DV(eff('spd'))>=70&&(DV(eff('con'))+DV(eff('pow')))/2<65?.93:1),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
   return pick(['GO','GO','FO','FO','LO'])}
 function mePitPA(bR,risp,tired){const L=bR,pv=x=>{const d=x-L-pitB(L);return d>16?16*PITC+(d-16)*PITC*.75:d>0?d*PITC:d},st=stuffC(eff)+roleAdj(S._pRole||'SP')-tired+(sk('clutch')?2:0)+(ME.hid.men-50)*.12,ctl=eff('ctl'),stf=eff('stf');
   const PM=pitMods(S._pRole||'SP'),tto=PM.tto*Math.max(0,(S._pInn||1)-2),k=PM.k*cl(.185+pv(st-tto-PM.st)*.0036+pv(ctl)*.0012+(sk('kmach')?.025:0),.05,.42),bb=cl(.085-pv(ctl)*.0021+tired*.002,.02,.2),r=R();
@@ -2347,7 +2347,7 @@ function svFac(){try{const k=S.y;if(S._svF&&S._svF.k===k)return S._svF;const a=a
   const r={k,sv:af,hd:af};S._svF=r;return r}catch(e){return{sv:1,hd:1}}}
 
 /* 홈런 결정 능력치: 파워 80% · 컨택 10% · 선구안 5% · 동체시력 5% (MLB: 파워 70 · 컨택 10 · 선구안 10 · 동체시력 10) */
-function hrStat(){try{const v=k=>k in ME.r?eff(k):eff('pow');const mlb=S.stage==='pro'&&S.pro&&S.pro.league==='MLB';return mlb?v('pow')*.7+v('con')*.1+v('eye')*.1+v('vis')*.1:v('pow')*.8+v('con')*.1+v('eye')*.05+v('vis')*.05}catch(e){return eff('pow')}}
+function hrStat(){try{const v=k=>k in ME.r?eff(k):eff('pow');const mlb=S.stage==='pro'&&S.pro&&S.pro.league==='MLB';return mlb?v('pow')*.7+v('con')*.06+v('eye')*.12+v('vis')*.12:v('pow')*.8+v('con')*.1+v('eye')*.05+v('vis')*.05}catch(e){return eff('pow')}}
 
 /* ===================== POSITION / ORDER / GROWTH TYPE ===================== */
 const POSKEY={'1B':[['pow',.6],['fld',.4]],C:[['arm',.6],['fld',.4]],SS:[['rng',.6],['arm',.25],['fld',.15]],'2B':[['rng',.6],['fld',.3],['spd',.1]],CF:[['rng',.65],['spd',.35]],'3B':[['arm',.6],['fld',.4]],LF:[['arm',.6],['rng',.4]],RF:[['arm',.7],['rng',.3]]};
