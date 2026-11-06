@@ -1298,7 +1298,7 @@ const ITEMS=[
   {id:'car3',n:'전담 기사 + 리무진',p:60000,t:'A',cat:'life',fm:.5,recov:2,rep:'car2',d:'이동 중에도 휴식 — 컨디션 상승 확률↑↑↑'},
   {id:'camp',hide:1,n:'해외 개인 캠프 (1년에 1번)',p:2500,t:'A',once:true,xp:12,we:2,ph:0,d:'성장 포인트 +12, 워크에식 +2 (스프링캠프 턴, 연 1회)'}];
 const ACH=[
-  ['first_hit','프로 첫 안타','B'],['first_hr','프로 첫 홈런','B'],['hr30','시즌 30홈런','B'],['hr50','시즌 50홈런','B'],['avg3','시즌 3할 (규정타석)','B'],['h200','시즌 200안타','B'],['t2020','20-20 클럽','B'],['t3030','30-30 클럽','B'],['t4040','40-40 클럽','B'],['triple','3할·30홈런·100타점','B'],['cycle','사이클링 히트','B'],['iphr','인사이드 더 파크 홈런','B'],['walkoff','끝내기의 사나이','B'],['c300hr','통산 300홈런','B'],['c2000h','통산 2000안타','B'],
+  ['first_hit','프로 첫 안타','B'],['first_hr','프로 첫 홈런','B'],['hr30','시즌 30홈런','B'],['hr50','시즌 50홈런','B'],['avg3','시즌 3할 (규정타석)','B'],['h200','시즌 200안타','B'],['t2020','20-20 클럽','B'],['t3030','30-30 클럽','B'],['t4040','40-40 클럽','B'],['t5050','50-50 클럽','B'],['triple','3할·30홈런·100타점','B'],['cycle','사이클링 히트','B'],['iphr','인사이드 더 파크 홈런','B'],['walkoff','끝내기의 사나이','B'],['c300hr','통산 300홈런','B'],['c2000h','통산 2000안타','B'],
   ['first_k','프로 첫 탈삼진','P'],['first_w','프로 첫 승','P'],['w15','시즌 15승','P'],['k200','시즌 200탈삼진','P'],['sv40','시즌 40세이브','P'],['era2','시즌 1점대 평균자책','P'],['sho','완봉승','P'],['nh','노히트노런','P'],['perfect','퍼펙트게임','P'],['c100w','통산 100승','P'],['c200sv','통산 200세이브','P'],
   ['draft1','1라운드 지명','A'],['debut','1군 데뷔','A'],['allstar','올스타 선정','A'],['nat','국가대표 발탁','A'],['gold','국제대회 금메달','A'],['ring','한국시리즈 우승','A'],['ksmvp','한국시리즈 MVP','A'],['mvp','정규시즌 MVP','A'],['roy','신인왕','A'],['gg','골든글러브','A'],['record','리그 신기록','A'],['fa100','FA 총액 100억+','A'],['abroad','해외 진출','A'],['hof','명예의 전당','A']];
 const BOOK0={hitStreak:39,hrStreak:9,sHR:56,sH:202,sRBI:146,sSB:84,sAVG:.412,sW:24,sK:225,sSV:47};
@@ -1430,9 +1430,9 @@ function getRow(lvk){const team=rowTeam(lvk);let r=S.rows.find(x=>x.y===S.y&&x.l
   if(!r){r={y:S.y,age:age(),lv:lvk,team,b:blankB(),p:blankP(),m1:0};S.rows.push(r)}return r}
 
 /* ===================== FEATS ===================== */
-const CEL=[/퍼펙트/,/노히트/,/리그 신기록/,/사이클링/,/40-40/,/트리플 크라운/,/30-30/,/인사이드 더 파크/,/3할·30홈런/,/홈런 고지/,/\d+승 투수/,/1점대/,/만 \d+세, 역대급/];
+const CEL=[/퍼펙트/,/노히트/,/리그 신기록/,/사이클링/,/50-50/,/40-40/,/트리플 크라운/,/30-30/,/인사이드 더 파크/,/3할·30홈런/,/20-20/,/홈런 고지/,/\d+승 투수/,/1점대/,/만 \d+세, 역대급/];
 function celebrate(kind,title,sub,extra){const gx={mvp:8,ring:6,medal:6,hof:0,record:6,feat:4,lb:0,debut:3,star:3,trophy:4,crown:5,glove:5}[kind]??3;if(gx){ME.xp+=gx;(extra=extra||[]).push(`성장 포인트 +${gx}`)}S.queue.push({type:'award',a:{kind,title,sub:sub||'',extra:extra||[],y:S.y}})}
-function feat(t,big){(S.phFeats=S.phFeats||[]).push({t,big:!!big});if(big){const p=CEL.findIndex(r=>r.test(t));if(p>=0&&(!S.phCel||p<S.phCel.p))S.phCel={p,t}}S.feats.unshift({y:S.y,ph:S.phase,t,big:!!big});if(S.feats.length>300)S.feats.pop();if(big)news('★ '+t)}
+function feat(t,big){(S.phFeats=S.phFeats||[]).push({t,big:!!big});if(big){const p=CEL.findIndex(r=>r.test(t));if(p>=0&&(!S.phCel||p<S.phCel.p))S.phCel={p,t};if(p>=0&&/\d0-\d0 클럽|3할·30홈런/.test(t))(S.phCelX=S.phCelX||[]).push(t)}S.feats.unshift({y:S.y,ph:S.phase,t,big:!!big});if(S.feats.length>300)S.feats.pop();if(big)news('★ '+t)}
 function bookCheck(key,val,fmt){if(val>S.book[key]){const old=S.book[key];S.book[key]=val;feat(`리그 신기록! ${BOOKN[key]} ${fmt?fmt(val):val} (종전 ${fmt?fmt(old):old})`,1);S.ach.record=S.ach.record||S.y;return true}return false}
 
 /* ===================== BATTING ===================== */
@@ -1688,13 +1688,13 @@ function phaseEnd(rep,tot0){
     if(main&&S.stage==='pro'&&S.pro.league!=='MLB'&&Math.abs(ps)>=(isP()&&ME.pos==='RP'&&(S.rel.fame||0)<45?1.8:1.2)&&R()<(isP()&&ME.pos==='RP'?.3:.5))S.queue.push(interview(ps,main));
     else{const ev=randEvent();if(ev)S.queue.push(ev)}}
   if(!ME.inj&&ME.fat>=65&&S.stage!=='ret')S.queue.push({title:'⚠️ 피로 경고',text:`피로도 ${Math.round(ME.fat)}. 이대로 쉬지 않고 훈련하거나 계속 출전하면 장기 부상 위험이 크게 올라간다.\n(내구성 ${Math.round(ME.hid.dur)} · 피로 75 이상이면 큰 부상 확률↑)`,ch:[{t:'서브 훈련을 휴식으로 (권장)',act:'restplan'},{t:'괜찮다, 그대로 간다',s:'부상 위험 감수',r:'무리하는 만큼 위험도 커진다.'}]});
-  if(S.phCel){const t=S.phCel.t.replace(/^\d+월 /,'').replace(/!+$/,'');celebrate(/신기록/.test(t)?'record':'feat',t,`${S.y} ${PHASE[S.phase]} · ${shortTeam()}`);S.phCel=null}
+  if(S.phCel){const t=S.phCel.t.replace(/^\d+월 /,'').replace(/!+$/,'');celebrate(/신기록/.test(t)?'record':'feat',t,`${S.y} ${PHASE[S.phase]} · ${shortTeam()}`);(S.phCelX||[]).filter(x=>x!==S.phCel.t).forEach(x=>{const t2=x.replace(/^\d+월 /,'').replace(/!+$/,'');celebrate('feat',t2,`${S.y} ${PHASE[S.phase]} · ${shortTeam()}`)});S.phCel=null}S.phCelX=[];
   if(S.phase===0&&S.stage==='pro'&&S.pro.debut<=S.y+1){const r=decideRoleAt(3);rep.lines.push(`개막 엔트리 예상: ${ROLEN[r]||r}`)}}
 function decideRoleAt(m){const k=S.m;S.m=m;const r=decideRole();S.m=k;return r}
 function seasonFeats(rep){
   const {b,p}=yearTot(S.y),y=S.y,kbo=S.pro.league==='KBO',qual=b.PA>=(S.pro.league==='MLB'?502:446),aw=S.awards.filter(a=>a.y===y).map(a=>a.n);
   if(!isP()){
-    if(b.HR>=40&&b.SB>=40){feat(`${y}시즌 40-40 클럽 가입!`,1);S.ach.t4040=y}else if(b.HR>=30&&b.SB>=30){feat(`${y}시즌 30-30 클럽 가입`,1);S.ach.t3030=y}else if(b.HR>=20&&b.SB>=20){feat(`${y}시즌 20-20 클럽`);S.ach.t2020=S.ach.t2020||y}
+    if(b.HR>=50&&b.SB>=50){feat(`${y}시즌 50-50 클럽 가입!`,1);S.ach.t5050=S.ach.t5050||y}else if(b.HR>=40&&b.SB>=40){feat(`${y}시즌 40-40 클럽 가입!`,1);S.ach.t4040=S.ach.t4040||y}else if(b.HR>=30&&b.SB>=30){feat(`${y}시즌 30-30 클럽 가입`,1);S.ach.t3030=S.ach.t3030||y}else if(b.HR>=20&&b.SB>=20){feat(`${y}시즌 20-20 클럽 가입`,1);S.ach.t2020=S.ach.t2020||y}
     if(qual&&b.H/b.AB>=.3&&b.HR>=30&&b.RBI>=100){feat(`3할·30홈런·100타점 달성`,1);S.ach.triple=S.ach.triple||y}
     if(b.H>=200){feat(`시즌 ${b.H}안타`,1);S.ach.h200=S.ach.h200||y}
     if(b.HR>=50){feat(`시즌 ${b.HR}홈런 고지`,1);S.ach.hr50=S.ach.hr50||y}
@@ -3126,7 +3126,7 @@ const TOPIC={park:/탁구장|잠실|라팍|문학|사직|몬스터월|고척돔|
 {const _cp=compPool;compPool=function(tone){S.topicY=S.topicY||{};if(S.topicY.legend===S.y&&R()<.8)return null;const p=_cp(tone);if(p)S.topicY.legend=S.y;return p}}
 
 /* 대기록 연출은 처음 한 번만, 이후엔 결과에만 */
-{const _cel=celebrate;celebrate=function(kind,title,sub,ex){if(kind==='feat'){S.celSeen=S.celSeen||{};const key=String(title).replace(/\d+(\.\d+)?/g,'#').replace(/\s+/g,'');if(S.celSeen[key]){ME.xp+=2;return}S.celSeen[key]=1}return _cel(kind,title,sub,ex)}}
+{const _cel=celebrate;celebrate=function(kind,title,sub,ex){if(kind==='feat'){S.celSeen=S.celSeen||{};const key=/\d0-\d0 클럽/.test(String(title))?String(title).replace(/\s+/g,''):String(title).replace(/\d+(\.\d+)?/g,'#').replace(/\s+/g,'');if(S.celSeen[key]){ME.xp+=2;return}S.celSeen[key]=1}return _cel(kind,title,sub,ex)}}
 
 /* 경기 종료 요약 (스크롤 최소화) */
 function gameDone(g){const win=g.win,my=g.my;const ar=g.aid?S.arts.find(x=>x.id===g.aid):null;
@@ -4653,7 +4653,7 @@ function intlUpcoming(y){const L=[];if(y>=2026&&(y-2026)%4===0)L.push(['wbc',`${
 ACT.intlp=function(a){S.intlPick=S.intlPick||{};S.intlPick[a.n]=!!a.go;if(a.go)return`${a.n} 최종 명단에 이름을 올렸다. 태극마크의 무게를 느낀다.`;S.rel.fame=Math.max(0,S.rel.fame-1);return`${a.n}은 고사했다. 이번 시즌은 소속팀에만 집중한다.`};
 CRIT.add('intlp');
 {const _in=intl;intl=function(rep,cy){try{const m=S.m;
-  const ag=(m===8&&cy>=2028&&(cy-2028)%4===0)||(m===9&&cy>=2026&&(cy-2026)%4===0);if(ag&&S.mil&&S.mil.status==='exempt')return;
+  const ag=(m===8&&cy>=2028&&(cy-2028)%4===0)||(m===9&&cy>=2026&&(cy-2026)%4===0);if(ag&&S.mil&&(S.mil.status==='exempt'||S.mil.status==='done'||S.mil.status==='serving'))return;
   const n=m===3&&cy>=2026&&(cy-2026)%4===0?`${cy} WBC`:null;
   if(n&&S.intlPick&&S.intlPick[n]===false)return;
   const before=S.hist.nat;_in(rep,cy);
