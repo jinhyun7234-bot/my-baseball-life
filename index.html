@@ -4653,7 +4653,7 @@ function intlUpcoming(y){const L=[];if(y>=2026&&(y-2026)%4===0)L.push(['wbc',`${
 ACT.intlp=function(a){S.intlPick=S.intlPick||{};S.intlPick[a.n]=!!a.go;if(a.go)return`${a.n} 최종 명단에 이름을 올렸다. 태극마크의 무게를 느낀다.`;S.rel.fame=Math.max(0,S.rel.fame-1);return`${a.n}은 고사했다. 이번 시즌은 소속팀에만 집중한다.`};
 CRIT.add('intlp');
 {const _in=intl;intl=function(rep,cy){try{const m=S.m;
-  const ag=(m===8&&cy>=2028&&(cy-2028)%4===0)||(m===9&&cy>=2026&&(cy-2026)%4===0);
+  const ag=(m===8&&cy>=2028&&(cy-2028)%4===0)||(m===9&&cy>=2026&&(cy-2026)%4===0);if(ag&&S.mil&&S.mil.status==='exempt')return;
   const n=m===3&&cy>=2026&&(cy-2026)%4===0?`${cy} WBC`:null;
   if(n&&S.intlPick&&S.intlPick[n]===false)return;
   const before=S.hist.nat;_in(rep,cy);
