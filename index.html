@@ -1464,7 +1464,7 @@ function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp
 function simBat(role,tg,L,row,lvk){
   const od=(role==='start'||role==='fB')?(S.order=batOrder(L)):0,share={start:.95,bench:.45,reserve:.18,fB:.92}[role],paG={start:od?[4.65,4.55,4.45,4.35,4.25,4.15,4.0,3.9,3.8][od-1]:4.25,bench:1.5,reserve:1.1,fB:4.2}[role];S.onMul=od?[.7,.85,1.15,1.3,1.2,1,.95,.9,.85][od-1]:1;
   const m=blankB(),ch={C:5,'1B':8,'2B':5,'3B':3,SS:5,LF:2,CF:2.6,RF:2}[ME.pos]*(role==='bench'||role==='reserve'?.4:1);
-  const ep=cl(.018-(eff('fld')-L)*.0007,.002,.05)*(sk('glove')?.6:1)*({C:.45,'1B':.3,'2B':.65,'3B':1.5,SS:1.05,LF:.7,CF:.55,RF:.75}[ME.pos]||1),pro=PRO.includes(lvk),st=S.str,d=`${S.m}월`;
+  const ep=cl(.016-(eff('fld')-L)*.00045,.003,.04)*(sk('glove')?.6:1)*({C:.56,'1B':.35,'2B':.85,'3B':1.9,SS:1.22,LF:.82,CF:.64,RF:.82}[ME.pos]||1),pro=PRO.includes(lvk),st=S.str,d=`${S.m}월`;
   for(let g=0;g<tg;g++){if(R()>share)continue;m.G++;const n=Math.max(1,Math.round(paG+rn(0,.6))),gl={H:0,HR:0,RBI:0,S1:0,D:0,T:0,ob:0,GS:0,iphr:0};
     for(let i=0;i<n;i++)batPA(L,m,gl);
     for(let c=0;c<Math.round(ch);c++)if(R()<ep)m.E++;
