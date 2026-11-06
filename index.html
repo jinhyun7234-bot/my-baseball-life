@@ -1452,7 +1452,7 @@ function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp
   m.AB++;
   const hit=cl(.325+dvc(con)*.0028+Math.min(8,dv(sp))*.0007+Math.min(15,Math.max(0,DV(sp)-60))*.0009+(sk('hitm')?.012:0)+lefty,.18,.47);
   if(R()<hit){m.H++;gl.H++;if(risp&&S.rsp)S.rsp.h++;
-    const hr=cl(.09+dvp(eff('pow'))*.0045+Math.max(0,eff('pow')-80)*.0045,.005,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1),tr=cl(.015+dv(sp)*.0008,.002,.06),db=cl(.19+dvp(eff('pow'))*.0015+dv(sp)*.001,.06,.34),q=R();
+    const hr=cl(.086+(dvp(eff('pow'))>0?dvp(eff('pow'))*.0052:dvp(eff('pow'))*.0057)+Math.max(0,eff('pow')-80)*.0055,.015,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1),tr=cl(.015+dv(sp)*.0008,.002,.06),db=cl(.19+dvp(eff('pow'))*.0015+dv(sp)*.001,.06,.34),q=R();
     const n=on.filter(Boolean).length;
     if(q<hr){m.HR++;gl.HR++;m.R++;const x=1+n;m.RBI+=x;gl.RBI+=x;if(n===3)gl.GS=1;if(sp>=60&&R()<(sp-57)*.0012)gl.iphr=1;return}
     if(q<hr+tr){m.T++;gl.T++;m.RBI+=n;gl.RBI+=n;reach(3);return}
@@ -1839,7 +1839,7 @@ function meBatPA(pR,risp){let con=eff('con')+(sk('clutch')?4:0)+(ME.hid.men-50)*
   const k=cl(.205-dvc(con)*.0042-dv(eff('eye'))*.0008+(sk('kprone')?.03:0),.05,.42),bb=cl(.082+dv(eff('eye'))*.0018,.02,.2),r=R();
   if(r<k)return'K';if(r<k+bb+.01)return'BB';
   {const sv=DV(eff('spd'));if(sv>=70&&R()<.012+(sv-70)*.0008){if(R()<cl(.4+(sv-70)*.012,.4,.75)){S._lastMeSpd=1;S._bunt=1;return'1B'}return'GO'}}
-  if(R()<cl(.325+dvc(con)*.0028+Math.min(8,dv(eff('spd')))*.0007+Math.min(15,Math.max(0,DV(eff('spd'))-60))*.0009+(sk('hitm')?.012:0),.18,.47)){S._lastMeSpd=1;const hr=cl(.09+dvp(eff('pow'))*.0045+Math.max(0,eff('pow')-80)*.0045,.005,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
+  if(R()<cl(.325+dvc(con)*.0028+Math.min(8,dv(eff('spd')))*.0007+Math.min(15,Math.max(0,DV(eff('spd'))-60))*.0009+(sk('hitm')?.012:0),.18,.47)){S._lastMeSpd=1;const hr=cl(.086+(dvp(eff('pow'))>0?dvp(eff('pow'))*.0052:dvp(eff('pow'))*.0057)+Math.max(0,eff('pow')-80)*.0055,.015,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
   return pick(['GO','GO','FO','FO','LO'])}
 function mePitPA(bR,risp,tired){const L=bR,pv=x=>{const d=x-L-pitB(L);return d>0?d*PITC:d},st=stuffC(eff)+roleAdj(S._pRole||'SP')-tired+(sk('clutch')?2:0)+(ME.hid.men-50)*.12,ctl=eff('ctl'),stf=eff('stf');
   const PM=pitMods(S._pRole||'SP'),tto=PM.tto*Math.max(0,(S._pInn||1)-2),k=PM.k*cl(.185+pv(st-tto-PM.st)*.0036+pv(ctl)*.0012+(sk('kmach')?.025:0),.05,.42),bb=cl(.085-pv(ctl)*.0021+tired*.002,.02,.2),r=R();
