@@ -4587,7 +4587,7 @@ function narrLines(x){const nm=ME.name,gn=giv(nm),opp=x.opp||'상대',win=x.win!
     /* 3) 역전·결승타·동점 */
     else{const go=pl.find(p=>(isHitP(p)||p.t==='BB')&&p.r>0&&p.my>p.op&&p.my-p.r<=p.op);
       if(go){const gl=hitTxt(go),was=go.my-go.r<go.op?'역전':'균형 깨는';
-        add(pick([`${go.i}회 ${was} ${gl} 소름 돋았다`,`${go.i}회 그 ${gl} 하나로 분위기 완전 넘어옴`,go.i>=7?`${go.i}회에 이걸 쳐버리네 미친놈 ㅋㅋ`:`${go.i}회 ${gl}로 ${opp} 기 죽임`,`${opp} 투수 실투 놓치지 않는 ${gn} 클래스`]),win?3:2);
+        add(pick([`${go.i}회 ${was} ${gl} 소름 돋았다`,`${go.i}회 그 ${gl} 하나로 분위기 완전 넘어옴`,go.i>=7?`${go.i}회에 이걸 쳐버리네 미친놈 ㅋㅋ`:`${go.i}회 ${jo(gl,'으로','로')} ${opp} 기 죽임`,`${opp} 투수 실투 놓치지 않는 ${gn} 클래스`]),win?3:2);
         if(win)add(pick([`결승타 ${nm} 오늘 MVP 그냥 줘라`,`오늘 승리 지분 ${jo(gn,'이','가')} 반은 먹음`,`${was==='역전'?'역전':'결승'}타 주인공 ${nm} 이름 기억해라`]),2);
         else add(`${go.i}회 ${gl}로 앞서갔는데 불펜이 다 날려먹음 ㅠ ${jo(nm,'은','는')} 무죄`,3)}
       const tie=pl.find(p=>p.r>0&&p.i>=7&&p.my===p.op);if(tie)add(pick([`${tie.i}회 동점 ${hitTxt(tie)} 아니었으면 그냥 졌다`,`${tie.i}회 ${gn} 동점타에서 진짜 소리 질렀다`]),2)}
@@ -8805,10 +8805,10 @@ function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${
   out=add.concat(out)}catch(e){}return out}}
 
 /* 가을야구·국제대회: 지면 탈락인 경기에서 살아남음 · 접전 결정적 순간 활약 → 캐스터 멘트 인용 댓글 */
-{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!(x.ps||x.intl)||!x.win||!Array.isArray(out))return out;const sub=String(x.sub||''),nm=ME.name,P=isP(),add=[];
+{const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!(x.ps||x.intl)||!x.win||!Array.isArray(out)||/와일드카드[^]*1차전/.test(String(x.title||'')))return out;const sub=String(x.sub||''),nm=ME.name,P=isP(),add=[];
   const put=(s,re)=>{s=josaFix(s);if(seenHas(s)||out.some(c=>c.t===s))return;seenAdd(s);add.push(mkC(s,re?[{nk:pick(NICKS),t:re,up:ri(80,1200)}]:[],{up:ri(2500,8000),must:1}))};
   const m=sub.match(/(\d)승\s*(\d)패/),wa=m?+m[1]:-1,wb=m?+m[2]:-1,elim=/지면 탈락|마지막 승부/.test(sub);
-  if(elim&&!x.clinch){const L=wa===0&&wb===3?[`0승 3패, 모두가 끝났다고 했던 시리즈. 그 절망의 끝에서 희망을 찾아내는 오늘 경기였습니다`,`벼랑 끝 0승 3패, 아직 이 팀의 가을은 끝나지 않았습니다`]:[`지면 끝나는 경기, 벼랑 끝에서 살아남았습니다!`,`탈락 위기에서 다시 일어섭니다. 이 시리즈, 아직 끝나지 않았습니다`];put(`캐스터 "${pick(L)}" 이 멘트 소름`,pick(['진짜 끝까지 봐야 한다','이게 가을야구지','아직 안 끝났다!!']))}
+  if(elim&&!x.clinch&&!/와일드카드[^]*1차전/.test(String(x.title||''))){const L=wa===0&&wb===3?[`0승 3패, 모두가 끝났다고 했던 시리즈. 그 절망의 끝에서 희망을 찾아내는 오늘 경기였습니다`,`벼랑 끝 0승 3패, 아직 이 팀의 가을은 끝나지 않았습니다`]:[`지면 끝나는 경기, 벼랑 끝에서 살아남았습니다!`,`탈락 위기에서 다시 일어섭니다. 이 시리즈, 아직 끝나지 않았습니다`];put(`캐스터 "${pick(L)}" 이 멘트 소름`,pick(['진짜 끝까지 봐야 한다','이게 가을야구지','아직 안 끝났다!!']))}
   /* 결정적 순간: 7회 이후 3점 차 이내에서 내 타점·홈런 / 접전 7회 이후 무실점 투구 / 결승타·끝내기 */
   const pl=x.pl||[],pp=x.pp||[];const bat=!P&&(x._wo||x._dhr||pl.some(p=>p.i>=7&&p.r>0&&Math.abs((p.my-p.r)-p.op)<=2));
   const late=pp.filter(p=>p.i>=7),pit=P&&late.length>=3&&late.every(p=>!p.r)&&late.some(p=>Math.abs(p.my-p.op)<=3);
@@ -9001,7 +9001,7 @@ const stA=()=>{try{return S&&S.stage==='pro'?(S.stoveAdj||0):0}catch(e){return 0
   const lg=S.pro.league,{b}=yearTot(S.y,[lg]),gn=giv(ME.name),pn=POS[ME.pos]||'야수',IF=['SS','2B','3B','1B','C'].includes(ME.pos),dh=ME.pos==='DH'||S.dhConv&&S.y>=S.dhConv;
   const fld=DV(E('fld')),rng=DV(E('rng')),spd=DV(E('spd')),ops=b.PA>=80?opsN(b):null,add=[];const A=(t,re,p)=>{if(!seenHas(t)&&R()<(p??.5))add.push([t,re||[]])};x=x||{};
   /* 실책 많은 시즌 */
-  const eBad=!dh&&b.G>=25&&(b.E>=(IF?Math.max(8,b.G*.12):Math.max(5,b.G*.07)))&&fld<70;
+  const eBad=!dh&&(x.gPA==null||(x.gErr||0)>=1)&&b.G>=25&&(b.E>=(IF?Math.max(8,b.G*.12):Math.max(5,b.G*.07)))&&fld<70;
   if(eBad){A(`이 정도 실책 개수랑 수비력이면 그냥 지타 박거나 수비력 올라올 때까지 수납`,['수비 코치랑 펑고 1000개 받고 와라','지명타자 자리는 비어 있냐'],.55);A(`실책 ${b.E}개 실화냐 글러브에 구멍 났냐`,['공 굴러오면 내가 다 불안함 ㅋㅋ'],.5);
     if(ops!=null&&ops>=.8)A('방망이로 번 점수 수비로 다 까먹는다',['타격만 보면 레전드인데…'],.5);if(IF&&ME.pos!=='1B')A(`${pn} 말고 1루나 외야로 돌리는 게 맞다`,['송구가 너무 불안함'],.4)}
   /* 오늘 경기 실책 */
@@ -9749,6 +9749,20 @@ function draftTool(){try{if(isP()){const best=Math.max(...PITCHES.filter(k=>k!==
 
 /* 예전 저장: 새로 배우다 만 구종이 40 미만이면 40으로 */
 {const _ld40=load;load=function(){const s=_ld40.apply(this,arguments);try{const m=s&&s.me;if(m&&m.pt&&!s._pt40){for(const k in m.pt){if(k!=='FB'&&m.pt[k]>0&&m.pt[k]<35)m.pt[k]=35}s._pt40=1}}catch(e){}return s}}
+
+/* ===== 경기 기사 댓글 최종 정합성 필터: 승패·내 활약과 안 맞는 댓글 제거 ===== */
+function myPerfX(x){const P=isP();if(P){const o=x.ipO||0,ra=x.ra||0;if(!o&&!ra)return 'none';if(ra>=4||(o<9&&ra>=3)||(o<6&&ra>=2)||(o<3&&ra>=1))return 'bad';if((o>=15&&ra<=2)||(o>=3&&ra===0))return 'good';return 'avg'}
+  const pa=x.gPA||0,h=x.gH||0;if(!pa)return 'none';if(h>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2)return 'good';if(pa>=3&&h===0)return 'bad';return 'avg'}
+{const LOSS=/승리 요정|펠레|석패|영봉패|팀이 안 따라|팀은 졌|팀졌|졌시쳤|졌잘싸|라커룸에서 무슨 생각|패배|지는 경기|져도|졌지만|이렇게 던지고 패전|점수를 하나도 못 내주/,
+  WIN=/이겼|이겨서|이긴 날|이기면 장땡|영봉승|이런 경기 이기면|승리에 보탬|승리 요정 아님|살려줬|멱살 잡고 살려|우승 버스/,
+  PRAISE=/MVP|지배|미쳤다|미쳤네|GOAT|없었으면|클래스|해결사|언터처블|에이스의 품격|혼자 멱살|평가는 오히려 올라|가을 사나이|던질 만큼 던졌다|완벽했는데|억울하다|불쌍하다/,
+  CRIT=/좀 쳐주라|좀 쳐라|좀 해줘|조금만 더 해줬으면|작아지네|존재감이 부족|묻어가|소리 듣기 싫으면|부진 길어지면|못 쳐도|휴식하고|방화|침묵|승리할 때만 출근|세월은 못|아쉽다|아쉬운데|구멍|빼라|곤란하다|실망|한숨/;
+ const _cF=comments;comments=function(tone,x){let out=_cF(tone,x);try{if(!x||!Array.isArray(out)||(x.gPA==null&&x.ipO==null)||x.win==null)return out;const pf=myPerfX(x),nm=ME.name,gn=giv(nm);
+  const elim=/지면 탈락|마지막 승부/.test(String(x.sub||''));
+  out=out.filter(c=>{if(!c||c.rl||typeof c.t!=='string')return true;const t=c.t;
+    if(x.win&&LOSS.test(t))return false;if(!x.win&&WIN.test(t))return false;
+    if(pf==='bad'&&PRAISE.test(t))return false;if(!x.win&&pf!=='good'&&/DNA|다르긴 하다|역시 경험|베테랑을 쓰는|품격|몸값 증명|돈값은 큰 경기/.test(t))return false;if(pf==='good'&&CRIT.test(t))return false;if(pf==='none'&&(PRAISE.test(t)||CRIT.test(t))&&(t.includes(gn)||t.includes(nm)||/\{n\}/.test(t)))return false;
+    if(!elim&&/^아직 안 끝났다/.test(t))return false;return true})}catch(e){}return out}}
 
 </script>
 
