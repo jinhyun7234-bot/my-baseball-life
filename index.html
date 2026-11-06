@@ -1802,7 +1802,7 @@ function intl(rep,cy){
   const m=S.m;if(!(S.stage==='pro'&&((S.pro.league==='KBO'&&!S.pro.dev&&S.pro.debut<=S.y)||S.pro.league==='MLB')))return;
   const o=ovrE(),nf=natForm(),good=(nf&&nf.ok)||o>=62;let ev=null;
   if(m===8&&cy>=2028&&(cy-2028)%4===0&&good)ev={n:`${cy} 올림픽`,opp:['일본','미국','도미니카']};
-  if(m===9&&cy>=2026&&(cy-2026)%4===0&&good)ev={n:`${cy} 아시안게임`,opp:['대만','일본']};
+  if(m===9&&cy>=2026&&(cy-2026)%4===0&&(good||o>=55||(nf&&nf.bonus>0)))ev={n:`${cy} 아시안게임`,opp:['대만','일본']};
   if(!ev)return;
   S.hist.nat++;S.ach.nat=S.ach.nat||cy;S.rel.fame+=5;ME.xp+=4;rep.lines.push(`${ev.n} 국가대표 발탁! (성장 포인트 +4)`);
   const bn=nf?nf.bonus:0;let stage,want,force=null;
@@ -1945,10 +1945,10 @@ function followGame(o){
 function phi(z){return 1/(1+Math.exp(-1.702*z))}
 function careerPerf(lv){const b=blankB(),p=blankP();S.rows.filter(r=>r.lv===lv).forEach(r=>{addTo(b,r.b);addTo(p,r.p)});
   if(isP())return p.outs<30?0:cl((3.3-eraN(p))*2,-6,6);return b.PA<40?0:cl((opsN(b)-.85)*20,-6,6)}
-var DRK={n:1000,c:61,s:8};
+var DRK={n:1000,c:64,s:8};
 function draftEvent(){
   const o=ovrE(),lv=S.stage==='hs'?'hs':'univ';
-  const v=o+(ME.pot+rn(0,3))*.55+careerPerf(lv)+S.rel.fame*.06+(isP()&&ME.hand.startsWith('좌')?3:0)-(lv==='univ'?6:0);
+  const _pn=rn(0,3),_cp=careerPerf(lv),_vol=draftVol(lv),_tl=draftTool(),v=o+(ME.pot+_pn)*.55+_cp*1.5+_vol+_tl+S.rel.fame*.06+(isP()&&ME.hand.startsWith('좌')?3:0)-(lv==='univ'?6:0);S._drV={o,pot:(ME.pot+_pn)*.55,perf:_cp*1.5,vol:_vol,tool:_tl,fame:S.rel.fame*.06,v};
   const rank=Math.max(1,Math.round(DRK.n*(1-phi((v-DRK.c)/DRK.s))+rn(0,4))),yr=S.y,order=S.lg.prev.slice().reverse();
   const rv=S.rival.o+S.rival.pot*.55,rr=Math.max(1,Math.round(1000*(1-phi((rv-71)/8))+rn(0,6)));
   if(S.rival.team==null){if(rr<=110){S.rival.team=order[(rr-1)%10];news(`라이벌 ${S.rival.name}, ${Math.ceil(rr/10)}라운드 ${TEAMS[S.rival.team].nick} 지명.`)}else S.rival.team=-1}
@@ -4653,7 +4653,7 @@ function intlUpcoming(y){const L=[];if(y>=2026&&(y-2026)%4===0)L.push(['wbc',`${
 ACT.intlp=function(a){S.intlPick=S.intlPick||{};S.intlPick[a.n]=!!a.go;if(a.go)return`${a.n} 최종 명단에 이름을 올렸다. 태극마크의 무게를 느낀다.`;S.rel.fame=Math.max(0,S.rel.fame-1);return`${a.n}은 고사했다. 이번 시즌은 소속팀에만 집중한다.`};
 CRIT.add('intlp');
 {const _in=intl;intl=function(rep,cy){try{const m=S.m;
-  const ag=(m===8&&cy>=2028&&(cy-2028)%4===0)||(m===9&&cy>=2026&&(cy-2026)%4===0);if(ag&&S.mil&&S.mil.status==='exempt')return;
+  const ag=(m===8&&cy>=2028&&(cy-2028)%4===0)||(m===9&&cy>=2026&&(cy-2026)%4===0);
   const n=m===3&&cy>=2026&&(cy-2026)%4===0?`${cy} WBC`:null;
   if(n&&S.intlPick&&S.intlPick[n]===false)return;
   const before=S.hist.nat;_in(rep,cy);
@@ -9201,7 +9201,7 @@ function wbcRun(){const y=S.y,n=wbcName(y),nf=natForm(),bn=nf?nf.bonus:0,o=ovrE(
   const games=[],hidden=()=>{const ks=P?['stf','ctl','velo','pcl']:['con','pow','eye','vis'];for(let i=0;i<2;i++)grow(pick(ks),.13)};
   S.queue.push({type:'wbcintro',y,n,pool:['한국',...pool]});
   const play=(oppN,title,sub,stage,cap,mercy,roleOv)=>{const O=NATS[oppN]||{ab:oppN,c:'#333'},oR=WBC_R[oppN]||55;
-    const role=roleOv||(P?(sp?'none':'CL'):'start');
+    let role=roleOv||(P?(sp?'none':'CL'):'start');if(role!=='none'&&typeof intlBench==='function'&&R()<intlBench()){role='none';try{news(`대표팀 감독이 부진한 ${ME.name}를 이번 경기에서 뺐다.`)}catch(e){}}
     const g=followGame({title,sub,me:{ab:'한국',c:'#c60c30',bR:korR,pR:korR},op:{ab:O.ab,c:O.c,bR:oR,pR:oR},home:R()<.5,role,lvk:'KBO',L:58,intl:true,wbc:true,mercy,pitchCap:cap,quiet:true});
     const played=P?(g.mp&&g.mp.outs>0):(g.mb&&g.mb.PA>0);if(played){hidden();ME.fat=cl(ME.fat+(P?(sp?6:2.5):2),0,100)}
     wbcArticle(g,{oppN,stage,title,strong:WBC_STRONG.includes(oppN),rival:oppN==='대만'||oppN==='일본'});
@@ -9252,7 +9252,7 @@ function vWbcEnd(q){const t={우승:'🏆 세계 정상!',준우승:'🥈 준우
 function wbcArticle(g,c){try{const my=g.my,kr=g.R[my],op=g.R[1-my],P=isP(),mb=g.mb||{},mp=g.mp||{},win=g.win,diff=kr-op;
   const ra=+(((g.myLine||'').match(/(\d+)실점/)||[0,0])[1]),played=P?mp.outs>0:mb.PA>0,good=played&&(P?((mp.outs>=9&&ra<=1)||(mp.outs>=3&&ra===0&&(mp.K>=2||mp.SV))):(mb.H>=2||mb.HR>=1||mb.RBI>=2)),bad=played&&(P?ra>=3:(mb.PA>=3&&mb.H===0));
   const st=c.stage,stN={pool:'1라운드',qf:'8강',sf:'준결승',final:'결승'}[st];const head=win?(g.mercy?`대한민국, ${c.oppN}에 ${kr}-${op} 콜드승… ${ME.name} ${g.myLine}`:`대한민국, ${c.oppN} ${kr}-${op} 격파… ${ME.name} ${g.myLine}`):(g.mercy?`대한민국, ${c.oppN}에 ${kr}-${op} 콜드패… 세계의 벽`:`대한민국, ${c.oppN}에 ${kr}-${op} ${Math.abs(diff)<=2?'석패':'패배'}… ${ME.name} ${g.myLine}`);
-  article(`[${stN}] ${head}`,`${c.title}. ${ME.name}: ${g.myLine}.`,'intl',{wbc:1,intl:true,title:c.title,win,opp:c.oppN,strong:c.strong,rival:c.rival,close:Math.abs(diff)<=2,mercy:!!g.mercy,good,bad,played,st,kr,op,gH:mb.H||0,gHR:mb.HR||0,gRBI:mb.RBI||0,gPA:mb.PA||0,ipO:mp.outs||0,K:mp.K||0,pl:g.pl||[],pp:g.pp||[]});g.aid=S.artId}catch(e){}}
+  article(`[${stN}] ${head}`,`${c.title}. ${ME.name}: ${g.myLine}.`,'intl',{wbc:1,intl:true,title:c.title,win,opp:c.oppN,strong:c.strong,rival:c.rival,close:Math.abs(diff)<=2,mercy:!!g.mercy,good,bad,played,st,kr,op,ra,gH:mb.H||0,gHR:mb.HR||0,gRBI:mb.RBI||0,gPA:mb.PA||0,ipO:mp.outs||0,K:mp.K||0,pl:g.pl||[],pp:g.pp||[]});g.aid=S.artId}catch(e){}}
 /* WBC 기사: 소속팀·시즌 얘기 걸러내고 국가대표 상황 댓글로 */
 {const CLUB=/연봉|FA|먹튀|시즌|정규|팀 순위|1군|2군|퓨처스|트레이드|감독 교체|프런트|단장|우리 팀|팀 성적|가을야구|포스트시즌|한국시리즈|월드시리즈|직관|사직|잠실|구단|등장곡|굿즈|유니폼 마킹|신인왕|골든글러브|골글|MVP 각|우승 반지/;
  const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.wbc||!Array.isArray(out))return out;out=out.filter(c=>!CLUB.test(c.t||'')&&!(TEAMS||[]).some(t=>(c.t||'').includes(t.nick))&&!(!x.played&&/안 쓴|놔두고|아끼다|안 올렸|안 썼|왜 안 /.test(c.t||'')));out.forEach(c=>{if(c.re)c.re=c.re.filter(q=>!CLUB.test(q.t||''))});
@@ -9695,6 +9695,39 @@ function relQ(){try{if(!isP())return 0;const e=relEra();if(e==null)return 0;retu
     if(/^캐스터 "|^"[^"]+" 이 멘트|캐스터 멘트/.test(t)){cs++;return cs<=mx&&R()<.85}
     if(/인터뷰 보소|인터뷰에서 "|인터뷰 울먹|수훈 인터뷰/.test(t)){iv++;return iv<=mx&&R()<.85}
     return true})}catch(e){}return out}}
+
+/* ===== 국제대회: 대회 내 내 성적 흐름 반영 댓글 + 연속 부진 시 출전 기회↓ ===== */
+function intlKey(x){const t=String((x&&x.title)||'');const m=t.match(/(\d{4})\s*(WBC|아시안게임|올림픽)/);return m?m[1]+m[2]:S.y+'intl'}
+function intlStreak(){const T=S._iT;if(!T||!T.g)return 0;let k=0;for(let i=T.g.length-1;i>=0;i--){if(T.g[i]==='b')k++;else if(T.g[i]==='n'&&k===0)continue;else break}return k}
+function intlBench(){try{if(!S._iT||S._iT.k.indexOf(String(S.y))!==0)return 0;const k=intlStreak();return k>=2?Math.min(.6,(k-1)*.25):0}catch(e){return 0}}
+{const _cT=comments;comments=function(tone,x){let out=_cT(tone,x);try{if(!x||!x.intl||!Array.isArray(out))return out;const key=intlKey(x);if(!S._iT||S._iT.k!==key)S._iT={k:key,g:[],seen:{}};const T=S._iT,id=String(x.title||'')+'|'+(x.opp||'');if(T.seen[id])return out;T.seen[id]=1;
+  const P=isP(),o=x.ipO||0,ra=x.ra!=null?x.ra:0,played=x.played!=null?!!x.played:(P?o>0:(x.gPA||0)>0);
+  const bad=x.bad!=null?!!x.bad||(P&&played&&o<3&&ra>=2):(P?played&&(ra>=3||(o<3&&ra>=2)):(x.gPA||0)>=3&&!(x.gH||0));
+  const good=x.good!=null?!!x.good:(P?played&&((o>=9&&ra<=1)||(o>=3&&ra===0)):((x.gH||0)>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2));
+  const prevG=T.g.filter(v=>v==='g').length,prevStreak=intlStreak();T.g.push(!played?'n':bad?'b':good?'g':'a');if(!played)return out;
+  const gn=giv(ME.name),act=P?'투구':'타석';let L=[],re=[];
+  if(bad){const st=prevStreak+1;
+    if(st===1&&prevG>=1){L=[`${gn} 오늘은 안 풀렸네 앞에서 해준 게 있으니까 넘어간다`,`한 경기 못 했다고 너무 까지 말자 ${gn} 이번 대회 지분 크다`,`${gn}도 사람이다 오늘은 그냥 그런 날`,`그래도 오늘 ${gn} ${act}는 좀 아쉬웠다`];re=['ㅇㅇ 다음 경기 믿는다','앞 경기 생각하면 쉴드 가능'];}
+    else if(st===1){L=[`${gn} 국대 첫 경기라 긴장했나`,`기대 많이 했는데 ${gn} 오늘은 아니었다`,`${gn} 오늘 ${act} 보고 한숨 나왔다`,`${gn} 이 정도 선수 아닌데 오늘은 실망이다`];re=['다음 경기에서 보여주면 된다','국대 압박감이 다르긴 하다'];}
+    else if(st===2){L=[`${gn} 두 경기 연속 이러면 곤란하다`,`${gn} 컨디션 안 좋으면 다른 선수 써라`,`${gn} 이번 대회 영 안 맞는 듯`,`${gn} 소속팀에서 하던 거 반만 해도 되는데`,`${gn} 나올 때마다 불안하다 진짜`];re=['ㄹㅇ 바꿔야 함','감독은 뭐 하냐','이건 쉴드 불가'];}
+    else{L=[`${gn} 이제 진짜 빼라 볼 만큼 봤다`,`${gn} 대표팀 자리 아깝다 이름값으로 뽑힌 거냐`,`${gn} 이번 대회 최대 구멍`,`감독은 ${gn} 언제까지 쓸 거냐`,`${gn} 국대 다시 안 뽑혀도 할 말 없다`,`${gn} 나오는 순간 채널 돌렸다`];re=['ㄹㅇ 할 말 없음','혈압 오른다','이건 감독 책임도 크다'];}}
+  else if(good&&prevStreak>=2){L=[`${gn} 드디어 살아났다`,`욕 먹던 ${gn} 오늘은 인정`,`${gn} 이제야 원래 모습 나온다`];re=['진작 이렇게 하지 ㅋㅋ','미안하다 내가 깠다'];}
+  else if(good&&prevG>=2){L=[`${gn} 이번 대회 내내 미쳤다`,`${gn} 국대 체질 맞네 매 경기 해준다`,`이번 대회 한국 최고 선수는 ${gn}`];re=['ㅇㅈ','대회 MVP 줘라'];}
+  L=L.filter(t=>!seenHas(t));if(!L.length)return out;const n=bad&&prevStreak+1>=2?Math.min(L.length,ri(2,3)):Math.min(L.length,bad?2:1);
+  const add=[];L.sort(()=>R()-.5).slice(0,n).forEach(t=>{seenAdd(t);add.push(mkC(t,R()<.6?[pick(re)]:[],{up:ri(1500,6000),must:1}))});
+  out.splice(Math.min(out.length,1),0,...add)}catch(e){}return out}}
+
+/* 드래프트: 고교(대학) 누적 기록(홈런·도루·탈삼진 등)과 포지션 핵심 툴 반영 */
+function draftVol(lv){try{const b=blankB(),p=blankP();S.rows.filter(r=>r.lv===lv).forEach(r=>{addTo(b,r.b);addTo(p,r.p)});
+  if(isP()){if(p.outs<30)return 0;const ip=p.outs/3,k9=p.K*9/ip;return cl((k9-7)*.45,-1.5,2.5)+cl(ip/60,0,1.5)}
+  if(b.PA<40)return 0;return cl(b.HR*.18,0,2)+cl(b.SB*.06,0,1.2)+cl(((b.BB||0)-(b.SO||b.K||0)*.5)/b.PA*8,-1,1)}catch(e){return 0}}
+function draftTool(){try{if(isP()){const best=Math.max(...PITCHES.filter(k=>k!=='FB').map(k=>raw(k)));return cl((DV(E('velo'))-50)*.06,-1.5,2.5)+cl((DV(best)-50)*.04,-1,1.5)}
+  const pr=POSPRIO[ME.pos]||POSPRIO.DH,top=pr.slice(0,3).map(g=>Math.max(...g.map(k=>DV(prioVal(k)))));const mn=top.reduce((a,b)=>a+b,0)/top.length;return cl((mn-50)*.07,-2,3)+(Math.min(...top)>=60?.8:0)}catch(e){return 0}}
+/* 고교 무대에서 활약하기 조금 쉽게 */
+{const _b=batPA;batPA=function(L,m,gl){return _b(S&&S.stage==='hs'?L-1.2:L,m,gl)}}
+{const _mb=meBatPA;meBatPA=function(pR,risp){return _mb(S&&S.stage==='hs'?pR-1.2:pR,risp)}}
+{const _p=pitchGame;pitchGame=function(L,type){return _p(S&&S.stage==='hs'?L-1.2:L,type)}}
+{const _mp=mePitPA;mePitPA=function(bR,risp,tired){return _mp(S&&S.stage==='hs'?bR-1.2:bR,risp,tired)}}
 
 </script>
 
