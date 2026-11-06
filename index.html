@@ -3104,7 +3104,7 @@ CM.mlbBig=['메이저에서 이 금액이면 진짜 인정받은 거다','한국
 CM.legend=['레전드 대우 제대로 해줬네','프랜차이즈 스타 대접 ㄷㄷ','구단이 의리 지켰다','이 팀에서 은퇴까지 가자','영구결번 예약','원클럽맨의 품격','이 금액이면 평생 이 팀 사람이다','팬들이 원하던 그림','돈보다 의리 감동이다','종신 계약 가즈아'];
 /* 영구결번: KBO 한 팀에서만 뛰고 그 팀 WAR 90 이상 */
 function retireNo(){const kr=S.rows.filter(r=>r.lv==='KBO'),teams=new Set(kr.map(r=>r.team));if(teams.size!==1)return null;const w=kr.reduce((a,r)=>a+rowWAR(r),0);if(w<90)return null;return{team:[...teams][0],w}}
-{const _rt=retire;retire=function(why){const rn=S.stage==='pro'?retireNo():null;_rt(why);if(rn){S.retNo={team:rn.team,num:ME.num||'-',w:rn.w};news(`${rn.team}, ${ME.name}의 등번호 ${ME.num||''}번 영구결번.`);celebrate('hof','영구결번',`${rn.team} · 등번호 ${ME.num||'-'} · 팀 통산 WAR ${rn.w.toFixed(1)}`);article(`${rn.team}, ${ME.name} 등번호 ${ME.num||''}번 영구결번`,`원클럽맨으로 커리어를 마친 그의 이름이 구장 외야에 영원히 걸린다.`,'retire')}}}
+{const _rt=retire;retire=function(why){const rn=S.stage==='pro'?retireNo():null;_rt(why);if(rn){S.retNo={team:rn.team,num:ME.num||'-',w:rn.w};news(`${rn.team}, ${ME.name}의 등번호 ${ME.num||''}번 영구결번.`);celebrate('hof','영구결번',`${rn.team} · 등번호 ${ME.num||'-'} · 팀 통산 WAR ${rn.w.toFixed(1)}`);article(`${rn.team}, ${ME.name} 등번호 ${ME.num||''}번 영구결번`,(rn.traded?`트레이드로 이적해 온 뒤 팀의 상징이 된 그의 이름이 구장 외야에 영원히 걸린다.`:`원클럽맨으로 커리어를 마친 그의 이름이 구장 외야에 영원히 걸린다.`),'retire')}}}
 {const _rs=recapSlides;recapSlides=function(){const sl=_rs();if(S.retNo){sl.splice(sl.length-1,0,{bg:'linear-gradient(160deg,#c9a227,#2b1d00)',ey:'영구결번',big:`No. ${S.retNo.num}`,sub:`${S.retNo.team}의 영원한 번호.\n원클럽맨, 팀 통산 WAR ${S.retNo.w.toFixed(1)}.`})}return sl}}
 
 /* ===================== 상점 물가 인상 · 초호화 소비 · 댓글 주제 분산 ===================== */
@@ -4456,7 +4456,7 @@ const PSTYLE=[['적극 육아','아이와 시간을 많이 보낸다 · 피로�
     out.push({title:'💍 프러포즈',text:`${jo(g.n,'과','와')} 만난 지 ${S.y-g.since}년. 반지를 준비할까?\n(결혼식·신혼집 비용 약 ${money(cost)})`,ch:[{t:'프러포즈한다',s:`−${money(cost)} · 성공하면 결혼 (호감이 높을수록 성공 확률↑)`,act:'prop',arg:{cost,p}},{t:'조금 더 만나보자',s:'변화 없음',act:'lifeok'}]});return out}
   /* 2세 계획 */
   famMigrate();const ks=S.children=S.children||[];
-  if(S.married&&ks.length<3&&!S.babyDue&&!S.kidNever&&S.y-S.married.y>=1&&(S.kidAskY||0)<S.y&&R()<.4){S.kidAskY=S.y;out.push({title:'👶 2세 계획',text:`${S.married.n} 씨가 조심스럽게 묻는다. "우리 ${['','둘째 ','셋째 '][ks.length]||''}아기 가져볼까?"`,ch:[{t:'좋아, 가족을 늘리자',s:'내년 출산 · 생활비↑ · 인기↑',act:'kidPlan',arg:{y:1}},{t:'아직은 둘만의 시간이 좋아',s:'변화 없음',act:'kidPlan',arg:{y:0}}]});return out}
+  if(S.married&&ks.length<2&&!S.babyDue&&!S.kidNever&&S.y-S.married.y>=1&&(S.kidAskY||0)<S.y&&R()<.4){S.kidAskY=S.y;out.push({title:'👶 2세 계획',text:`${S.married.n} 씨가 조심스럽게 묻는다. "우리 ${['','둘째 ','셋째 '][ks.length]||''}아기 가져볼까?"`,ch:[{t:'좋아, 가족을 늘리자',s:'내년 출산 · 생활비↑ · 인기↑',act:'kidPlan',arg:{y:1}},{t:'아직은 둘만의 시간이 좋아',s:'변화 없음',act:'kidPlan',arg:{y:0}}]});return out}
   if(S.babyDue&&S.y>=S.babyDue){S.babyDue=0;out.push({title:'👶 출산',text:`${S.married.n} 씨가 건강한 아기를 낳았다! 작은 손을 잡는 순간 모든 게 달라 보인다.`,ch:[{t:'아들',s:'',act:'kidSex',arg:{s:'아들'}},{t:'딸',s:'',act:'kidSex',arg:{s:'딸'}}]});return out}
   /* 육아 방식 (연 1회) */
   if(ks.length&&S.phase===0&&(S.pstyleY||0)<S.y){S.pstyleY=S.y;out.push({title:'🍼 올해 육아는 어떻게?',text:`${ks.map(k=>`${k.n}(${kidAge(k)}살)`).join(', ')}. 시즌을 앞두고 ${S.married.n} 씨와 육아 분담을 이야기했다.`,ch:PSTYLE.map(([t,s],i)=>({t,s,act:'parent',arg:{i}}))});return out}
@@ -9377,7 +9377,9 @@ function retStory(){try{
   const d=S.pro&&S.pro.draft;
   if(d&&d.rd>=4&&t.w>=40)add('under',1+(d.rd-4)*.1,1,'open',{o:pk('udo',[`${d.y+1} 드래프트 ${d.rd}라운드, 그날 이 이름을 기억한 사람은 거의 없었지만 돌아보면 그것은 거대한 나무가 될 작은 씨앗이 땅에 떨어진 순간이었습니다.`,`${d.rd}라운드에서 겨우 이름이 불려 아무도 크게 기대하지 않던 선수였지만, 그 작은 불씨가 이렇게 큰 불길이 될 줄은 아무도 몰랐습니다.`])});
   /* ---------- 팀 ---------- */
-  if(S.retNo&&mlbY){const ry=(clubs.find(c=>c.n===S.retNo.team)||{y:seasons}).y;add('retno',1.4,1.6,'close',{c:pk('rnc2',[`메이저리그를 다녀와서도 결국 ${S.retNo.team}로 돌아왔고, KBO에서는 ${ry}년 동안 오직 그 유니폼만 입었으니 이제 ${S.retNo.num}번은 구장 하늘 위에 영원히 그의 번호로 걸리게 되었습니다.`,`세계 무대를 누비고도 돌아올 곳은 하나뿐이었고, ${S.retNo.team}는 그 의리에 영구결번 ${S.retNo.num}번이라는 최고의 예우로 답했습니다.`])})}
+  if(S.retNo&&/\(MLB\)|MLB/.test(String(S.retNo.team))){const tn=String(S.retNo.team).replace(/\s*\(MLB\)/,'');add('retno',1.4,1.6,'close',{c:pk('rnc3',[`태평양 건너 ${tn}에서도 그의 번호는 특별했습니다. ${jo(tn,'은','는')} 등번호 ${S.retNo.num}번을 영구결번으로 지정하며 한국에서 온 선수에게 최고의 예우를 바쳤습니다.`,`${jo(tn,'은','는')} ${S.retNo.num}번을 다시는 누구에게도 주지 않기로 했으니, 메이저리그 구장 한편에 한국 선수의 번호가 영원히 걸리게 되었습니다.`])})}
+  else if(S.retNo&&mlbY){const ry=(clubs.find(c=>c.n===S.retNo.team)||{y:seasons}).y;add('retno',1.4,1.6,'close',{c:pk('rnc2',[`메이저리그를 다녀와서도 결국 ${jo(S.retNo.team,'으로','로')} 돌아왔고, KBO에서는 ${ry}년 동안 오직 그 유니폼만 입었으니 이제 ${S.retNo.num}번은 구장 하늘 위에 영원히 그의 번호로 걸리게 되었습니다.`,`세계 무대를 누비고도 돌아올 곳은 하나뿐이었고, ${jo(S.retNo.team,'은','는')} 그 의리에 영구결번 ${S.retNo.num}번이라는 최고의 예우로 답했습니다.`])})}
+  else if(S.retNo&&S.retNo.traded){const ry=(clubs.find(c=>c.n===S.retNo.team)||{y:seasons}).y;add('retno',1.4,1.6,'close',{c:pk('rnc4',[`트레이드로 낯선 유니폼을 입었지만 ${S.retNo.team}에서 ${ry}년을 보내며 팀의 얼굴이 되었고, 그 시간에 대한 답으로 ${S.retNo.num}번은 영구결번이 되었습니다.`,`처음 입은 유니폼은 아니었지만, ${jo(S.retNo.team,'은','는')} ${ry}년 동안 팀을 지킨 그에게 영구결번 ${S.retNo.num}번이라는 최고의 예우로 답했습니다.`])})}
   else if(S.retNo){const ry=(clubs.find(c=>c.n===S.retNo.team)||{y:seasons}).y;add('retno',1.4,1.6,'close',{c:pk('rnc',[`이제 ${S.retNo.team}에서 등번호 ${S.retNo.num}번을 다는 선수는 다시 나오지 않을 것이며, 이는 ${ry}년 동안 한 유니폼만 입은 선수에게 구단이 바칠 수 있는 최고의 예우입니다.`,`${ry}년 동안 처음 입은 유니폼을 마지막 날까지 지켜냈고, 이제 ${S.retNo.team}의 ${S.retNo.num}번은 구장 하늘 위에 영원히 그의 번호로 걸리게 되었습니다.`])})}
   else if(clubs.length===1&&seasons>=12)add('one',seasons/12,1.3,'close',{c:pk('onc',[`${seasons}년 동안 ${clubs[0].n} 유니폼 하나만을 입고 처음 입은 그 옷을 마지막까지 지켰으니, 진정한 원클럽맨이라는 말은 바로 이런 선수를 위해 존재합니다.`,`한 팀에서 뿌리를 내리고 한 팀에서 열매를 맺었으며, ${clubs[0].n}에서만 ${seasons}년을 보냈으니 그 팀의 역사책에는 그의 이름이 굵은 글씨로 남을 것입니다.`])});
   const big=clubs.filter(c=>c.y>=3);
@@ -9437,6 +9439,9 @@ function retStory(){try{
 {const _vr=vRetired;vRetired=function(){let h=_vr();try{h=h.replace(' (헌액 기준 110)','').replace('(헌액 기준 110)','');const s=retStory();if(s){const box=`<div class="card retstory" style="gap:10px"><span class="lbl">은퇴 카드</span>${s.split('\n\n').map(x=>`<p style="margin:0;line-height:1.7">${esc(x)}</p>`).join('')}</div>`;const k=h.indexOf('<div class="card" style="text-align:center');h=k>=0?h.slice(0,k)+box+h.slice(k):h+box}}catch(e){}return h}}
 /* 커리어 리캡: 마지막 장 앞에 */
 {const _rs=recapSlides;recapSlides=function(){const sl=_rs.apply(this,arguments);try{const s=retStory();if(s&&sl.length){const L=sl[sl.length-1],lf=L&&L.last;if(L)delete L.last;sl.push({th:'green',ey:'은퇴 카드',sub:s,last:lf||true})}}catch(e){}return sl}}
+
+/* 은퇴 스토리: 리캡과 은퇴 화면이 같은 문장을 쓰도록 한 번만 생성해서 저장 */
+{const _rsC=retStory;retStory=function(){try{const k=(ME&&ME.name)+'|'+(S.retY||S.y);if(S._rsK===k&&S._rsT!=null)return S._rsT;const t=_rsC();S._rsK=k;S._rsT=t;return t}catch(e){return _rsC()}}}
 
 /* ===================== 고교·대학 시절 기사/댓글: 어디서 뛰는지 머리말 + 아마추어 맥락 댓글 ===================== */
 function amaCtx(){try{if(!S||!ME)return null;if(S.stage==='hs'){const sc=(SCHOOLS[S.school]||{}).n||'고교';return{k:'hs',lab:'고교야구',where:sc,gr:cl(age()-15,1,3)}}
@@ -9644,7 +9649,7 @@ try{const T=(id,o)=>{const t=TR.find(x=>x.id===id);if(t)Object.assign(t,o)};
   if(!kb.length){try{if(typeof faScaleOffer==='function')faScaleOffer(c,age())}catch(e){}}
   const ri2=q.ch.findIndex(x=>x.act==='retire');q.ch.splice(ri2>=0?ri2:q.ch.length,0,c);try{if(typeof tagHome==='function'){q._ht=0;tagHome(q)}}catch(e){}}catch(e){}return q}}
 /* ===== 노쇠: 만 35세부터 경기력 서서히 하락 (능력치와 별개로 체감 노화) ===== */
-const ageDrop=()=>{try{const a=age();return a>=35?(a-34)*.35:0}catch(e){return 0}};
+const ageDrop=()=>{try{const a=age();return (a>=35?(a-34)*.35:0)+(a>=40?(a-39)*.85:0)}catch(e){return 0}};
 {const _b=batPA;batPA=function(L,m,gl){return _b(isP()?L:L+ageDrop(),m,gl)}}
 {const _mb=meBatPA;meBatPA=function(pR,risp){return _mb(isP()?pR:pR+ageDrop(),risp)}}
 {const _p=pitchGame;pitchGame=function(L,type){return _p(isP()?L+ageDrop():L,type)}}
@@ -9801,6 +9806,31 @@ function injLifeEvent(){const P=isP(),gf=S.gf&&S.gf.n,sp=S.married&&S.married.n,
   const key=S.y*12+S.m;if(S._injEvK!==key&&R()<.6&&!S.queue.some(q=>q&&q._inj)){S._injEvK=key;const e=injLifeEvent();e._inj=1;S.queue.push(e)}}}catch(e){}return r}}
 /* 부상 주수 소수점 방지 */
 {const _msW=monthStep;monthStep=function(rep){const r=_msW(rep);try{if(ME&&ME.inj&&typeof ME.inj.wk==='number')ME.inj.wk=Math.round(ME.inj.wk*2)/2}catch(e){}return r}}
+
+/* ===== 영구결번: 원클럽맨 + (강제 트레이드로 옮긴 팀에서 9시즌↑ & WAR 조건) · KBO/MLB 동시 가능 ===== */
+{const _tgF=ACT.tradeGo;ACT.tradeGo=function(a){const r=_tgF(a);try{const lv=S.pro.league;(S.forcedTo=S.forcedTo||[]).push({lv,team:rowTeam(lv),y:S.y})}catch(e){}return r}}
+function retireNos(){const out=[];try{const W=rs=>{let w=0;rs.forEach(r=>{try{w+=rowWAR(r)}catch(e){}});return w};
+  const mlbW=W(S.rows.filter(r=>r.lv==='MLB')),SER={KBO:/한국시리즈 우승/,MLB:/월드시리즈 우승/};const FT=S.forcedTo||[];
+  for(const lv of ['KBO','MLB']){const rs=S.rows.filter(r=>r.lv===lv);if(!rs.length)continue;const teams=[...new Set(rs.map(r=>r.team))];let best=null;
+    for(const team of teams){const one=teams.length===1,forced=FT.some(f=>f.lv===lv&&f.team===team);if(!one&&!forced)continue;
+      const tr=rs.filter(r=>r.team===team),seasons=new Set(tr.filter(r=>(r.b.G||0)+(r.p.G||0)>0).map(r=>r.y));if(seasons.size<9)continue;
+      const starter=y=>tr.some(r=>r.y===y&&((r.b.PA||0)>=300||(r.p.outs||0)>=180));
+      const rings=(S.awards||[]).filter(a=>a&&SER[lv].test(a.n)&&seasons.has(a.y)&&starter(a.y)).length;
+      const need=60-2*rings-(lv==='KBO'?Math.max(0,mlbW)*.1:0),w=W(tr);
+      if(w>=need&&(!best||w>best.w))best={team,w,lv,traded:!one}}
+    if(best)out.push(best)}}catch(e){}return out}
+retireNo=function(){const L=retireNos();return L.length?L.sort((a,b)=>(a.lv==='KBO'?0:1)-(b.lv==='KBO'?0:1))[0]:null};
+{const _rtN=retire;retire=function(why){const L=S.stage==='pro'?retireNos():[];const r=_rtN.apply(this,arguments);try{if(L.length>1){const sec=L.find(x=>x.lv==='MLB');if(sec&&S.retNo&&!/MLB/.test(String(S.retNo.team))){const tn=String(sec.team);
+    S.retNo2={team:tn,num:ME.num||'-',w:sec.w};news(`${tn}, ${ME.name}의 등번호 ${ME.num||''}번 영구결번.`);celebrate('hof','영구결번',`${tn} · 등번호 ${ME.num||'-'}번`)}}
+  if(S.retNo){const f=L.find(x=>x.traded);if(f)S.retNo.traded=1}}catch(e){}return r}}
+{const _rsT=retStory;retStory=function(){let t=_rsT();try{if(t&&S.retNo2&&!S._rs2){const tn=String(S.retNo2.team).replace(/\s*\(MLB\)/,'');t+=` 바다 건너 ${tn}도 그의 ${S.retNo2.num}번을 영구결번으로 남기며, 한국과 미국 두 나라의 구장에 그의 번호가 함께 걸리게 되었습니다.`;S._rsT=t;S._rs2=1}}catch(e){}return t}}
+
+/* ===== 이벤트 빈도 조절: 전체 약 4/5, 말년(36세↑)은 더 적게, 말년 육아 이벤트는 더 드물게 ===== */
+{const KEEP=/계약|FA|트레이드|부상|수술|재활|은퇴|드래프트|지명|입대|병역|군|대표|WBC|올림픽|아시안|출산|프러포즈|결혼|천재성|피로 경고|연봉|포스팅|방출|보직|콜업|엔트리|이적/;
+ const KID=/👶|👧|👦|아이|육아|아들|딸|자녀|학예회|운동회|유치원|초등|첫째|둘째/;
+ const _msE=monthStep;monthStep=function(rep){const before=new Set(S&&Array.isArray(S.queue)?S.queue:[]);const r=_msE(rep);try{if(!Array.isArray(S.queue))return r;const a=age(),late=S.stage==='pro'&&a>=36;
+  S.queue=S.queue.filter(q=>{if(!q||before.has(q)||q.type||q._inj||!Array.isArray(q.ch)||!q.ch.length)return true;const t=String(q.title||'');
+    if(KEEP.test(t)||q.ch.some(c=>c&&c.act&&CRIT.has(c.act)))return true;let drop=.2;if(late)drop=.42;if(late&&KID.test(t+String(q.text||'')))drop=.65;return R()>=drop})}catch(e){}return r}}
 
 </script>
 
