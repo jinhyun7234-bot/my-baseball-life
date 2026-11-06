@@ -6334,7 +6334,7 @@ function vPsFlow(q){let h='';q.lines.forEach(l=>{if(l.h)h+=`<div class="srec-k" 
 {const _rd12=_render;_render=function(app,nav,bar,ov){try{if(S&&!ui.simming&&ui.screen!=='title'&&ui.recap==null&&ui.res==null){const q=nextQ();if(q&&q.type==='psflow'){ME=S.me;ui.sheet=null;full(app,nav,bar,ov,vPsFlow(q),' dark');bar.innerHTML=`<button class="btn pri glow" data-act="psflowok">${q.final?'확인 ▶':'다음 경기 ▶'}</button>`;ov.innerHTML='';return}}}catch(e){}return _rd12(app,nav,bar,ov)}}
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="psflowok"]');if(!b||!S)return;e.stopPropagation();const q=nextQ();if(q&&q.type==='psflow'){S.queue.shift();save();afterQueue();ui.anim=true;render();window.scrollTo(0,0)}},true);
 /* 내가 엔트리에 없을 때(부상·2군 등)도 가을야구 결과를 보여줌 */
-function psOutReason(){if(ME.inj)return`부상(${ME.inj.n}${ME.inj.wk?` · 복귀까지 약 ${ME.inj.wk}주`:''})으로 가을야구 엔트리에서 빠졌다. 팀 경기를 밖에서 지켜봤다.`;const r=S.prevRole||'';if(/^f/.test(r)||r==='reserve')return'시즌 막판 1군 엔트리에 없어서 가을야구 엔트리에 들지 못했다.';return'가을야구 엔트리에 들지 못했다.'}
+function psOutReason(){if(ME.inj)return`부상(${ME.inj.n}${ME.inj.wk?` · 복귀까지 약 ${Math.max(1,Math.round(ME.inj.wk))}주`:''})으로 가을야구 엔트리에서 빠졌다. 팀 경기를 밖에서 지켜봤다.`;const r=S.prevRole||'';if(/^f/.test(r)||r==='reserve')return'시즌 막판 1군 엔트리에 없어서 가을야구 엔트리에 들지 못했다.';return'가을야구 엔트리에 들지 못했다.'}
 function psLogOut(name,gn,win,w,l,opp){try{S._psFlow=S._psFlow||{lines:[],quiet:0};S._psSer=S._psSer||{};if(!S._psFlow.why){S._psFlow.why=psOutReason()}
   if(!S._psSer[name]){S._psSer[name]={w:0,l:0};S._psFlow.lines.push({h:1,t:`${name} 시작`,s:`vs ${opp||''}`})}S._psSer[name]={w,l};S._psFlow.quiet++;
   S._psFlow.lines.push({t:`${name} ${gn}차전`,w:!!win,sc:'',me:'엔트리 제외',st:`시리즈 ${w}승 ${l}패`})}catch(e){}}
@@ -9772,7 +9772,7 @@ function myPerfX(x){const P=isP();if(P){const o=x.ipO||0,ra=x.ra||0;if(!o&&!ra)r
 const INJ_TRAIN_EV=/훈련|특타|피칭|캠프|연습|타격 이론|투구|웨이트|구종|그립|변화구|러닝|펑고|불펜 세션|천재성|대표팀|WBC|국가대표/;
 const INJ_OK=/부상|재활|수술|회복/;
 {const _reI=randEvent;randEvent=function(){if(!ME||!ME.inj)return _reI();for(let i=0;i<8;i++){const e=_reI();if(!e)return null;const txt=(e.title||'')+(e.text||'')+JSON.stringify((e.ch||[]).map(c=>c.t+(c.s||'')));if(!INJ_TRAIN_EV.test(txt)||INJ_OK.test(e.title||''))return e}return null}}
-ACT.injLife=function(a){try{if(a.aff&&S.gf)S.gf.aff=cl((S.gf.aff||50)+a.aff,0,100);if(a.wk&&ME.inj)ME.inj.wk=Math.max(1,ME.inj.wk+a.wk)}catch(e){}return ''};
+ACT.injLife=function(a){try{if(a.aff&&S.gf)S.gf.aff=Math.round(cl((S.gf.aff||50)+a.aff,0,100));if(a.wk&&ME.inj)ME.inj.wk=Math.max(1,Math.round(ME.inj.wk+a.wk))}catch(e){}return ''};
 function injLifeEvent(){const P=isP(),gf=S.gf&&S.gf.n,sp=S.married&&S.married.n,kids=(S.children||[]).length||S.kids||0,L=[];
   if(gf&&!sp)L.push({title:'💕 재활 중 데이트',text:`재활이 끝나는 날마다 ${gf} 씨가 병원 앞에서 기다려 준다. "오늘은 야구 얘기 금지야."`,ch:[
     {t:'근교로 하루 여행 간다',s:'멘탈↑ 성장 포인트↑ 호감↑ · 비용 −150만원 · 피로 조금↑',fx:{men:3,xp:6,money:-150,fat:4},act:'injLife',arg:{aff:8},r:'오랜만에 야구 생각 없이 웃었다. 머리가 맑아졌다.'},
@@ -9799,6 +9799,8 @@ function injLifeEvent(){const P=isP(),gf=S.gf&&S.gf.n,sp=S.married&&S.married.n,
 {const _msInj=monthStep;monthStep=function(rep){const r=_msInj(rep);try{if(ME&&ME.inj&&S.stage!=='ret'){
   S.queue=S.queue.filter(q=>!(q&&!q.type&&q.title&&INJ_TRAIN_EV.test(q.title)&&!INJ_OK.test(q.title)));
   const key=S.y*12+S.m;if(S._injEvK!==key&&R()<.6&&!S.queue.some(q=>q&&q._inj)){S._injEvK=key;const e=injLifeEvent();e._inj=1;S.queue.push(e)}}}catch(e){}return r}}
+/* 부상 주수 소수점 방지 */
+{const _msW=monthStep;monthStep=function(rep){const r=_msW(rep);try{if(ME&&ME.inj&&typeof ME.inj.wk==='number')ME.inj.wk=Math.round(ME.inj.wk*2)/2}catch(e){}return r}}
 
 </script>
 
