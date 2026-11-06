@@ -9740,7 +9740,7 @@ function draftTool(){try{if(isP()){const best=Math.max(...PITCHES.filter(k=>k!==
 {const _ms26=monthStep;monthStep=function(rep){try{if(ME&&ME.inj&&ME.inj.wk>26)ME.inj.wk=26}catch(e){}return _ms26(rep)}}
 
 /* 이벤트 선택으로 생긴 축하·결과 화면(결혼 등)은 다른 대기 화면(WBC 등)보다 먼저 */
-{const _ch9=choose;choose=function(i){const before=new Set(S&&Array.isArray(S.queue)?S.queue:[]);const r=_ch9(i);try{if(Array.isArray(S.queue)){const nw=S.queue.filter(q=>!before.has(q)&&q&&(q.type==='award'||q.ch));if(nw.length){S.queue=nw.concat(S.queue.filter(q=>!nw.includes(q)))}}}catch(e){}return r}}
+{const _ch9=choose;choose=function(i){const before=new Set(S&&Array.isArray(S.queue)?S.queue:[]);const r=_ch9(i);try{if(Array.isArray(S.queue)){const nw=S.queue.filter(q=>!before.has(q)&&q);if(nw.length){S.queue=nw.concat(S.queue.filter(q=>!nw.includes(q)))}}}catch(e){}return r}}
 
 /* 안전장치: 선택지 없는 이벤트가 큐에 들어가면 진행이 막힘 → '확인' 버튼 자동 추가 */
 {const _ms0=monthStep;monthStep=function(rep){const r=_ms0(rep);try{(S.queue||[]).forEach(q=>{if(q&&!q.type&&q.title&&(!Array.isArray(q.ch)||!q.ch.length))q.ch=[{t:'확인',r:'계속 나아가자.'}]})}catch(e){}return r}}
