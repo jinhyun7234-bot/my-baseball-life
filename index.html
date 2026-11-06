@@ -1488,7 +1488,7 @@ function simBat(role,tg,L,row,lvk){
 /* ===================== PITCHING ===================== */
 function pitchGame(L,type){const pv=x=>{const d=x-L-pitB(L);return d>0?d*PITC:d};
   let outs=0,pc=0,H=0,Rn=0,BB=0,K=0,HR=0,b=[0,0,0];
-  const lim=type==='SP'?68+E('sta')*.55+(sk('eater')?10:0)-Math.max(0,ME.fat-50)*.4:(type==='MR'?34:24)+(S._multi?16:0)+E('sta')*.1;
+  const lim=type==='SP'?68-(S.stage==='hs'?4:0)+E('sta')*.55+(sk('eater')?10:0)-Math.max(0,ME.fat-50)*.4:(type==='MR'?34:24)+(S._multi?16:0)+E('sta')*.1;
   const maxO=type==='SP'?27:type==='MR'?(R()<cl(.4+relQ()*2.5+(E('sta')-50)*.006,.08,.7)?ri(4,6):3):(S._multi?ri(4,6):3);
   const st=stuffC(eff)+roleAdj(type==='SP'?'SP':'RP'),ctl=eff('ctl'),stf=eff('stf'),velo=eff('velo'),men=ME.hid.men;
   while(outs<maxO){
@@ -1863,7 +1863,7 @@ function followGame(o){
   const G={title:o.title,sub:o.sub,ab:[A.ab,H.ab],c:[A.c,H.c],line:[[],[]],R:[0,0],Hh:[0,0],BBt:[0,0],Et:[0,0],ev:[],idx:0,my};
   const T=[A,H],idx=[0,0],star=ovrE()>=o.L+5,spot=o.role==='start'&&S.order?S.order-1:star?ri(2,3):ri(4,6);
   const mb=blankB(),mp=blankP();let pitching=false,pc=0,used=false,phUsed=false,ra=0;
-  const lim=Math.min(68+E('sta')*.55+(sk('eater')?10:0),o.pitchCap||999),role=o.role,isB=!isP();S._pRole=(role==='SP'||role==='ace')?'SP':'RP';let relInn=0;const bigPS=!o.intl&&/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'');const multiG=role==='CL'?R()<cl(.22+(E('sta')-50)*.006+relQ()*1.5,.05,.45):bigPS&&(role==='SU'||role==='MR')&&R()<cl((role==='MR'?.3:.24)+(E('sta')-50)*.006+relQ()*1.5,.04,.48);
+  const _bigPS0=!o.intl&&/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||''),_ace0=isP()&&ovrE()>=66,lim=Math.min(63+E('sta')*.6+(sk('eater')?8:0)+(_ace0?6:0)-(_bigPS0?7:0)-(S.stage==='hs'?9:0),o.pitchCap||999),role=o.role,isB=!isP();S._pRole=(role==='SP'||role==='ace')?'SP':'RP';let relInn=0;const bigPS=!o.intl&&/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'');const multiG=role==='CL'?R()<cl(.22+(E('sta')-50)*.006+relQ()*1.5,.05,.45):bigPS&&(role==='SU'||role==='MR')&&R()<cl((role==='MR'?.3:.24)+(E('sta')-50)*.006+relQ()*1.5,.04,.48);
   const psEnt=role==='MR'?ri(5,7):role==='SU'?(R()<.45?7:8):9;let relLead=null;
   let pendC=false,irLeft=0,ueLeft=0,crisisCont=0;const _pev=(typeof pitEval==='function'&&!isB)?pitEval():null,_tier=_pev?_pev.t:2;G.ent=null;
   const pCr=(role==='CL'?.36:role==='SU'?.32:role==='MR'?.18:0)*(_tier>=4?1.3:_tier>=3?1.1:_tier<=1?.5:1)*(bigPS?1.15:1);const crisis=!isB&&role!=='SP'&&role!=='none'&&R()<pCr;
@@ -1880,7 +1880,7 @@ function followGame(o){
         if(R()<pg){G.def.g++;snap(`${it} ${name}, 몸을 날리는 다이빙 캐치! 안타를 지웠다`,'me def')}
         else if(R()<pe){G.def.e++;G.Et[my]++;const rr=R()<.5?1:0;G.R[bat]+=rr;G.line[bat][inn-1]+=rr;snap(`${it} ${name} 포구 실책…${rr?' 그 사이 1점을 내줬다':' 주자 출루'}`,'me bad')}}
       if(fld===my&&!isB&&role!=='none'){const lead=G.R[my]-G.R[1-my];
-        if(role==='SP'){if(inn===1&&!used){pitching=true;used=true}else if(pitching&&(pc>lim||(ra>=(o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'')?4:5)&&inn>=3)||inn>9)){pitching=false;snap(`${it} — ${name} 마운드를 내려간다 (${ip(mp.outs)}이닝 ${ra}실점, 투구수 ${pc})`,'sub')}}
+        if(role==='SP'){if(inn===1&&!used){pitching=true;used=true}else if(pitching&&(pc>lim-(_bigPS0&&Math.abs(G.R[0]-G.R[1])<=2&&!_ace0?6:0)||(ra>=(o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'')?4:5)&&inn>=3)||inn>9)){pitching=false;snap(`${it} — ${name} 마운드를 내려간다 (${ip(mp.outs)}이닝 ${ra}실점, 투구수 ${pc})`,'sub')}}
         else if(!used&&crisis&&!G.crTried&&inn===crIn&&lead>=0&&lead<=3){G.crTried=1;pendC=true}
         else if(!used&&((role==='CL'&&inn>=9&&lead>=1&&lead<=3)||(multiG&&inn===8&&lead>=0&&lead<=3)||(multiG&&inn>=9&&lead===0)||(role==='SU'&&inn===8&&lead>=0&&lead<=3)||(role==='MR'&&inn===6)||(o.intl&&role==='CL'&&inn>=9&&lead>=0&&lead<=4)||(bigPS&&role!=='CL'&&inn===psEnt&&lead>=-3&&lead<=4)||(bigPS&&role==='CL'&&inn>=9&&lead>=-1&&lead<=4)||(bigPS&&inn===9&&(role==='SU'||role==='MR')&&R()<.6)||(bigPS&&role==='CL'&&inn===9&&R()<.35))){pitching=true;used=true;relInn=1;relLead=lead;snap(`${it} — ${name} 마운드에 오른다 (${lead>0?`${lead}점 리드`:lead===0?'동점':`${-lead}점 차`})${multiG&&inn<9?' — 멀티이닝 대기':multiG&&lead===0?' — 연장 승부':''}`,'sub')}
         else if(role!=='SP'&&pitching){if(crisisCont){crisisCont=0;relInn++;snap(`${it} — ${name} 이어서 마운드를 지킨다`,'me')}else if(multiG&&relInn<2&&ra<=1){relInn++;snap(`${it} — ${name} 한 이닝 더 간다!`,'me')}else if(role==='CL'&&(bigPS||inn>=10||o.intl)&&relInn===2&&ra===0&&R()<.3){relInn++;G.cl3=1;snap(`${it} — ${name} 3이닝째 마운드에 선다!`,'me')}else pitching=false}}
@@ -1897,7 +1897,7 @@ function followGame(o){
         else t=genPA(T[bat].bR,T[fld].pR);
         G._myR=null;let errPA=false;if(!me&&t==='GO'&&outs<2&&R()<.05){t='1B';errPA=true}else if(me&&!isB&&fld===my&&t==='GO'&&R()<.03){t='1B';errPA=true;ueLeft++}
         S.big=false;idx[bat]++;
-        const pb=b.slice();const r=resolve(t,b,outs);if(r.t2)t=r.t2;const dOuts=r.outs-outs;b=r.b;outs=r.outs;st.b=b.slice();st.outs=Math.min(3,outs);st.last={t,me,runs:r.runs,pb};
+        const pb=b.slice();const r=resolve(t,b,outs);if(r.t2)t=r.t2;const dOuts=r.outs-outs;b=r.b;outs=r.outs;st.b=b.slice();st.outs=Math.min(3,outs);st.last={t,me,runs:r.runs,pb};if(me&&!isB&&fld===my&&pitching&&role==='SP'){if(['1B','2B','3B','HR'].includes(t))G._hs=(G._hs||0)+1;else if(t!=='BB')G._hs=0;const _df=Math.abs(G.R[0]-G.R[1]);if(outs<3&&pc>=90&&G._hs>=2&&_df<=2&&R()<(_ace0?.38:.72)*(_bigPS0?1.2:1)){pitching=false;G._hs=0;snap(`${it} — 연속 안타를 맞자 벤치가 움직인다. ${name} 강판 (${pc}구)`,'sub')}else if(outs<3&&pc>lim+(_bigPS0?4:9)&&(b[0]||b[1]||b[2])){pitching=false;G._hs=0;snap(`${it} — 투구수 ${pc}개, 한계에 다다랐다. ${name} 교체`,'sub')}}
         if(errPA)G.Et[fld]++;else if(['1B','2B','3B','HR'].includes(t))G.Hh[bat]++;if(t==='BB')G.BBt[bat]++;if(t==='HR'){G.HRt=G.HRt||[0,0];G.HRt[bat]++}
         G.R[bat]+=r.runs;G.line[bat][inn-1]+=r.runs;ran+=r.runs;if(t==='HR')(G.hrLog=G.hrLog||[]).push({i:inn,me:bat===my,mine:!!(me&&isB&&bat===my),r:r.runs,my:G.R[my],op:G.R[1-my]});
         const sc=r.runs?` — ${r.runs}점!`:'';
@@ -1939,7 +1939,7 @@ function followGame(o){
   const bigG=/결승|한국시리즈/.test(o.title);
   if(!o.quiet&&G.mvp&&G.win&&isB&&mb.HR)feat(`${o.title} 결정적 홈런`,bigG);
   else if(!o.quiet&&G.mvp&&G.win&&!isB)feat(`${o.title} 호투로 승리 견인`,bigG);
-  return G}
+  G.pcEnd=pc;return G}
 
 /* ===================== DRAFT ===================== */
 function phi(z){return 1/(1+Math.exp(-1.702*z))}
