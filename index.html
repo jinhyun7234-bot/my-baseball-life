@@ -1489,7 +1489,7 @@ function simBat(role,tg,L,row,lvk){
 function pitchGame(L,type){const pv=x=>{const d=x-L-pitB(L);return d>0?d*PITC:d};
   let outs=0,pc=0,H=0,Rn=0,BB=0,K=0,HR=0,b=[0,0,0];
   const lim=type==='SP'?68+E('sta')*.55+(sk('eater')?10:0)-Math.max(0,ME.fat-50)*.4:(type==='MR'?34:24)+(S._multi?16:0)+E('sta')*.1;
-  const maxO=type==='SP'?27:type==='MR'?ri(3,6):(S._multi?ri(4,6):3);
+  const maxO=type==='SP'?27:type==='MR'?(R()<cl(.4+relQ()*2.5+(E('sta')-50)*.006,.08,.7)?ri(4,6):3):(S._multi?ri(4,6):3);
   const st=stuffC(eff)+roleAdj(type==='SP'?'SP':'RP'),ctl=eff('ctl'),stf=eff('stf'),velo=eff('velo'),men=ME.hid.men;
   while(outs<maxO){
     if(type==='SP'&&outs%3===0&&outs>0&&(pc>lim||Rn>=6||(Rn>=4&&pc>lim*.7)))break;
@@ -1528,7 +1528,7 @@ function simPit(role,tg,L,row,lvk){
     if(role==='hsP'&&R()<.6)apps.unshift('SP')}
   const tadj=S.stage==='pro'&&S.pro.league==='KBO'?(S.lg.str[S.pro.team]-50)*.012:0;
   let pcT=0;
-  for(const t of apps){S._multi=(t==='CL'||t==='SU')&&R()<cl(.1+(E('sta')-50)*.006,.04,.22);const g=pitchGame(L,t==='CL'||t==='SU'?'RP':t);S._multi=false;m.G++;
+  for(const t of apps){S._multi=(t==='CL'||t==='SU')&&R()<cl(.1+(E('sta')-50)*.006+relQ(),.02,.26);const g=pitchGame(L,t==='CL'||t==='SU'?'RP':t);S._multi=false;m.G++;
     m.outs+=g.outs;m.H+=g.H;m.R+=g.R;m.BB+=g.BB;m.K+=g.K;m.HR+=g.HR;pcT+=g.pc;
     let W=0,Lo=0;
     if(t==='SP'){m.GS++;
@@ -1745,7 +1745,7 @@ function tourney(name,rep,ps){
 function kboTeamR(i){return LV.KBO+(S.lg.str[i]-50)*.6}
 function postseason(rep){
   const st=standings(),top=st.slice(0,5).map(x=>x.i);S.lg.prev=st.map(x=>x.i);
-  const my=S.pro.team,T=i=>TEAMS[i].nick,playing=ONE.includes(S.prevRole||'')&&!ME.inj;
+  const my=S.pro.team,T=i=>TEAMS[i].nick,playing=ONE.includes(S.prevRole||'')&&!ME.inj&&!psSlump();
   S.champs=S.champs||{};{const BASE=[2023,2019,null,2022,2021,1999,2014,2024,1992,2020],last=S.champs[my]??BASE[my];S.drought=last==null?'never':S.y-last}
   const myRole=S.prevRole;let ksMVP=false;const psB=blankB(),psP=blankP();
   const ser=(a,b,need,adv,name)=>{let wa=adv,wb=0,gn=0;const sB=blankB(),sP=blankP();const p=cl(.6+(S.lg.str[a]-S.lg.str[b])*.05,.25,.86),mine=a===my||b===my;
@@ -1863,7 +1863,7 @@ function followGame(o){
   const G={title:o.title,sub:o.sub,ab:[A.ab,H.ab],c:[A.c,H.c],line:[[],[]],R:[0,0],Hh:[0,0],BBt:[0,0],Et:[0,0],ev:[],idx:0,my};
   const T=[A,H],idx=[0,0],star=ovrE()>=o.L+5,spot=o.role==='start'&&S.order?S.order-1:star?ri(2,3):ri(4,6);
   const mb=blankB(),mp=blankP();let pitching=false,pc=0,used=false,phUsed=false,ra=0;
-  const lim=Math.min(68+E('sta')*.55+(sk('eater')?10:0),o.pitchCap||999),role=o.role,isB=!isP();S._pRole=(role==='SP'||role==='ace')?'SP':'RP';let relInn=0;const bigPS=!o.intl&&/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'');const multiG=role==='CL'?R()<cl(.22+(E('sta')-50)*.006,.12,.42):bigPS&&(role==='SU'||role==='MR')&&R()<cl((role==='MR'?.3:.24)+(E('sta')-50)*.006,.12,.45);
+  const lim=Math.min(68+E('sta')*.55+(sk('eater')?10:0),o.pitchCap||999),role=o.role,isB=!isP();S._pRole=(role==='SP'||role==='ace')?'SP':'RP';let relInn=0;const bigPS=!o.intl&&/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'');const multiG=role==='CL'?R()<cl(.22+(E('sta')-50)*.006+relQ()*1.5,.05,.45):bigPS&&(role==='SU'||role==='MR')&&R()<cl((role==='MR'?.3:.24)+(E('sta')-50)*.006+relQ()*1.5,.04,.48);
   const psEnt=role==='MR'?ri(5,7):role==='SU'?(R()<.45?7:8):9;let relLead=null;
   let pendC=false,irLeft=0,ueLeft=0,crisisCont=0;const _pev=(typeof pitEval==='function'&&!isB)?pitEval():null,_tier=_pev?_pev.t:2;G.ent=null;
   const pCr=(role==='CL'?.36:role==='SU'?.32:role==='MR'?.18:0)*(_tier>=4?1.3:_tier>=3?1.1:_tier<=1?.5:1)*(bigPS?1.15:1);const crisis=!isB&&role!=='SP'&&role!=='none'&&R()<pCr;
@@ -3846,7 +3846,7 @@ function psPick(base,gn,g7,need){if(!isP()||!base||base==='none')return base||'n
     if(g7&&P.day-P.last-1>=2&&sta>=55&&R()<.65){P.last=P.day;S._b2b=0;return'MR'}
     return'none'}
   if(['CL','SU','MR','RP','fP'].includes(base)){const maxS=sta>=68?3:2,cons=P.lastDay===P.day-1?P.streak:0;if(cons>=maxS)return'none';
-    if(g7||R()<(base==='CL'?.72:base==='SU'?.74:.66)){P.streak=cons+1;P.lastDay=P.day;S._b2b=cons;return base}return'none'}
+    if(g7||R()<cl((base==='CL'?.72:base==='SU'?.74:.66)+relQ()*1.5+(sta-55)*.004,.35,.92)){P.streak=cons+1;P.lastDay=P.day;S._b2b=cons;return base}return'none'}
   return base}
 {const _po=postseason;postseason=function(rep){S._ps=null;S._b2b=0;return _po(rep)}}
 {const _mp=mlbPost;mlbPost=function(rep){S._ps=null;S._b2b=0;return _mp(rep)}}
@@ -5275,7 +5275,7 @@ function psTeamAdj(meA){try{return(meA?.9:-.9)+(S.rel.chem-50)*.03+(S.rel.coach-
 /* ===================== MLB 포스트시즌: 순위표 기준 진출·시드(1~2위 디비전 직행) · 정규시즌 종료 화면 · MLB 타자/끝내기 댓글 ===================== */
 function myMLBLg(){return MLB30.AL.includes(myMLBNick())?'AL':'NL'}
 function mlbSeed(){const {out}=mlbStandings(),lg=myMLBLg(),i=out[lg].findIndex(x=>x.me);return{rank:i+1,lg,row:out[lg][i],tbl:out}}
-mlbPost=function(rep){const p=S.pro;const playing=ONE.includes(S.prevRole||'')&&!ME.inj,myW=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB').reduce((a,r)=>a+rowWAR(r),0);
+mlbPost=function(rep){const p=S.pro;const playing=ONE.includes(S.prevRole||'')&&!ME.inj&&!psSlump(),myW=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB').reduce((a,r)=>a+rowWAR(r),0);
   const sd=mlbSeed(),lgN=sd.lg==='AL'?'아메리칸리그':'내셔널리그';if(!sd.row||sd.rank>6){rep.lines.push(`${jo(p.tname,"은","는")} ${lgN} ${sd.rank}위로 포스트시즌 진출에 실패했다.`);S.mlbRes={y:S.y,res:`최종 ${sd.rank}위`};return}
   const bye=sd.rank<=2;rep.lines.push(`${p.tname}, ${lgN} ${sd.rank}위로 포스트시즌 ${bye?'디비전 시리즈 직행':'진출'}!`);news(`${S.y} ${p.tname} 포스트시즌 진출 (${lgN} ${sd.rank}위).`);
   const pct=sd.row.w/Math.max(1,sd.row.w+sd.row.l),myR=LV.MLB+(pct-.5)*18+(S.rel.chem-50)*.03+(S.rel.coach-50)*.02,psB=blankB(),psP=blankP();let alive=true,reached='와일드카드 탈락';
@@ -6529,7 +6529,7 @@ function pmPick(arr,n){const y=S.y;S.pmY=S.pmY&&S.pmY.y===y?S.pmY:{y,u:{}};const
   /* 활약 판정 */
   const pl=x.pl||[],ks=pl.filter(p=>p.t==='K').length,hr=x.gHR||0,h=x.gH||0,rbi=x.gRBI||0,pa=x.gPA||0;
   const rp=['CL','SU','MR'].includes(S.prevRole)||((x.ipO||0)<=6&&(x.ipO||0)>0&&!(x.ipO>=12));
-  let perf=P?((rp?((x.ipO||0)>=3&&!(x.ra)):((x.ipO||0)>=15&&(x.ra||0)<=2))?'good':((x.ra||0)>=4||(rp&&(x.ra||0)>=2))?'bad':'avg'):((hr>=1||h>=2||rbi>=2)?'good':(pa>=3&&h===0&&!rbi)?'bad':'avg');
+  let perf=P?((rp?((x.ipO||0)>=3&&!(x.ra)):((x.ipO||0)>=15&&(x.ra||0)<=2))?'good':((x.ra||0)>=4||(!rp&&(x.ipO||0)<12&&(x.ra||0)>=3)||(rp&&((x.ra||0)>=2||((x.ra||0)>=1&&(x.ipO||0)<3))))?'bad':'avg'):((hr>=1||h>=2||rbi>=2)?'good':(pa>=3&&h===0&&!rbi)?'bad':'avg');
   if(!P&&perf==='good'&&h===1&&hr===0&&rbi<2)perf='avg';
   const champ=win&&x.clinch&&(/한국시리즈|월드시리즈/.test(t)||fin),elim=!win&&/지면 탈락|마지막 승부/.test(sub)&&!fin;
   const rings=S.awards.filter(a=>/^(한국시리즈|월드시리즈) 우승$/.test(a.n)&&a.y<S.y).length,vet=proYears()>=10,young=age()<=23||proYears()<=2,sal=S.pro.salary||0,hiSal=mlb?sal>=1500000:sal>=80000,loSal=!mlb&&sal<=6000;
@@ -8158,10 +8158,12 @@ const CMB={
 const CMB_RE={good:['ㅇㅈ 개추 박고 간다','ㄹㅇ ㅋㅋㅋㅋ','인정합니다','개추 누름','오늘은 인정해야지','이건 빨아야 한다','미쳤다 진짜','눈물 난다 ㅠㅠ','형 사랑해요','직관 간 사람 부럽다'],
  bad:['비추 박고 간다','ㄹㅇ 혈압','할 말 없음','내일은 다르겠지…','그래도 믿는다','이건 쉴드 불가','눈 버렸다','ㅋㅋㅋㅋ 그만해','한숨만 나온다'],
  ring:['우승 축하해!!!','올해 야구 끝 행복하다','이 맛에 야구 본다','눈물 난다 진짜','평생 응원한다','퍼레이드 가자']};
+CMB.winMeh=['일단 이겼으니 됐다','오늘은 다른 선수들이 살렸다','팀이 이겨서 다행이다','{g} 오늘은 그냥 그랬다 다음 경기 보자','승리는 좋은데 {g}는 좀 더 보여줘야 한다','이긴 날은 넘어가자','타선이 오늘 다 했다','{g} 다음엔 확실하게 한 방 보여줘','결과가 좋으니 넘어간다'];
+CMB_RE.meh=['ㄹㅇ','이기면 장땡','다음 경기도 이기자','인정','그치'];
 function cmFill(s,gn){return s.replace(/\{g\}/g,gn).replace(/\{f\}/g,ME.name)}
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||!x)return out;const lv=cmLevel(tone,x);if(!lv)return out;const P=isP(),gn=giv(ME.name),fame=(S.rel&&S.rel.fame)||0;
   const ipO=x.ipO||0,ra=x.ra||0,pa=x.gPA||0,h=x.gH||0,hr=x.gHR||0,rbi=x.gRBI||0,played=P?ipO>0:pa>0;if(!played&&lv<4)return out;
-  const good=P?((ipO>=15&&ra<=2)||(ipO>=3&&ra===0)||(x.gK||0)>=8):(h>=2||hr>=1||rbi>=2),bad=P?(ipO>=3&&ra>=4)||(ipO<9&&ra>=3):(pa>=4&&h===0&&rbi===0),hero=P?(ipO>=21&&ra<=1)||(ipO>=6&&ra===0&&lv>=3):(hr>=2||(h>=3&&rbi>=2)||rbi>=4);
+  const good=P?((ipO>=15&&ra<=2)||(ipO>=3&&ra===0)||(x.gK||0)>=8):(h>=2||hr>=1||rbi>=2),bad=P?(ipO>=3&&ra>=4)||(ipO<9&&ra>=3)||(ipO<6&&ra>=2)||(ipO<3&&ra>=1):(pa>=4&&h===0&&rbi===0),hero=P?(ipO>=21&&ra<=1)||(ipO>=6&&ra===0&&lv>=3):(hr>=2||(h>=3&&rbi>=2)||rbi>=4);
   const win=!!x.win,ring=lv===4&&win;
   let n=[0,2,3,5,8][lv]+(fame>=60?2:fame>=30?1:0);const add=[],pick2=(L,k,re)=>{L.filter(s=>!seenHas(cmFill(s,gn))).sort(()=>R()-.5).slice(0,k).forEach(s=>{const t=cmFill(s,gn);seenAdd(t);add.push(mkC(t,R()<.55?[pick(re)]:[],{up:Math.round(ri(400,2600)*(1+lv*.6)*(1+fame/60)),must:1}))})};
   const mine=P?{g:CMB.goodP,b:CMB.badP,h:CMB.ksHeroP}:{g:CMB.goodB,b:CMB.badB,h:CMB.ksHeroB};
@@ -8169,7 +8171,7 @@ function cmFill(s,gn){return s.replace(/\{g\}/g,gn).replace(/\{f\}/g,ME.name)}
   if(good&&!win&&!hero){pick2(CMB.loseGood.filter(t=>!/원맨쇼|혼자 야구/.test(t)),2,['고생했다','할 만큼 했다','팀이 문제다 오늘은']);pick2(CMB.loseOk,Math.max(1,Math.ceil(n/2)),CMB_RE.bad)}
   else if(good){if(hero&&lv>=3){pick2(mine.h,2,CMB_RE.good);n-=2}const k=Math.max(0,n);pick2(CMB.goodA,Math.ceil(k/2),CMB_RE.good);pick2(mine.g,Math.floor(k/2),CMB_RE.good);if(!win)pick2(CMB.loseGood,1,CMB_RE.good)}
   else if(bad){const k=Math.max(0,Math.ceil(n*.7));if(win){pick2(CMB.winBad,Math.min(2,k),CMB_RE.good);pick2(mine.b,Math.max(0,k-2),CMB_RE.bad)}else{pick2(CMB.badA,Math.ceil(k/2),CMB_RE.bad);pick2(mine.b,Math.floor(k/2),CMB_RE.bad)}}
-  else if(!ring){const k=Math.max(1,Math.floor(n/2));pick2(win?CMB.goodA.slice(0,12):CMB.badA.slice(0,6),k,win?CMB_RE.good:CMB_RE.bad)}
+  else if(!ring){const k=Math.max(1,Math.floor(n/2));pick2(win?CMB.winMeh:CMB.badA.slice(0,6),k,win?CMB_RE.meh:CMB_RE.bad)}
   /* 섞어서 끼우기: 맨 위 1~2개는 원래 댓글 유지 */
   add.forEach((c,i)=>out.splice(Math.min(out.length,1+i*2),0,c))}catch(e){}return out}}
 /* 경기 끝 화면: 큰 경기일수록 댓글을 더 보여주기 */
@@ -9532,7 +9534,7 @@ function sbAnimate(){try{if(typeof document==='undefined'||!S||ui.simming)return
   const n=Math.max(e.line[0].length,e.line[1].length),pend=[];
   for(let k=0;k<n;k++)for(let i=0;i<2;i++){const nv=e.line[i][k],ov=P0.line[i][k];if(nv!=null&&nv!==''&&(ov==null||ov===''))pend.push([i,k,nv])}
   if(pend.length<2)return;
-  if(!document.getElementById('sbcss')){const st=document.createElement('style');st.id='sbcss';st.textContent='.lscore td.sbpop{animation:sbpop .32s ease-out}@keyframes sbpop{0%{background:rgba(255,206,64,.55);transform:scale(1.25)}100%{background:transparent;transform:none}}';document.head.appendChild(st)}
+  if(!document.getElementById('sbcss')){const st=document.createElement('style');st.id='sbcss';st.textContent='.lscore td.sbpop{animation:sbpop .28s ease-out}@keyframes sbpop{0%{opacity:0;transform:translateY(-3px)}100%{opacity:1;transform:none}}';document.head.appendChild(st)}
   const cell=(i,k)=>rows[i]&&rows[i].children[1+k],rc=i=>rows[i]&&rows[i].children[1+Math.max(9,n)];
   const run=[0,0];for(let i=0;i<2;i++){for(let k=0;k<n;k++){const ov=P0.line[i][k];if(ov!=null&&ov!=='')run[i]+=+ov||0}}
   pend.forEach(([i,k])=>{const c=cell(i,k);if(c)c.textContent=''});for(let i=0;i<2;i++){const c=rc(i);if(c&&pend.some(p=>p[0]===i))c.textContent=run[i]}
@@ -9672,6 +9674,14 @@ function pitDivAdj(){try{if(!isP()||!S||S.stage!=='pro'||!S.pro||S.pro.league!==
   if(!pv||pv===cur)return;const up=(RK[cur]||0)>(RK[pv]||0)||(pv==='MOP'&&cur!=='MOP');
   const T={CL:['감독이 9회를 맡겼다. 이제 마무리다!','뒷문 열쇠를 받았다. 오늘부터 마무리 투수.'],SU:up?['필승조로 올라섰다. 이기는 경기 8회는 내 몫.','감독이 다시 승부처에 부르기 시작했다. 필승조 복귀.']:['마무리 자리를 내려놨다. 당분간 필승조에서 던진다.','9회를 내줬다. 한 발 물러나 셋업으로.'],MR:up?['패전처리에서 벗어나 추격조로 올라왔다.']:['필승조에서 밀려났다. 추격조로 감을 찾아야 한다.','승부처 등판이 끊겼다. 추격조행.'],MOP:['패전처리로 밀려났다. 점수 차 큰 경기만 나간다.','벤치가 믿음을 거뒀다. 당분간 패전처리.']};
   const L=T[cur];if(L){const t=pick(L);news(t);if(rep&&rep.lines)rep.lines.push(t)}}catch(e){}}}
+
+/* 가을야구 엔트리: 시즌 내내 무너진 불펜(패전처리·ERA 5.5↑)은 엔트리 탈락 */
+function psSlump(){try{if(!isP()||!S.pro)return false;const lv=S.pro.league,rows=S.rows.filter(r=>r.y===S.y&&r.lv===lv);const p=rows.reduce((a,r)=>(addTo(a,r.p),a),blankP());
+  if(p.outs<30)return false;const e=p.R*27/p.outs;if(ME.pos==='SP'&&S.prevRole==='SP')return e>=6.3;return !!S.mopNow||e>=5.5}catch(e){return false}}
+psOutReason=(function(_o){return function(){try{if(!ME.inj&&psSlump()){const lv=S.pro.league,p=S.rows.filter(r=>r.y===S.y&&r.lv===lv).reduce((a,r)=>(addTo(a,r.p),a),blankP());return`시즌 평균자책 ${era(p)}로 부진해 가을야구 엔트리에 들지 못했다. 팀 경기를 밖에서 지켜봤다.`}}catch(e){}return _o()}})(psOutReason);
+
+/* 불펜 기용 질: 시즌 ERA 좋을수록 멀티이닝·가을 등판↑, 나쁠수록↓ (설명 노노) */
+function relQ(){try{if(!isP())return 0;const e=relEra();if(e==null)return 0;return cl((3.8-e)*.04,-.12,.1)}catch(e){return 0}}
 
 </script>
 
