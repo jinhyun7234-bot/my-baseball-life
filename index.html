@@ -1323,7 +1323,7 @@ function ars(f=E){const q=PITCHES.map(k=>f(k)).filter(v=>v>0).sort((a,b)=>b-a);c
 const pSyn=(f=E)=>{const n=PITCHES.filter(k=>f(k)>=40).length,pc=f('pcl')||45;return(pc-50)*.09*Math.max(.5,n/3)};
 const stuffC=(f=E)=>f('velo')*.31+f('stf')*.32+ars(f)*.37+pSyn(f)+(sk('spin')?3:0);
 const DEFW={C:[0,.35,.65],'1B':[.2,.7,.1],'2B':[.5,.35,.15],SS:[.45,.3,.25],'3B':[.25,.4,.35],LF:[.45,.25,.3],CF:[.65,.2,.15],RF:[.35,.25,.4]};
-const defScore=(f=E)=>{const w=DEFW[ME.pos]||[.4,.35,.25];return f('rng')*w[0]+f('fld')*w[1]+f('arm')*w[2]};
+const defScore=(f=E)=>{const w=DEFW[ME.pos]||[.4,.35,.25];const vb=('vis' in ME.r)?(f('vis')-50)*.04:0;return f('rng')*w[0]+(f('fld')+vb)*w[1]+f('arm')*w[2]};
 function ovrE(){
   if(isP()){const s=stuffC();return ME.pos==='SP'?s*.55+E('ctl')*.3+E('sta')*.15:s*.65+E('ctl')*.3+E('sta')*.05}
   const off=E('con')*.36+E('pow')*.3+E('eye')*.2+E('spd')*.14;
@@ -1443,16 +1443,16 @@ function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp
   let con=eff('con');if(risp){if(sk('chance'))con+=6;if(sk('weakch'))con-=6;if(sk('clutch')&&S.big)con+=4;con+=(ME.hid.men-50)*.06}
   const lefty=ME.hand.includes('좌타')||ME.hand.includes('양타')?.004:0;
   const k=cl(.205-dvc(con)*.0042-dv(eff('eye'))*.0008-(sk('eyem')?.01:0)+(sk('kprone')?.03:0),.05,.42);
-  const bb=cl(.082+dv(eff('eye'))*.0018+(sk('eyem')?.015:0),.02,.2);
+  const bb=cl(.082+dv(eff('eye'))*.0018+dvc(con)*.0004+(sk('eyem')?.015:0),.02,.2);
   const r=R(),sp=eff('spd');m.PA++;if(risp&&S.rsp)S.rsp.pa++;
   const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<Math.min(.29,((E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)+Math.max(0,DV(E('spd'))-78)*.004)*(sk('thief')?1.4:1))){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.06:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
     if(R()<cl([0,.18,.31,.48][b]+Math.min(5,dv(sp))*.004,.05,.55))m.R++};
   if(r<k){m.AB++;m.K++;return}
   if(r<k+bb+.01){m.BB++;gl.ob++;reach(1);if(on[0]&&on[1]&&on[2])m.RBI++;return}
   m.AB++;
-  const hit=cl(.325+dvc(con)*.0028+Math.min(8,dv(sp))*.0007+Math.min(15,Math.max(0,DV(sp)-60))*.00065+(sk('hitm')?.012:0)+lefty,.18,.47);
+  const hit=cl(.325+dvc(con)*.00295+Math.min(8,dv(sp))*.0007+Math.min(15,Math.max(0,DV(sp)-60))*.00065+(sk('hitm')?.012:0)+lefty,.18,.47),hitNS=cl(.325+dvc(con)*.00295+(sk('hitm')?.012:0)+lefty,.18,.47);
   if(R()<hit){m.H++;gl.H++;if(risp&&S.rsp)S.rsp.h++;
-    const hr=cl(.086+(dvp(eff('pow'))>0?dvp(eff('pow'))*.0056:dvp(eff('pow'))*.0057)+Math.max(0,eff('pow')-80)*.0055,.015,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1),tr=cl(.015+dv(sp)*.0008,.002,.06),db=cl(.19+dvp(eff('pow'))*.0015+dv(sp)*.001,.06,.34),q=R();
+    const hr=(hitNS/hit)*cl(.086+(dvp(hrStat())>0?dvp(hrStat())*.0056:dvp(hrStat())*.0057)+Math.max(0,hrStat()-80)*.0055,.015,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1),tr=cl(.015+dv(sp)*.0008,.002,.06),db=cl(.19+dvp(eff('pow'))*.0015+dv(sp)*.001,.06,.34),q=R();
     const n=on.filter(Boolean).length;
     if(q<hr){m.HR++;gl.HR++;m.R++;const x=1+n;m.RBI+=x;gl.RBI+=x;if(n===3)gl.GS=1;if(sp>=60&&R()<(sp-57)*.0012)gl.iphr=1;return}
     if(q<hr+tr){m.T++;gl.T++;m.RBI+=n;gl.RBI+=n;reach(3);return}
@@ -1567,7 +1567,7 @@ function trainMonth(rep){
   if(ME.inj){rep.rehab=1;return-8}
   const G=.784*intM*effM*ageM*(S.phase===0?1.15:.8);
   for(const k in al){if(k==='rest'||!al[k])continue;const p=al[k]/100;
-    if(k==='brk'){const f=S.plan.pitch;if(!ME.pt[f]){ME.pt[f]=Math.max(35,cl(20+(ri(40,44)-20)*.75,20,capOf(f)));rep.lines.push(`새 구종 ${LBL[f]} 습득을 시작했다!`)}else grow(f,G*p*1.6*((S.plan.mul||{}).brk||1));PITCHES.filter(x=>x!==f&&ME.pt[x]).forEach(x=>grow(x,G*p*(S.plan.main==='brk'||S.plan.sub==='brk'?.55:.3)))}
+    if(k==='brk'){const f=S.plan.pitch;if(!ME.pt[f]){ME.pt[f]=Math.max(35,cl(20+(ri(40,44)-20)*.75,20,capOf(f)));rep.lines.push(`새 구종 ${LBL[f]} 습득을 시작했다!`)}else grow(f,G*p*(S.plan.main==='brk'?2.1:1.6)*((S.plan.mul||{}).brk||1))}
     else grow(k,G*p*((S.plan.mul||{})[k]||1)*(k==='pow'||k==='velo'?1+itemSum('pw'):1)*(k==='velo'?.85:1))}
   const cf=typeof cardGrow==='function'?cardGrow(G,PMON[S.phase].length):0;
   return[4,12.5,22][S.plan.int]*(1-rest/100)-rest*.3+(rest?0:6)+cf}
@@ -1836,10 +1836,10 @@ function genPA(bR,pR){const d=bR-pR,k=cl(.2-d*.0045,.07,.38),bb=cl(.082+d*.0012,
   if(R()<cl(.325+d*.0028,.2,.45)){const hr=cl(.09+d*.004,.02,.3),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.2?'2B':'1B'}
   return pick(['GO','GO','FO','FO','LO'])}
 function meBatPA(pR,risp){let con=eff('con')+(sk('clutch')?4:0)+(ME.hid.men-50)*.12+(risp?(sk('chance')?6:0)-(sk('weakch')?6:0)+(ME.hid.men-50)*.06:0);const L=pR,dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp(x-L,BATC):(x-L),dvp=x=>x>L?softUp(x-L,.85):(x-L);
-  const k=cl(.205-dvc(con)*.0042-dv(eff('eye'))*.0008+(sk('kprone')?.03:0),.05,.42),bb=cl(.082+dv(eff('eye'))*.0018,.02,.2),r=R();
+  const k=cl(.205-dvc(con)*.0042-dv(eff('eye'))*.0008+(sk('kprone')?.03:0),.05,.42),bb=cl(.082+dv(eff('eye'))*.0018+dvc(con)*.0004,.02,.2),r=R();
   if(r<k)return'K';if(r<k+bb+.01)return'BB';
   {const sv=DV(eff('spd'));if(sv>=70&&R()<.012+(sv-70)*.0008){if(R()<cl(.4+(sv-70)*.012,.4,.75)){S._lastMeSpd=1;S._bunt=1;return'1B'}return'GO'}}
-  if(R()<cl(.325+dvc(con)*.0028+Math.min(8,dv(eff('spd')))*.0007+Math.min(15,Math.max(0,DV(eff('spd'))-60))*.00065+(sk('hitm')?.012:0),.18,.47)){S._lastMeSpd=1;const hr=cl(.086+(dvp(eff('pow'))>0?dvp(eff('pow'))*.0056:dvp(eff('pow'))*.0057)+Math.max(0,eff('pow')-80)*.0055,.015,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
+  const _hit=cl(.325+dvc(con)*.00295+Math.min(8,dv(eff('spd')))*.0007+Math.min(15,Math.max(0,DV(eff('spd'))-60))*.00065+(sk('hitm')?.012:0),.18,.47),_hitNS=cl(.325+dvc(con)*.00295+(sk('hitm')?.012:0),.18,.47);if(R()<_hit){S._lastMeSpd=1;const hr=(_hitNS/_hit)*cl(.086+(dvp(hrStat())>0?dvp(hrStat())*.0056:dvp(hrStat())*.0057)+Math.max(0,hrStat()-80)*.0055,.015,.46)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
   return pick(['GO','GO','FO','FO','LO'])}
 function mePitPA(bR,risp,tired){const L=bR,pv=x=>{const d=x-L-pitB(L);return d>0?d*PITC:d},st=stuffC(eff)+roleAdj(S._pRole||'SP')-tired+(sk('clutch')?2:0)+(ME.hid.men-50)*.12,ctl=eff('ctl'),stf=eff('stf');
   const PM=pitMods(S._pRole||'SP'),tto=PM.tto*Math.max(0,(S._pInn||1)-2),k=PM.k*cl(.185+pv(st-tto-PM.st)*.0036+pv(ctl)*.0012+(sk('kmach')?.025:0),.05,.42),bb=cl(.085-pv(ctl)*.0021+tired*.002,.02,.2),r=R();
@@ -2345,6 +2345,9 @@ function svFac(){try{const k=S.y;if(S._svF&&S._svF.k===k)return S._svF;const a=a
   const af=a<=22?.93:a<=32?1:a<=35?.95:.87;
   const r={k,sv:af,hd:af};S._svF=r;return r}catch(e){return{sv:1,hd:1}}}
 
+/* 홈런 결정 능력치: 파워 80% · 컨택 10% · 선구안 5% · 동체시력 5% (MLB: 파워 70 · 컨택 10 · 선구안 10 · 동체시력 10) */
+function hrStat(){try{const v=k=>k in ME.r?eff(k):eff('pow');const mlb=S.stage==='pro'&&S.pro&&S.pro.league==='MLB';return mlb?v('pow')*.7+v('con')*.1+v('eye')*.1+v('vis')*.1:v('pow')*.8+v('con')*.1+v('eye')*.05+v('vis')*.05}catch(e){return eff('pow')}}
+
 /* ===================== POSITION / ORDER / GROWTH TYPE ===================== */
 const POSKEY={'1B':[['pow',.6],['fld',.4]],C:[['arm',.6],['fld',.4]],SS:[['rng',.6],['arm',.25],['fld',.15]],'2B':[['rng',.6],['fld',.3],['spd',.1]],CF:[['rng',.65],['spd',.35]],'3B':[['arm',.6],['fld',.4]],LF:[['arm',.6],['rng',.4]],RF:[['arm',.7],['rng',.3]]};
 const POSKN={'1B':'파워 · 타구처리','C':'타구처리 · 어깨','SS':'수비범위','2B':'수비범위','CF':'수비범위 · 주력','3B':'어깨 · 타구처리','LF':'어깨','RF':'어깨'};
@@ -2447,7 +2450,7 @@ selScore=function(){return isP()?ovrE():ovrE()*.35+prioScore()*.65};
 function prioTxt(pos){return(POSPRIO[pos]||POSPRIO.DH).map(g=>g.map(k=>PRIO_LBL[k]).join(' + ')).join(' › ')}
 
 /* ===================== TRAINING MENUS (파워프로식) ===================== */
-const MENU_B={bat:{n:'배팅 훈련',ic:'🏏',w:{con:.65,eye:.35}},wt:{n:'웨이트',ic:'🏋️',w:{pow:.7,arm:.3}},fungo:{n:'펑고',ic:'🧤',w:{rng:.5,fld:.5}},run:{n:'주루 훈련',ic:'👟',w:{spd:.7,rng:.3}},video:{n:'영상 분석',ic:'📺',w:{eye:.6,con:.4},men:1},throw:{n:'송구 훈련',ic:'🎯',w:{arm:.6,fld:.4}},rest:{n:'휴식',ic:'🛌',w:{}}};
+const MENU_B={bat:{n:'배팅 훈련',ic:'🏏',w:{con:.65,eye:.35}},wt:{n:'웨이트',ic:'🏋️',w:{pow:.7,arm:.3}},fungo:{n:'펑고',ic:'🧤',w:{rng:.5,fld:.5}},run:{n:'주루 훈련',ic:'👟',w:{spd:.7,rng:.36}},video:{n:'영상 분석',ic:'📺',w:{eye:.6,con:.4},men:1},throw:{n:'송구 훈련',ic:'🎯',w:{arm:.6,fld:.46}},rest:{n:'휴식',ic:'🛌',w:{}}};
 const MENU_P={pen:{n:'불펜 투구',ic:'⚾',w:{ctl:.5,stf:.5}},wt:{n:'웨이트',ic:'🏋️',w:{velo:.6,sta:.4}},run:{n:'러닝',ic:'👟',w:{sta:.8,stf:.2}},brk:{n:'변화구 연마',ic:'🌀',w:{brk:1}},video:{n:'영상 분석',ic:'📺',w:{pcl:.65,ctl:.35},men:1},long:{n:'롱토스',ic:'💪',w:{velo:.6,stf:.4}},rest:{n:'휴식',ic:'🛌',w:{}}};
 const menus=()=>isP()?MENU_P:MENU_B;
 const CARDS_B=[{n:'베테랑 선배와 새벽 특타',d:'파워 대폭 성장 · 피로↑↑',w:{pow:1.2,con:.3},f:10},{n:'수비코치 1:1 지옥 펑고',d:'수비범위·타구처리 성장 · 피로↑',w:{rng:.8,fld:.8},f:8},{n:'전력분석팀 맞춤 영상 세션',d:'선구안·컨택 성장 · 멘탈 소폭↑',w:{eye:1,con:.4},f:0,men:2},{n:'육상 코치 스프린트 캠프',d:'주력 대폭 성장 · 피로↑',w:{spd:1.2,rng:.3},f:8},{n:'레전드 OB 원포인트 레슨',d:'컨택·파워 성장',w:{con:.9,pow:.5},f:4},{n:'외야 송구 집중 클리닉',d:'어깨 대폭 성장',w:{arm:1.2,fld:.3},f:6}];
@@ -4838,7 +4841,7 @@ function pitchInfo(){const g=k=>eff(k);const good=PITCHES.filter(k=>g(k)>=50),fa
 function pitMods(type){if(!isP())return{k:1,hr:1,tto:0,st:0};const I=pitchInfo(),SP=type==='SP'||type==='ace';
   let tto=0,st=0;if(SP){tto=I.nGood<=1?PITW_TTO[0]:I.nGood===2?PITW_TTO[1]:0;st=I.nGood<=1?PITW_ST:0;if(S.brkFocus===S.y&&S.phase===1)st+=2}
   const k=SP?(I.fast<44?.8:I.fast<50?.9:1):(I.fast<44?.92:1),hr=SP?(I.slow<44?1.2:I.slow<50?1.08:1):(I.slow<44?1.06:1);return{k,hr,tto,st}}
-const PITW_TTO=[1.7,1.0],PITW_ST=1.3;
+const PITW_TTO=[2.8,1.7],PITW_ST=1.3;
 /* 시즌 전 보직 상담 */
 {const _ny8=newYear;newYear=function(){const r=_ny8();try{if(isP()&&S.stage==='pro'&&S.pro&&!S.pro.dev&&S.pro.debut<S.y&&!ME.inj&&!(S.queue||[]).some(q=>q.ch&&q.ch.some(c=>c.act==='devp'))){const I=pitchInfo(),nm=PITCHES.filter(k=>eff(k)>=50).map(k=>LBL[k]).join('·')||'없음';
   if(ME.pos==='SP'&&I.nGood<=1)S.queue.push({title:'⚾ 올 시즌 보직 상담',text:`투수코치가 불렀다. "쓸 만한 구종이 ${nm}뿐이다. 선발로 가면 타순이 한 바퀴 돌고 나서가 문제야. 올해 어떻게 갈래?"`,ch:[
@@ -9557,7 +9560,7 @@ function sbAnimate(){try{if(typeof document==='undefined'||!S||ui.simming)return
 /* ===== 투수 변화구: 변화구 훈련을 안 해도 아는 구종은 조금씩 자람 · 변화구 훈련 시에도 살짝 더 (비공개) ===== */
 {const _tm=trainMonth;trainMonth=function(rep){const inj=ME&&ME.inj;const p0=ME&&ME.pt?{...ME.pt}:null;const out=_tm(rep);
   try{if(!isP()||inj||!p0)return out;const a=age(),am=a<=23?1.1:a<=27?.9:a<=30?.55:a<=33?.35:.2,int=[.7,1,1.25][S.plan.int]||1,brk=(S.plan.alloc||{}).brk||0;
-    PITCHES.forEach(k=>{if(!(p0[k]>0)||!(ME.pt[k]>0))return;const g=ME.pt[k]-p0[k];if(g>0&&brk)ME.pt[k]=cl(ME.pt[k]+g*.15,20,capOf(k));grow(k,.03*am*int)})}catch(e){}return out}}
+    PITCHES.forEach(k=>{if(!(p0[k]>0)||!(ME.pt[k]>0))return;const g=ME.pt[k]-p0[k];if(g>0&&brk)ME.pt[k]=cl(ME.pt[k]+g*.15,20,capOf(k))})}catch(e){}return out}}
 /* ===== 타자 의외의 천재성: 19~25세, 스프링캠프에 송구(어깨) 훈련 중이면 매년 30% 파워 소폭 상승 (중복 가능) ===== */
 {const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(isP()||!S||!ME||S.m!==2||S.bGenY===S.y||ME.inj)return;const a=age();if(a<19||a>25)return;if(!(S.stage==='pro'||S.stage==='univ'||S.stage==='hs'))return;
   const pl=S.plan||{};if(!(pl.main==='arm'||pl.sub==='arm'))return;S.bGenY=S.y;if(R()>=.3)return;
@@ -9859,6 +9862,20 @@ function batDivAdj(){try{if(isP())return 0;const lv=lgLv(),f=LGF[lv]||.5,L=LV[lv
 {const _bD=batPA;batPA=function(L,m,gl){return _bD(L-batDivAdj(),m,gl)}}
 {const _mbD=meBatPA;meBatPA=function(pR,risp){return _mbD(pR-batDivAdj(),risp)}}
 {const _pgR=pitchGame;pitchGame=function(L,type){const o=S._pRole;S._pRole=type==='SP'?'SP':'RP';try{return _pgR(L,type)}finally{S._pRole=o}}}
+
+/* ===== 제구가 나쁘면 경기마다 기복 (긁히는 날 / 안 긁히는 날) — 설명 노노 ===== */
+function ctlSwing(){try{if(!isP())return 0;const c=DV(E('ctl'));if(c>=72)return 0;const sd=(72-c)*.045;return rn(0,sd)}catch(e){return 0}}
+{const _pgC=pitchGame;pitchGame=function(L,type){return _pgC(L+ctlSwing(),type)}}
+{const _fgC=followGame;followGame=function(o){S._ctlDay=ctlSwing();try{return _fgC(o)}finally{S._ctlDay=0}}}
+{const _mpC=mePitPA;mePitPA=function(bR,risp,tired){return _mpC(bR+(S._ctlDay||0),risp,tired)}}
+/* 제구 기복 댓글 */
+{const _cC=comments;comments=function(tone,x){let out=_cC(tone,x);try{if(!x||!isP()||!Array.isArray(out)||x.ipO==null||!(x.ipO>0))return out;const c=DV(E('ctl'));if(c>=64||R()>.5)return out;const pf=myPerfX(x),gn=giv(ME.name);
+  const G=[`${gn} 긁히는 날엔 진짜 지린다`,`오늘은 긁혔다 이런 날 ${gn}은 아무도 못 침`,`제구만 잡히면 리그 씹어먹을 공인데`,`${gn} 오늘은 잘 긁히는 날이네 ㅋㅋ`,`이 공이 매일 들어가면 에이스인데`],
+    B=[`${gn} 제구 때문에 기복이 너무 심하네`,`볼넷 남발하는 날은 답이 없다`,`${gn} 안 긁히는 날은 그냥 볼넷 머신`,`기복이 심해서 믿고 보기가 힘들다`,`공은 좋은데 제구가 오락가락함`],
+    A=[`${gn} 오늘은 반쯤 긁혔다`,`제구 기복만 줄이면 진짜 무서운 투수`,`${gn}은 매 경기가 복불복이다 ㅋㅋ`];
+  const L=(pf==='good'?G:pf==='bad'?B:A).filter(t=>!seenHas(t));if(!L.length)return out;const t=pick(L);seenAdd(t);out.splice(Math.min(out.length,2),0,mkC(t,R()<.5?[pick(['ㄹㅇ 복불복','긁히는 날만 직관 가고 싶다','제구 코치 일해라','이게 이 선수 매력임 ㅋㅋ'])]:[],{up:ri(400,2500)}))}catch(e){}return out}}
+/* 타자 피로도 아주 살짝↓ */
+{const _fmB=fatMul;fatMul=function(){return _fmB()*(isP()?1:.93)}}
 
 </script>
 
