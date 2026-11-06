@@ -1319,7 +1319,7 @@ const talentM=()=>cl(.8+(ME.pot-46)/34*.4,.8,1.2);
 const talentG=p=>p>=74?'S':p>=68?'A':p>=62?'B':p>=56?'C':'D';
 const E=k=>{const v=raw(k);return v>0?v+itemBonus(k):0};
 const eff=k=>{const v=E(k);return v>0?v+ME.form*.8-Math.max(0,ME.fat-60)/3-mlbPen(k)+spBonus(k):0};
-function ars(f=E){const q=PITCHES.map(k=>f(k)).filter(v=>v>0).sort((a,b)=>b-a);const g=i=>q[i]??20;return g(0)*.5+g(1)*.3+g(2)*.2+(q.length>=4?2:0)}
+function ars(f=E){const q=PITCHES.map(k=>f(k)).filter(v=>v>0).sort((a,b)=>b-a);const g=i=>q[i]??20;return g(0)*.42+g(1)*.32+g(2)*.26+(q.length>=4?2:0)}
 const pSyn=(f=E)=>{const n=PITCHES.filter(k=>f(k)>=40).length,pc=f('pcl')||45;return(pc-50)*.09*Math.max(.5,n/3)};
 const stuffC=(f=E)=>f('velo')*.31+f('stf')*.32+ars(f)*.37+pSyn(f)+(sk('spin')?3:0);
 const DEFW={C:[0,.35,.65],'1B':[.2,.7,.1],'2B':[.5,.35,.15],SS:[.45,.3,.25],'3B':[.25,.4,.35],LF:[.45,.25,.3],CF:[.65,.2,.15],RF:[.35,.25,.4]};
@@ -1445,7 +1445,7 @@ function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp
   const k=cl(.205-dvc(con)*.0042-dv(eff('eye'))*.0008-(sk('eyem')?.01:0)+(sk('kprone')?.03:0),.05,.42);
   const bb=cl(.082+dv(eff('eye'))*.0018+(sk('eyem')?.015:0),.02,.2);
   const r=R(),sp=eff('spd');m.PA++;if(risp&&S.rsp)S.rsp.pa++;
-  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<Math.min(.31,((E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)+Math.max(0,DV(E('spd'))-78)*.004)*(sk('thief')?1.4:1))){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.06:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
+  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<Math.min(.29,((E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)+Math.max(0,DV(E('spd'))-78)*.004)*(sk('thief')?1.4:1))){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.06:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
     if(R()<cl([0,.18,.31,.48][b]+Math.min(5,dv(sp))*.004,.05,.55))m.R++};
   if(r<k){m.AB++;m.K++;return}
   if(r<k+bb+.01){m.BB++;gl.ob++;reach(1);if(on[0]&&on[1]&&on[2])m.RBI++;return}
@@ -5041,7 +5041,7 @@ function pHypeLines(tone,x){if(!isP()||S.stage!=='pro')return[];const nm=ME.name
 
 /* ===================== 타자 포스트시즌 결정적 홈런 댓글 (가을 영웅 레파토리) ===================== */
 const PARK2={트윈스:'잠실',베어스:'잠실',히어로즈:'고척돔',랜더스:'문학',위즈:'수원',이글스:'대전',라이온스:'라팍',타이거스:'챔피언스필드',자이언츠:'사직',다이노스:'창원NC파크'};
-function scoutName(){if(!S.scoutN){const sur=pick(['권','김','이','박','정','최','조','윤','장','한']);S.scoutN=sur+pick(['윤민','성훈','재혁','동석','민규','상우','태호','진우','영철'])}return S.scoutN}
+function scoutName(){if(!S.scoutN){const sur=pick(['권','김','이','박','정','최','조','윤','장','한']);let n,g=0;do{n=pick(['권','김','이','박','정','최','조','윤','장','한'])+pick(['윤민','성훈','재혁','동석','민규','태석','기호','진태','영철','두식','명보'])}while(g++<20&&(REALN2.has(n)||(()=>{try{return REALN.test(n)}catch(e){return false}})()));S.scoutN=n}return S.scoutN}
 function draftedHere(){try{const t=S.pro&&S.pro.league==='KBO'?TEAMS[S.pro.team]:null;if(!t||!S.pro.draft)return false;const r=S.rows.filter(r=>r.lv==='KBO'||r.lv==='fut').sort((a,b)=>a.y-b.y)[0];return!!(r&&r.team.includes(t.nick))}catch(e){return false}}
 function bigHRLines(x){const nm=ME.name,gn=giv(nm),gA=jo(gn,'아','야'),gI=jo(gn,'이','가'),T=S.pro&&S.pro.league==='KBO'?TEAMS[S.pro.team]:null,nick=T?T.nick:'',city=T?T.city:'';
   const homeNick=x.home?nick:(x.opp||nick),park=PARK2[homeNick]||'구장',slam=(x.pl||[]).some(p=>p.t==='HR'&&p.r>=4),ttl=(x.title||'').replace(/^\d{4} /,''),sc=scoutName(),dh=draftedHere()&&!x.intl,big=ME.body!=='거구',o=[];
@@ -7032,7 +7032,7 @@ function psSlot(){try{const lg=S.pro&&S.pro.league,{p}=yearTot(S.y,[lg]);if(!p||
 /* ===================== VIEW HELPERS ===================== */
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function reqOk(s){if(s.t!=='A'&&s.t!==ME.type)return false;for(const k in s.req){const v=['we','men','dur'].includes(k)?ME.hid[k]:E(k);if(v<s.req[k])return false}return true}
-function spendCost(k){const v=raw(k);let c=Math.max(1,Math.ceil((v-15)/9*.75));if(v>=75)c*=2;if(ME&&ME.pt&&k in ME.pt)c=Math.max(1,Math.round(c*.55));return c}
+function spendCost(k){const v=raw(k);let c=Math.max(1,Math.ceil((v-15)/9*.75));if(v>=75)c*=2;if(ME&&ME.pt&&k in ME.pt)c=Math.max(1,Math.round(c*.45));return c}
 const spendMax=k=>Math.min(capOf(k),ceilAt(k));
 const bar=(v,cls,max=100)=>`<div class="bar ${cls||''}"><b style="width:${cl(v/max*100,0,100)}%"></b></div>`;
 const SVG={turn:'<path d="M6 4l12 8-12 8z"/>',train:'<path d="M3 10v4M6 7v10M18 7v10M21 10v4M6 12h12"/>',stats:'<path d="M5 20V10M12 20V4M19 20v-7"/>',rec:'<path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6M9 16h4"/>',news:'<path d="M4 5h13v14H6a2 2 0 0 1-2-2z"/><path d="M17 9h3v8a2 2 0 0 1-2 2M8 9h5M8 13h5"/>',shop:'<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>'};
@@ -8766,7 +8766,7 @@ ACT.rchg=function(a){if(a.k==='SP')return'"선발 자리, 끝까지 지켜보이
   else if(tier===2){L.push([`${team} 하면 ${gn}였는데… 진짜 수고 많았다`,['한 팀의 얼굴이었다']],[`화려하진 않아도 늘 그 자리에 있던 선수. 고마웠어요`,['꾸준함이 제일 어려운 거임']],[`은퇴식 날 꼭 가서 이름 불러줄게`,[]],[`두 번째 인생도 응원한다 ${gn}`,['어디서든 잘 될 사람']])}
   else if(tier===1){L.push([`오래 뛰었다 진짜 고생 많았어요`,['몸 관리 잘해서 이만큼 한 거지']],[`${gn} 덕분에 즐거웠던 시즌들 많았다`,[]],[`이제 가족이랑 행복하게 지내세요 두 번째 인생 응원합니다`,[]])}
   else L.push([`그동안 고생했다 두 번째 인생은 꽃길만 걷자`,['응원합니다']],[`화려하진 않았어도 야구에 진심이었던 선수로 기억할게`,[]]);
-  const add=L.slice(0,tier===3?5:4).map(([t,re])=>mkC(josaFix(t),re.map(r=>({nk:pick(NICKS),t:josaFix(r),up:ri(50,1500)})),{up:ri(tier>=2?3000:500,tier>=2?9000:3000),must:1}));
+  const add=L.filter(([t])=>!seenHas(josaFix(t))).slice(0,tier===3?5:4).map(([t,re])=>mkC(josaFix(t),re.map(r=>({nk:pick(NICKS),t:josaFix(r),up:ri(50,1500)})),{up:ri(tier>=2?3000:500,tier>=2?9000:3000),must:1}));add.forEach(c=>seenAdd(c.t));
   const seenK=new Set();out=add.concat(out.filter(c=>!add.some(a=>a.t===c.t))).filter(c=>{const k=String(c.t).replace(/\s+/g,'').slice(0,9);if(seenK.has(k))return false;seenK.add(k);return true}).sort((a,b)=>(b.up||0)-(a.up||0))}catch(e){}return out}}
 /* MLB 계약 기간: 보여준 게 있는 선수는 1년 재계약 거의 없음
    34~37세: 최소 2년 (대형이면 2~4년) · 38~40세: 2년(1+1 성격) · 41세 이상만 1년 */
@@ -9467,8 +9467,8 @@ POSKEY.LF=[['rng',.7],['arm',.3]];POSKEY.RF=[['arm',.75],['rng',.25]];
 /* 우선순위 1~3위 툴이 모두 좋으면 살짝 더 잘함 · MLB에선 4~5위 툴이 심각하게 낮으면 살짝 못함 */
 function toolAdj(){try{if(isP()||!S||S.stage!=='pro'||!S.pro)return 0;const k0=S.turn+':'+ME.pos;if(S._taK===k0)return S._taV||0;
   const pr=POSPRIO[ME.pos]||POSPRIO.DH,top=pr.slice(0,3).flat(),low=pr.slice(3).flat(),dv=k=>DV(prioVal(k));let v=0;
-  const mn=Math.min(...top.map(dv));if(mn>=78)v+=.7;else if(mn>=70)v+=.4;
-  if(S.pro.league==='MLB'){let pen=0;low.forEach(k=>{const d=dv(k);if(d<40)pen+=.4;else if(d<45)pen+=.2});v-=Math.min(.8,pen)}
+  const mn=Math.min(...top.map(dv)),mlb=S.pro.league==='MLB';if(mn>=78)v+=mlb?1:.7;else if(mn>=70)v+=mlb?.6:.4;else if(mlb&&mn<55)v-=.5;
+  if(mlb){let pen=0;low.forEach(k=>{const d=dv(k);if(d<40)pen+=.5;else if(d<45)pen+=.25});v-=Math.min(1.1,pen);const n60=['con','pow','eye','spd','rng','fld','arm'].filter(k=>dv(k)>=60).length;if(n60>=5)v+=.4;else if(n60>=4)v+=.2}
   S._taK=k0;S._taV=v;return v}catch(e){return 0}}
 {const _b=batPA;batPA=function(L,m,gl){return _b(isP()?L:L-toolAdj(),m,gl)}}
 {const _mb=meBatPA;meBatPA=function(pR,risp){return _mb(isP()?pR:pR-toolAdj(),risp)}}
@@ -9650,6 +9650,16 @@ const EASE=.9;
 {const _mr2=ACT.marry;ACT.marry=function(a){if(!S.gf||S.married)return '';return _mr2(a)}}
 {const _pr2=ACT.prop;ACT.prop=function(a){if(!S.gf||S.married)return '';return _pr2(a)}}
 {const _le2=lifeEvents;lifeEvents=function(){const out=_le2();try{let seen=false;return out.filter(q=>{if(/프러포즈/.test(q.title||'')){if(seen||(S.queue||[]).some(z=>z&&/프러포즈/.test((z.q&&z.q.title)||z.title||'')))return false;seen=true}return true})}catch(e){return out}}}
+
+/* MLB: 구종 다양성 비중↑ (설명 노노) */
+function pitDivAdj(){try{if(!isP()||!S||S.stage!=='pro'||!S.pro||S.pro.league!=='MLB')return 0;const q=PITCHES.filter(k=>k!=='FB'&&raw(k)>=50).length,q2=PITCHES.filter(k=>k!=='FB'&&raw(k)>=62).length;
+  let v=q>=4?.6:q===3?.3:q===2?-.15:-.7;if(q2>=2)v+=.2;return v}catch(e){return 0}}
+{const _p=pitchGame;pitchGame=function(L,type){return _p(L-pitDivAdj(),type)}}
+{const _mp=mePitPA;mePitPA=function(bR,risp,tired){return _mp(bR-pitDivAdj(),risp,tired)}}
+
+/* 등번호 없는 채로 은퇴하면 '등번호 번 영구결번'·'No.-' 나오던 문제 */
+{const _rt3=retire;retire=function(why){try{if(ME&&!ME.num)ME.num=ri(1,99)}catch(e){}return _rt3.apply(this,arguments)}}
+{const _ms9=monthStep;monthStep=function(rep){_ms9(rep);try{if(S.stage==='pro'&&ME&&!ME.num)ME.num=ri(1,99)}catch(e){}}}
 
 </script>
 
