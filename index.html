@@ -1567,7 +1567,7 @@ function trainMonth(rep){
   if(ME.inj){rep.rehab=1;return-8}
   const G=.784*intM*effM*ageM*(S.phase===0?1.15:.8);
   for(const k in al){if(k==='rest'||!al[k])continue;const p=al[k]/100;
-    if(k==='brk'){const f=S.plan.pitch;if(!ME.pt[f]){ME.pt[f]=20;rep.lines.push(`새 구종 ${LBL[f]} 습득을 시작했다!`)}else grow(f,G*p*1.4*((S.plan.mul||{}).brk||1));PITCHES.filter(x=>x!==f&&ME.pt[x]).forEach(x=>grow(x,G*p*(S.plan.main==='brk'||S.plan.sub==='brk'?.32:.2)))}
+    if(k==='brk'){const f=S.plan.pitch;if(!ME.pt[f]){ME.pt[f]=Math.max(35,cl(20+(ri(40,44)-20)*.75,20,capOf(f)));rep.lines.push(`새 구종 ${LBL[f]} 습득을 시작했다!`)}else grow(f,G*p*1.4*((S.plan.mul||{}).brk||1));PITCHES.filter(x=>x!==f&&ME.pt[x]).forEach(x=>grow(x,G*p*(S.plan.main==='brk'||S.plan.sub==='brk'?.32:.2)))}
     else grow(k,G*p*((S.plan.mul||{})[k]||1)*(k==='pow'||k==='velo'?1+itemSum('pw'):1)*(k==='velo'?.85:1))}
   const cf=typeof cardGrow==='function'?cardGrow(G,PMON[S.phase].length):0;
   return[4,12.5,22][S.plan.int]*(1-rest/100)-rest*.3+(rest?0:6)+cf}
@@ -2080,7 +2080,7 @@ const ACT={
   trade(){if(R()<.55){let t;do t=ri(0,9);while(t===S.pro.team);S.pro.team=t;S.rel.coach=55;S.rel.chem=45;S.coach=mkName()+' 감독';news(`트레이드 — ${TEAMS[t].city} ${TEAMS[t].nick} 이적.`);article(`[오피셜] ${ME.name}, ${TEAMS[t].nick}로 트레이드`,'출전 기회를 찾아 새 팀으로 향한다.','move');return`${TEAMS[t].city} ${TEAMS[t].nick}로 트레이드됐다. 새 출발이다.`}S.rel.coach-=6;return'구단은 트레이드 요청을 묵살했다. 분위기가 싸늘하다.'},
   rolechg(){if(S.rel.coach>=55){ME.pos=ME.pos==='SP'?'RP':'SP';return`보직 변경 승인. 이제 ${POS[ME.pos]}다.`}S.rel.coach-=2;return'"지금 보직에서 증명해라."'},
   restplan(){if(S.plan.main!=='rest')S.plan.sub='rest';if(typeof syncW==='function')syncW();return'서브 훈련을 휴식으로 바꿨다. 다음 기간엔 몸을 회복하자.'},
-  learn(a){if(!ME.pt[a.p]){ME.pt[a.p]=22;S.plan.pitch=a.p;return`${LBL[a.p]} 그립을 손에 익히기 시작했다. 훈련의 '변화구' 비율이 이 구종에 들어간다.`}return''}};
+  learn(a){if(!ME.pt[a.p]){ME.pt[a.p]=Math.max(35,cl(20+(ri(40,44)-20)*.75,20,capOf(a.p)));S.plan.pitch=a.p;return`${LBL[a.p]} 그립을 손에 익히기 시작했다. 훈련의 '변화구' 비율이 이 구종에 들어간다.`}return''}};
 function applyFx(fx){if(!fx)return;for(const k in fx){const v=fx[k];
   if(['we','men','dur'].includes(k))ME.hid[k]=cl(ME.hid[k]+v,20,80);
   else if(['coach','chem','fame'].includes(k))S.rel[k]=cl(S.rel[k]+v,0,100);
@@ -8819,7 +8819,7 @@ function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${
 /* ===== 의외의 천재성: 27~35세 투수, 변화구 훈련 중일 때 매년 25% 새 변화구 발견 (능력치 = 최고 변화구 −10~15) ===== */
 {const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(!isP()||S.stage!=='pro'||!S.pro||S.m!==2||S.genY===S.y)return;const a=age();if(a<27||a>35)return;const pl=S.plan||{},brk=((pl.alloc||{}).brk||0)>0||pl.main==='brk'||pl.sub==='brk';if(!brk)return;S.genY=S.y;if(R()>=.25)return;
   const cand=PITCHES.filter(k=>k!=='FB'&&!ME.pt[k]);if(!cand.length)return;const k=pick(cand),have=PITCHES.filter(x=>x!=='FB'&&ME.pt[x]).map(x=>ME.pt[x]),best=have.length?Math.max(...have):50;
-  const bd=Math.round(DV(best))-ri(10,15),v=cl(20+(bd-20)*.75,20,capOf(k));ME.pt[k]=v;const nm=LBL[k];
+  const bd=ri(50,60),v=cl(20+(bd-20)*.75,20,Math.max(capOf(k),20+(bd-20)*.75));ME.pt[k]=v;const nm=LBL[k];
   const how=pick([`불펜 캐치볼 중에 장난삼아 던져본 ${nm}. 포수가 미트를 내려놓고 물었다. "방금 뭐야? 다시 던져봐."`,`스프링캠프 숙소에서 영상을 돌려보다 그립을 살짝 바꿔봤다. 다음 날 불펜에서 던진 ${nm}이 말도 안 되게 꺾였다.`,`손가락 물집 때문에 그립을 바꿔 잡았는데, 그게 오히려 ${nm}의 각을 만들어냈다. 투수코치가 한참 웃었다.`]);
   feat(`의외의 천재성 — 새 구종 ${nm} 장착`,false);S.queue.push({ch:[{t:'확인',r:'새 구종을 레퍼토리에 넣었다. 올 시즌 써먹어 보자.'}],title:'✨ 의외의 천재성',text:`${josaFix(how)}\n\n몇 년을 붙잡고 있어도 안 되던 게, 어느 날 갑자기 손에 붙는다.\n새 구종 ${jo(nm,'이','가')} 레퍼토리에 추가됐다. (${nm} ${Math.round(DV(v))})`});
   news(`${ME.name}, 캠프에서 새 구종 ${nm} 장착…"갑자기 됐다"`)}catch(e){}}}
@@ -9746,6 +9746,9 @@ function draftTool(){try{if(isP()){const best=Math.max(...PITCHES.filter(k=>k!==
 {const _ms0=monthStep;monthStep=function(rep){const r=_ms0(rep);try{(S.queue||[]).forEach(q=>{if(q&&!q.type&&q.title&&(!Array.isArray(q.ch)||!q.ch.length))q.ch=[{t:'확인',r:'계속 나아가자.'}]})}catch(e){}return r}}
 {const _ld0=load;load=function(){const s=_ld0.apply(this,arguments);try{(s&&s.queue||[]).forEach(q=>{if(q&&!q.type&&q.title&&(!Array.isArray(q.ch)||!q.ch.length))q.ch=[{t:'확인',r:'계속 나아가자.'}]})}catch(e){}return s}}
 {const _vsQ=vSheet;vSheet=function(){try{const q=S&&nextQ();if(q&&!q.type&&(!Array.isArray(q.ch)||!q.ch.length))q.ch=[{t:'확인',r:'계속 나아가자.'}]}catch(e){}return _vsQ()}}
+
+/* 예전 저장: 새로 배우다 만 구종이 40 미만이면 40으로 */
+{const _ld40=load;load=function(){const s=_ld40.apply(this,arguments);try{const m=s&&s.me;if(m&&m.pt&&!s._pt40){for(const k in m.pt){if(k!=='FB'&&m.pt[k]>0&&m.pt[k]<35)m.pt[k]=35}s._pt40=1}}catch(e){}return s}}
 
 </script>
 
