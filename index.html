@@ -1536,9 +1536,9 @@ function simPit(role,tg,L,row,lvk){
         if(!g.H){m.NH++;if(!g.BB&&R()<.45){feat(`${d} 퍼펙트게임!!! 27타자 연속 아웃`,1);if(pro){S.ach.perfect=S.ach.perfect||S.y;S.ach.nh=S.ach.nh||S.y}}else{feat(`${d} 노히트노런 달성!`,1);if(pro)S.ach.nh=S.ach.nh||S.y}}
         else feat(`${d} ${g.K}탈삼진 완봉승`)}else feat(`${d} 완투승 역투`)}
       const pw=g.outs>=15?cl(.42-(g.R-3)*.09+tadj,.08,.8):.04,pl=cl(.3+(g.R-3)*.1-tadj,.08,.75),rr=R();if(rr<pw)W=1;else if(rr<pw+pl)Lo=1}
-    else{let svd=false;
-      if(t==='CL'&&R()<.62){if(!g.R||(g.R===1&&R()<.4)){m.SV++;st.sv++;svd=true}else st.sv=0}
-      else if(t==='SU'&&R()<.58&&!g.R){m.HLD++;svd=true}
+    else{let svd=false;const svB=m.outs>=30?cl((3.6-m.R*27/m.outs)*.011,-.02,.035):0;
+      if(t==='CL'&&R()<.64+svB){if(!g.R||(g.R===1&&R()<.4)){m.SV++;st.sv++;svd=true}else st.sv=0}
+      else if(t==='SU'&&R()<.60+svB&&!g.R){m.HLD++;svd=true}
       if(!svd){const dr=reliefDec(t,g,row,m);W=dr===1?1:0;Lo=dr===-1?1:0}}
     m.W+=W;m.L+=Lo;if(W)st.win++;if(Lo)st.win=0;
     if(g.K>=12)feat(`${d} 한 경기 ${g.K}탈삼진`,g.K>=15);if(pro&&g.K>S.pb.gK)S.pb.gK=g.K;
