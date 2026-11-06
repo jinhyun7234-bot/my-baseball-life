@@ -9832,6 +9832,14 @@ retireNo=function(){const L=retireNos();return L.length?L.sort((a,b)=>(a.lv==='K
   S.queue=S.queue.filter(q=>{if(!q||before.has(q)||q.type||q._inj||!Array.isArray(q.ch)||!q.ch.length)return true;const t=String(q.title||'');
     if(KEEP.test(t)||q.ch.some(c=>c&&c.act&&CRIT.has(c.act)))return true;let drop=.2;if(late)drop=.42;if(late&&KID.test(t+String(q.text||'')))drop=.65;return R()>=drop})}catch(e){}return r}}
 
+/* ===== 비FA 연봉 협상: 1년 인상 폭 최대 4억 ===== */
+const SAL_UP_MAX=40000;
+function salCapQ(q){try{if(!q||q.type||!/연봉 협상/.test(q.title||'')||!S.pro)return;const cur=S.pro.salary||0,cap=cur+SAL_UP_MAX;
+  (q.ch||[]).forEach(c=>{const a=c&&c.arg;if(!a)return;['v','f'].forEach(k=>{if(typeof a[k]==='number'&&a[k]>cap){const o=money(a[k]);a[k]=cap;a.cap=cap;const n=money(cap);if(c.s)c.s=c.s.split(o).join(n);q.text=String(q.text||'').split(o).join(n)}});if(a.k==='demand'||a.k==='arb')a.cap=cap})}catch(e){}}
+{const _msS=monthStep;monthStep=function(rep){const r=_msS(rep);try{(S.queue||[]).forEach(salCapQ)}catch(e){}return r}}
+{const _advS=advance;advance=function(){const r=_advS.apply(this,arguments);try{(S.queue||[]).forEach(salCapQ)}catch(e){}return r}}
+{const _salC=ACT.sal;ACT.sal=function(a){const p=S.pro,cur=p?p.salary||0:0;const r=_salC(a);try{if(p&&p.salary>cur+SAL_UP_MAX&&!/이미 다년/.test(String(r||''))){const o=money(p.salary);p.salary=cur+SAL_UP_MAX;const n=money(p.salary);try{(S.news||[]).slice(0,3).forEach((x,i)=>{if(typeof x==='string')S.news[i]=x.split(o).join(n);else if(x&&x.t)x.t=String(x.t).split(o).join(n)});(S.arts||[]).slice(0,2).forEach(x=>{if(x&&x.head)x.head=x.head.split(o).join(n);if(x&&x.body)x.body=String(x.body).split(o).join(n)})}catch(e){}return String(r||'').split(o).join(n)}}catch(e){}return r}}
+
 </script>
 
 <script>
