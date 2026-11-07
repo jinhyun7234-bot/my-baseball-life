@@ -7736,7 +7736,7 @@ const HOF_CAT={B:[['wwar','명예의 전당 점수',1],['war','통산 WAR (1군)
   P:[['wwar','명예의 전당 점수',1],['war','통산 WAR (1군)',1],['w','승',0],['sv','세이브',0],['hld','홀드',0],['k','탈삼진',0],['era','평균자책점 (1000이닝+)',2]]};
 const HOF_COLS='career_id,nick,owner,team,pos,kind,prole,hof,years,end_y,war,wwar,kbo_war,mlb_war,npb_war,minor_war,g,h,hr,rbi,sb,avg,ops,pa,w,l,sv,hld,k,ip,era,rings,mvps';
 function hofCfg(){try{const c=typeof window!=='undefined'&&window.HOF_CFG;return c&&c.url&&c.key&&!/YOUR_/.test(c.url+c.key)?c:null}catch(e){return null}}
-async function hofReq(path,opt){const c=hofCfg();if(!c)throw new Error('nocfg');const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),9000);
+async function hofReq(path,opt){const c=hofCfg();if(!c)throw new Error('nocfg');const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),(opt&&opt.method==='POST')?20000:12000);
   try{const r=await fetch(c.url.replace(/\/$/,'')+'/rest/v1/'+path,Object.assign({signal:ctl.signal},opt||{},{headers:Object.assign({apikey:c.key},/^sb_/.test(c.key)?{}:{Authorization:'Bearer '+c.key},(opt&&opt.headers)||{})}));return r}finally{clearTimeout(tm)}}
 /* 은퇴 기록 만들기 */
 /* 명예의 전당 점수(가중 WAR): 리그 수준 반영 — MLB ×2.0 · NPB ×1.3 · KBO ×1.0 · 마이너 AAA ×0.5 · AA 이하 ×0.3 · 퓨처스(2군)·고교·대학 제외 */
@@ -7799,7 +7799,7 @@ if(typeof document!=='undefined'){document.addEventListener('input',e=>{if(e.tar
     else if(k==='tab')ui.hof.tab=b.getAttribute('data-v');
     else if(k==='cat'){ui.hof.cat=ui.hof.cat||{};ui.hof.cat[b.getAttribute('data-k')]=b.getAttribute('data-v')}
     else if(k==='refresh'){Object.keys(HOFD).forEach(x=>delete HOFD[x])}
-    else if(k==='submit'){if(ui.hofBusy)return;ui.hofBusy=1;ui.hofErr='';render();try{const r=await hofSubmit(ui.hofOwner);Object.keys(HOFD).forEach(x=>delete HOFD[x]);try{toast(r==='dup'?'이미 올린 커리어예요':'🏆 명예의 전당에 기록을 올렸어요!')}catch(x){}}catch(err){ui.hofErr='기록을 올리지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.'}ui.hofBusy=0}
+    else if(k==='submit'){if(ui.hofBusy)return;ui.hofBusy=1;ui.hofErr='';render();try{const r=await hofSubmit(ui.hofOwner);Object.keys(HOFD).forEach(x=>delete HOFD[x]);try{toast(r==='dup'?'이미 올린 커리어예요':'🏆 명예의 전당에 기록을 올렸어요!')}catch(x){}}catch(err){const m=String(err&&err.message||err||'');ui.hofErr=/^http 4/.test(m)?`기록을 올리지 못했어요. 서버가 이 기록을 받지 않았어요. (${m.replace('http ','오류 ')}${err&&err.why?' · '+err.why:''})`:/^http 5/.test(m)?`명예의 전당 서버에 잠시 문제가 있어요. 조금 뒤에 다시 시도해 주세요. (${m.replace('http ','오류 ')})`:/abort/i.test(m)||(err&&err.name==='AbortError')?'서버 응답이 너무 늦어요. 잠시 뒤 다시 시도해 주세요. (시간 초과)':`기록을 올리지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.${m&&!/fetch|network/i.test(m)?' ('+m.slice(0,60)+')':''}`;try{console.warn('[HOF] submit failed',err)}catch(x){}}ui.hofBusy=0}
     render()},true)}
 /* 웹사이트 버전에선 claude.ai 계정 저장 안내 숨김 */
 {const _vs20=vSlots;vSlots=function(){let h=_vs20();try{if(typeof window!=='undefined'&&window.WEB_BUILD)h=h.replace(/<div class="sl-h" style="margin-top:12px"><span>☁️ 계정 저장[\s\S]*<\/div>$/,'</div>')}catch(e){}return h}}
@@ -7938,9 +7938,9 @@ function hofSan(v,d){d=d||0;if(d>6)return null;if(typeof v==='string')return v.r
 function hofExtra(){const D=cardData();D.teams=(D.teams||[]).map(t=>({name:t.name,kind:t.kind,y1:t.y1,n:t.n}));let sl=[];try{sl=recapSlides().map(s=>hofSan(s))}catch(e){}
   const L=ME.look||{};return{v:1,D:hofSan(D),look:{nh:L.nh!=null?L.nh:null,body:ME.body||'표준'},sl}}
 async function hofPost(rec){return hofReq('hof_records',{method:'POST',headers:{'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(rec)})}
-async function hofSend(rec){let r=await hofPost(rec);if(r.status===400&&rec.extra){const x=rec.extra;delete rec.extra;r=await hofPost(rec);rec.extra=x}return r}
+async function hofSend(rec){const post=async()=>{try{return await hofPost(rec)}catch(e){await new Promise(z=>setTimeout(z,1200));return hofPost(rec)}};let r=await post();if(r.status>=400&&r.status!==409&&rec.extra){const x=rec.extra;delete rec.extra;r=await post();rec.extra=x}if(!r.ok&&r.status!==409){try{const j=await r.clone().json();r._why=String(j.message||j.code||'').slice(0,80)}catch(e){}}return r}
 hofSubmit=async function(owner){const rec=hofRecord(owner);try{rec.extra=hofExtra()}catch(e){}save();const r=await hofSend(rec);
-  if(r.status===409){S.hofSent=S.cid;save();return'dup'}if(!r.ok)throw new Error('http '+r.status);S.hofSent=S.cid;save();return'ok'};
+  if(r.status===409){S.hofSent=S.cid;save();return'dup'}if(!r.ok){const e=new Error('http '+r.status);e.why=r._why||'';throw e}S.hofSent=S.cid;save();return'ok'};
 /* 은퇴한 커리어 슬롯을 지우면: 아직 안 올렸으면 자동으로 명예의 전당에 올려서 남김 */
 function hofSubmitSnap(snap){if(!hofCfg())return;const kS=S,kM=ME;let rec=null;try{S=snap;ME=snap.me;rec=hofRecord(null);try{rec.extra=hofExtra()}catch(e){}}catch(e){rec=null}finally{S=kS;ME=kM}
   if(rec)hofSend(rec).then(()=>{Object.keys(HOFD).forEach(x=>delete HOFD[x])}).catch(()=>{})}
