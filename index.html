@@ -10089,6 +10089,15 @@ function drScoutLines(good){try{const F=S._drFit;if(!F)return[];const pn=F.P?(F.
     if(hi[1]>=F.base+14)L.push(`${jo(hn,'은','는')} 진짜 좋은데 ${ln} 때문에 저평가된 케이스`);}
   else{if(hi[1]>=F.base+12)L.push(`${pn} ${hn} 툴이 확실하니까 상위 지명 받은 거지`,`${hn} 하나만 봐도 스카우트들이 줄 설 만했다`,`${pn}한테 필요한 ${jo(hn,'을','를')} 제대로 갖췄네`,`이 ${hn}이면 프로에서도 바로 통한다`,`스카우트 리포트 ${hn} 항목은 만점 받았을 듯`);
     if(lo[1]<F.base+6)L.push(`${jo(ln,'만','만')} 보완하면 진짜 완성형 ${pn}`);}
+  try{const lv=S.stage==='univ'?'univ':'hs',sn=lv==='univ'?'대학':'고교',b=blankB(),p=blankP();S.rows.filter(r=>r.lv===lv).forEach(r=>{addTo(b,r.b);addTo(p,r.p)});
+    let st='',st2='',hiS=false,loS=false;if(F.P){if(p.outs>=30){const ip=p.outs/3,e=eraN(p),k9=p.K*9/ip;st=`ERA ${e.toFixed(2)}`;st2=`${Math.round(ip)}이닝 ${p.K}삼진`;hiS=e<=2.3||(e<=2.8&&k9>=11);loS=e>=4.2}}
+    else if(b.PA>=40){const op=opsN(b),os=`OPS ${op.toFixed(3).replace(/^0/,'')}`;hiS=op>=.98||b.HR>=12;loS=op<.78&&b.HR<8;st=(op<.98&&b.HR>=12)?`홈런 ${b.HR}개`:os;st2=b.HR>=10?`홈런 ${b.HR}개`:os}
+    const wins=lv==='hs'?(S.hsWins||0):0;
+    if(st){if(good&&hiS)L.push(`${sn} 때 ${st} 찍은 걸 스카우트들이 그냥 넘길 리가 없지`,`툴도 툴인데 ${sn} 성적이 워낙 압도적이었음`,`${sn} 무대에서 ${st2}${F.P?' 기록':''}이면 말 다 했지`.replace(/개이면/,'개면'),`${st}… 이건 숫자가 증명한 상위 지명`);
+      else if(good&&loS)L.push(`${sn} 성적은 평범했는데 툴 보고 뽑은 거다`,`${sn} 기록만 보면 의외의 상위 지명이긴 함`,`${st} 성적으로 이 순번이면 스카우트들이 몸을 본 거지`);
+      else if(!good&&hiS)L.push(`${sn} 때 ${st} 기록하고도 이 순번은 좀 억울하겠다`,`성적은 진짜 좋았는데 툴에서 물음표 붙은 듯`,`${sn} 기록은 상위권이었는데 왜 이렇게 밀렸냐`);
+      else if(!good&&loS)L.push(`${sn} 성적도 아쉬웠으니 순번 밀린 건 어쩔 수 없음`,`${sn} 때 ${st} 정도면 스카우트 눈에 잘 안 띄지`,`성적으로 어필을 못 한 게 컸다`);}
+    if(good&&wins>=1)L.push(`${sn} 우승 이끈 경력이 순번을 끌어올렸다`,`큰 경기 경험 있는 선수라 스카우트들이 좋아했을 듯`);}catch(e){}
   return L.map(josaFix)}catch(e){return[]}}
 {const _cDr=comments;comments=function(tone,x){let out=_cDr(tone,x);try{if(tone!=='draft'||!Array.isArray(out)||!S._drFit)return out;const rd=(x&&x.rd)||5,good=rd<=2,bad=rd>=4;if(!good&&!bad)return out;
   const L=drScoutLines(good).filter(t=>!seenHas(t));if(!L.length)return out;const n=Math.min(L.length,R()<.4?2:1);for(let i=0;i<n;i++){const k=Math.floor(R()*L.length),t=L.splice(k,1)[0];seenAdd(t);out.splice(Math.min(out.length,1+i*2),0,mkC(t,[],{}))}}catch(e){}return out}}
