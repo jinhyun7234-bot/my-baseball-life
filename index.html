@@ -6368,10 +6368,11 @@ function opsTier(o,pos){const a=o-(OPSADJ[pos]||0);return a>=1?6:a>=.95?5:a>=.9?
 const OPST=['아쉬운 수준','평균 아래','무난한 수준','평균 이상 수준급','확실히 잘하는 편','아주 잘하는 편','MVP급'];
 function yrDW(y){return S.rows.filter(r=>r.y===y&&r.b&&r.b.PA&&PRO.includes(r.lv)).reduce((s,r)=>{const v=bWARsplit(r.b,r.lv).d;return s+(isFinite(v)?v:0)},0)}
 function carDW(){return S.rows.filter(r=>r.b&&r.b.PA&&PRO.includes(r.lv)).reduce((s,r)=>{const v=bWARsplit(r.b,r.lv).d;return s+(isFinite(v)?v:0)},0)}
-function defEval(){if(isP()||!S.pro)return null;const d=yrDW(S.y),c=carDW(),pn=POS[ME.pos]||'수비수',f=v=>(Math.abs(v)<.05?'0.0':(v>0?'+':'')+v.toFixed(1));
+function evY(){try{const pa=S.rows.filter(r=>r.y===S.y&&r.b&&PRO.includes(r.lv)).reduce((a,r)=>a+(r.b.PA||0),0);return pa>=30?S.y:S.y-1}catch(e){return S.y}}
+function defEval(){if(isP()||!S.pro)return null;const d=yrDW(evY()),c=carDW(),pn=POS[ME.pos]||'수비수',f=v=>(Math.abs(v)<.05?'0.0':(v>0?'+':'')+v.toFixed(1));
   const t=d>=1.5?`리그 정상급 ${pn} 수비`:d>=.5?'수비로도 확실히 보탬':d>-.5?'수비는 평균 정도':d>-1.5?'수비가 아쉽다는 평가':'수비가 확실한 약점';
   const ct=proYears()>=4?(c<=-8?' · 통산으로 보면 수비는 사실상 포기 수준':c>=8?' · 통산으로도 손꼽히는 수비수':''):'';return{d,c,txt:`수비 dWAR ${f(d)} (통산 ${f(c)}) — ${t}${ct}`}}
-function batEval(){if(isP()||!S.pro)return null;const {b}=yearTot(S.y,[S.pro.league]);if(!b.PA||b.PA<150)return null;const o=opsN(b),t=opsTier(o,ME.pos),pn=POS[ME.pos]||'지명타자';
+function batEval(){if(isP()||!S.pro)return null;const {b}=yearTot(evY(),[S.pro.league]);if(!b.PA||b.PA<150)return null;const o=opsN(b),t=opsTier(o,ME.pos),pn=POS[ME.pos]||'지명타자';
   return{o,t,b,txt:`OPS ${ops(b)} — ${pn} 기준 ${OPST[t]}`}}
 /* 연봉·FA·재계약·트레이드·포스팅 이벤트에 수비 평가 한 줄 */
 {const _ms12=monthStep;monthStep=function(rep){_ms12(rep);try{if(isP()||S.stage!=='pro')return;const d=defEval();if(!d)return;S.queue.forEach(q=>{if(!q||q.type||q._dv||!q.text||!/연봉|FA|재계약|트레이드|포스팅|계약|이적|제안/.test((q.title||'')+q.text))return;q._dv=1;
@@ -6403,7 +6404,7 @@ function batEval(){if(isP()||!S.pro)return null;const {b}=yearTot(S.y,[S.pro.lea
       if(a.t<=2&&['1B','DH','LF','RF'].includes(pos))L.push(`${POS[pos]||'지명타자'}가 OPS ${o}면 솔직히 아쉬움 공격으로 먹고사는 자리인데`);
       if(a.t<=2&&['C','SS'].includes(pos)&&a.o>=.75)L.push(`${POS[pos]}라 이 정도 치면 충분함 수비가 메인이지`);
       const C=L.filter(t=>!seenHas(t));if(C.length){const t=pick(C);seenAdd(t);add.push(mkC(t,[pick(a.t>=3?['ㄹㅇ 인정','이 페이스 유지만 하자','올해 골글 가자']:['내년엔 더 잘하겠지','기대치가 높아서 그럼','그래도 꾸준히 나오는 게 어디냐'])],{up:ri(300,2400)}))}}
-    const d=defEval();if(d&&cmX('dwev'+S.y)){const f=v=>(Math.abs(v)<.05?'0.0':(v>0?'+':'')+v.toFixed(1)),L=d.d>=.8?[`${gn} 수비로만 dWAR ${f(d.d)} 수비 장인`,`방망이 안 맞아도 수비로 밥값 하는 ${gn}`,`${POS[ME.pos]} 수비는 ${gn}가 리그 원탑`]:d.d<=-.8?[`dWAR ${f(d.d)} 실화냐 수비 좀…`,`${gn} 방망이는 좋은데 수비가 다 까먹음`,`솔직히 ${gn}는 지명타자 가는 게 맞다`]:[`${gn} 올해 수비 dWAR ${f(d.d)} 딱 평균 정도`,`수비는 크게 플러스도 마이너스도 아님 무난함`,`${gn} 수비는 그냥 평균은 해줌`];
+    const d=evY()===S.y?defEval():null;if(d&&cmX('dwev'+S.y)){const f=v=>(Math.abs(v)<.05?'0.0':(v>0?'+':'')+v.toFixed(1)),L=d.d>=.8?[`${gn} 수비로만 dWAR ${f(d.d)} 수비 장인`,`방망이 안 맞아도 수비로 밥값 하는 ${gn}`,`${POS[ME.pos]} 수비는 ${gn}가 리그 원탑`]:d.d<=-.8?[`dWAR ${f(d.d)} 실화냐 수비 좀…`,`${gn} 방망이는 좋은데 수비가 다 까먹음`,`솔직히 ${gn}는 지명타자 가는 게 맞다`]:[`${gn} 올해 수비 dWAR ${f(d.d)} 딱 평균 정도`,`수비는 크게 플러스도 마이너스도 아님 무난함`,`${gn} 수비는 그냥 평균은 해줌`];
       if(d.c<=-8)L.push(`통산 dWAR ${f(d.c)}… 수비는 이제 포기해야 할 듯`,`${gn} 수비 통산 ${f(d.c)}면 그냥 1루나 지타 가자`);if(d.c>=8)L.push(`통산 dWAR ${f(d.c)} 수비 하나로 커리어 만든 선수`);
       const C=L.filter(t=>!seenHas(t));if(C.length){const t=pick(C);seenAdd(t);add.push(mkC(t,[pick(d.d>=.8?['수비는 진짜 인정','기록이 증명한다']:d.d<=-.8?['수비 훈련 좀 시켜라','타격으로 커버 중 ㅋㅋ']:['평균이면 충분하지 뭐','큰 실수만 없으면 됐다','수비는 그냥 무난무난'])],{up:ri(300,2000)}))}}}
   out.splice(Math.min(out.length,1),0,...add)}catch(e){}return out}}
@@ -7476,8 +7477,8 @@ function onClick(e){
     case'rcpo':ui.recap=0;break;
     case'budg':S.budget=d.v;save();break;
     case'autot':S.auto=S.auto||{};S.auto[d.k]=!S.auto[d.k];save();break;
-    case'tset':{const p=S.plan,v=d.v;if(d.s==='main'){if(p.sub===v)p.sub=p.main===v?null:p.main;p.main=v}else{if(p.main===v){toast('이미 메인 훈련이에요');break}p.sub=p.sub===v?null:v}ensurePlan();save();break}
-    case'tmenu':{const p=S.plan,v=d.v,slot=ui.tpick||'main';if(slot==='main'){if(p.main!==v){if(p.sub===v)p.sub=p.main;p.main=v}ui.tpick='sub'}else{if(p.main===v){toast('이미 메인 훈련이에요');break}p.sub=p.sub===v?null:v}ensurePlan();save();break}
+    case'tset':{const p=S.plan,v=d.v;if(d.s==='main'){if(p.sub===v)p.sub=p.main===v?null:p.main;p.main=v}else{if(p.main===v){if(p.sub&&p.sub!==v){const o=p.sub;p.sub=v;p.main=o;toast('메인·서브 훈련을 맞바꿨어요')}else{toast('메인으로 할 다른 훈련을 먼저 골라 주세요');break}}else p.sub=p.sub===v?null:v}ensurePlan();save();break}
+    case'tmenu':{const p=S.plan,v=d.v,slot=ui.tpick||'main';if(slot==='main'){if(p.main!==v){if(p.sub===v)p.sub=p.main;p.main=v}ui.tpick='sub'}else{if(p.main===v){if(p.sub&&p.sub!==v){const o=p.sub;p.sub=v;p.main=o;toast('메인·서브 훈련을 맞바꿨어요')}else{toast('메인으로 할 다른 훈련을 먼저 골라 주세요');break}}else p.sub=p.sub===v?null:v}ensurePlan();save();break}
     case'tcard':S.plan.useCard=!S.plan.useCard;ensurePlan();save();break;
     case'rseg':ui.rseg=d.v;ui.anim=true;break;
     case'lseg':ui.lseg=d.v;break;
