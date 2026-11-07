@@ -3646,7 +3646,7 @@ function drawCard(D){const W=1080,H=1440,cv=document.createElement('canvas');cv.
   /* 좌·우 큰 숫자 */
   const big=(v,X,lbl)=>{x.save();gr=x.createLinearGradient(0,190,0,330);gr.addColorStop(0,'#ffe58a');gr.addColorStop(1,'#e0a917');T(String(v),X,330,`800 172px ${FN}`,gr);x.restore();T(lbl,X,376,`800 30px ${FB}`,'#d9b44a','center',3)};
   big(D.peak,190,D.peakLbl||'PEAK OVR');T(D.pos,190,432,`800 40px ${FB}`,'#ffffff');T(D.hand,190,474,`500 28px ${FB}`,MUT);
-  big(D.mvp,890,'MVP');if(D.hof)T('명예의 전당',890,432,`800 34px ${FB}`,GOLD);if(D.retNo)T(`영구결번 No.${D.retNo.num}`,890,D.hof?474:432,`700 28px ${FB}`,'#ffffff');
+  {let tv=(D.tscore!=null?D.tscore:(typeof titleScore==='function'?titleScore():0))||0;tv=tv%1?(+tv).toFixed(1):String(tv);if(tv.length>=4){x.save();gr=x.createLinearGradient(0,190,0,330);gr.addColorStop(0,'#ffe58a');gr.addColorStop(1,'#e0a917');T(tv,890,330,`800 ${tv.length>=6?110:tv.length>=5?128:152}px ${FN}`,gr);x.restore();T('타이틀 점수',890,376,`800 30px ${FB}`,'#d9b44a','center',3)}else big(tv,890,'타이틀 점수')}if(D.hof)T('명예의 전당',890,432,`800 34px ${FB}`,GOLD);if(D.retNo)T(`영구결번 No.${D.retNo.num}`,890,D.hof?474:432,`700 28px ${FB}`,'#ffffff');
   /* 이름 */
   T(D.name,W/2,566,`400 80px ${FD}`,'#ffffff');
   T(`${D.seasons}시즌 · ${D.clubs}개 구단 · ${D.age}세 ${D.ret?'은퇴':'현역'}`,W/2,622,`500 32px ${FB}`,'#a9b8d2');
@@ -3663,8 +3663,8 @@ function drawCard(D){const W=1080,H=1440,cv=document.createElement('canvas');cv.
   D.big.forEach(([v,l],i)=>{const sv=Number(v).toLocaleString();let fs=124;x.font=`800 ${fs}px ${FN}`;while(x.measureText(sv).width>270&&fs>60){fs-=4;x.font=`800 ${fs}px ${FN}`}T(sv,cols[i],900+dy,`800 ${fs}px ${FN}`,'#ffffff');T(l,cols[i],948+dy,`700 30px ${FB}`,MUT)});
   D.sub.forEach(([v,l],i)=>{T(String(v),cols[i],1030+dy,`700 64px ${FN}`,'#ffffff');T(l,cols[i],1070+dy,`500 27px ${FB}`,MUT)});
   /* 필 */
-  x.font=`800 30px ${FB}`;const pw=D.pills.map(s=>x.measureText(s).width+56),tot=pw.reduce((a,b)=>a+b,0)+(pw.length-1)*18;let px0=W/2-tot/2;
-  D.pills.forEach((s,i)=>{rr(px0,1112+dy,pw[i],62,31);x.fillStyle='rgba(244,196,48,.10)';x.fill();x.lineWidth=3;x.strokeStyle='#c99a1e';x.stroke();T(s,px0+pw[i]/2,1154+dy,`800 30px ${FB}`,GOLD);px0+=pw[i]+18});
+  x.font=`800 30px ${FB}`;let pw=D.pills.map(s=>x.measureText(s).width+56),tot=pw.reduce((a,b)=>a+b,0)+(pw.length-1)*18;const pk=Math.min(1,(W-80)/tot),pf=Math.round(30*pk);if(pk<1){x.font=`800 ${pf}px ${FB}`;pw=D.pills.map(s=>x.measureText(s).width+Math.round(56*pk));tot=pw.reduce((a,b)=>a+b,0)+(pw.length-1)*Math.round(18*pk)}let px0=W/2-tot/2;
+  D.pills.forEach((s,i)=>{rr(px0,1112+dy,pw[i],62,31);x.fillStyle='rgba(244,196,48,.10)';x.fill();x.lineWidth=3;x.strokeStyle='#c99a1e';x.stroke();T(s,px0+pw[i]/2,1154+dy-(30-pf)/2,`800 ${pf}px ${FB}`,GOLD);px0+=pw[i]+Math.round(18*pk)});
   /* 구단 */
   let tm=D.teams.length?D.teams:[{name:D.stage,n:D.seasons||0}];const cs=tm.length>6?3:4,csp=tm.length>6?128:156;tm=tm.slice(0,7);const tw=tm.length*csp;
   tm.forEach((t,i)=>{const cx=W/2-tw/2+csp/2+i*csp;pxDraw(x,pxCrest(t.name),cx-9*cs,1206+dy,cs);T(`${t.n}시즌`,cx,1316+dy,`700 26px ${FB}`,'#a9b8d2')});
@@ -9191,7 +9191,7 @@ function hofScore(w){try{return hofParts(w).total}catch(e){return w}}
 /* 은퇴(커리어) 카드 오른쪽 위: 타이틀 개수 */
 {const _cd=cardData;cardData=function(){const D=_cd.apply(this,arguments);try{D.tscore=titleScore()}catch(e){}return D}}
 {const _dw=drawCard;drawCard=function(D){const cv=_dw(D);try{const x=cv.getContext('2d'),W=cv.width,FB='"Noto Sans KR","Apple SD Gothic Neo",sans-serif',FN='"Barlow Condensed","Arial Narrow",sans-serif';
-  const y=432+(D.hof?42:0)+(D.retNo?42:0);x.textAlign='center';x.textBaseline='alphabetic';x.font=`800 30px ${FB}`;x.fillStyle='#d9b44a';x.fillText(`타이틀 점수 ${(D.tscore||0)%1?(D.tscore||0).toFixed(1):(D.tscore||0)}`,890,y+(D.hof||D.retNo?6:0))}catch(e){}return cv}}
+  }catch(e){}return cv}}
 {const _cs=cardSig;cardSig=function(){return _cs()+'|t'+titleScore()}}
 
 /* 명예의 전당: 선발 이닝 비중만큼 기준선을 선발(105)↔불펜(74) 사이에서 비례 적용 (선발 WAR 쌓고 불펜으로 경기 수 채우는 꼼수 방지) */
