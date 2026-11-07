@@ -3619,7 +3619,7 @@ function cardData(){const pit=isP(),t=careerTot(PRO),b=t.b,p=t.p,ret=S.stage==='
   const pills=Object.entries(grp).sort((a,b)=>(b[0]==='MVP')-(a[0]==='MVP')||b[1]-a[1]).slice(0,3).map(([k,v])=>`${k} ${v}`);
   if(pills.length<3&&S.hist.allstar)pills.push(`올스타 ${S.hist.allstar}`);if(pills.length<3&&S.hist.nat)pills.push(`국가대표 ${S.hist.nat}`);
   const mvp=AWc.filter(a=>/정규시즌 MVP|리그 MVP/.test(a.n)).length;
-  const big=pit?[[p.G,'출전'],[p.W,'승'],[p.K,'탈삼진']]:[[b.G,'출전'],[b.H,'안타'],[b.HR,'홈런']];
+  const big=pit?[[p.G,'출전'],((p.SV||0)>=Math.max(80,p.W||0)&&(p.SV||0)>=(p.HLD||0))?[p.SV,'세이브']:((p.HLD||0)>=Math.max(80,p.W||0))?[p.HLD,'홀드']:[p.W,'승'],[p.K,'탈삼진']]:[[b.G,'출전'],[b.H,'안타'],[b.HR,'홈런']];
   const sub=pit?[[p.outs?era(p):'-','평균자책점'],[`${S.hist.rings||0}회`,'우승'],[`${pers.length}회`,'개인상']]:[[b.AB?avg(b):'-','통산 타율'],[`${S.hist.rings||0}회`,'우승'],[`${pers.length}회`,'개인상']];
   const ag=ret?S.ended.age:age();
   return{name:ME.name,pos:POS[ME.pos],hand:ME.hand,y0,y1,peak:Math.round(DV(Math.max(S.peakO||0,ovrE()))),mvp,seasons,clubs:teams.length,age:ag,ret:!!ret,hof:ret&&S.ended.hof,retNo:S.retNo,tro,pills:pills.slice(0,3),big,sub,teams,war:t.w,
@@ -7953,7 +7953,7 @@ function hofViewLoad(id){const key='v:'+id;if(HOFD[key]&&Date.now()-HOFD[key].t<
   (async()=>{let r=await hofReq(`hof_records?select=${HOF_COLS},extra&career_id=eq.${q}`);if(r.status===400)r=await hofReq(`hof_records?select=${HOF_COLS}&career_id=eq.${q}`);if(!r.ok)throw new Error('http '+r.status);const d=await r.json();
     const row=d[0];if(!row)throw new Error('none');HOFD[key]={row,t:Date.now()};render();hofCardMake(key)})().catch(e=>{HOFD[key]={err:1,t:Date.now()};render()});return HOFD[key]}
 function hofRowD(r){const P=r.kind==='P',sea=r.years||0;return{name:r.nick,pos:HOF_PN[P?r.prole:r.pos]||'',hand:'',y0:(r.end_y||0)-Math.max(0,sea-1),y1:r.end_y,peak:Math.round(+(r.wwar??r.war)||0),peakLbl:'HOF 점수',mvp:r.mvps||0,seasons:sea,clubs:1,age:'-',ret:true,hof:!!r.hof,retNo:null,tro:[],pills:[],
-  big:P?[[r.g,'출전'],[r.w,'승'],[r.k,'탈삼진']]:[[r.g,'출전'],[r.h,'안타'],[r.hr,'홈런']],sub:P?[[r.era!=null?(+r.era).toFixed(2):'-','평균자책점'],[`${r.rings||0}회`,'우승'],[`${r.mvps||0}회`,'MVP']]:[[(+r.avg||0).toFixed(3).replace(/^0/,''),'통산 타율'],[`${r.rings||0}회`,'우승'],[`${r.mvps||0}회`,'MVP']],
+  big:P?[[r.g,'출전'],((r.sv||0)>=Math.max(80,r.w||0)&&(r.sv||0)>=(r.hld||0))?[r.sv,'세이브']:((r.hld||0)>=Math.max(80,r.w||0))?[r.hld,'홀드']:[r.w,'승'],[r.k,'탈삼진']]:[[r.g,'출전'],[r.h,'안타'],[r.hr,'홈런']],sub:P?[[r.era!=null?(+r.era).toFixed(2):'-','평균자책점'],[`${r.rings||0}회`,'우승'],[`${r.mvps||0}회`,'MVP']]:[[(+r.avg||0).toFixed(3).replace(/^0/,''),'통산 타율'],[`${r.rings||0}회`,'우승'],[`${r.mvps||0}회`,'MVP']],
   teams:[{name:r.team||'',n:sea}],war:+r.war||0,av:{c1:'#3182f6',c2:'#1b64da',num:'',age:'-'},stage:r.team||''}}
 async function hofCardMake(key){const H=HOFD[key];if(!H||!H.row||H.card)return;const r=H.row,x=r.extra&&r.extra.D?r.extra:null;
   try{const D=x?JSON.parse(JSON.stringify(x.D)):hofRowD(r);D.teams=D.teams||[];D.tro=D.tro||[];D.pills=D.pills||[];D.av=D.av||{c1:'#3182f6',c2:'#1b64da'};
@@ -8463,7 +8463,7 @@ recapSlides=function(){const e=S.ended||{},P=isP(),t=careerTot(PRO),b=t.b,p=t.p,
   const cnt=n=>S.awards.filter(a=>a.n.includes(n)).length,fa=(S.faList||[]).slice().sort((a,b)=>b.tot-a.tot)[0];
   sl.push({th:'green',ey:'YOUR CAREER WRAPPED',big:ME.name,sub:`${first}–${e.y||S.y} · ${yrs}년의 야구 인생`,av:1,foot:'화면을 눌러 넘겨보세요'});
   sl.push({th:'pink',ey:'시작',big:SCHOOLS[S.school]?SCHOOLS[S.school].n:'',sub:`${first}년, 16살 고교 1학년.\n${dr?`${dr.y+1} 드래프트 ${dr.rd}라운드 전체 ${dr.pick}순위.`:S.pro&&S.pro.dev?'아무도 부르지 않았지만, 육성선수로 다시 시작했다.':S.univ?`${S.univ}를 거쳐 프로에 왔다.`:'프로의 문은 끝내 열리지 않았다.'}`});
-  sl.push({th:'blue',ey:'숫자로 보는 커리어',nums:P?[[p.G,'경기'],[p.W,'승'],[p.K,'탈삼진'],[p.SV,'세이브'],[p.outs?+(p.R*27/p.outs).toFixed(2):0,'평균자책'],[+t.w.toFixed(1),'WAR']]:[[b.G,'경기'],[b.H,'안타'],[b.HR,'홈런'],[b.RBI,'타점'],[b.AB?+(b.H/b.AB).toFixed(3):0,'타율'],[+t.w.toFixed(1),'WAR']]});
+  sl.push({th:'blue',ey:'숫자로 보는 커리어',nums:P?[[p.G,'경기'],[p.W,'승'],[p.K,'탈삼진'],((p.HLD||0)>(p.SV||0)?[p.HLD,'홀드']:[p.SV,'세이브']),[p.outs?+(p.R*27/p.outs).toFixed(2):0,'평균자책'],[+t.w.toFixed(1),'WAR']]:[[b.G,'경기'],[b.H,'안타'],[b.HR,'홈런'],[b.RBI,'타점'],[b.AB?+(b.H/b.AB).toFixed(3):0,'타율'],[+t.w.toFixed(1),'WAR']]});
   if(ys.length>=2)sl.push({th:'ink',ey:'시즌별 WAR',sub:`${ys.length}시즌의 기록 · 가장 높은 막대가 커리어 하이`,chart:{type:'bar',pts:ys.map(s=>[String(s.y).slice(2),s.w,s.lv,s.y,P?(s.era!=null?'ERA '+s.era.toFixed(2):''):(s.ops!=null?'OPS '+s.ops.toFixed(3).replace(/^0/,''):'')]),hi:best?String(best.y).slice(2):''}});
   const ln=ys.filter(s=>P?s.era!=null:s.ops!=null);if(ln.length>=3)sl.push({th:'teal',ey:P?'시즌별 평균자책':'시즌별 OPS',sub:P?'낮을수록 좋아요':'높을수록 좋아요',chart:{type:'line',inv:P?1:0,lbl:P?'ERA':'OPS',pts:ln.map(s=>[String(s.y).slice(2),P?s.era:s.ops,s.lv,s.y,s.w])}});
   if(best&&best.w>0)sl.push({th:'sun',ey:'커리어 하이',big:`${best.y}`,sub:`${[...new Set(S.rows.filter(r=>r.y===best.y&&PRO.includes(r.lv)).map(r=>r.team))].join(' · ')}\n${lineFor(S.rows.filter(r=>r.y===best.y&&PRO.includes(r.lv)))}\n그해, 리그는 당신의 것이었다.`});
