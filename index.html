@@ -9968,7 +9968,7 @@ function pArsLines(kind){const g=perfGrade(),pro=S.stage==='pro'&&S.pro,rookie=!
   if(tier==='mid')return['볼배합은 좋은데 구종 하나만 더 익히면 훨씬 나을 듯','머리 쓰는 건 수준급 무기 하나만 추가하자','수 싸움은 되니까 결정구 하나만 더 있으면 됨',two<=2?'구종이 두 개밖에 없는 게 아쉽다 하나만 더':'제대로 된 구종 하나만 더 생기면 좋겠다'];
   const h=['구종 하나만 더 생기면 진짜 에이스각','지금도 잘하는데 새 구종 장착하면 더 무서워질 듯','이 볼배합에 무기 하나 더 붙으면 답이 없다','결정구 하나만 추가하면 한 단계 위로 간다'];
   if(kbo)h.push('구종 하나 더 익히면 메이저 스카우트들 눈 돌아간다');else if(mlbExp)h.push('구종 하나만 더 있으면 리그 정상급');return h}
-{const _cH=comments;comments=function(tone,x){let out=_cH(tone,x);try{if(!Array.isArray(out)||!isP()||(x&&x.intl))return out;if(x&&(x.ps||x.big)||/^ps|champ|title|award|injury|inj|comeback|retire|hof|record|love|wed|baby|kid|mil|draft|scandal/i.test(String(tone)))return out;const k=pArsHint();if(!k)return out;
+{const _cH=comments;comments=function(tone,x){let out=_cH(tone,x);try{if(!Array.isArray(out)||!isP()||(x&&x.intl))return out;if(x&&(x.ps||x.big)||/^ps|champ|title|award|injury|inj|comeback|retire|hof|record|love|wed|baby|kid|mil|draft|scandal|^ring$|^ws$|^gold$|medal|legend|^mvp/i.test(String(tone)))return out;const k=pArsHint();if(!k)return out;
   const key=S.y+':'+S.phase+':'+k;if(S._pHintK===key||R()>=.22)return out;const L=pArsLines(k).map(josaFix).filter(t=>!seenHas(t));if(!L.length)return out;const t=pick(L);seenAdd(t);S._pHintK=key;
   out.splice(Math.min(out.length,ri(1,3)),0,mkC(t,[],{up:Math.round(ri(150,900)*(1+((S.rel&&S.rel.fame)||0)/40))}))}catch(e){}return out}}
 
@@ -10036,7 +10036,7 @@ function obpLines(x){try{if(isP()||S.stage!=='pro'||!S.pro)return null;const lg=
   if((g==='good'||g==='elite')){if(!mlbExp)L.push('이 출루율이면 메이저 스카우트들이 좋아할 유형','세이버 좋아하는 메이저 구단들이 탐낼 타자');else L.push('메이저에서도 출루율 이 정도면 리그 정상급','현지 분석가들이 좋아할 만한 타석 접근법')}
   if(S.order===1)L.push('1번 타자는 원래 이런 애가 해야 됨','출루율 높은 리드오프 있으면 그 팀 득점력 확 달라짐');else L.push('타순 어디 놔도 앞에서 판 깔아주는 타입');
   return L}catch(e){return null}}
-{const _cOB=comments;comments=function(tone,x){let out=_cOB(tone,x);try{if(!Array.isArray(out)||isP()||(x&&x.intl))return out;if(x&&(x.ps||x.big)||/^ps|champ|title|award|injury|inj|comeback|retire|hof|record|love|wed|baby|kid|mil|draft|scandal/i.test(String(tone)))return out;if(['abroad','contract','faBig','faFair','salary','mlbBig','milback','trade','love','retire','scandal','injury'].includes(tone))return out;
+{const _cOB=comments;comments=function(tone,x){let out=_cOB(tone,x);try{if(!Array.isArray(out)||isP()||(x&&x.intl))return out;if(x&&(x.ps||x.big)||/^ps|champ|title|award|injury|inj|comeback|retire|hof|record|love|wed|baby|kid|mil|draft|scandal|^ring$|^ws$|^gold$|medal|legend|^mvp/i.test(String(tone)))return out;if(['abroad','contract','faBig','faFair','salary','mlbBig','milback','trade','love','retire','scandal','injury'].includes(tone))return out;
   if(out.some(c=>/눈야구|볼넷 골라|선구안|출루 머신|출루율/.test(c&&c.t||'')))return out;const key=S.y+':'+S.phase+(x&&x.gPA!=null?':g':':s');if(S._obpK===key||R()>=.25)return out;
   const L=(obpLines(x)||[]).map(josaFix).filter(t=>!seenHas(t));if(!L.length)return out;const t=pick(L);seenAdd(t);S._obpK=key;out.splice(Math.min(out.length,ri(1,3)),0,mkC(t,[],{}))}catch(e){}return out}}
 
