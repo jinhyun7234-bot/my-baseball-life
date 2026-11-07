@@ -2510,7 +2510,7 @@ function vTrainPlan(){ensurePlan();const p=S.plan,M=menus(),al=p.alloc,months=PM
     <div class="row small"><span class="sp">${tipB('fcast','예상 피로')}</span><span class="chip ${lv[1]}">${lv[0]}</span></div>
     <div class="tiny muted">훈련 효율 ×${effM.toFixed(2)} (워크에식·장비) · ${S.phase===0?'캠프는 경기가 없어 훈련 효과가 커요':'시즌 중엔 경기 피로가 쌓여요'}</div></div>`}
 
-function trainShield(k){const p=S.plan;if(!p||ME.inj)return 1;if(p.useCard&&p.card&&p.card.w[k])return 0;const M=menus();for(const id of [p.main,p.sub])if(id&&M[id]&&M[id].w[k])return id===p.main?.6:.8;return 1}
+function trainShield(k){const p=S.plan;if(!p||ME.inj)return 1;if(p.useCard&&p.card&&p.card.w[k])return .12;const M=menus();for(const id of [p.main,p.sub])if(id&&M[id]&&M[id].w[k])return id===p.main?.67:.85;return 1}
 
 /* ===================== 상황 인식 댓글 & 중복 없는 댓글 ===================== */
 const PARK={6:{s:1,n:'라팍'},3:{s:1,n:'문학'},0:{b:1,n:'잠실'},1:{b:1,n:'잠실'},8:{n:'사직'},2:{n:'고척'},5:{n:'대전'},7:{n:'챔필'},9:{n:'창원'},4:{n:'수원'}};
@@ -8035,7 +8035,7 @@ function faScaleOffer(c,a){try{if(!c||c.act!=='fa'||!c.arg||!c.arg.tot)return c;
    - 선구안: 표시 60부터 보호 시작, 90 이상이면 하락폭 70% 감소 · 선구안 좋은 타자는 컨택 하락도 최대 30% 감소
    - 볼배합: 원래 안 떨어지는 대신, 좋은 투수는 제구 하락 최대 50% · 구위 하락 최대 25% 감소 */
 {const _ag=agingTick;agingTick=function(){const b={...ME.r};_ag();try{const sh=v=>Math.max(0,Math.min(1,(DV(v)-60)/30));const keep=(k,f)=>{if(k in ME.r&&b[k]!=null&&ME.r[k]<b[k])ME.r[k]+=(b[k]-ME.r[k])*f};
-  if(isP()){const s=sh(b.pcl||45);keep('ctl',.5*s);keep('stf',.25*s)}else{const s=sh(b.eye);keep('eye',.7*s);keep('con',.3*s)}}catch(e){}}}
+  if(isP()){const s=sh(b.pcl||45);keep('ctl',.42*s);keep('stf',.2*s)}else{const s=sh(b.eye);keep('eye',.6*s);keep('con',.25*s)}}catch(e){}}}
 /* 피로 이벤트: 선배 심부름·고참 군기는 저연차(28세 이하·프로 6년차 이하)만
    31세 이상 고참은 반대로 '후배에게 시킬까' 이벤트 (시키면 피로↓ 팀 분위기↓ / 직접 하면 피로↑ 분위기↑) */
 FEV.forEach(e=>{if(e.t==='선배의 심부름'||e.t==='라커룸 군기')e.jr=1});
