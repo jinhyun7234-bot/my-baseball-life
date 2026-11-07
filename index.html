@@ -10077,14 +10077,14 @@ hofInfoBox=function(){return`<div class="hof-note" style="text-align:left;line-h
 <span class="muted">통산 WAR·은퇴 카드·기록 화면에는 모든 WAR가 그대로 반영돼요.</span></div>`};
 
 /* ===== 드래프트: 포지션 핵심 툴 반영 + 스카우트 평가 댓글 ===== */
-const POSFIT={C:[['arm',.5],['fld',.5]],'1B':[['pow',.6],['con',.4]],'2B':[['fld',.4],['rng',.35],['con',.25]],'3B':[['arm',.35],['fld',.3],['pow',.35]],SS:[['rng',.4],['fld',.35],['arm',.25]],LF:[['pow',.55],['con',.45]],CF:[['rng',.45],['spd',.35],['arm',.2]],RF:[['arm',.45],['pow',.55]],DH:[['pow',.6],['con',.4]]};
-const FITN={arm:'어깨',fld:'타구처리',rng:'수비범위',spd:'주력',pow:'파워',con:'컨택',velo:'구속',stf:'구위',ctl:'제구',sta:'체력',brk:'변화구'};
+const POSFIT={C:[['arm',.35],['fld',.3],['con',.2],['eye',.15]],'1B':[['pow',.4],['con',.3],['eye',.2],['fld',.1]],'2B':[['fld',.3],['rng',.3],['con',.25],['spd',.15]],'3B':[['arm',.3],['pow',.3],['fld',.25],['con',.15]],SS:[['rng',.3],['fld',.3],['arm',.25],['con',.15]],LF:[['pow',.35],['con',.3],['eye',.2],['spd',.15]],CF:[['rng',.35],['spd',.3],['arm',.2],['con',.15]],RF:[['pow',.35],['arm',.3],['con',.2],['rng',.15]],DH:[['pow',.4],['con',.3],['eye',.2],['vis',.1]]};
+const FITN={eye:'선구안',vis:'동체시력',arm:'어깨',fld:'타구처리',rng:'수비범위',spd:'주력',pow:'파워',con:'컨택',velo:'구속',stf:'구위',ctl:'제구',sta:'체력',brk:'변화구'};
 function posFitInfo(){try{let ks;if(isP()){const best=Math.max(...PITCHES.filter(k=>k!=='FB').map(k=>ME.pt[k]||0));const v={velo:DV(E('velo')),stf:DV(E('stf')),ctl:DV(E('ctl')),sta:DV(E('sta')),brk:best>0?DV(best):30};
-   ks=ME.pos==='SP'?[['sta',.3],['ctl',.25],['velo',.2],['brk',.25]]:[['velo',.4],['stf',.3],['brk',.3]];const sc=ks.reduce((a,[k,w])=>a+v[k]*w,0);return{sc,ks:ks.map(([k])=>[k,v[k]])}}
+   ks=ME.pos==='SP'?[['sta',.3],['ctl',.25],['brk',.25],['velo',.2]]:[['velo',.35],['stf',.3],['brk',.25],['ctl',.1]];const sc=ks.reduce((a,[k,w])=>a+v[k]*w,0);return{sc,ks:ks.map(([k])=>[k,v[k]])}}
   ks=POSFIT[ME.pos]||POSFIT.DH;const vv=ks.map(([k,w])=>[k,DV(E(k)),w]);return{sc:vv.reduce((a,x)=>a+x[1]*x[2],0),ks:vv.map(x=>[x[0],x[1]])}}catch(e){return null}}
 {const _dT=draftTool;draftTool=function(){let v=_dT();try{const f=posFitInfo();if(f){const lvL=S.stage==='univ'?56:52;v+=cl((f.sc-lvL)*.14,-4,4);S._drFit={pos:ME.pos,P:isP(),sc:f.sc,ks:f.ks,base:lvL}}}catch(e){}return v}}
 function drScoutLines(good){try{const F=S._drFit;if(!F)return[];const pn=F.P?(F.pos==='SP'?'선발':'불펜'):({C:'포수','1B':'1루수','2B':'2루수','3B':'3루수',SS:'유격수',LF:'좌익수',CF:'중견수',RF:'우익수',DH:'지명타자'}[F.pos]||'야수');
-  const srt=F.ks.slice().sort((a,b)=>a[1]-b[1]),lo=srt[0],hi=srt[srt.length-1],ln=FITN[lo[0]],hn=FITN[hi[0]];const L=[];
+  const srt=F.ks.slice(0,3).sort((a,b)=>a[1]-b[1]),lo=srt[0],hi=srt[srt.length-1],ln=FITN[lo[0]],hn=FITN[hi[0]];const L=[];
   if(!good){if(lo[1]<F.base+8)L.push(`${pn}치고 ${jo(ln,'이','가')} 별로라서 스카우트들이 고평가 안 한 듯`,`${pn}인데 ${ln} 툴이 아쉬우니까 순번이 밀렸지`,`${ln}만 좀 됐어도 몇 라운드는 더 빨리 뽑혔을 텐데`,`스카우트 리포트에 ${ln} 물음표 붙었을 듯`,`${pn}한테 ${jo(ln,'은','는')} 기본인데 거기서 감점 먹은 듯`,`프로 가서 ${ln}부터 키워야 산다`);
     if(hi[1]>=F.base+14)L.push(`${jo(hn,'은','는')} 진짜 좋은데 ${ln} 때문에 저평가된 케이스`);}
   else{if(hi[1]>=F.base+12)L.push(`${pn} ${hn} 툴이 확실하니까 상위 지명 받은 거지`,`${hn} 하나만 봐도 스카우트들이 줄 설 만했다`,`${pn}한테 필요한 ${jo(hn,'을','를')} 제대로 갖췄네`,`이 ${hn}이면 프로에서도 바로 통한다`,`스카우트 리포트 ${hn} 항목은 만점 받았을 듯`);
