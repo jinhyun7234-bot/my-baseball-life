@@ -1407,6 +1407,8 @@ function newStreaks(){S.str={hit:0,hr:0,ob:0,zero:0,win:0,sv:0,hitMax:0,hrMax:0,
 /* 표시용 20~100 스케일 (내부 엔진은 20~80) */
 function DV(v){return 20+(v-20)*4/3}
 
+function ctlSyn(){try{if(!isP())return 0;const c=DV(eff('ctl')),q=DV(eff('pcl')||45);return Math.max(0,Math.min(4.5,(Math.min(c,q)-58)*.14))}catch(e){return 0}}
+
 /* ===================== ROLE & LEVEL ===================== */
 function decideRole(){
   const o=selScore();
@@ -1491,7 +1493,7 @@ function pitchGame(L,type){const pv=x=>{const d=x-L-pitB(L);return d>16?16*PITC+
   let outs=0,pc=0,H=0,Rn=0,BB=0,K=0,HR=0,b=[0,0,0];
   const lim=type==='SP'?68-(S.stage==='hs'?4:0)+E('sta')*.55+(sk('eater')?9:0)-Math.max(0,ME.fat-50)*.4:(type==='MR'?34:24)+(S._multi?16:0)+E('sta')*.1;
   const maxO=type==='SP'?27:type==='MR'?(R()<cl(.4+relQ()*2.5+(E('sta')-50)*.006,.08,.7)?ri(4,6):3):(S._multi?ri(4,6):3);
-  const st=stuffC(eff)+roleAdj(type==='SP'?'SP':'RP'),ctl=eff('ctl'),stf=eff('stf'),velo=eff('velo'),men=ME.hid.men;
+  const st=stuffC(eff)+roleAdj(type==='SP'?'SP':'RP'),ctl=eff('ctl')+ctlSyn(),stf=eff('stf'),velo=eff('velo'),men=ME.hid.men;
   while(outs<maxO){
     if(type==='SP'&&outs%3===0&&outs>0&&(pc>lim||Rn>=6||(Rn>=4&&pc>lim*.7)))break;
     if(type==='SP'&&(pc>lim+18||Rn>=6))break;
@@ -1842,7 +1844,7 @@ function meBatPA(pR,risp){let con=eff('con')+(sk('clutch')?4:0)+(ME.hid.men-50)*
   {const sv=DV(eff('spd'));if(sv>=70&&R()<.012+(sv-70)*.0008){if(R()<cl(.4+(sv-70)*.012,.4,.75)){S._lastMeSpd=1;S._bunt=1;return'1B'}return'GO'}}
   const _hit=cl(.325+dvc(con)*.00325+Math.min(8,dv(eff('spd')))*.0006+Math.min(15,Math.max(0,DV(eff('spd'))-60))*.00055+(sk('hitm')?.012:0),.18,.47),_hitNS=cl(.325+dvc(con)*.00325+(sk('hitm')?.012:0),.18,.47);if(R()<_hit){S._lastMeSpd=1;const hr=(_hitNS/_hit)*Math.pow(.325/_hitNS,.45)*1.04*cl(HRB0+(dvp(hrStat())>0?dvp(hrStat())*HRS1:dvp(hrStat())*HRS2)+Math.max(0,hrStat()-HRT)*HRS3,.012,.5)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1)*(DV(eff('spd'))>=70&&(DV(eff('con'))+DV(eff('pow')))/2<65?.93:1),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
   return pick(['GO','GO','FO','FO','LO'])}
-function mePitPA(bR,risp,tired){const L=bR,pv=x=>{const d=x-L-pitB(L);return d>16?16*PITC+(d-16)*PITC*.75:d>0?d*PITC:d},st=stuffC(eff)+roleAdj(S._pRole||'SP')-tired+(sk('clutch')?2:0)+(ME.hid.men-50)*.12,ctl=eff('ctl'),stf=eff('stf');
+function mePitPA(bR,risp,tired){const L=bR,pv=x=>{const d=x-L-pitB(L);return d>16?16*PITC+(d-16)*PITC*.75:d>0?d*PITC:d},st=stuffC(eff)+roleAdj(S._pRole||'SP')-tired+(sk('clutch')?2:0)+(ME.hid.men-50)*.12,ctl=eff('ctl')+ctlSyn(),stf=eff('stf');
   const PM=pitMods(S._pRole||'SP'),tto=PM.tto*Math.max(0,(S._pInn||1)-2),k=PM.k*cl(.185+pv(st-tto-PM.st)*.0036+pv(ctl)*.0012+(sk('kmach')?.025:0),.05,.42),bb=cl(.085-pv(ctl)*(pv(ctl)<0?.0025:.0021)+Math.max(0,60-DV(ctl))*.0007+tired*.002,.02,.2),r=R();
   if(r<k)return'K';if(r<k+bb+.008)return'BB';
   let h=cl(.325-pv(stf-tto*.8-PM.st)*.0018-pv(ctl)*.0007+tired*.003,.2,.42)*((S._pRole||'SP')==='SP'?1:.972);if(risp)h-=(ME.hid.men-50)*.0012+(sk('heart')?.02:0)-(sk('chicken')?.025:0);
@@ -8035,7 +8037,7 @@ function faScaleOffer(c,a){try{if(!c||c.act!=='fa'||!c.arg||!c.arg.tot)return c;
    - 선구안: 표시 60부터 보호 시작, 90 이상이면 하락폭 70% 감소 · 선구안 좋은 타자는 컨택 하락도 최대 30% 감소
    - 볼배합: 원래 안 떨어지는 대신, 좋은 투수는 제구 하락 최대 50% · 구위 하락 최대 25% 감소 */
 {const _ag=agingTick;agingTick=function(){const b={...ME.r};_ag();try{const sh=v=>Math.max(0,Math.min(1,(DV(v)-60)/30));const keep=(k,f)=>{if(k in ME.r&&b[k]!=null&&ME.r[k]<b[k])ME.r[k]+=(b[k]-ME.r[k])*f};
-  if(isP()){const s=sh(b.pcl||45);keep('ctl',.42*s);keep('stf',.2*s)}else{const s=sh(b.eye);keep('eye',.6*s);keep('con',.25*s)}}catch(e){}}}
+  if(isP()){const s=sh(b.pcl||45);keep('ctl',.48*s);keep('stf',.2*s)}else{const s=sh(b.eye);keep('eye',.6*s);keep('con',.25*s)}}catch(e){}}}
 /* 피로 이벤트: 선배 심부름·고참 군기는 저연차(28세 이하·프로 6년차 이하)만
    31세 이상 고참은 반대로 '후배에게 시킬까' 이벤트 (시키면 피로↓ 팀 분위기↓ / 직접 하면 피로↑ 분위기↑) */
 FEV.forEach(e=>{if(e.t==='선배의 심부름'||e.t==='라커룸 군기')e.jr=1});
