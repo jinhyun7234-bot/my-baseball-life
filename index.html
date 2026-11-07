@@ -3726,7 +3726,7 @@ const pwork=()=>S&&isP()&&(S.pwT||0)>0?2:1;
 {const _sp=simPit;simPit=function(role,tg,L,row,lvk){const w=pwork();return _sp(role,w===2?Math.round(tg*1.32):w===0?Math.round(tg*.88):tg,L,row,lvk)}}
 {const _pg=pitchGame;pitchGame=function(L,type){const w=pwork();if(w===1)return _pg(L,type);const st=ME.r.sta,add=w===2?(type==='SP'?18:8):(type==='SP'?-9:-4);ME.r.sta=st+(type==='SP'?add/.55:add/.1);try{return _pg(L,type)}finally{ME.r.sta=st}}}
 {const _ms=monthStep;monthStep=function(rep){const w=pwork(),f0=ME.fat,inj0=ME.inj;_ms(rep);if(!isP())return;const g=S.lastGame,played=g&&g.kind==='P'&&g.m&&g.m.G>0;
-  if(w===2&&played){const gain=g.m.outs/60;['stf','ctl'].forEach(k=>{if(ME.r[k]<ceilAt(k))ME.r[k]=Math.min(ceilAt(k),ME.r[k]+.18*gain*(age()<=27?1:.6))});ME.hid.men=cl(ME.hid.men+.12*gain,20,80);ME.xp+=.4*gain;
+  if(w===2&&played){const gain=g.m.outs/60;['stf','ctl'].forEach(k=>{if(ME.r[k]<ceilAt(k))ME.r[k]=Math.min(ceilAt(k),ME.r[k]+.18*gain*(age()<=27?1:.6))});ME.hid.men=cl(ME.hid.men+.12*gain,20,80);ME.xp+=.4*gain+.5;
     ME.fat=cl(ME.fat+4,0,100);S.armW=(S.armW||0)+1+g.m.outs/40;rep.pw=(rep.pw||0)+1;
     if(!ME.inj&&!inj0){const risk=.012+Math.max(0,(S.armW||0)-6)*.006+Math.max(0,ME.fat-60)*.002+Math.max(0,age()-30)*.002;if(R()<risk*cl(1-(ME.hid.dur-50)/80,.5,1.6))armInjury(rep)}}
   else if(w===0){ME.fat=cl(ME.fat-3,0,100);S.armW=Math.max(0,(S.armW||0)-1.2)}
