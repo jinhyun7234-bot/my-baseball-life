@@ -10258,7 +10258,7 @@ FEV2.forEach(e=>FEV.push(e));
 
 /* 계약·이적 기사: 경기 얘기 댓글/대댓글 최종 제거 (대댓글 포함) */
 {const CT2=['move','franMove','kmove','abroad','contract','faBig','faFair','salary','mlbBig','milback','trade'];
- const G2=/오늘 경기|경기보다|구위|타석|등판|타구|헛스윙|삼진|감독 표정|중계 카메라|폼 미쳤|몸만 출근|리모컨/;
+ const G2=/오늘 경기|경기보다|구위|타석|등판|타구|헛스윙|삼진|감독 표정|중계 카메라|폼 미쳤|몸만 출근|리모컨|구종 하나|출루율이면|세이버 좋아하는|볼배합이|변화구 하나만/;
  const bad=t=>G2.test(t)||(/오늘/.test(t)&&!/오늘 (야구 커뮤|댓글|기사|발표|오피셜|은|은 마셔)/.test(t));
  const _cC2=comments;comments=function(tone,x){let out=_cC2(tone,x);try{if(!Array.isArray(out)||!CT2.includes(tone))return out;out=out.filter(c=>!(c&&bad(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!bad(String(r&&r.t||'')))})}catch(e){}return out}}
 
