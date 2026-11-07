@@ -1492,7 +1492,7 @@ function simBat(role,tg,L,row,lvk){
 function pitchGame(L,type){const pv=x=>{const d=x-L-pitB(L);return d>16?16*PITC+(d-16)*PITC*.75:d>0?d*PITC:d};
   let outs=0,pc=0,H=0,Rn=0,BB=0,K=0,HR=0,b=[0,0,0];
   const lim=type==='SP'?68-(S.stage==='hs'?4:0)+E('sta')*.55+(sk('eater')?9:0)-Math.max(0,ME.fat-50)*.4:(type==='MR'?34:24)+(S._multi?16:0)+E('sta')*.1;
-  const maxO=type==='SP'?27:type==='MR'?(R()<cl(.4+relQ()*2.5+(E('sta')-50)*.006+mlBon(),.08,.78)?(mlBon()>0&&R()<.15?ri(7,9):ri(4,6)):3):(S._multi?(mlBon()>0&&R()<.15?ri(7,9):ri(4,6)):3);
+  const maxO=type==='SP'?27:type==='MR'?(R()<cl(.4+relQ()*2.5+(E('sta')-50)*.006+mlBon(),.08,.78)?(mlEl()&&R()<.15?ri(7,9):ri(4,6)):3):(S._multi?(mlEl()&&R()<.15?ri(7,9):ri(4,6)):3);
   const st=stuffC(eff)+kboV()+roleAdj(type==='SP'?'SP':'RP'),ctl=eff('ctl')+ctlSyn(),stf=eff('stf'),velo=eff('velo'),men=ME.hid.men;
   while(outs<maxO){
     if(type==='SP'&&outs%3===0&&outs>0&&(pc>lim||Rn>=6||(Rn>=4&&pc>lim*.7)))break;
@@ -10280,8 +10280,9 @@ try{TR.forEach(t=>{if(!t||!t.a||typeof t.d!=='string')return;t.d=t.d.replace(/([
   out=out.filter(c=>!(c&&NX.test(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!NX.test(String(r&&r.t||'')))})}catch(e){}return out}}
 
 /* 불펜 멀티이닝: 시즌 ERA 2.5 이하 + 체력 좋은 불펜만 가끔 더 길게 (설명 노노) */
-function mlBon(){try{if(!isP()||ME.pos!=='RP')return 0;const e=relEra(),s=DV(E('sta'));if(e==null||e>2.5||s<60)return 0;return cl(.06+(s-60)*.003+(2.5-e)*.03,0,.16)}catch(e){return 0}}
-function rp3(){try{return R()<(mlBon()>0?.22:.05)}catch(e){return false}}
+function mlBon(){try{if(!isP()||ME.pos!=='RP')return 0;const e=relEra(),s=DV(E('sta'));if(e==null||e>=5)return 0;const f=cl((s-40)/40,0,1.2);return cl(((5-e)*.03+.02)*f,0,.16)}catch(e){return 0}}
+function mlEl(){try{if(!isP()||ME.pos!=='RP')return false;const e=relEra(),s=DV(E('sta'));return e!=null&&e<=2.5&&s>=60}catch(e){return false}}
+function rp3(){try{return R()<(mlEl()?.22:.05)}catch(e){return false}}
 
 /* KBO 한정 구속 보너스 아주 살짝 (설명 노노) */
 function kboV(){try{if(!isP()||S.stage!=='pro'||!S.pro||S.pro.league!=='KBO')return 0;return Math.max(0,Math.min(1,(DV(eff('velo'))-60)*.025))}catch(e){return 0}}
