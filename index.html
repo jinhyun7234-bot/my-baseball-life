@@ -1498,14 +1498,14 @@ function pitchGame(L,type){const pv=x=>{const d=x-L-pitB(L);return d>16?16*PITC+
     if(type!=='SP'&&(pc>lim+12||Rn>=4))break;
     const tired=(Math.max(0,pc-lim*.75)*.18+Math.max(0,pc-lim*.9)*.22)*cl(1.15-(DV(E('sta'))-50)*.006,.8,1.25),risp=b[1]||b[2],PM=pitMods(type),tto=PM.tto*Math.max(0,Math.floor(outs/3)+1-2);
     const k=PM.k*cl(.185+pv(st-tired-tto-PM.st)*.0036+pv(ctl)*.0012+(sk('kmach')?.025:0),.05,.42);
-    const bb=cl(.085-pv(ctl)*.0021-(sk('pin')?.012:0)+tired*.002,.02,.2);
+    const bb=cl(.085-pv(ctl)*(pv(ctl)<0?.0025:.0021)+Math.max(0,60-DV(ctl))*.0007-(sk('pin')?.012:0)+tired*.002,.02,.2);
     let h=cl(.325-pv(stf-tired-tto*.8-PM.st)*.0018-pv(ctl)*.0009+tired*.003,.2,.42)*(type==='SP'?1:.972);
     if(risp)h=cl(h-(men-50)*.0012-(sk('heart')?.02:0)+(sk('chicken')?.025:0)-(sk('clutch')&&S.big?.02:0),.17,.45);
     const hrS=cl(.09-pv(stf)*.0014-pv(velo)*.00088,.02,.2)*PM.hr*(1+tto*.03)*(sk('gb')?.8:1)*(sk('hrprone')?1.3:1);
     const r=R(),sc=n=>{Rn+=n};
     if(r<k){K++;outs++;pc+=ri(4,6);if(outs%3===0)b=[0,0,0];continue}
     if(r<k+bb+.008){BB++;pc+=ri(4,7);if(b[0]){if(b[1]){if(b[2])sc(1);b[2]=1}b[1]=1}b[0]=1;continue}
-    pc+=ri(1,5);
+    {const ce=cl((ctl-L)*.008,-.1,.18);pc+=Math.max(1,ri(1,5)-(ce>0&&R()<ce?1:0)+(ce<0&&R()<-ce?1:0))}
     if(R()<h){H++;const q=R();
       if(q<hrS){HR++;sc(1+b[0]+b[1]+b[2]);b=[0,0,0]}
       else if(q<hrS+.2){const x=b[0]&&R()<.4;sc(b[2]+b[1]+(x?1:0));b=[0,1,b[0]&&!x?1:0]}
@@ -1843,7 +1843,7 @@ function meBatPA(pR,risp){let con=eff('con')+(sk('clutch')?4:0)+(ME.hid.men-50)*
   const _hit=cl(.325+dvc(con)*.00325+Math.min(8,dv(eff('spd')))*.0006+Math.min(15,Math.max(0,DV(eff('spd'))-60))*.00055+(sk('hitm')?.012:0),.18,.47),_hitNS=cl(.325+dvc(con)*.00325+(sk('hitm')?.012:0),.18,.47);if(R()<_hit){S._lastMeSpd=1;const hr=(_hitNS/_hit)*Math.pow(.325/_hitNS,.45)*1.04*cl(HRB0+(dvp(hrStat())>0?dvp(hrStat())*HRS1:dvp(hrStat())*HRS2)+Math.max(0,hrStat()-HRT)*HRS3,.012,.5)*(sk('power')?1.15:1)*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1)*(DV(eff('spd'))>=70&&(DV(eff('con'))+DV(eff('pow')))/2<65?.93:1),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
   return pick(['GO','GO','FO','FO','LO'])}
 function mePitPA(bR,risp,tired){const L=bR,pv=x=>{const d=x-L-pitB(L);return d>16?16*PITC+(d-16)*PITC*.75:d>0?d*PITC:d},st=stuffC(eff)+roleAdj(S._pRole||'SP')-tired+(sk('clutch')?2:0)+(ME.hid.men-50)*.12,ctl=eff('ctl'),stf=eff('stf');
-  const PM=pitMods(S._pRole||'SP'),tto=PM.tto*Math.max(0,(S._pInn||1)-2),k=PM.k*cl(.185+pv(st-tto-PM.st)*.0036+pv(ctl)*.0012+(sk('kmach')?.025:0),.05,.42),bb=cl(.085-pv(ctl)*.0021+tired*.002,.02,.2),r=R();
+  const PM=pitMods(S._pRole||'SP'),tto=PM.tto*Math.max(0,(S._pInn||1)-2),k=PM.k*cl(.185+pv(st-tto-PM.st)*.0036+pv(ctl)*.0012+(sk('kmach')?.025:0),.05,.42),bb=cl(.085-pv(ctl)*(pv(ctl)<0?.0025:.0021)+Math.max(0,60-DV(ctl))*.0007+tired*.002,.02,.2),r=R();
   if(r<k)return'K';if(r<k+bb+.008)return'BB';
   let h=cl(.325-pv(stf-tto*.8-PM.st)*.0018-pv(ctl)*.0007+tired*.003,.2,.42)*((S._pRole||'SP')==='SP'?1:.972);if(risp)h-=(ME.hid.men-50)*.0012+(sk('heart')?.02:0)-(sk('chicken')?.025:0);
   if(R()<h){const hr=cl(.09-pv(stf)*.0014,.02,.2)*(sk('gb')?.8:1)*PM.hr*(1+tto*.03),q=R();return q<hr?'HR':q<hr+.02?'3B':q<hr+.21?'2B':'1B'}
@@ -1894,7 +1894,7 @@ function followGame(o){
         if(pendC&&fld===my&&!pitching){const nb=b[0]+b[1]+b[2];if((outs>=1&&nb>=2)||(outs>=1&&(b[1]||b[2])&&R()<.5)||(outs===2&&nb>=1&&R()<.3)){pendC=false;pitching=true;used=true;relInn=1;relLead=G.R[my]-G.R[1-my];irLeft=nb;const bt=nb===3?'만루':[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')+'루';G.ent={outs,b:b.slice(),bt,inn,ir:nb,lead:relLead,irs:0,irsH:0,irsSF:0,end:null};crisisCont=inn<9&&(role==='CL'||R()<.5)?1:0;
           snap(`${it} ${outs}사 ${bt} 위기 — ${name} 긴급 등판! (${relLead>0?`${relLead}점 리드`:relLead===0?'동점':`${-relLead}점 차`})`,'sub')}}
         if(bat===my&&isB&&((role==='start'&&idx[bat]%9===spot)||(role==='bench'&&inn>=7&&!phUsed&&(idx[bat]%9===spot||(risp&&Math.abs(G.R[bat]-G.R[fld])<=2&&R()<.45))))){me=true;S._bctx={b:b.slice(),inn,outs,diff:G.R[bat]-G.R[fld]};if(role==='bench'&&!phUsed)G.phCtx={outs,b:b.slice(),inn,diff:G.R[bat]-G.R[fld],bt:(b[0]&&b[1]&&b[2])?'만루':[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')+(b[0]||b[1]||b[2]?'루':'')};st.b=b.slice();st.outs=outs;snap(`${it} ${outs}아웃${b[0]||b[1]||b[2]?` · 주자 ${[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')}루`:''} — ${name} ${role==='bench'?'대타로 ':''}타석에 들어선다${risp?' (득점권!)':''}`,'meup');if(role==='bench')phUsed=true;S.big=true;S._bctx={outs,inn,my:G.R[bat],op:G.R[fld],b:b.slice()};t=meBatPA(T[fld].pR,risp)}
-        else if(fld===my&&pitching){me=true;S.big=true;const tired=(Math.max(0,pc-lim*.75)*.18+Math.max(0,pc-lim*.9)*.22)*cl(1.15-(DV(E('sta'))-50)*.006,.8,1.25);S._pInn=inn;S._pctx={outs,inn,my:G.R[fld],op:G.R[bat],b:b.slice(),pc};t=mePitPA(T[bat].bR,risp,tired);pc+=t==='K'?ri(4,6):t==='BB'?ri(4,7):ri(1,5)}
+        else if(fld===my&&pitching){me=true;S.big=true;const tired=(Math.max(0,pc-lim*.75)*.18+Math.max(0,pc-lim*.9)*.22)*cl(1.15-(DV(E('sta'))-50)*.006,.8,1.25);S._pInn=inn;S._pctx={outs,inn,my:G.R[fld],op:G.R[bat],b:b.slice(),pc};t=mePitPA(T[bat].bR,risp,tired);{const ce=cl((eff('ctl')-T[bat].bR)*.008,-.1,.18);pc+=t==='K'?ri(4,6):t==='BB'?ri(4,7):Math.max(1,ri(1,5)-(ce>0&&R()<ce?1:0)+(ce<0&&R()<-ce?1:0))}}
         else t=genPA(T[bat].bR,T[fld].pR);
         G._myR=null;let errPA=false;if(!me&&t==='GO'&&outs<2&&R()<.05){t='1B';errPA=true}else if(me&&!isB&&fld===my&&t==='GO'&&R()<.03){t='1B';errPA=true;ueLeft++}
         S.big=false;idx[bat]++;
