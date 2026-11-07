@@ -3612,12 +3612,13 @@ function cardData(){const pit=isP(),t=careerTot(PRO),b=t.b,p=t.p,ret=S.stage==='
   const main=teams.slice().sort((a,b)=>b.n-a.n)[0],mk=main?main.name:teamLabel(),md=crestData(mk,teamColor());
   const ys=S.rows.map(r=>r.y),y0=ys.length?Math.min(...ys):S.y,y1=ret?S.ended.y:S.y;
   const isTeam=n=>/우승|메달/.test(n)&&!/MVP/.test(n);
+  const dbY=(()=>{const ys=S.rows.filter(r=>PRO.includes(r.lv)).map(r=>r.y);return ys.length?Math.min(...ys):9999})(),AMR=/고교|대학|전국|청룡|봉황|황금사자|금사자|대통령배|협회장|주니어|U-?18|대회 최우수선수/,AWc=(S.awards||[]).filter(a=>!(a.y<dbY&&!/WBC|올림픽|아시안|프리미어/.test(a.n))&&!AMR.test(a.n));
   const ORD=['ws','ring','mvp','medal','glove','crown','rookie','trophy'];
-  const tro=S.awards.map(a=>({k:awardKind(a.n),n:a.n,y:a.y})).sort((a,b)=>ORD.indexOf(a.k)-ORD.indexOf(b.k)||a.y-b.y);
-  const pers=S.awards.filter(a=>!isTeam(a.n)),grp={};pers.forEach(a=>{let k=a.n.replace(/^\d{4} /,'').replace(/\s*\(.*\)/,'').trim();if(/정규시즌 MVP/.test(k))k='MVP';(grp[k]=grp[k]||0,grp[k]++)});
+  const tro=AWc.map(a=>({k:awardKind(a.n),n:a.n,y:a.y})).sort((a,b)=>ORD.indexOf(a.k)-ORD.indexOf(b.k)||a.y-b.y);
+  const pers=AWc.filter(a=>!isTeam(a.n)),grp={};pers.forEach(a=>{let k=a.n.replace(/^\d{4} /,'').replace(/\s*\(.*\)/,'').trim();if(/정규시즌 MVP/.test(k))k='MVP';(grp[k]=grp[k]||0,grp[k]++)});
   const pills=Object.entries(grp).sort((a,b)=>(b[0]==='MVP')-(a[0]==='MVP')||b[1]-a[1]).slice(0,3).map(([k,v])=>`${k} ${v}`);
   if(pills.length<3&&S.hist.allstar)pills.push(`올스타 ${S.hist.allstar}`);if(pills.length<3&&S.hist.nat)pills.push(`국가대표 ${S.hist.nat}`);
-  const mvp=S.awards.filter(a=>/정규시즌 MVP|리그 MVP/.test(a.n)).length;
+  const mvp=AWc.filter(a=>/정규시즌 MVP|리그 MVP/.test(a.n)).length;
   const big=pit?[[p.G,'출전'],[p.W,'승'],[p.K,'탈삼진']]:[[b.G,'출전'],[b.H,'안타'],[b.HR,'홈런']];
   const sub=pit?[[p.outs?era(p):'-','평균자책점'],[`${S.hist.rings||0}회`,'우승'],[`${pers.length}회`,'개인상']]:[[b.AB?avg(b):'-','통산 타율'],[`${S.hist.rings||0}회`,'우승'],[`${pers.length}회`,'개인상']];
   const ag=ret?S.ended.age:age();
@@ -8865,7 +8866,7 @@ const KBO_DUP=['타이거스','트윈스','자이언츠'];
 {const _cd=crestData;crestData=function(name,fb){try{const n=String(name||'');if(!n)return _cd(name,fb);
   let key=Object.keys(MCREST).find(k=>n===k)||Object.keys(MCREST).find(k=>n.includes(k))||(MC_CITY[n]||'');
   if(!key){const c=Object.keys(MC_CITY).find(c=>n.startsWith(c));if(c)key=MC_CITY[c]}
-  if(key){const dup=KBO_DUP.includes(key)&&n===key;const mlbCtx=(S&&S.stage==='pro'&&S.pro&&S.pro.league==='MLB')||/MLB|디트로이트|미네소타|샌프란시스코/.test(n)||(S&&S._mlbCrest);
+  if(key){const kboCity=KBO_DUP.includes(key)&&!/MLB|\(/.test(n)&&(()=>{try{return TEAMS.some(t=>t.nick===key&&n.includes(t.city))}catch(e){return false}})();if(kboCity)return _cd(name,fb);const dup=KBO_DUP.includes(key)&&n===key;const mlbCtx=(S&&S.stage==='pro'&&S.pro&&S.pro.league==='MLB')||/MLB|디트로이트|미네소타|샌프란시스코/.test(n)||(S&&S._mlbCrest);
     if(!dup||mlbCtx){const m=MCREST[key];return{k:[key],m:m[0],c1:m[1],c2:m[2],sh:m[3]}}}}catch(e){}return _cd(name,fb)}}
 /* KBO 1군 경력이 없는 선수(고교→MLB 직행 등): "KBO에서 보여준 거" 류 댓글 제거 */
 function noKboCareer(){try{return S&&S.stage==='pro'&&S.pro&&S.pro.league!=='KBO'&&!(S.rows||[]).some(r=>r.lv==='KBO')}catch(e){return false}}
