@@ -6644,7 +6644,7 @@ sweep:[["{sw}연승 실화냐 ㅋㅋㅋㅋ 이게 우리 팀이라고?",["시즌
   if(!P&&ks>=2&&h===0&&!win)sits.push('kChance');
   if(P&&!rp&&(x.gK||0)>=8)sits.push('kpit');
   if(P&&rp&&ipO>=6&&ra<=1&&win)sits.push('multiRP');
-  if(!P&&good&&opener)sits.push('ace');
+  if(!P&&good&&opener&&R()<.45&&!(S.pmY&&S.pmY.y===S.y&&S.pmY.ace))sits.push('ace');
   if(yrs>=10&&good)sits.push('vet');if(yrs>=11&&rings&&good)sits.push('vetRing');
   if(yrs>=11&&!rings&&good&&!(x.clinch&&win&&/한국시리즈|월드시리즈/.test(t)))sits.push('mugwan');
   if(win&&(x.inns||9)>9)sits.push('extra');
@@ -6655,14 +6655,14 @@ sweep:[["{sw}연승 실화냐 ㅋㅋㅋㅋ 이게 우리 팀이라고?",["시즌
   if(!sits.length)return out;
   S.pmY=S.pmY&&S.pmY.y===S.y?S.pmY:{y:S.y,u:{}};const use=sits.slice(0,2),add=[];
   const fill=s=>s.replace(/\{n\}(이|가|은|는|을|를|과|와)?(?=[\s,.!?ㅋㅠ]|$)/g,(m,j)=>j?jo(gn,{이:'이',가:'이',은:'은',는:'은',을:'을',를:'을',과:'과',와:'과'}[j],{이:'가',가:'가',은:'는',는:'는',을:'를',를:'를',과:'와',와:'와'}[j]):gn).replace(/\{n\}/g,gn).replace(/\{k\}/g,x.gK||0).replace(/\{ip\}/g,Math.floor(ipO/3)).replace(/\{inn\}/g,x.inns||10).replace(/\{sw\}/g,(typeof w0r!=='undefined'?w0r:w0)+1);
-  use.forEach((k,ii)=>{const pool=(PSIT[k]||[]).filter(c=>!S.pmY.u[c[0]]);const n=ii===0?3:2;pool.sort(()=>R()-.5).slice(0,n).forEach(c=>{S.pmY.u[c[0]]=1;const rr=c[1].slice().sort(()=>R()-.5).slice(0,R()<.5?1:2).map(fill);add.push(mkC(fill(c[0]),rr,{up:ri(300,5000),must:1}))})});
+  use.forEach((k,ii)=>{const pool=(PSIT[k]||[]).filter(c=>!S.pmY.u[c[0]]);const n=k==='ace'?1:ii===0?3:2;if(k==='ace')S.pmY.ace=1;pool.sort(()=>R()-.5).slice(0,n).forEach(c=>{S.pmY.u[c[0]]=1;const rr=c[1].slice().sort(()=>R()-.5).slice(0,R()<.5?1:2).map(fill);add.push(mkC(fill(c[0]),rr,{up:ri(300,5000),must:1}))})});
   /* 같은 활약이라도 이전 기록에 따라 한 줄 */
   if(!P&&good&&hr>=1&&cmX('ctx'+S.y+t)){let c=null;if(sAvg!=null&&sAvg>=.32)c='역시 클래스는 영원하다';else if(sAvg!=null&&sAvg<.22)c='정규시즌에 잠수 타더니 가을에 갑자기 사람이 바뀌었네';else if(fa!=null&&fa<.15)c='드디어 사람 구실 하네 ㅋㅋㅋㅋ';else if(S.postY&&S.postY[S.y-1]&&S.postY[S.y-1].b.AB>=12&&S.postY[S.y-1].b.H/S.postY[S.y-1].b.AB>=.3)c='작년에 이어 올해도 가을의 남자 입증';else if(S.pro.years<=1&&S.pro.league==='KBO')c='FA 앞두고 이러면 이제 돈 받을 일만 남았네';if(c&&!S.pmY.u[c]){S.pmY.u[c]=1;add.push(mkC(c,[],{up:ri(500,3000),must:1}))}}
   /* 연애 기사 뜨고 1년 안: 부진하면 맛OO, 잘하면 가끔 사랑의 힘 */
   if(typeof loveNews==='function'&&loveNews()&&cmX('lovePS'+S.y)&&R()<.4){if(!good&&pa>=3&&h===0)add.push(mkC(`맛${gn} 입갤 ㅋㅋㅋ`,['열애 기사 뜨더니 이러네','연애는 죄가 없다 타격감이 죄지'],{up:ri(400,2500)}));else if(good)add.push(mkC('열애 기사 뜨고 더 잘하네 사랑의 힘인가',['형수님 직관 오신 날인가 ㅋㅋ'],{up:ri(400,2500)}))}
   /* 거구 체형 홈런 → 돼지 드립 */
   if(!P&&hr>=1&&ME.body==='거구'&&cmX('pig'+S.y))add.push(mkC(`돼지가 담장 넘기는 거 봤냐 ㅋㅋㅋ 체중 실린 스윙 미쳤다`,['역시 야구는 몸무게다','돼지 아니고 거포라고 해라'],{up:ri(400,2500)}));
-  out=add.concat(out);if(out.length>18){const must=out.filter(c=>c.must),rest=out.filter(c=>!c.must);out=must.slice(0,15).concat(rest).slice(0,18)}}catch(e){}return out}}
+  {const G=[];out.forEach(c=>{const g=G[G.length-1];if(g&&c&&c.rl&&g[g.length-1]&&g[g.length-1].rl)g.push(c);else G.push([c])});const mix=[];let i=0,j=0;while(i<add.length||j<G.length){if(i<add.length)mix.push(add[i++]);if(j<G.length)mix.push(...G[j++])}out=mix}if(out.length>18){const must=out.filter(c=>c.must),rest=out.filter(c=>!c.must);out=must.slice(0,15).concat(rest).slice(0,18)}}catch(e){}return out}}
 /* 작성자 유형 보강: 추억팔이 · 야알못 · 야잘알 · 감독 비판 · 팀원 비판 · 국대 선발 논쟁 · 국내파/해외파 */
 {const _c106=comments;comments=function(tone,x){let out=_c106(tone,x);try{if(!S||!ME||!x||S.stage!=='pro')return out;const fin=x.intl&&/결승전/.test(x.title||'');if(!(x.ps&&!x.intl)&&!fin)return out;
   const P=isP(),gn=giv(ME.name),win=!!x.win,good=P?((x.ipO||0)>=15&&(x.ra||0)<=2):((x.gHR||0)>=1||(x.gH||0)>=2||(x.gRBI||0)>=2),bad=P?(x.ra||0)>=4:((x.gPA||0)>=3&&!(x.gH)&&!(x.gRBI));const C=[];
