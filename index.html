@@ -6184,12 +6184,12 @@ const EV_KEEP=/계약|FA|드래프트|병역|입대|방출|연봉|포스팅|피�
   if(!AG)path.push({r:'8강',t:shuffle(pool.filter(x=>!grp.includes(x)))[0]||'호주',w:true,s:`${ri(4,8)}:${ri(1,3)}`});
   if(stage==='final')path.push({r:'준결승',t:shuffle(pool.filter(x=>!grp.includes(x)))[1]||'대만',w:true,s:`${ri(3,6)}:${ri(1,2)}`});
   if(stage==='bronze')path.push({r:'준결승',t:shuffle(pool.filter(x=>!grp.includes(x)))[1]||'일본',w:false,s:`${ri(1,3)}:${ri(4,6)}`});
-  const mon=S.m;const show={type:'intlshow',ev,mon,stage,opp,path,role:isP()?(ME.pos==='SP'?'선발':'불펜'):`${POS[ME.pos]}`},back={type:'intlback',ev,game:g};
+  path.forEach(p=>{p.me=ipMe(p,AG)});const mon=S.m;const show={type:'intlshow',ev,mon,stage,opp,path,role:isP()?(ME.pos==='SP'?'선발':'불펜'):`${POS[ME.pos]}`},back={type:'intlback',ev,game:g};
   const pos=n0+gi;S.queue.splice(pos,0,show);let last=n0;S.queue.forEach((q,i)=>{if(i>=n0)last=i});S.queue.splice(last+1,0,back)}catch(e){}return r}}
 function vIntlShow(q){const stg={final:'결승전',semi:'준결승',bronze:'동메달 결정전'}[q.stage];
   return`<div class="srec"><div class="srec-ey">TEAM KOREA · ${q.mon}월</div><h1 class="srec-tt">🇰🇷 ${esc(q.ev)}</h1><div class="srec-team">국가대표 ${esc(ME.name)} · ${q.role}</div>
   <div class="srec-card"><div class="srec-k">소속팀을 잠시 떠나 대표팀에 합류했다</div><div class="srec-sub">시즌 도중 ${q.mon}월, 태극마크를 달고 출국. 소속팀 일정은 잠시 멈춘다.</div></div>
-  <div class="srec-card"><div class="srec-k">${stg}까지의 여정</div><div class="srec-sub">${ipSum(q,stg)}</div>${q.path.map(p=>`<div class="ipath ${p.w?'w':'l'}"><span class="ip-r">${p.r}</span><span class="ip-t">vs ${esc(p.t)}</span><b>${p.w?'승':'패'} ${p.s}</b></div>`).join('')}
+  <div class="srec-card"><div class="srec-k">${stg}까지의 여정</div><div class="srec-sub">${ipSum(q,stg)}</div><div class="psf" style="margin-top:8px">${q.path.map((p,i)=>{const m=String(p.s||'').match(/(\d+)\s*:\s*(\d+)/),a=m?+m[1]:0,b=m?+m[2]:0;return`<div class="psf-row ${p.w?'w':'l'}" data-i="${i}" data-a="${a}" data-b="${b}"><div class="psf-top"><span class="psf-t">${esc(p.r)} · vs ${esc(p.t)}</span><span class="psf-res">${p.w?'승':'패'}</span></div><div class="psf-mid"><span class="psf-sc"><b class="psf-a">0</b><i>:</i><b class="psf-b">0</b></span><span class="psf-me">${esc(p.me||'')}</span></div></div>`}).join('')}</div>
    <div class="ipath next"><span class="ip-r">${stg}</span><span class="ip-t">vs ${esc(q.opp)}</span><b>중계</b></div></div></div>`}
 function vIntlBack(q){const g=q.game,win=g&&g.win,stg=/결승전/.test(g.title)?(win?(/WBC|프리미어/.test(q.ev)?'우승':'금메달'):(/WBC|프리미어/.test(q.ev)?'준우승':'은메달')):/동메달/.test(g.title)?(win?'동메달':'메달 실패'):'4강 탈락';
   const ex=S.mil&&S.mil.status==='exempt'&&/금메달|동메달|은메달/.test(stg)&&/아시안게임|올림픽/.test(q.ev);
@@ -6202,6 +6202,14 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
 function ipSum(q,stg){try{const P=q.path||[],G=P.filter(p=>/조별|예선/.test(p.r)),gw=G.filter(p=>p.w).length,gl=G.length-gw,rest=P.filter(p=>!/조별|예선/.test(p.r));
   const a=G.length?`${G[0].r} ${gl?`${gw}승 ${gl}패`:`${gw}전 전승`}`:'',b=rest.map(p=>p.w?`${p.r}에서 ${p.t}${jo(p.t,'을','를').slice(-1)} 꺾고`:`${p.r}에서 ${p.t}에 졌지만`).join(' ');
   return `${a}${a&&b?', ':''}${b} ${stg}${stg==='결승전'?'에 올랐다.':'으로 간다.'}`.replace(/\s+/g,' ').trim()}catch(e){return''}}
+/* 국제대회 진행 과정 경기별 내 활약 (조별리그·8강·준결승) — 상대 수준·내 실력 기준 */
+function ipMe(p,AG){try{const P=isP(),o=ovrE(),weak=AG&&/홍콩|태국|필리핀/.test(p.t),edge=(o-(LV.KBO||50))/10+(weak?1.2:0);
+  if(!P){const pa=ri(4,5),bb=R()<.35?1:0,ab=pa-bb,avg=cl(.27+edge*.05,.15,.55);let h=0;for(let i=0;i<ab;i++)if(R()<avg)h++;const hr=h&&R()<cl(.08+(DV(E('pow'))-60)*.006+(weak?.08:0),0,.5)?1:0,rbi=h?ri(0,h+hr*2):0;
+    return`${ab}타수 ${h}안타${hr?' 1홈런':''}${rbi?` ${rbi}타점`:''}${bb?' 1볼넷':''}`}
+  if(ME.pos==='SP'){if(p._sp===undefined)p._sp=null;if(R()<(weak?.25:.5)&&!ipMe._st){ipMe._st=1;const ip=ri(5,7),er=Math.max(0,Math.round(rn(2.2-edge*.6,1.1))),k=ri(4,9);return`선발 ${ip}이닝 ${er?`${er}실점`:'무실점'} ${k}K`}return'등판 없음 · 불펜 대기'}
+  if(R()<(weak?.35:.6)){const er=R()<cl(.18-edge*.05,.03,.4)?1:0,k=ri(0,3),o=R()<.25?ri(4,6):3;return`${ip(o)}이닝 ${er?'1실점':'무실점'}${k?` ${k}K`:''}`}return'등판 없음'}catch(e){return''}}
+{const _inS=intl;intl=function(rep,cy){ipMe._st=0;return _inS(rep,cy)}}
+{const _prI=postRender;postRender=function(app){const r=_prI(app);try{const q=S&&nextQ();if(q&&q.type==='intlshow'&&document.querySelector('.psf-row')&&typeof psfAnimate==='function')psfAnimate()}catch(e){}return r}}
 
 /* ===================== MLB 지구제 (동부·중부·서부 5팀씩) · 실제 방식 포스트시즌 (지구 우승 3 + 와일드카드 3, 1·2번 시드 부전승) ===================== */
 const DIVN=['동부','중부','서부'];
@@ -10353,11 +10361,13 @@ CRIT.add('openFut');
 {const _msQ=monthStep;monthStep=function(rep){_msQ(rep);try{if(!isP())return;
   if(S.stage==='hs'&&!S.hsRoleQ&&(S.grade||1)===1&&(S.m===2||S.m===3)){S.hsRoleQ=1;
     S.queue.push({title:'⚾ 첫 스프링캠프 — 보직',text:'입학하고 처음 맞는 스프링캠프. 감독이 불펜 피칭을 지켜보다 물었다.\n"너는 어디서 던지고 싶냐? 긴 이닝 끌고 가는 선발이냐, 짧게 세게 막는 불펜이냐."',
-      ch:[{t:'선발로 던지고 싶습니다',s:'긴 이닝·투구 수 · 체력 부담',act:'hsRole',arg:{k:'SP'}},{t:'불펜에서 던지고 싶습니다',s:'짧은 이닝·위기 상황 · 등판은 잦음',act:'hsRole',arg:{k:'RP'}},{t:'감독님께 맡기겠습니다',s:'지금 스타일 그대로 · 감독 신뢰↑',act:'hsRole',arg:{k:''}}]});return}
+      ch:[{t:'선발로 던지고 싶습니다',s:'체력·변화구·볼배합 +1 · 긴 이닝에 피로↑',act:'hsRole',arg:{k:'SP'}},{t:'불펜에서 던지고 싶습니다',s:'구속·구위 +1 · 체력 −0.5',act:'hsRole',arg:{k:'RP'}},{t:'감독님께 맡기겠습니다',s:'지금 스타일 그대로 · 감독 신뢰↑ · 능력치 보너스 없음',act:'hsRole',arg:{k:''}}]});return}
   if(S.stage==='pro'&&S.pro&&!S.pro.dev&&!S.proRoleQ&&S.m===2&&S.pro.debut<=S.y){S.proRoleQ=1;S.rpAsk=S.rpAsk||{sta:Math.round(DV(E('sta'))),ng:0,team:S.pro.team,lg:S.pro.league};
     S.queue.push({title:'⚾ 프로 첫 스프링캠프 — 보직',text:'프로에서 맞는 첫 스프링캠프. 감독이 따로 불렀다.\n"데뷔하고 나면 어디서 뛰고 싶나? 네 생각부터 듣고 싶다."\n\n여기서 고른 보직은 다음 시즌에도 그대로 이어진다.',
       ch:[{t:'선발 로테이션',s:'이닝·승수·큰 계약 · 체력 부담',act:'rpref',arg:{k:'SP'}},{t:'필승조 (셋업)',s:'홀드·꾸준함 · 화려함은 덜함',act:'rpref',arg:{k:'SU'}},{t:'마무리',s:'세이브·클러치 · 블론 한 번에 욕먹음',act:'rpref',arg:{k:'CL'}},{t:'감독에게 맡긴다',s:'감독 신뢰↑',act:'rpref',arg:{k:'any'}}]})}}catch(e){}}}
-ACT.hsRole=function(a){if(a.k==='SP'){ME.pos='SP';return'"선발로 가자. 대신 러닝부터 두 배다." 감독이 웃었다.'}if(a.k==='RP'){ME.pos='RP';return'"좋다. 위기 때 마운드에 올라갈 배짱부터 키워라."'}S.rel.coach=cl((S.rel.coach??50)+3,0,100);return'"좋은 자세다. 내가 잘 보고 정해주마."'};
+ACT.hsRole=function(a){const up=(k,d)=>{const r=d*.75;if(ME.r&&k in ME.r)ME.r[k]=cl(ME.r[k]+r,20,capOf(k));else if(ME.pt&&k in ME.pt&&ME.pt[k]>0)ME.pt[k]=cl(ME.pt[k]+r,20,capOf(k))};
+  if(a.k==='SP'){ME.pos='SP';up('sta',1);up('pcl',1);const bk=PITCHES.filter(p=>p!=='FB'&&(ME.pt[p]||0)>0).sort((x,y)=>ME.pt[y]-ME.pt[x])[0];if(bk)up(bk,1);ME.fat=cl(ME.fat+8,0,100);return'"선발로 가자. 대신 러닝부터 두 배다." 감독이 웃었다.'+(bk?` (체력·${LBL[bk]}·볼배합 +1)`:' (체력·볼배합 +1)')}
+  if(a.k==='RP'){ME.pos='RP';up('velo',1);up('stf',1);up('sta',-.5);return'"좋다. 위기 때 마운드에 올라갈 배짱부터 키워라." (구속·구위 +1 · 체력 −0.5)'}S.rel.coach=cl((S.rel.coach??50)+3,0,100);return'"좋은 자세다. 내가 잘 보고 정해주마."'};
 CRIT.add('hsRole');
 
 /* ===================== 첫 화면 일러스트 (사용자 제공 이미지) ===================== */
