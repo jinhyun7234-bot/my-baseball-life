@@ -1467,7 +1467,7 @@ function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp
   if(on[0]&&R()<.13*cl(1+(50-eff('spd'))/35,.4,1.8)*(typeof eyeDP==='function'?eyeDP():1)){m.GDP=(m.GDP||0)+1;return}
   if(on[2]&&R()<.22){m.RBI++;gl.RBI++}}
 function simBat(role,tg,L,row,lvk){
-  const od=(role==='start'||role==='fB')?(S.order=batOrder(L)):0,share={start:.95,bench:.45,reserve:.18,fB:.92}[role],paG={start:od?[4.65,4.55,4.45,4.35,4.25,4.15,4.0,3.9,3.8][od-1]:4.25,bench:1.5,reserve:1.1,fB:4.2}[role];S.onMul=od?[.7,.85,1.15,1.3,1.2,1,.95,.9,.85][od-1]:1;
+  const od=(role==='start'||role==='fB')?(S.order=batOrder(L)):0,share={start:.95,bench:.45,reserve:.18,fB:.92}[role],paG={start:od?[4.65,4.55,4.45,4.35,4.25,4.15,4.0,3.9,3.8][od-1]:4.25,bench:1.5,reserve:1.1,fB:4.2}[role];S.onMul=od?[.7,.85,1.15,1.3,1.2,1,.95,.9,.85][od-1]:role==='bench'?1.35:role==='reserve'?1.2:1;
   const m=blankB(),ch={C:5,'1B':8,'2B':5,'3B':3,SS:5,LF:2,CF:2.6,RF:2}[ME.pos]*(role==='bench'||role==='reserve'?.4:1);
   const ep=cl(.016-(eff('fld')-L)*.00045,.003,.04)*(sk('glove')?.64:1)*({C:.56,'1B':.35,'2B':.85,'3B':1.9,SS:1.22,LF:.82,CF:.64,RF:.82}[ME.pos]||1),pro=PRO.includes(lvk),st=S.str,d=`${S.m}월`;
   for(let g=0;g<tg;g++){if(R()>share)continue;m.G++;const n=Math.max(1,Math.round(paG+rn(0,.6))),gl={H:0,HR:0,RBI:0,S1:0,D:0,T:0,ob:0,GS:0,iphr:0};
@@ -1658,7 +1658,7 @@ function income(){if(S.stage==='hs'||S.stage==='univ')S.money+=S.stage==='hs'?8:
 function rivalTick(){const v=S.rival;v.o=Math.min(v.pot,v.o+(v.pot-v.o)*.025+rn(0,.15));if(age()>=31)v.o-=.08}
 function newYear(){S.rSnap=S.rLast||{...ME.r};S.rLast={...ME.r};
   for(const id in S.me.items){const v=S.me.items[id];if(v!==true&&v<=S.turn){delete S.me.items[id];news(`${ITEMS.find(i=>i.id===id).n} 계약이 끝났다.`)}}
-  {const pv=S.lg.prev||[];S.lg.str=S.lg.str.map((s,i)=>{const rk=pv.indexOf(i);const tgt=rk>=0?55.5-rk*1.15:50;return cl(tgt*.8+rn(50,2.2)*.2+(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'&&i===S.pro.team?cl((ovrE()-55)*.1,-1,2):0),44,57.5)})}if(S.pro)S.pro.m1y=0}
+  {const pv=S.lg.prev||[];S.lg.str=S.lg.str.map((s,i)=>{const rk=pv.indexOf(i);const tgt=rk>=0?55.5-rk*1.15:50;return cl(tgt*.8+rn(50,2.2)*.2+(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'&&i===S.pro.team?cl((ovrE()-55)*.085,-1,1.7):0),44,57.5)})}if(S.pro)S.pro.m1y=0}
 function newSeason(){S.lg.w=S.lg.w.map(()=>0);S.lg.l=S.lg.l.map(()=>0);S.lg.d=TEAMS.map(()=>0);S.lg.rec=TEAMS.map(()=>[]);lpYear();S.lvl1=0;newStreaks();S.cnt={};
   if(S.stage==='hs'&&S.y>2027)S.grade++;if(S.stage==='univ')S.grade++}
 
@@ -1758,7 +1758,7 @@ function postseason(rep){
   const my=S.pro.team,T=i=>TEAMS[i].nick,playing=ONE.includes(S.prevRole||'')&&!ME.inj&&!psSlump();
   S.champs=S.champs||{};{const BASE=[2023,2019,null,2022,2021,1999,2014,2024,1992,2020],last=S.champs[my]??BASE[my];S.drought=last==null?'never':S.y-last}
   const myRole=S.prevRole;let ksMVP=false;const psB=blankB(),psP=blankP();
-  const ser=(a,b,need,adv,name)=>{let wa=adv,wb=0,gn=0;const sB=blankB(),sP=blankP();const p=cl(.6+(S.lg.str[a]-S.lg.str[b])*.05,.25,.86),mine=a===my||b===my;
+  const ser=(a,b,need,adv,name)=>{let wa=adv,wb=0,gn=0;const sB=blankB(),sP=blankP();const p=cl(.615+(S.lg.str[a]-S.lg.str[b])*.054,.25,.87),mine=a===my||b===my;
     while(wa<need&&wb<need){gn++;const qr=mine&&playing?psPick(myRole,gn,wa===need-1&&wb===need-1,need):'none';
       if(mine&&playing&&qr!=='none'){const meA=a===my,o=meA?b:a;
         const g=followGame({clinch:(meA?wa:wb)===need-1,title:`${name} ${gn}차전`,sub:`시리즈 ${meA?wa:wb}승 ${meA?wb:wa}패 · ${wa===need-1&&wb===need-1?'마지막 승부':(meA?wa:wb)===need-1?'이기면 시리즈 승리':(meA?wb:wa)===need-1?'지면 탈락':gn===1?'시리즈 개막전':'시리즈 진행 중'}`,me:{ab:TEAMS[my].nick,c:TEAMS[my].c,bR:kboTeamR(my)+psTeamAdj(meA),pR:kboTeamR(my)+psTeamAdj(meA)},op:{ab:TEAMS[o].nick,c:TEAMS[o].c,bR:kboTeamR(o),pR:kboTeamR(o)},home:R()<.5,role:qr,lvk:'KBO',L:LV.KBO});
@@ -1902,7 +1902,7 @@ function followGame(o){
         const risp=b[1]||b[2];let t,me=false;
         if(pendC&&fld===my&&!pitching){const nb=b[0]+b[1]+b[2];if((outs>=1&&nb>=2)||(outs>=1&&(b[1]||b[2])&&R()<.5)||(outs===2&&nb>=1&&R()<.3)){pendC=false;pitching=true;used=true;relInn=1;relLead=G.R[my]-G.R[1-my];irLeft=nb;const bt=nb===3?'만루':[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')+'루';G.ent={outs,b:b.slice(),bt,inn,ir:nb,lead:relLead,irs:0,irsH:0,irsSF:0,end:null};crisisCont=inn<9&&(role==='CL'||R()<.5)?1:0;
           snap(`${it} ${outs}사 ${bt} 위기 — ${name} 긴급 등판! (${relLead>0?`${relLead}점 리드`:relLead===0?'동점':`${-relLead}점 차`})`,'sub')}}
-        if(bat===my&&isB&&((role==='start'&&idx[bat]%9===spot)||(role==='bench'&&inn>=7&&!phUsed&&(idx[bat]%9===spot||(risp&&Math.abs(G.R[bat]-G.R[fld])<=2&&R()<.45))))){me=true;S._bctx={b:b.slice(),inn,outs,diff:G.R[bat]-G.R[fld]};if(role==='bench'&&!phUsed)G.phCtx={outs,b:b.slice(),inn,diff:G.R[bat]-G.R[fld],bt:(b[0]&&b[1]&&b[2])?'만루':[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')+(b[0]||b[1]||b[2]?'루':'')};st.b=b.slice();st.outs=outs;snap(`${it} ${outs}아웃${b[0]||b[1]||b[2]?` · 주자 ${[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')}루`:''} — ${name} ${role==='bench'?'대타로 ':''}타석에 들어선다${risp?' (득점권!)':''}`,'meup');if(role==='bench')phUsed=true;S.big=true;S._bctx={outs,inn,my:G.R[bat],op:G.R[fld],b:b.slice()};t=meBatPA(T[fld].pR,risp)}
+        if(bat===my&&isB&&((role==='start'&&idx[bat]%9===spot)||(role==='bench'&&inn>=6&&!phUsed&&((risp&&Math.abs(G.R[bat]-G.R[fld])<=2&&R()<(inn>=8?.8:.5))||(idx[bat]%9===spot&&inn>=9&&Math.abs(G.R[bat]-G.R[fld])<=3))))){me=true;S._bctx={b:b.slice(),inn,outs,diff:G.R[bat]-G.R[fld]};if(role==='bench'&&!phUsed)G.phCtx={outs,b:b.slice(),inn,diff:G.R[bat]-G.R[fld],bt:(b[0]&&b[1]&&b[2])?'만루':[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')+(b[0]||b[1]||b[2]?'루':'')};st.b=b.slice();st.outs=outs;snap(`${it} ${outs}아웃${b[0]||b[1]||b[2]?` · 주자 ${[b[0]?'1':'',b[1]?'2':'',b[2]?'3':''].filter(Boolean).join('·')}루`:''} — ${name} ${role==='bench'?'대타로 ':''}타석에 들어선다${risp?' (득점권!)':''}`,'meup');if(role==='bench')phUsed=true;S.big=true;S._bctx={outs,inn,my:G.R[bat],op:G.R[fld],b:b.slice()};t=meBatPA(T[fld].pR,risp)}
         else if(fld===my&&pitching){me=true;S.big=true;const tired=(Math.max(0,pc-lim*.75)*.18+Math.max(0,pc-lim*.9)*.22)*cl(1.15-(DV(E('sta'))-50)*.006,.8,1.25);S._pInn=inn;S._pctx={outs,inn,my:G.R[fld],op:G.R[bat],b:b.slice(),pc};t=mePitPA(T[bat].bR,risp,tired);{const ce=cl((eff('ctl')-T[bat].bR)*.008,-.1,.18);pc+=t==='K'?ri(4,6):t==='BB'?ri(4,7):Math.max(1,ri(1,5)-(ce>0&&R()<ce?1:0)+(ce<0&&R()<-ce?1:0))}}
         else t=genPA(T[bat].bR,T[fld].pR);
         G._myR=null;let errPA=false;if(!me&&t==='GO'&&outs<2&&R()<.05){t='1B';errPA=true}else if(me&&!isB&&fld===my&&t==='GO'&&R()<.03){t='1B';errPA=true;ueLeft++}
@@ -2416,7 +2416,7 @@ function lpSimP(p,n){const m=p.s,str=S.lg.str[p.t],era0=cl(4.4-(p.r-56)*.17,1.5,
   else{const apps=Math.round(n*(p.k==='CL'?.42:.46)*rn(1,.12));for(let i=0;i<apps;i++){m.G++;const outs=R()<.85?3:ri(1,5);m.outs+=outs;const er=pois(era0*.92*outs/27);m.R+=er;m.K+=pois(outs/3*(1+(p.r-56)*.02));m.BB+=pois(outs/3*.38);m.H+=pois(outs/3*cl(.9-(p.r-56)*.014,.55,1.3));
     const opp=R()<(p.k==='CL'?.6:.52)*(1+(str-50)*.012);if(opp){if(!er||R()<.35){if(p.k==='CL')m.SV++;else m.HLD++}else if(R()<.4)m.L++}else if(R()<.08)m.W++}}}
 function simLeague(g,ps){ensureLP();const n=GM.KBO[S.m],avgS=S.lg.str.reduce((a,b)=>a+b)/10,my=S.stage==='pro'&&S.pro.league==='KBO'?S.pro.team:-1;
-  S.lg.str.forEach((s,i)=>{const p=.5+(s-avgS)*.014+(i===my&&g&&ONE.includes(S.role)?ps*.0068+(S.rel.coach-50)*.0004+(S.rel.chem-50)*.0008:0);let w=0,d=0;
+  S.lg.str.forEach((s,i)=>{const p=.5+(s-avgS)*.014+(i===my&&g&&ONE.includes(S.role)?ps*.006+(S.rel.coach-50)*.0004+(S.rel.chem-50)*.0008:0);let w=0,d=0;
     for(let k=0;k<n;k++){const r=R();if(r<.015){d++;S.lg.rec[i].push('D')}else if(r<p){w++;S.lg.rec[i].push('W')}else S.lg.rec[i].push('L')}
     S.lg.rec[i]=S.lg.rec[i].slice(-20);S.lg.w[i]+=w;S.lg.d[i]+=d;S.lg.l[i]+=n-w-d});
   S.lp.forEach(p=>p.k==='B'?lpSimB(p,n):lpSimP(p,n))}
