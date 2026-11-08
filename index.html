@@ -1758,7 +1758,7 @@ function postseason(rep){
   const my=S.pro.team,T=i=>TEAMS[i].nick,playing=ONE.includes(S.prevRole||'')&&!ME.inj&&!psSlump();
   S.champs=S.champs||{};{const BASE=[2023,2019,null,2022,2021,1999,2014,2024,1992,2020],last=S.champs[my]??BASE[my];S.drought=last==null?'never':S.y-last}
   const myRole=S.prevRole;let ksMVP=false;const psB=blankB(),psP=blankP();
-  const ser=(a,b,need,adv,name)=>{let wa=adv,wb=0,gn=0;const sB=blankB(),sP=blankP();const p=cl(.615+(S.lg.str[a]-S.lg.str[b])*.054,.25,.87),mine=a===my||b===my;
+  const ser=(a,b,need,adv,name)=>{let wa=adv,wb=0,gn=0;const sB=blankB(),sP=blankP();const p=cl(.62+(S.lg.str[a]-S.lg.str[b])*.054,.25,.87),mine=a===my||b===my;
     while(wa<need&&wb<need){gn++;const qr=mine&&playing?psPick(myRole,gn,wa===need-1&&wb===need-1,need):'none';
       if(mine&&playing&&qr!=='none'){const meA=a===my,o=meA?b:a;
         const g=followGame({clinch:(meA?wa:wb)===need-1,title:`${name} ${gn}차전`,sub:`시리즈 ${meA?wa:wb}승 ${meA?wb:wa}패 · ${wa===need-1&&wb===need-1?'마지막 승부':(meA?wa:wb)===need-1?'이기면 시리즈 승리':(meA?wb:wa)===need-1?'지면 탈락':gn===1?'시리즈 개막전':'시리즈 진행 중'}`,me:{ab:TEAMS[my].nick,c:TEAMS[my].c,bR:kboTeamR(my)+psTeamAdj(meA),pR:kboTeamR(my)+psTeamAdj(meA)},op:{ab:TEAMS[o].nick,c:TEAMS[o].c,bR:kboTeamR(o),pR:kboTeamR(o)},home:R()<.5,role:qr,lvk:'KBO',L:LV.KBO});
@@ -5306,6 +5306,8 @@ function batOPS(){try{const lg=S.pro.league,{b}=yearTot(S.y,[lg]);return{ops:b.P
 function psTeamAdj(meA){try{return(meA?.9:-.9)+(S.rel.chem-50)*.045+(S.rel.coach-50)*.02}catch(e){return 0}}
 
 /* ===================== MLB 포스트시즌: 순위표 기준 진출·시드(1~2위 디비전 직행) · 정규시즌 종료 화면 · MLB 타자/끝내기 댓글 ===================== */
+/* MLB 포스트시즌 시드: 같은 리그는 순위, 월드시리즈는 승률 높은 쪽이 상위 시드 · 와일드카드 팀은 하위 시드 */
+function mlbSeedAdj(sd,ot,name){try{const pct=r=>r.w/Math.max(1,r.w+r.l);if(name==='월드시리즈'){const a=pct(sd.row),b=pct(ot);return a>b?1:a<b?-1:0}const L=sd.tbl[sd.lg],oi=L.findIndex(x=>x.n===ot.n);if(oi<0)return 0;return sd.rank<oi+1?1:-1}catch(e){return 0}}
 function myMLBLg(){return MLB30.AL.includes(myMLBNick())?'AL':'NL'}
 function mlbSeed(){const {out}=mlbStandings(),lg=myMLBLg(),i=out[lg].findIndex(x=>x.me);return{rank:i+1,lg,row:out[lg][i],tbl:out}}
 mlbPost=function(rep){const p=S.pro;const playing=ONE.includes(S.prevRole||'')&&!ME.inj&&!psSlump(),myW=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB').reduce((a,r)=>a+rowWAR(r),0);
@@ -5314,11 +5316,11 @@ mlbPost=function(rep){const p=S.pro;const playing=ONE.includes(S.prevRole||'')&&
   const pct=sd.row.w/Math.max(1,sd.row.w+sd.row.l),myR=LV.MLB+(pct-.5)*18+(S.rel.chem-50)*.045+(S.rel.coach-50)*.02,psB=blankB(),psP=blankP();let alive=true,reached='와일드카드 탈락';
   const same=sd.tbl[sd.lg].filter(x=>!x.me),other=sd.tbl[sd.lg==='AL'?'NL':'AL'];
   const rounds=(bye?[]:[['와일드카드 시리즈',2,same.slice(0,6)]]).concat([['디비전 시리즈',3,same.slice(0,4)],['챔피언십 시리즈',4,same.slice(0,3)],['월드시리즈',4,other.slice(0,3)]]);
-  for(const [name,need,pool] of rounds){const ot=(typeof mlbRoundOpp==='function'&&mlbRoundOpp())||pick(pool)||{n:pick(MLB30[sd.lg]),w:81,l:81},op=ot.w/Math.max(1,ot.w+ot.l),oR=LV.MLB+(op-.5)*18,oc=crestData(ot.n).c1||'#333',pw=cl(.5+(myR-oR)*.03+myW*.009,.3,.75);let wa=0,wb=0,gn=0;const sB=blankB(),sP=blankP();
+  for(const [name,need,pool] of rounds){const ot=(typeof mlbRoundOpp==='function'&&mlbRoundOpp())||pick(pool)||{n:pick(MLB30[sd.lg]),w:81,l:81},op=ot.w/Math.max(1,ot.w+ot.l),oR=LV.MLB+(op-.5)*18,oc=crestData(ot.n).c1||'#333',sAd=mlbSeedAdj(sd,ot,name),pw=cl(.5+(myR-oR)*.03+myW*.009+sAd*.02,.3,.76);let wa=0,wb=0,gn=0;const sB=blankB(),sP=blankP();
     while(wa<need&&wb<need){gn++;const qr=playing?psPick(S.prevRole,gn,wa===need-1&&wb===need-1,need):'none';
-      if(playing&&qr!=='none'){const g=followGame({clinch:wa===need-1,title:`${name} ${gn}차전`,sub:`시리즈 ${wa}승 ${wb}패 · ${wa===need-1&&wb===need-1?'마지막 승부':wa===need-1?'이기면 시리즈 승리':wb===need-1?'지면 탈락':gn===1?'시리즈 개막전':'시리즈 진행 중'}`,me:{ab:myMLBNick(),c:crestData(p.tname).c1||'#13274f',bR:myR,pR:myR},op:{ab:ot.n,c:oc,bR:oR,pR:oR},home:R()<.5,role:qr,lvk:'MLB',L:LV.MLB});
+      if(playing&&qr!=='none'){const g=followGame({clinch:wa===need-1,title:`${name} ${gn}차전`,sub:`시리즈 ${wa}승 ${wb}패 · ${wa===need-1&&wb===need-1?'마지막 승부':wa===need-1?'이기면 시리즈 승리':wb===need-1?'지면 탈락':gn===1?'시리즈 개막전':'시리즈 진행 중'}`,me:{ab:myMLBNick(),c:crestData(p.tname).c1||'#13274f',bR:myR+sAd*.5,pR:myR+sAd*.5},op:{ab:ot.n,c:oc,bR:oR,pR:oR},home:R()<.5,role:qr,lvk:'MLB',L:LV.MLB});
         S.queue.push({type:'game',g});addTo(psB,g.mb);addTo(psP,g.mp);addTo(sB,g.mb);addTo(sP,g.mp);if(g.win)wa++;else wb++;g.psLine=isP()?`올해 가을 ${psP.G}경기 ERA ${era(psP)} ${psP.K}K`:`올해 가을 ${psB.G}경기 타율 ${avg(psB)} ${psB.HR}홈런 ${psB.RBI}타점`}
-      else if(playing){const g=followGame({quiet:true,title:`${name} ${gn}차전`,sub:'',me:{ab:myMLBNick(),c:'#13274f',bR:myR,pR:myR},op:{ab:ot.n,c:oc,bR:oR,pR:oR},home:R()<.5,role:qr,lvk:'MLB',L:LV.MLB});addTo(psB,g.mb);addTo(psP,g.mp);addTo(sB,g.mb);addTo(sP,g.mp);if(g.win)wa++;else wb++}
+      else if(playing){const g=followGame({quiet:true,title:`${name} ${gn}차전`,sub:'',me:{ab:myMLBNick(),c:'#13274f',bR:myR+sAd*.5,pR:myR+sAd*.5},op:{ab:ot.n,c:oc,bR:oR,pR:oR},home:R()<.5,role:qr,lvk:'MLB',L:LV.MLB});addTo(psB,g.mb);addTo(psP,g.mp);addTo(sB,g.mb);addTo(sP,g.mp);if(g.win)wa++;else wb++}
       else{const _w=R()<pw;_w?wa++:wb++;if(typeof psLogOut==='function')psLogOut(name,gn,_w,wa,wb,ot.n)}}
     if(playing)serEnd(rep,name,wa>=need,sB,sP);
     if(wb>=need){reached=`${name} 탈락`;alive=false;break}reached=name==='월드시리즈'?'월드시리즈 우승':`${name} 통과`}
