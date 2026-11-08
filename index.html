@@ -1348,7 +1348,7 @@ const ip=o=>`${Math.floor(o/3)}.${o%3}`;
 const blankB=()=>({G:0,PA:0,AB:0,H:0,D:0,T:0,HR:0,RBI:0,R:0,BB:0,K:0,SB:0,CS:0,E:0,GDP:0});
 const blankP=()=>({G:0,GS:0,W:0,L:0,SV:0,HLD:0,outs:0,H:0,R:0,BB:0,K:0,HR:0,CG:0,SHO:0,NH:0});
 const addTo=(a,b)=>{for(const k in b)if(typeof b[k]==='number')a[k]=(a[k]||0)+b[k]};
-const PADJ={C:8,SS:7,'2B':3,CF:3,'3B':2,RF:-6,LF:-6,'1B':-9};
+const PADJ={C:4,SS:5,'2B':2,CF:2,'3B':1,RF:-6,LF:-6,'1B':-9};
 /* WAR 분리: oWAR = 타격 득점 + 대체선수 보정 / dWAR = 수비 득점 + 포지션 보정 (WAR = oWAR + dWAR) */
 function bWARsplit(b,lv){if(!b||!b.PA)return{o:0,d:0};const s=b.H-b.D-b.T-b.HR,w=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.03*b.HR)/b.PA,raa=(w-.33)/1.2*b.PA,f=b.G/140;
   const dhc=!!b._dh,dr=dhc?0:cl((x=>x<0?x*1.25:x)((defScore()-(LV[lv]||51))*.45+(sk('glove')?2.7:0)+(sk('laser')?1.8:0)),-15,15)*f-b.E*.25,pa_=dhc?-13:(PADJ[ME.pos]||0);const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+pa_*f)/10*mg}}
@@ -6033,7 +6033,7 @@ Object.assign(MENU_B,{con:{n:'컨택 훈련',ic:'🎯',w:{con:1}},pow:{n:'파워
 for(const k of Object.keys(MENU_P))delete MENU_P[k];
 Object.assign(MENU_P,{velo:{n:'구속 훈련',ic:'🔥',w:{velo:1}},stf:{n:'구위 훈련',ic:'⚾',w:{stf:1}},ctl:{n:'제구 훈련',ic:'🎯',w:{ctl:1}},pcl:{n:'볼배합 훈련',ic:'🧠',w:{pcl:1},men:1},
   sta:{n:'체력 훈련',ic:'🏃',w:{sta:1}},rest:{n:'휴식',ic:'🛌',w:{}}});
-const DEFB={rng:[{rng:.75,fld:.25},'수비범위 위주'],bal:[{rng:.5,fld:.5},'균형'],fld:[{rng:.25,fld:.75},'타구처리 위주']};
+const DEFB={rng:[{rng:.78,fld:.34},'수비범위 위주'],bal:[{rng:.56,fld:.56},'균형'],fld:[{rng:.34,fld:.78},'타구처리 위주']};
 {const _ep=ensurePlan;ensurePlan=function(){if(S&&S.plan){const b=DEFB[S.plan.defBias||'bal']||DEFB.bal;MENU_B.def.w=b[0];const M=menus();if(S.plan.main&&!M[S.plan.main])S.plan.main=null;if(S.plan.sub&&!M[S.plan.sub])S.plan.sub=undefined;if(!S.plan.main)S.plan.main=isP()?'stf':'con';if(S.plan.sub===undefined)S.plan.sub=isP()?'ctl':'pow'}return _ep()}}
 {const _vtp=vTrainPlan;vTrainPlan=function(){let h=_vtp();try{if(!isP()){const cur=S.plan.defBias||'bal',box=`<div class="pitchbox"><div class="row"><b class="sp">🧤 수비 훈련 비중</b><span class="tiny muted">수비 훈련을 고를 때 적용</span></div><div class="row wrap">${Object.entries(DEFB).map(([k,v])=>`<button class="chip ${cur===k?'on':''}" data-defb="${k}">${v[1]}</button>`).join('')}</div></div>`;
   h=h.replace('<div><div class="tiny muted" style="margin-bottom:6px">이번 기간 예상 성장',box+'<div><div class="tiny muted" style="margin-bottom:6px">이번 기간 예상 성장')}
@@ -10745,7 +10745,7 @@ if(typeof document!=='undefined'){try{const st=document.createElement('style');s
 {const _sbD=simBat;simBat=function(role,tg,L,row,lvk){const r=_sbD.apply(this,arguments);try{if(!isP()&&row&&row.b&&r&&r.m&&r.m.G){const g=r.m.G;row.b._dsum=(row.b._dsum||0)+defScore()*g;row.b._psum=(row.b._psum||0)+(PADJ[ME.pos]||0)*g;row.b._dg=(row.b._dg||0)+g}}catch(e){}return r}}
 bWARsplit=function(b,lv){if(!b||!b.PA)return{o:0,d:0};const s=b.H-b.D-b.T-b.HR,w=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.03*b.HR)/b.PA,raa=(w-.33)/1.2*b.PA,f=b.G/140;
   const has=b._dg>0,ds=has?b._dsum/b._dg:defScore(),pj=has?b._psum/b._dg:(PADJ[ME.pos]||0);
-  const dhc=!!b._dh,dr=dhc?0:cl((x=>x<0?x*1.0:x*.85)((ds-(LV[lv]||51))*.45+(sk('glove')?2.7:0)+(sk('laser')?1.8:0)),-9,11)*f-b.E*.25,pa_=dhc?-13:pj;const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+pa_*f)/10*mg}};
+  const dhc=!!b._dh,dr=dhc?0:cl((x=>x<0?x*1.0:x*.78)((ds-(LV[lv]||51))*.45+(sk('glove')?2.7:0)+(sk('laser')?1.8:0)),-9,11)*f-b.E*.25,pa_=dhc?-13:pj;const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+pa_*f)/10*mg}};
 
 /* 경기 화면: 공수교대 배너 크게 · 오른쪽 위 삼진 배지 제거 · 타구 포물선 살짝 빠르게 */
 {const _vfH=vFollow;vFollow=function(g){let h=_vfH(g);try{const e=g.ev[Math.min(g.idx,g.ev.length-1)],L=e&&e.last;
@@ -10861,7 +10861,7 @@ mlbGapPen=function(){try{if(!S||S.stage!=='pro'||!S.pro||S.pro.league!=='MLB'||S
 /* MLB: 수비(타구처리·수비범위·어깨)가 셋 다 좋으면 KBO 보너스에 더해 파워·컨택 추가 상승 — 곡선식 (설명 노노) */
 {const _sbM=spBonus;let _dk='',_dv=0;spBonus=function(k){let v=_sbM(k);try{if((k==='pow'||k==='con')&&!isP()&&S&&S.stage==='pro'&&S.pro&&S.pro.league==='MLB'&&!S.pro.minor){
   const key=S.y+'-'+S.m+'-'+ME.name;if(key!==_dk){_dk=key;const d=['fld','rng','arm'].map(x=>DV(E(x))),kk=4,sm=-kk*Math.log(d.reduce((t,x)=>t+Math.exp(-x/kk),0)/3),t=Math.pow(Math.max(0,sm-68)/22,1.4),vT=Math.pow(Math.max(0,DV(E('vis'))-65)/25,1.3)*.5;_dv=Math.min(1.3,t*(1+vT))}
-  v+=_dv*(k==='pow'?2.6:2.0)}}catch(e){}return v}}
+  v+=_dv*(k==='pow'?3.0:2.3)}}catch(e){}return v}}
 /* 댓글 중복 최종 정리: 한 커리어에서 같은 문장 댓글은 다시 안 나오게 (짧은 감탄사·릴레이 응원 제외, 최소 3개는 남김) */
 {const _cDD=comments;comments=function(tone,x){let out=_cDD(tone,x);try{if(!Array.isArray(out)||!S)return out;const G=/^(ㄹㅇ|222|인정|ㅋ+|개추|미쳤다|레전드|가자!*|ㅠ+)$/;
   const keep=[],drop=[];out.forEach(c=>{const t=c&&String(c.t||'');if(!c||c.rl||t.length<=6||G.test(t)){keep.push(c);return}if(seenHas('dd:'+t))drop.push(c);else keep.push(c)});
