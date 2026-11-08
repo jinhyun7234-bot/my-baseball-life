@@ -3787,8 +3787,8 @@ const nmL=()=>{const n=ME.name,z=n.slice(1);return{pos:[`${n} 진짜 미쳤다`,
 /* 조용히 시뮬하는 포스트시즌 경기의 내 역할 */
 function psQuietRole(r,gn){if(!r||r==='none')return'none';if(r==='SP'||r==='ace')return gn%4===1?r:'none';if(['CL','SU','MR','RP'].includes(r))return R()<.5?r:'none';return r}
 /* 시리즈 MVP: 기본 30%, 시리즈 성적에 따라 5~50% */
-function serMVPProb(sB,sP){if(isP()){if(sP.outs<6)return 0;if(sP.outs<12&&(sP.SV||0)<2)return .02;const e=sP.R*27/sP.outs,ip=sP.outs/3;let sc=(3-e)/2.4+Math.min(ip,20)/20*.35+(sP.SV||0)*.12+(sP.K/Math.max(1,ip))*.08-.15;if(sP.R>=6)sc-=.4;return cl(.14+cl(sc,-1,1.5)*.2,.02,.45)}
-  if(sB.PA<4)return .05;const o=opsN(sB);let sc=(o-.85)/.45+sB.HR*.15+sB.RBI/Math.max(1,sB.G)*.15;return cl(.14+cl(sc,-1,1.5)*.2,.02,.45)}
+function serMVPProb(sB,sP){if(isP()){if(sP.outs<6)return 0;if(sP.outs<12&&(sP.SV||0)<2)return .02;const e=sP.R*27/sP.outs,ip=sP.outs/3;let sc=(3-e)/1.7+Math.min(ip,22)/22*.7+(sP.SV||0)*.15+(sP.K/Math.max(1,ip))*.1-.2;if(sP.R>=6)sc-=.4;return cl(.14+cl(sc,-1,3)*.21,.02,.78)}
+  if(sB.PA<4)return .05;const o=opsN(sB);let sc=(o-.85)/.45+sB.HR*.15+sB.RBI/Math.max(1,sB.G)*.15;return cl(.14+cl(sc,-1,3)*.21,.02,.78)}
 const SERMVP={준플레이오프:'준플레이오프 MVP',플레이오프:'플레이오프 MVP','챔피언십 시리즈':'챔피언십 시리즈 MVP'};
 function serEnd(rep,name,won,sB,sP){if(!won)return;const p=serMVPProb(sB,sP),hit=R()<p;
   if(name==='한국시리즈'){S._ksOK=hit;return}if(name==='월드시리즈'){S._wsOK=hit;return}
@@ -10474,9 +10474,9 @@ function rpHook(onI,on,role,elim,gap,pc){try{if(!on)return'';const lead=cl((DV(o
 /* 투수인데 '○○ 없으면 타선이 안 돌아감·한 번만 더 쳐줘' 같은 타자용 댓글 최종 차단 */
 {const BX=/(없으면|빠지면|빠지니까) 타선|타선이 안 돌아|더 쳐줘|쳐줘|방망이|대타로|타순에서/;
  const _cBX=comments;comments=function(tone,x){let out=_cBX(tone,x);try{if(!isP()||!Array.isArray(out))return out;out=out.filter(c=>!(c&&BX.test(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!BX.test(String(r&&r.t||'')))})}catch(e){}return out}}
-/* 가을야구 완봉승·완투: 그 시리즈 MVP 확률 조금↑ (완봉 +0.08 · 완투 +0.04, 최대 0.55) */
+/* 가을야구 완봉승·완투: 그 시리즈 MVP 확률 조금↑ (완봉 +0.08 · 완투 +0.04, 최대 0.88) */
 {const _fgS=followGame;followGame=function(o){const g=_fgS.apply(this,arguments);try{if(isP()&&!o.intl&&/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'')&&(o.role==='SP'||o.role==='ace')&&g&&g.mp&&g.mp.outs>=27){if(g.win&&(g.mp.R||0)===0)S._psSHO=(S._psSHO||0)+1;else S._psCG=(S._psCG||0)+1}}catch(e){}return g}}
-{const _smP=serMVPProb;serMVPProb=function(sB,sP){let p=_smP(sB,sP);try{if(isP()&&(S._psSHO||S._psCG))p=Math.min(.55,p+.08*(S._psSHO||0)+.04*(S._psCG||0))}catch(e){}return p}}
+{const _smP=serMVPProb;serMVPProb=function(sB,sP){let p=_smP(sB,sP);try{if(isP()&&(S._psSHO||S._psCG))p=Math.min(.88,p+.08*(S._psSHO||0)+.04*(S._psCG||0))}catch(e){}return p}}
 {const _seS=serEnd;serEnd=function(){try{return _seS.apply(this,arguments)}finally{S._psSHO=0;S._psCG=0}}}
 
 /* ===================== 첫 화면 일러스트 (사용자 제공 이미지) ===================== */
