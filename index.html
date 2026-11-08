@@ -1916,7 +1916,7 @@ function followGame(o){
           mp.outs+=dOuts;mp.R+=myR-ueS;mp.UR=(mp.UR||0)+ueS;ra+=myR;if(t==='K')mp.K++;if(t==='BB')mp.BB++;if(['1B','2B','3B','HR'].includes(t)&&!errPA)mp.H++;if(t==='HR')mp.HR++;
           {const ot=['GO','FO','LO'].includes(t);snap(`${it} ${name}, ${t==='K'?pick(['헛스윙 삼진!','루킹 삼진!','삼진을 잡아낸다!','결정구에 헛스윙 삼진!']):t==='BB'?'볼넷 허용':errPA?'수비 실책으로 타자 출루':ot?`${pick(HTXT[t])} 처리${dOuts===2?' (병살!)':''}${t==='FO'&&r.runs?' (희생플라이)':''}`:`${pick(HTXT[t])} 허용`}${sc}${irS?(myR?` (그중 ${irS}점은 앞 투수 책임주자)`:' (앞 투수 책임주자 득점)'):''}${ueS?' · 비자책':''}${r.runs?` [${G.ab[0]} ${G.R[0]} : ${G.R[1]} ${G.ab[1]}]`:''}`,myR?'me bad':t==='K'?'me kk':'me')}meIn=true}
         if(me&&!isB&&pitching&&outs<3){if(G.ibInn!==inn){G.ibInn=inn;G.ib=0;G.hs=0;G.ir=0;G.pin=0;G.onI=0}G.pin=(G.pin||0)+1;const hit=['1B','2B','3B','HR'].includes(t);G.hs=hit?(G.hs||0)+1:t==='BB'?(G.hs||0):0;G.ib+=t==='BB'?1:0;G.ir+=(G._myR!=null?G._myR:r.runs);const big=!!(o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||''));
-          if(hit||t==='BB'||t==='HBP')G.onI=(G.onI||0)+1;const hk=big&&!o.intl?(role==='SP'?psHook(ra,t,hit,G.pin,_ace0):rpHook(G.onI,hit||t==='BB'||t==='HBP',role)):'',why=hk||(ra>=(big&&role==='SP'&&!o.intl?99:big?5:6)?`${ra}실점`:G.ir>=4?'한 이닝 대량 실점':G.hs>=4?`${G.hs}연속 안타`:G.ib>=3?'제구 난조, 볼넷 남발':role!=='SP'&&ra>=3?`${ra}실점`:'');
+          if(hit||t==='BB'||t==='HBP')G.onI=(G.onI||0)+1;const elim=/지면 탈락|마지막 승부/.test(o.sub||'')||(!!o.intl&&/8강|준결승|결승/.test(o.title||'')),close=Math.abs(G.R[0]-G.R[1])<=2,hk=big?(role==='SP'?psHook(ra,t,hit,G.pin,_ace0,elim,close):rpHook(G.onI,hit||t==='BB'||t==='HBP',role,elim,close)):'',why=hk||(ra>=(big&&role==='SP'?99:big?5:6)?`${ra}실점`:G.ir>=4?'한 이닝 대량 실점':G.hs>=4?`${G.hs}연속 안타`:G.ib>=3?'제구 난조, 볼넷 남발':role!=='SP'&&ra>=3?`${ra}실점`:'');
           if(why){pitching=false;snap(`${it} ${name}, ${why}… 감독이 직접 마운드에 올라 공을 건네받는다 (${ip(mp.outs)}이닝 ${ra}실점)`,'sub')}else if(role!=='SP'&&relInn===3&&G._p23&&outs===2){pitching=false;G._p23=0;snap(`${it} ${name}, 투구수가 늘어나자 벤치가 움직인다. 박수 속에 마운드를 내려간다 (${ip(mp.outs)}이닝 ${ra}실점)`,'sub')}}
         else if(r.runs)snap(`${it} ${G.ab[bat]} ${errPA?'상대 실책으로':pick(HTXT[t]).replace('!','')}${sc}`,'sc');
         if(half===1&&inn>=9&&G.R[1]>G.R[0])break}
@@ -10463,12 +10463,12 @@ function pwEraOK(){try{const lv=S.stage==='pro'&&S.pro?[S.pro.league]:[S.stage],
   const RE=['ㄹㅇ','가자!!!','오늘 잠 다 잤다 ㅋㅋ','미쳤다 진짜'];
   add.slice(0,2).forEach((t,i)=>{seenAdd('bw:'+t);out.splice(Math.min(i*2,out.length),0,mkC(t,R()<.35?[{nk:pick(NICKS),t:pick(RE),up:ri(30,600)}]:[]))})}catch(e){}return out}}
 /* 가을야구 선발 교체 타이밍: 5실점 이상이면 다음 출루(특히 선두타자 볼넷) 때 빠르게 교체 · 에이스·체력·실력 좋으면 조금 더 믿어줌 */
-function psHook(ra,t,hit,pin,ace){try{const on=hit||t==='BB'||t==='HBP',lead=(ace?.25:0)+cl((DV(E('sta'))-60)*.006,-.1,.15)+cl((DV(ovrE())-75)*.01,-.1,.15);
-  if(ra>=7)return`${ra}실점`;if(ra>=6)return R()<.85-lead?`${ra}실점`:'';
-  if(ra>=5&&on)return R()<.8-lead?(pin===1&&t==='BB'?`${ra}실점에 선두타자 볼넷까지`:`${ra}실점, 또 출루 허용`):'';
-  if(ra===4&&pin===1&&t==='BB')return R()<.3-lead*.6?'4실점 뒤 선두타자 볼넷':'';return''}catch(e){return ra>=5?`${ra}실점`:''}}
+function psHook(ra,t,hit,pin,ace,elim,close){try{const on=hit||t==='BB'||t==='HBP',lead=(ace?.25:0)+cl((DV(E('sta'))-60)*.006,-.1,.15)+cl((DV(ovrE())-75)*.01,-.1,.15)-(close?.1:0),th=elim?4:5;
+  if(ra>=th+2)return`${ra}실점`;if(ra>=th+1)return R()<.85-lead?`${ra}실점`:'';
+  if(ra>=th&&on)return R()<.8-lead?(pin===1&&t==='BB'?`${ra}실점에 선두타자 볼넷까지`:`${ra}실점, 또 출루 허용`):'';
+  if(ra===th-1&&pin===1&&t==='BB')return R()<.3-lead*.6+(elim?.1:0)?`${ra}실점 뒤 선두타자 볼넷`:'';return''}catch(e){return ra>=5?`${ra}실점`:''}}
 /* 가을야구 불펜 교체: 한 이닝 3~4명 출루 허용이면 빠르게 교체 · 실력·체력 좋으면(마무리면 더) 조금 더 믿어줌 */
-function rpHook(onI,on,role){try{if(!on)return'';const lead=cl((DV(ovrE())-75)*.01,-.1,.15)+cl((DV(E('sta'))-55)*.004,-.08,.08)+(role==='CL'?.1:0);
+function rpHook(onI,on,role,elim,close){try{if(!on)return'';const lead=cl((DV(ovrE())-75)*.01,-.1,.15)+cl((DV(E('sta'))-55)*.004,-.08,.08)+(role==='CL'?.1:0)-(elim?.12:0)-(close?.08:0);
   if(onI>=4)return R()<.8-lead?`한 이닝 ${onI}명 출루 허용`:'';if(onI===3)return R()<.45-lead?'한 이닝 세 번째 출루 허용':'';return''}catch(e){return''}}
 
 /* ===================== 첫 화면 일러스트 (사용자 제공 이미지) ===================== */
