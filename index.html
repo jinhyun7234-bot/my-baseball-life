@@ -10419,7 +10419,7 @@ function myBrk(){try{const pp=S.plan&&S.plan.pitch;if(pp&&pp!=='FB'&&PITCHES.inc
 
 /* ===== 매년 스프링캠프 보직 면담 (프로 2년차부터) · 잘해온 투수는 체력이 조금 모자라도 선발 대우 ===== */
 function provenP(){try{const t=careerTot(['KBO','MLB']).p;const pw=S.rows.filter(x=>x.y===S.y-1&&['KBO','MLB'].includes(x.lv)).reduce((q,x)=>q+rowWAR(x),0);return pw>=3||t.GS>=60||(t.SV+t.HLD)>=80}catch(e){return false}}
-function spOKy(){try{if(spOKNow())return true;const pv=provenP(),ng=pitchInfo().nGood;return E('sta')>=(pv?36:42)&&ng>=1}catch(e){return false}}
+function spOKy(){try{const pv=provenP(),ng=pitchInfo().nGood;if(age()<33&&spOKNow())return true;if(age()>=33&&spStaOK()&&ng>=2)return true;return E('sta')>=(pv?36:42)&&ng>=1}catch(e){return false}}
 {const _msY=monthStep;monthStep=function(rep){_msY(rep);try{if(!isP()||S.stage!=='pro'||!S.pro||S.pro.dev||S.m!==2||ME.inj)return;if(S.proRoleQY===S.y||S.yrRoleQY===S.y||!S.proRoleQ||S.pro.debut>=S.y)return;
   S.yrRoleQY=S.y;const cur=ME.pos==='SP'?'선발':S.rpPref==='CL'?'마무리':'불펜',pv=provenP();
   S.queue.push({title:'⚾ 올 시즌 보직 면담',text:`스프링캠프. 감독이 따로 불렀다.\n"지난 시즌엔 ${jo(cur,'이었지','였지')}. 올해는 어디서 던지고 싶나?"${pv?'\n"그동안 해준 게 있으니까 네 의견을 최대한 들어주마."':''}\n\n여기서 고른 보직은 다음 시즌에도 그대로 이어진다.`,
