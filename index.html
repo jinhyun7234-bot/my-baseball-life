@@ -1754,7 +1754,7 @@ function tourney(name,rep,ps){
   if(w===5&&ps>=1){S.awards.push({y:S.y,n:`${name} 최우수선수`});S.rel.fame+=4;rep.lines.push('대회 최우수선수에 선정됐다!');article(`${teamLabel()} 우승 이끈 ${ME.name}, 대회 MVP`,`프로 스카우트들의 시선이 ${ME.name}에게 쏠렸다.`,'hs')}}
 function kboTeamR(i){return LV.KBO+(S.lg.str[i]-50)*.6}
 /* 팀 전력 보정(−0.17~+0.17 안팎): 타자 득점·타점, 투수 승·패에 반영 */
-function teamD(){try{if(S.stage!=='pro'||!S.pro||S.pro.dev)return 0;if(S.pro.league==='KBO')return cl((S.lg.str[S.pro.team]-50)*.024,-.18,.18);if(S.pro.league==='MLB'&&!S.pro.minor){const o=mlbStandings().out,r=[...o.AL,...o.NL].find(x=>x.me);if(r){const pc=r.w+r.l>20?r.w/(r.w+r.l):.5;return cl((pc-.5)*1.2,-.16,.16)}}}catch(e){}return 0}
+function teamD(){try{if(S.stage!=='pro'||!S.pro||S.pro.dev)return 0;const ch=((S.rel&&S.rel.chem!=null?S.rel.chem:50)-50)*.0015;if(S.pro.league==='KBO')return cl((S.lg.str[S.pro.team]-50)*.024+ch,-.2,.2);if(S.pro.league==='MLB'&&!S.pro.minor){const o=mlbStandings().out,r=[...o.AL,...o.NL].find(x=>x.me);if(r){const pc=r.w+r.l>20?r.w/(r.w+r.l):.5;return cl((pc-.5)*1.2+ch,-.18,.18)}}}catch(e){}return 0}
 function postseason(rep){
   const st=standings(),top=st.slice(0,5).map(x=>x.i);S.lg.prev=st.map(x=>x.i);
   const my=S.pro.team,T=i=>TEAMS[i].nick,playing=ONE.includes(S.prevRole||'')&&!ME.inj&&!psSlump();
@@ -2418,7 +2418,7 @@ function lpSimP(p,n){const m=p.s,str=S.lg.str[p.t],era0=cl(4.4-(p.r-56)*.17,1.5,
   else{const apps=Math.round(n*(p.k==='CL'?.42:.46)*rn(1,.12));for(let i=0;i<apps;i++){m.G++;const outs=R()<.85?3:ri(1,5);m.outs+=outs;const er=pois(era0*.92*outs/27);m.R+=er;m.K+=pois(outs/3*(1+(p.r-56)*.02));m.BB+=pois(outs/3*.38);m.H+=pois(outs/3*cl(.9-(p.r-56)*.014,.55,1.3));
     const opp=R()<(p.k==='CL'?.6:.52)*(1+(str-50)*.012);if(opp){if(!er||R()<.35){if(p.k==='CL')m.SV++;else m.HLD++}else if(R()<.4)m.L++}else if(R()<.08)m.W++}}}
 function simLeague(g,ps){ensureLP();const n=GM.KBO[S.m],avgS=S.lg.str.reduce((a,b)=>a+b)/10,my=S.stage==='pro'&&S.pro.league==='KBO'?S.pro.team:-1;
-  S.lg.str.forEach((s,i)=>{const p=.5+(s-avgS)*.014+(i===my&&g&&ONE.includes(S.role)?ps*.0018+(S.rel.coach-50)*.0004+(S.rel.chem-50)*.0008:0);let w=0,d=0;
+  S.lg.str.forEach((s,i)=>{const p=.5+(s-avgS)*.014+(i===my?(g&&ONE.includes(S.role)?ps*.0018:0)+(S.rel.coach-50)*.0004+(S.rel.chem-50)*.0015:0);let w=0,d=0;
     for(let k=0;k<n;k++){const r=R();if(r<.015){d++;S.lg.rec[i].push('D')}else if(r<p){w++;S.lg.rec[i].push('W')}else S.lg.rec[i].push('L')}
     S.lg.rec[i]=S.lg.rec[i].slice(-20);S.lg.w[i]+=w;S.lg.d[i]+=d;S.lg.l[i]+=n-w-d});
   S.lp.forEach(p=>p.k==='B'?lpSimB(p,n):lpSimP(p,n))}
@@ -4989,7 +4989,7 @@ const MLB_CITY={시애틀:'매리너스',샌디에이고:'파드리스',토론�
 function myMLBNick(){const t=S.pro&&S.pro.tname;return MLB_CITY[t]||t}
 function mlbGames(){if(S.m<3)return S.phase===0?0:162;return S.m>9?162:Math.round(cl((S.m-3+(S.phase===2?1:.5))/7,0,1)*162)}
 function mlbStandings(){const g=mlbGames(),mine=myMLBNick(),seed=s=>{let h=2166136261;for(const c of String(s))h=Math.imul(h^c.charCodeAt(0),16777619);return((h>>>0)%10000)/10000};
-  let myBoost=0;try{myBoost=-.038+Math.max(-.02,Math.min(.014,(lastLgWAR('MLB')??0)*.0018))+cl((S.rel.coach-50)*.0002+(S.rel.chem-50)*.0003,-.015,.008)}catch(e){}
+  let myBoost=0;try{myBoost=-.04+Math.max(-.02,Math.min(.014,(lastLgWAR('MLB')??0)*.0018))+cl((S.rel.coach-50)*.0002+(S.rel.chem-50)*.0006,-.025,.018)}catch(e){}
   const out={};for(const lg of ['AL','NL']){out[lg]=MLB30[lg].map(n=>{const base=.38+seed(S.y+n)*.24+(n===mine?myBoost:0),noise=(seed(S.y+n+'x')-.5)*.06,p=cl(base+noise,.3,.7),w=Math.round(g*p);return{n,w,l:g-w,me:n===mine}}).sort((a,b)=>b.w-a.w||a.l-b.l)}
   return{g,out}}
 function myRankLine(){if(S.stage!=='pro'||!S.pro||S.pro.dev)return null;
@@ -5305,7 +5305,7 @@ function batOPS(){try{const lg=S.pro.league,{b}=yearTot(S.y,[lg]);return{ops:b.P
   else{const {p}=yearTot(S.y,[S.pro.league]),e=p.outs>=90?p.R*27/p.outs:null;if(ME.pos==='SP'&&S.role==='SP'&&e!=null&&e>=5.2)L=[`${nm} 감독 약점 잡은 거 아니냐 ERA ${e.toFixed(2)}에 계속 선발이네`,`${gn} 선발 나오는 날은 그냥 불펜데이임`,`로테이션 자리 ${gn} 전용석이냐 ㅋㅋ`]}
   L=L.filter(t=>!seenHas(t));if(!L.length)return out;const t=pick(L);seenAdd(t);S.weakY=S.y;out.splice(Math.min(out.length,ri(0,2)),0,{nk:pick(NICKS),fl:null,t,up:Math.round(ri(200,1100)*(1+S.rel.fame/30)),dn:ri(5,60),ago:pick(AGO),re:R()<.5?[{nk:pick(NICKS),t:pick(['ㄹㅇ 의문임','감독이 믿는 데는 이유가 있겠지','이건 반박 불가','진짜 무슨 사연 있냐 ㅋㅋ']),up:ri(20,300)}]:[]})}catch(e){}return out}}
 /* 포스트시즌 팀 보정: 상위 시드 유리(업셋 드묾) + 팀 케미·감독 신뢰 */
-function psTeamAdj(meA){try{return(meA?.9:-.9)+(S.rel.chem-50)*.045+(S.rel.coach-50)*.02}catch(e){return 0}}
+function psTeamAdj(meA){try{return(meA?.9:-.9)+(S.rel.chem-50)*.065+(S.rel.coach-50)*.02}catch(e){return 0}}
 
 /* ===================== MLB 포스트시즌: 순위표 기준 진출·시드(1~2위 디비전 직행) · 정규시즌 종료 화면 · MLB 타자/끝내기 댓글 ===================== */
 /* MLB 포스트시즌 시드: 같은 리그는 순위, 월드시리즈는 승률 높은 쪽이 상위 시드 · 와일드카드 팀은 하위 시드 */
@@ -5315,7 +5315,7 @@ function mlbSeed(){const {out}=mlbStandings(),lg=myMLBLg(),i=out[lg].findIndex(x
 mlbPost=function(rep){const p=S.pro;const playing=ONE.includes(S.prevRole||'')&&!ME.inj&&!psSlump(),myW=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB').reduce((a,r)=>a+rowWAR(r),0);
   const sd=mlbSeed(),lgN=sd.lg==='AL'?'아메리칸리그':'내셔널리그';if(!sd.row||sd.rank>6){rep.lines.push(`${jo(p.tname,"은","는")} ${lgN} ${sd.rank}위로 포스트시즌 진출에 실패했다.`);S.mlbRes={y:S.y,res:`최종 ${sd.rank}위`};return}
   const bye=sd.rank<=2;rep.lines.push(`${p.tname}, ${lgN} ${sd.rank}위로 포스트시즌 ${bye?'디비전 시리즈 직행':'진출'}!`);news(`${S.y} ${p.tname} 포스트시즌 진출 (${lgN} ${sd.rank}위).`);
-  const pct=sd.row.w/Math.max(1,sd.row.w+sd.row.l),myR=LV.MLB+(pct-.5)*18+(S.rel.chem-50)*.045+(S.rel.coach-50)*.02,psB=blankB(),psP=blankP();let alive=true,reached='와일드카드 탈락';
+  const pct=sd.row.w/Math.max(1,sd.row.w+sd.row.l),myR=LV.MLB+(pct-.5)*18+(S.rel.chem-50)*.065+(S.rel.coach-50)*.02,psB=blankB(),psP=blankP();let alive=true,reached='와일드카드 탈락';
   const same=sd.tbl[sd.lg].filter(x=>!x.me),other=sd.tbl[sd.lg==='AL'?'NL':'AL'];
   const rounds=(bye?[]:[['와일드카드 시리즈',2,same.slice(0,6)]]).concat([['디비전 시리즈',3,same.slice(0,4)],['챔피언십 시리즈',4,same.slice(0,3)],['월드시리즈',4,other.slice(0,3)]]);
   for(const [name,need,pool] of rounds){const ot=(typeof mlbRoundOpp==='function'&&mlbRoundOpp())||pick(pool)||{n:pick(MLB30[sd.lg]),w:81,l:81},op=ot.w/Math.max(1,ot.w+ot.l),oR=LV.MLB+(op-.5)*18,oc=crestData(ot.n).c1||'#333',sAd=mlbSeedAdj(sd,ot,name),pw=cl(.5+(myR-oR)*.03+myW*.009+sAd*.02,.3,.76);let wa=0,wb=0,gn=0;const sB=blankB(),sP=blankP();
