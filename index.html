@@ -1321,7 +1321,7 @@ const talentM=()=>cl(.8+(ME.pot-46)/34*.4,.8,1.2);
 const talentG=p=>p>=74?'S':p>=68?'A':p>=62?'B':p>=56?'C':'D';
 const E=k=>{const v=raw(k);return v>0?v+itemBonus(k):0};
 const eff=k=>{const v=E(k);return v>0?(v+ME.form*.8-Math.max(0,ME.fat-60)/3-mlbPen(k)+spBonus(k))*primeM():0};
-function primeM(){try{if(!S||S.stage!=='pro')return 1;const a=S.y-S.birth;return a>=26&&a<=31?1.05:1}catch(e){return 1}}
+function primeM(){try{if(!S||S.stage!=='pro')return 1;const a=S.y-S.birth;return a>=26&&a<=31?(ME.type==='P'?1.05:1.03):1}catch(e){return 1}}
 function ars(f=E){const q=PITCHES.map(k=>f(k)).filter(v=>v>0).sort((a,b)=>b-a);const g=i=>q[i]??Math.max(33,(q[0]||0)*.6);return g(0)*.42+g(1)*.32+g(2)*.26+(q.length>=4?2:0)}
 const pSyn=(f=E)=>{const n=PITCHES.filter(k=>f(k)>=40).length,pc=f('pcl')||45;return(pc-50)*.09*Math.max(.5,n/3)};
 const stuffC=(f=E)=>f('velo')*.31+f('stf')*.32+ars(f)*.37+pSyn(f)+(sk('spin')?3:0);
