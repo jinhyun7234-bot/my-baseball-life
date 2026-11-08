@@ -9951,8 +9951,8 @@ function ctlSwing(){try{if(!isP())return 0;const c=DV(E('ctl'));if(c>=72)return 
 /* 선발 투수로 시작: 총합은 그대로, 체력 쪽으로 재배분 (체력 +3 raw, 구속·구위·제구·볼배합 -0.75 raw) */
 {const _bmSP=buildMe;buildMe=function(cr){const me=_bmSP(cr);try{if(cr&&cr.type==='P'&&cr.pos==='SP'&&'sta' in me.r){const up=Math.min(3,60-me.r.sta);me.r.sta+=up;const ks=['velo','stf','ctl','pcl'].filter(k=>k in me.r);ks.forEach(k=>me.r[k]=cl(me.r[k]-up/ks.length,20,60))}}catch(e){}return me}}
 
-/* 훈련 탭: 투수 보직 희망 (고정 설정) — 체력이 부족하면 선발은 안내 문구 */
-{const _vtt=vTrainTab;vTrainTab=function(){let h=_vtt();try{if(!isP()||S.stage!=='pro'||!S.pro||S.pro.dev||S.stage==='ret')return h;
+/* 훈련 탭: 투수 보직 희망 (고정 설정) — 매년 스프링캠프 보직 면담으로 바뀌어서 표시 안 함 */
+{const _vtt=vTrainTab;vTrainTab=function(){let h=_vtt();return h;try{if(!isP()||S.stage!=='pro'||!S.pro||S.pro.dev||S.stage==='ret')return h;
   const pf=S.rpPref||'any',ok=typeof spOKNow==='function'?spOKNow():true,staOK=typeof spStaOK==='function'?spStaOK():true;
   const O=[['SP','선발'],['CL','마무리'],['SU','셋업'],['any','감독에게']];
   const now=ME.pos==='SP'?'선발':(S.role==='CL'?'마무리':S.role==='SU'?'셋업':'불펜');
