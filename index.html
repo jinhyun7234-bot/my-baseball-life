@@ -10798,7 +10798,7 @@ hrPw=function(){try{const p=DV(eff('pow'));if(p<60)return Math.max(.5,.82*Math.p
 /* 홈런 곡선: 파워에 지수함수로 가파르게 (문턱 없이) + 컨택 영향 (설명 노노) */
 hrPw=function(){try{const p=DV(eff('pow')),c=DV(eff('con'));const pm=cl(Math.exp(.015*(p-90)),.45,1.15),cm=cl(1+(c-75)*.004,.9,1.08);return pm*cm}catch(e){return 1}};
 /* 통산 홈런 상한 맞춤: 전체 ×0.75 (1루수 최대 ~600) · 포수는 체력 부담으로 추가 ×0.55 (최대 ~300) */
-{const _hp3=hrPw;hrPw=function(){let m=_hp3()*.68;try{if(!isP()&&ME.pos==='C')m*=.55}catch(e){}return m}}
+{const _hp3=hrPw;hrPw=function(){return _hp3()*.68}}
 /* 중견수 툴 순위: 수비범위 › 주력 › 컨택 › 어깨 › 파워 (묶음 해제) */
 POSPRIO.CF=[['rng'],['spd'],['con'],['arm'],['pow']];
 
