@@ -1348,7 +1348,7 @@ const ip=o=>`${Math.floor(o/3)}.${o%3}`;
 const blankB=()=>({G:0,PA:0,AB:0,H:0,D:0,T:0,HR:0,RBI:0,R:0,BB:0,K:0,SB:0,CS:0,E:0,GDP:0});
 const blankP=()=>({G:0,GS:0,W:0,L:0,SV:0,HLD:0,outs:0,H:0,R:0,BB:0,K:0,HR:0,CG:0,SHO:0,NH:0});
 const addTo=(a,b)=>{for(const k in b)if(typeof b[k]==='number')a[k]=(a[k]||0)+b[k]};
-const PADJ={C:8,SS:7,'2B':3,CF:3,'3B':2,RF:-6,LF:-6,'1B':-11};
+const PADJ={C:8,SS:7,'2B':3,CF:3,'3B':2,RF:-6,LF:-6,'1B':-9};
 /* WAR 분리: oWAR = 타격 득점 + 대체선수 보정 / dWAR = 수비 득점 + 포지션 보정 (WAR = oWAR + dWAR) */
 function bWARsplit(b,lv){if(!b||!b.PA)return{o:0,d:0};const s=b.H-b.D-b.T-b.HR,w=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.03*b.HR)/b.PA,raa=(w-.33)/1.2*b.PA,f=b.G/140;
   const dhc=!!b._dh,dr=dhc?0:cl((x=>x<0?x*1.25:x)((defScore()-(LV[lv]||51))*.45+(sk('glove')?2.7:0)+(sk('laser')?1.8:0)),-15,15)*f-b.E*.25,pa_=dhc?-13:(PADJ[ME.pos]||0);const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+pa_*f)/10*mg}}
