@@ -8946,10 +8946,10 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
   const isStart=r===base;
   if(isStart&&!okRest){P.pend=1;return rest>=2&&g7&&R()<.25?'MR':'none'}
   if(!isStart&&P.pend&&okRest&&gn<=3){r=base}
-  if(r===base){P.last=P.day;P.pend=0;P.lastShort=rest===3?1:0;if(rest===3){S._srNow=1}}
+  if(r===base){P.pg7=P.lg===7;P.lg=gn;P.last=P.day;P.pend=0;P.lastShort=rest===3?1:0;if(rest===3){S._srNow=1}}
   else if(r==='MR'&&rest<2)r='none';S._psRoleNow=r}catch(e){}return r}}
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(S._srNow&&isP()&&x&&x.ps&&Array.isArray(out)&&x.ipO>=15){const good=(x.ra||0)<=2&&x.ipO>=15;
-  const L=good?['3일 쉬고 나와서 이렇게 던진다고? 체력 괴물이네','체력이 좋네 3일 쉬고 와도 ㅈㄴ 잘 던지네','짧은 휴식인데 구속 안 떨어진 거 봐라 몸이 다르다','에이스는 에이스다 3일 휴식 등판을 이렇게 버티네','7차전 던지고 또 나온다고 걱정했는데 쓸데없는 걱정이었음']:
+  const L=good?['3일 쉬고 나와서 이렇게 던진다고? 체력 괴물이네','체력이 좋네 3일 쉬고 와도 ㅈㄴ 잘 던지네','짧은 휴식인데 구속 안 떨어진 거 봐라 몸이 다르다','에이스는 에이스다 3일 휴식 등판을 이렇게 버티네','며칠 쉬지도 못하고 또 나온다고 걱정했는데 쓸데없는 걱정이었음',...(S._psR&&S._psR.pg7?['7차전 던지고 또 나온다고 걱정했는데 쓸데없는 걱정이었음']:[])]:
    ['3일 쉬고 나온 거라 힘 떨어지는 게 보이긴 했다','짧은 휴식 등판이면 이 정도도 선방이다','체력 좋은 건 알지만 3일 휴식은 좀 무리였나','그래도 3일 쉬고 이만큼 끌어준 게 어디냐'];
   const pool=L.filter(t=>!seenHas(t)).sort(()=>R()-.5).slice(0,2);pool.forEach(t=>{seenAdd(t);out.splice(ri(0,Math.min(1,out.length)),0,mkC(t,[]))})}}catch(e){}return out}}
 /* KBO 가상 선수 능력치 인플레이션 방지: 매년 리그 평균을 초기 수준으로 되돌림 (ERA 1점대 리더 남발 → 현실적인 2점대) */
