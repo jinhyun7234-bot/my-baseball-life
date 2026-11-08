@@ -8837,8 +8837,8 @@ function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${
     :[`결정적인 순간에는 언제나 ${jo(nm,'이','가')} 있었습니다`,`가장 필요한 순간, 가장 필요한 한 방을 ${jo(nm,'이','가')} 해냅니다`,`이 팀이 가장 필요로 할 때, ${nm}의 방망이가 응답합니다`,`승부처의 남자, 오늘도 ${nm}입니다`];
     put(`캐스터 "${pick(L)}" 이 멘트 나올 때 소름 돋았다`,pick(['ㄹㅇ 그 순간 ${nm}밖에 안 보였음'.replace('${nm}',giv(nm)),'중계진도 흥분함 ㅋㅋ','이 장면 하이라이트 1순위']))}
   out=add.concat(out)}catch(e){}return out}}
-/* ===== 의외의 천재성: 프로 투수, 변화구 훈련 누적 5번째 달부터 변화구 훈련하는 달마다 메인 8%·서브 5% 새 변화구 (능력치 표시 50~60) ===== */
-{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(!isP()||S.stage!=='pro'||!S.pro||ME.inj)return;const pl=S.plan||{},brk=pl.main==='brk'||pl.sub==='brk';if(!brk)return;S.brkN=(S.brkN||0)+1;if(S.brkN<5||R()>=(pl.main==='brk'?.08:.05))return;
+/* ===== 의외의 천재성: 프로 투수, 변화구 메인/서브 훈련 누적 3번째 달부터 메인 7%·서브 4% 새 변화구 (능력치 표시 50~60) ===== */
+{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(!isP()||S.stage!=='pro'||!S.pro||ME.inj)return;const pl=S.plan||{},brk=pl.main==='brk'||pl.sub==='brk';if(!brk)return;S.brkN=(S.brkN||0)+1;if(S.brkN<3||R()>=(pl.main==='brk'?.07:.04))return;
   const cand=PITCHES.filter(k=>k!=='FB'&&!ME.pt[k]);if(!cand.length)return;const k=pick(cand),have=PITCHES.filter(x=>x!=='FB'&&ME.pt[x]).map(x=>ME.pt[x]),best=have.length?Math.max(...have):50;
   const bd=ri(50,60),v=cl(20+(bd-20)*.75,20,Math.max(capOf(k),20+(bd-20)*.75));ME.pt[k]=v;const nm=LBL[k];
   const how=pick([`불펜 캐치볼 중에 장난삼아 던져본 ${nm}. 포수가 미트를 내려놓고 물었다. "방금 뭐야? 다시 던져봐."`,`숙소에서 영상을 돌려보다 그립을 살짝 바꿔봤다. 다음 날 불펜에서 던진 ${nm}이 말도 안 되게 꺾였다.`,`손가락 물집 때문에 그립을 바꿔 잡았는데, 그게 오히려 ${nm}의 각을 만들어냈다. 투수코치가 한참 웃었다.`]);
