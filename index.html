@@ -10361,13 +10361,13 @@ CRIT.add('openFut');
 {const _msQ=monthStep;monthStep=function(rep){_msQ(rep);try{if(!isP())return;
   if(S.stage==='hs'&&!S.hsRoleQ&&(S.grade||1)===1&&(S.m===2||S.m===3)){S.hsRoleQ=1;
     S.queue.push({title:'⚾ 첫 스프링캠프 — 보직',text:'입학하고 처음 맞는 스프링캠프. 감독이 불펜 피칭을 지켜보다 물었다.\n"너는 어디서 던지고 싶냐? 긴 이닝 끌고 가는 선발이냐, 짧게 세게 막는 불펜이냐."',
-      ch:[{t:'선발로 던지고 싶습니다',s:'체력·변화구·볼배합 +1 · 긴 이닝에 피로↑',act:'hsRole',arg:{k:'SP'}},{t:'불펜에서 던지고 싶습니다',s:'구속·구위 +1 · 체력 −0.5',act:'hsRole',arg:{k:'RP'}},{t:'감독님께 맡기겠습니다',s:'지금 스타일 그대로 · 감독 신뢰↑ · 능력치 보너스 없음',act:'hsRole',arg:{k:''}}]});return}
+      ch:[{t:'선발로 던지고 싶습니다',s:'체력·변화구·볼배합 +1 · 긴 이닝에 피로↑',act:'hsRole',arg:{k:'SP'}},{t:'불펜에서 던지고 싶습니다',s:'구속·구위 +1 · 체력 −0.5',act:'hsRole',arg:{k:'RP'}},{t:'감독님께 맡기겠습니다',s:'지금 스타일 그대로 · 감독 신뢰↑ · 워크에식·멘탈 조금↑ · 능력치 보너스 없음',act:'hsRole',arg:{k:''}}]});return}
   if(S.stage==='pro'&&S.pro&&!S.pro.dev&&!S.proRoleQ&&S.m===2&&S.pro.debut<=S.y){S.proRoleQ=1;S.rpAsk=S.rpAsk||{sta:Math.round(DV(E('sta'))),ng:0,team:S.pro.team,lg:S.pro.league};
     S.queue.push({title:'⚾ 프로 첫 스프링캠프 — 보직',text:'프로에서 맞는 첫 스프링캠프. 감독이 따로 불렀다.\n"데뷔하고 나면 어디서 뛰고 싶나? 네 생각부터 듣고 싶다."\n\n여기서 고른 보직은 다음 시즌에도 그대로 이어진다.',
       ch:[{t:'선발 로테이션',s:'이닝·승수·큰 계약 · 체력 부담',act:'rpref',arg:{k:'SP'}},{t:'필승조 (셋업)',s:'홀드·꾸준함 · 화려함은 덜함',act:'rpref',arg:{k:'SU'}},{t:'마무리',s:'세이브·클러치 · 블론 한 번에 욕먹음',act:'rpref',arg:{k:'CL'}},{t:'감독에게 맡긴다',s:'감독 신뢰↑',act:'rpref',arg:{k:'any'}}]})}}catch(e){}}}
 ACT.hsRole=function(a){const up=(k,d)=>{const r=d*.75;if(ME.r&&k in ME.r)ME.r[k]=cl(ME.r[k]+r,20,capOf(k));else if(ME.pt&&k in ME.pt&&ME.pt[k]>0)ME.pt[k]=cl(ME.pt[k]+r,20,capOf(k))};
   if(a.k==='SP'){ME.pos='SP';up('sta',1);up('pcl',1);const bk=PITCHES.filter(p=>p!=='FB'&&(ME.pt[p]||0)>0).sort((x,y)=>ME.pt[y]-ME.pt[x])[0];if(bk)up(bk,1);ME.fat=cl(ME.fat+8,0,100);return'"선발로 가자. 대신 러닝부터 두 배다." 감독이 웃었다.'+(bk?` (체력·${LBL[bk]}·볼배합 +1)`:' (체력·볼배합 +1)')}
-  if(a.k==='RP'){ME.pos='RP';up('velo',1);up('stf',1);up('sta',-.5);return'"좋다. 위기 때 마운드에 올라갈 배짱부터 키워라." (구속·구위 +1 · 체력 −0.5)'}S.rel.coach=cl((S.rel.coach??50)+3,0,100);return'"좋은 자세다. 내가 잘 보고 정해주마."'};
+  if(a.k==='RP'){ME.pos='RP';up('velo',1);up('stf',1);up('sta',-.5);return'"좋다. 위기 때 마운드에 올라갈 배짱부터 키워라." (구속·구위 +1 · 체력 −0.5)'}S.rel.coach=cl((S.rel.coach??50)+3,0,100);ME.hid.we=cl(ME.hid.we+1.5,20,80);ME.hid.men=cl(ME.hid.men+1.5,20,80);return'"좋은 자세다. 내가 잘 보고 정해주마."'};
 CRIT.add('hsRole');
 
 /* ===================== 첫 화면 일러스트 (사용자 제공 이미지) ===================== */
