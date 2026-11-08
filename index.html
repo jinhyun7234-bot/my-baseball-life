@@ -6214,7 +6214,7 @@ function ipSum(q,stg){try{const P=q.path||[],G=P.filter(p=>/조별|예선/.test(
 function ipMe(p,AG){try{const P=isP(),o=ovrE(),weak=AG&&/홍콩|태국|필리핀/.test(p.t),edge=(o-(LV.KBO||50))/10+(weak?1.2:0);
   if(!P){const pa=ri(4,5),bb=R()<.35?1:0,ab=pa-bb,avg=cl(.27+edge*.05,.15,.55);let h=0;for(let i=0;i<ab;i++)if(R()<avg)h++;const hr=h&&R()<cl(.08+(DV(E('pow'))-60)*.006+(weak?.08:0),0,.5)?1:0,rbi=h?ri(0,h+hr*2):0;
     return`${ab}타수 ${h}안타${hr?' 1홈런':''}${rbi?` ${rbi}타점`:''}${bb?' 1볼넷':''}`}
-  if(ME.pos==='SP'){if(p._sp===undefined)p._sp=null;if(R()<(weak?.25:.5)&&!ipMe._st){ipMe._st=1;const ip=ri(5,7),er=Math.max(0,Math.round(rn(2.2-edge*.6,1.1))),k=ri(4,9);return`선발 ${ip}이닝 ${er?`${er}실점`:'무실점'} ${k}K`}return'등판 없음 · 불펜 대기'}
+  if(ME.pos==='SP'){if(!/조별|예선/.test(p.r))return'등판 없음 · 다음 경기 선발 대기';if(R()<(weak?.25:.5)&&!ipMe._st){ipMe._st=1;const ip=ri(5,7),er=Math.max(0,Math.round(rn(2.2-edge*.6,1.1))),k=ri(4,9);return`선발 ${ip}이닝 ${er?`${er}실점`:'무실점'} ${k}K`}return'등판 없음 · 불펜 대기'}
   if(R()<(weak?.35:.6)){const er=R()<cl(.18-edge*.05,.03,.4)?1:0,k=ri(0,3),o=R()<.25?ri(4,6):3;return`${Math.floor(o/3)}${['','⅓','⅔'][o%3]}이닝 ${er?'1실점':'무실점'}${k?` ${k}K`:''}`}return'등판 없음'}catch(e){return''}}
 {const _inS=intl;intl=function(rep,cy){ipMe._st=0;return _inS(rep,cy)}}
 {const _prI=postRender;postRender=function(app){const r=_prI(app);try{const q=S&&nextQ();if(q&&q.type==='intlshow'&&document.querySelector('.psf-row')&&typeof psfAnimate==='function')psfAnimate()}catch(e){}return r}}
@@ -10325,7 +10325,7 @@ function retPosK(){try{if(!isP())return ME.pos;return hofMainRole()==='SP'?'SP':
 function retPosN(){try{return POS[retPosK()]||POS[ME.pos]}catch(e){return POS[ME.pos]}}
 
 /* ===== 반기 도중 끊기: 부상·감독 면담(부진/보직)·2군행 통보·국제대회 출국이 생기면 그 달에서 멈추고 바로 보여준 뒤, 처리하면 남은 달을 이어서 진행 ===== */
-function midHit(q){try{if(!q)return false;if(q.type==='intlshow')return true;return !q.type&&/감독 면담 — |2군행 통보|트리플A행 통보|🚑|인대 손상/.test(q.title||'')}catch(e){return false}}
+function midHit(q){try{if(!q)return false;if(q.type==='intlshow')return true;return !q.type&&/감독 면담 — |2군행 통보|트리플A행 통보|🚑|인대 손상|병역 특례/.test(q.title||'')}catch(e){return false}}
 function midStop(q0){try{if(S.stage!=='pro'&&S.stage!=='hs'&&S.stage!=='univ')return false;return S.queue.slice(q0).some(midHit)}catch(e){return false}}
 {const _advMid=advance;advance=function(){try{return _advMid.apply(this,arguments)}catch(e){if(e&&e.__mid){try{save()}catch(_){}return}throw e}}}
 
@@ -10417,7 +10417,7 @@ function provenP(){try{const t=careerTot(['KBO','MLB']).p;const pw=S.rows.filter
 function spOKy(){try{if(spOKNow())return true;return provenP()&&E('sta')>=44&&pitchInfo().nGood>=2}catch(e){return false}}
 {const _msY=monthStep;monthStep=function(rep){_msY(rep);try{if(!isP()||S.stage!=='pro'||!S.pro||S.pro.dev||S.m!==2||ME.inj)return;if(S.proRoleQY===S.y||S.yrRoleQY===S.y||!S.proRoleQ||S.pro.debut>=S.y)return;
   S.yrRoleQY=S.y;const cur=ME.pos==='SP'?'선발':S.rpPref==='CL'?'마무리':'불펜',pv=provenP();
-  S.queue.push({title:'⚾ 올 시즌 보직 면담',text:`스프링캠프. 감독이 따로 불렀다.\n"지난 시즌엔 ${cur}였지. 올해는 어디서 던지고 싶나?"${pv?'\n"그동안 해준 게 있으니까 네 의견을 최대한 들어주마."':''}\n\n여기서 고른 보직은 다음 시즌에도 그대로 이어진다.`,
+  S.queue.push({title:'⚾ 올 시즌 보직 면담',text:`스프링캠프. 감독이 따로 불렀다.\n"지난 시즌엔 ${jo(cur,'이었지','였지')}. 올해는 어디서 던지고 싶나?"${pv?'\n"그동안 해준 게 있으니까 네 의견을 최대한 들어주마."':''}\n\n여기서 고른 보직은 다음 시즌에도 그대로 이어진다.`,
     ch:[{t:'선발 로테이션',s:'이닝·승수·큰 계약 · 체력 부담 · 체력·구종이 모자라면 불펜에서 시작',act:'yrRole',arg:{k:'SP'}},{t:'필승조 (셋업)',s:'홀드·꾸준함 · 화려함은 덜함',act:'yrRole',arg:{k:'SU'}},{t:'마무리',s:'세이브·클러치 · 블론 한 번에 욕먹음',act:'yrRole',arg:{k:'CL'}},{t:'감독에게 맡긴다',s:'감독이 내 능력에 맞는 보직을 정함 · 감독 신뢰↑',act:'yrRole',arg:{k:'any'}}]})}catch(e){}}}
 ACT.yrRole=function(a){let k=a.k,tx='';const ok=spOKy(),pv=provenP();
   if(k==='any'){S.rel.coach=cl((S.rel.coach??50)+3,0,100);k=ok&&DV(E('sta'))>=(pv?52:55)?'SP':(DV(E('velo'))>=66||DV(E('stf'))>=66||(pv&&ME.pos!=='SP'&&S.rpPref==='CL'))?'CL':'SU';tx=`감독은 잠깐 생각하더니 말했다. "올해는 ${({SP:'선발',CL:'마무리',SU:'필승조'})[k]}로 가자."\n`}
