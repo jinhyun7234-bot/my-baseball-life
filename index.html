@@ -5369,7 +5369,9 @@ function eraPlusLines(tone,x){if(!isP()||S.stage!=='pro'||!S.pro)return[];const 
 /* ===================== 커리어 존중 · 투수 압도 댓글(포크볼) · '역시 ○○신' ===================== */
 const KBO_ONLY=/우물 안|KBO에서만|크보에서만|국내용|내수용|크보용|해외 가면 안 통|메이저 가면 털/;
 function respectLines(){const nm=ME.name,gn=giv(nm),mw=mlbW(),ct=careerTot(PRO),rings=S.hist.rings||0,o=[];
-  if(mw>=3){o.push('메이저에서 증명하고 온 선수한테 무슨 말이 더 필요하냐',`MLB 통산 WAR ${mw.toFixed(1)} 찍고 온 선수다 존중해라`,`${gn} 돌아와 줘서 고맙다 왕의 귀환`,`메이저에서 뛰던 클라스는 어디 안 간다`)}
+  const inM=S.pro&&S.pro.league==='MLB';
+  if(mw>=3&&!inM){o.push('메이저에서 증명하고 온 선수한테 무슨 말이 더 필요하냐',`MLB 통산 WAR ${mw.toFixed(1)} 찍고 온 선수다 존중해라`,`${gn} 돌아와 줘서 고맙다 왕의 귀환`,`메이저에서 뛰던 클라스는 어디 안 간다`)}
+  else if(mw>=3&&inM){o.push(`벌써 빅리그 통산 WAR ${mw.toFixed(1)}… 메이저에서 자리 잡았다`,'메이저에서도 통한다는 거 이미 증명했다',`${gn} 빅리그에서 이 정도면 그냥 클래스임`)}
   if(ct.w>=35)o.push(`${nm} 커리어 보면 리스펙밖에 없다`,'레전드는 레전드다 기록이 말해줌',`통산 WAR ${ct.w.toFixed(0)}… 이건 명예의 전당 코스다`);
   if(rings>=2)o.push(`우승 반지 ${rings}개 있는 선수 클라스`,'큰 경기 경험 자체가 팀 자산임');
   return o}
@@ -6005,7 +6007,7 @@ function clutchMoments(x){const out=[];(x.pl||[]).forEach(p=>{if(!p.r&&p.t!=='HR
     if(x.win===false&&good&&cmX('teamwa'+S.y+(x.title||'')))add.push(mkC(pick(P?[`팀은 졌지만 ${gn}는 던졌다`,`팀졌${gn[0]}던`,`오늘도 팀은 ${gn}… 혼자 다 했는데`]:[`팀은 졌지만 ${gn}는 쳤다`,`팀졌${gn[0]}쳤 ㅋㅋㅋ`,`오늘도 팀은 ${gn}`]),[pick(['원조 팀은 병호 생각나네','이 드립 가을에 들으면 더 슬프다','혼자 야구하는 중 ㄹㅇ'])],{up:ri(700,2600)}))}
   /* 6) MLB 경력 쌓고 KBO 복귀 → 리스펙 */
   if(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'&&!(x&&x.intl)){const mw=mlbW(),ys=new Set(S.rows.filter(r=>r.lv==='MLB').map(r=>r.y)),back=ys.size&&S.y-Math.max(...ys)<=3;
-    if(back&&mw>=4&&R()<.5&&cmX('mlbresp')){const L=[`메이저 통산 WAR ${mw.toFixed(1)} 찍고 온 선수다 리스펙 박고 보자`,`메이저 ${ys.size}시즌 버틴 것 자체가 클래스임`,`${gn}는 미국에서 증명하고 온 선수라 그냥 다름`,`메이저 물 먹고 온 선수는 타석에서 여유가 다르네`,`솔직히 ${gn} 정도면 크보 와준 게 고마운 거임`];
+    if(back&&mw>=4&&S.pro&&S.pro.league!=='MLB'&&R()<.5&&cmX('mlbresp')){const L=[`메이저 통산 WAR ${mw.toFixed(1)} 찍고 온 선수다 리스펙 박고 보자`,`메이저 ${ys.size}시즌 버틴 것 자체가 클래스임`,`${gn}는 미국에서 증명하고 온 선수라 그냥 다름`,`메이저 물 먹고 온 선수는 타석에서 여유가 다르네`,`솔직히 ${gn} 정도면 크보 와준 게 고마운 거임`];
       add.push(mkC(pick(L),[pick(['인정 그 커리어는 아무도 못 깜','메이저 경력은 진짜 존중해야 됨','돌아와줘서 고맙다 진심'])],{up:ri(600,2400)}))}}
   /* 7) 레퍼런스 드립 골고루: 상황 맞는 것 중 가장 덜 나온 것 하나 */
   if(!(x&&x.intl&&false)){const perf=(()=>{try{return perfGrade()}catch(e){return'mid'}})(),mlb=S.pro&&S.pro.league==='MLB',G=[];
