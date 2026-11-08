@@ -10923,7 +10923,7 @@ try{const st=document.createElement('style');st.textContent='.hv-rcp.hv-long{jus
 /* v580: MLB — 동체시력 기준(84) 미달이면 삼진↑ · 볼배합 기준(84) 미달이면 탈삼진↓(맞혀짐) · 곡선식 (설명 노노) */
 function mlbOn(){try{return!!(S&&S.stage==='pro'&&S.pro&&S.pro.league==='MLB'&&!S.pro.minor)}catch(e){return false}}
 function visKx(){if(isP()||!mlbOn())return 0;const d=VIS_ML-DV(E('vis'));return d>0?Math.min(.07,Math.pow(d/10,1.5)*.03):0}
-function pclKr(){if(!isP()||!mlbOn())return 0;const d=PCL_ML-DV(E('pcl'));return d>0?Math.min(.25,Math.pow(d/10,1.5)*.08):0}
+function pclKr(){if(!isP()||!mlbOn())return 0;const d=PCL_ML-DV(E('pcl'));return d>0?Math.min(.15,Math.pow(d/10,1.5)*.05):0}
 {const _bpV=batPA;batPA=function(L,m,gl){try{const e=visKx();if(e>0&&m&&R()<e){m.PA++;m.AB++;m.K++;return}}catch(x){}return _bpV.apply(this,arguments)}}
 {const _mbV=meBatPA;meBatPA=function(pR,risp){try{const e=visKx();if(e>0&&R()<e)return'K'}catch(x){}return _mbV.apply(this,arguments)}}
 {const _mpV=mePitPA;mePitPA=function(bR,risp,tired){const r=_mpV.apply(this,arguments);try{if(r==='K'){const e=pclKr();if(e>0&&R()<e)return R()<.3?(R()<.8?'1B':'2B'):pick(['GO','FO','GO','LO'])}}catch(x){}return r}}
