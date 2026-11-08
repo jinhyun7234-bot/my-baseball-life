@@ -10543,13 +10543,13 @@ function aceLog(k){const y=S.y;if(!S._aceL||S._aceL.y!==y)S._aceL={y,ps:[],intl:
   const lastAny=ev.length?ev[ev.length-1]:null,lastSP=[...ev].reverse().find(e=>e.t==='SP');
   if(r===base&&lastAny&&lastAny.t==='RP'&&S._psGC-(lastAny.g||0)<2){P.last=P0?P0.last:P.last;P.pend=1;return'none'}
   if(r==='none'&&aceP()){const rs=lastSP?P.day-lastSP.d-1:9,short=lastSP&&lastSP.pc<=60;let stk=0;for(let i=ev.length-1;i>=0&&ev[i].t==='RP';i--)stk++;
-    const ok=(!lastSP||rs>=2||(short&&rs>=1))&&stk<2&&!(lastAny&&lastAny.t==='SP'&&P.day-lastAny.d<1);if(ok){const pr=(g7||S._psElimNext)?.55:short&&rs<=2?.4:.25;if(R()<pr)return'MR'}}}catch(e){}return r}}
+    const ok=(!lastSP||rs>=2||(short&&rs>=1))&&stk<2&&!(lastAny&&lastAny.t==='SP'&&P.day-lastAny.d<1);if(ok){const pcL=lastSP?lastSP.pc:99,early=lastSP&&pcL<=50&&rs<=2?Math.min(.45,.1+(50-pcL)*.012):0,pr=Math.min(.75,((g7||S._psElimNext)?.5:.2)+early);if(R()<pr)return'MR'}}}catch(e){}return r}}
 {const _fgA=followGame;followGame=function(o){const big=o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||''),k=o.intl?'intl':'ps';S._psElimNow=/지면 탈락|마지막 승부/.test(o.sub||'');
   const ev=big&&isP()?aceLog(k):null;S._aceCur=ev?{k,t:o.role==='SP'?'SP':'RP',d:k==='intl'?(ev.length?ev[ev.length-1].d+2:0):(S._psR?S._psR.day:0)}:null;
   const g=_fgA.apply(this,arguments);try{if(ev&&g&&g.mp&&g.mp.outs>0)ev.push({t:S._aceCur.t,d:S._aceCur.d,g:S._psGC||0,pc:g.pcEnd||0,ra:g.mp.R||0,o:g.mp.outs})}catch(e){}S._aceCur=null;return g}}
 /* WBC·국제대회 1선발: 선발 아닌 날 구원 확률↑ · 선발 다음 경기는 휴식 */
 {const _wR=wbcRP;wbcRP=function(t,opp,fin){try{if(t==='ace'){const ev=aceLog('intl'),last=ev.length?ev[ev.length-1]:null;if(last&&last.t==='SP'&&!last.rested){last.rested=1;return'none'}
-  const pr=fin?.55:/일본|미국|도미니카|베네수엘라|푸에르토리코/.test(opp||'')?.35:.2;return R()<pr?'MR':'none'}}catch(e){}return _wR(t,opp,fin)}}
+  const pr=fin?.5:/일본|미국|도미니카|베네수엘라|푸에르토리코/.test(opp||'')?.3:.15;return R()<pr?'MR':'none'}}catch(e){}return _wR(t,opp,fin)}}
 /* 구원 등판 관련 댓글: 승부수 · 고생이 많다(잘했을 때) · 애니콜 · 혹사 · 구원 뒤 선발 */
 {const _cAR=comments;comments=function(tone,x){let out=_cAR(tone,x);try{const C=S._aceCur;if(!Array.isArray(out)||!x||!C||!isP()||ME.pos!=='SP')return out;const ev=aceLog(C.k);
   const cur={t:C.t,d:C.d,pc:Math.round((x.ipO||0)*5.4),ra:x.ra||0,o:x.ipO||0},all=[...ev,cur],gn=giv(ME.name),good=cur.t==='RP'?cur.ra===0&&cur.o>0:(cur.o>=15&&cur.ra<=2);
