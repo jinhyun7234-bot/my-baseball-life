@@ -7773,7 +7773,7 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
 const HOF_POS=['C','1B','2B','3B','SS','LF','CF','RF'];
 const HOF_PN={C:'포수','1B':'1루수','2B':'2루수','3B':'3루수',SS:'유격수',LF:'좌익수',CF:'중견수',RF:'우익수',DH:'지명타자',SP:'선발',CL:'마무리',RP:'불펜'};
 const HOF_CAT={B:[['wwar','명예의 전당 점수',1],['war','통산 WAR',1],['owar','공격 WAR',1],['dwar','수비 WAR',1],['hr','홈런',0],['h','안타',0],['rbi','타점',0],['runs','득점',0],['sb','도루',0],['bb','볼넷',0],['avg','타율 (3000타석+)',3],['ops','OPS (3000타석+)',3],['g','출장',0],['rings','우승',0]],
-  P:[['wwar','명예의 전당 점수',1],['war','통산 WAR',1],['w','승',0],['sv','세이브',0],['hld','홀드',0],['k','탈삼진',0],['ip','이닝',1],['era','평균자책점 (1000이닝+)',2],['g','등판',0],['cg','완투',0],['rings','우승',0]]};
+  P:[['wwar@SP','명예의 전당 점수 · 선발',1],['wwar@RP','명예의 전당 점수 · 불펜',1],['war','통산 WAR',1],['w','승',0],['sv','세이브',0],['hld','홀드',0],['k','탈삼진',0],['ip','이닝',1],['era','평균자책점 (1000이닝+)',2],['g','등판',0],['cg','완투',0],['rings','우승',0]]};
 const HOF_COLS='career_id,nick,owner,team,pos,kind,prole,hof,years,end_y,war,wwar,kbo_war,mlb_war,npb_war,minor_war,g,h,hr,rbi,sb,avg,ops,pa,w,l,sv,hld,k,ip,era,rings,mvps,owar:extra->st->owar,dwar:extra->st->dwar,runs:extra->st->r,bb:extra->st->bb,cg:extra->st->cg,gs:extra->st->gs';
 const HOF_XF={owar:1,dwar:1,runs:1,bb:1,cg:1,gs:1};
 function hofCfg(){try{const c=typeof window!=='undefined'&&window.HOF_CFG;return c&&c.url&&c.key&&!/YOUR_/.test(c.url+c.key)?c:null}catch(e){return null}}
@@ -7814,7 +7814,7 @@ function vHofHall(){const L=hofLoad('hall','order=wwar.desc.nullslast&limit=400'
   return`<div class="hof-note">은퇴한 모든 플레이어의 커리어 중 포지션별 명예의 전당 점수 1위가 올라요.<br>점수 = KBO WAR ×1.0 + MLB WAR ×2.0 + 마이너 WAR (AAA ×0.5 · AA 이하 ×0.3) · 퓨처스(2군) 기록은 제외</div><div class="hof-grp">야수</div>${bat}<div class="hof-grp">투수</div>${slot('1 · 선발',sp)}${slot('2 · 마무리',cl)}${slot('3 · 불펜',rp)}`}
 function vHofRank(kind){const cats=HOF_CAT[kind],cur=cats.find(c=>c[0]===(ui.hof.cat&&ui.hof.cat[kind]))||cats[0],L=hofLoad(kind+cur[0],hofQuery(kind,cur[0]));
   let body;if(L.loading)body='<div class="hof-msg">불러오는 중…</div>';else if(L.err)body='<div class="hof-msg">순위를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>';else if(!L.data.length)body=HOF_XF[cur[0]]?'<div class="hof-msg">이 항목은 새로 올라오는 기록부터 집계돼요. 은퇴하고 기록을 올리면 여기에 이름이 올라가요!</div>':'<div class="hof-msg">아직 기록이 없어요. 은퇴하면 첫 기록을 올릴 수 있어요!</div>';
-  else body=L.data.map((r,i)=>`<div class="hof-row ${S&&S.cid===r.career_id?'me':''}"><span class="hof-rk ${i<3?'rk'+(i+1):''}">${i+1}</span><div class="hof-who">${hofWho(r)}<span class="hof-ln">${HOF_PN[r.kind==='P'?r.prole:r.pos]||''} · ${hofLine(r)}</span>${cur[0]==='wwar'||cur[0]==='war'?`<span class="hof-sub">${hofWarTxt(r)}</span>`:''}</div><span class="hof-val">${hofFmt(r,cur[0],cur[2])}</span></div>`).join('');
+  else body=L.data.map((r,i)=>`<div class="hof-row ${S&&S.cid===r.career_id?'me':''}"><span class="hof-rk ${i<3?'rk'+(i+1):''}">${i+1}</span><div class="hof-who">${hofWho(r)}<span class="hof-ln">${HOF_PN[r.kind==='P'?r.prole:r.pos]||''} · ${hofLine(r)}</span>${/^(wwar|war)/.test(cur[0])?`<span class="hof-sub">${hofWarTxt(r)}</span>`:''}</div><span class="hof-val">${hofFmt(r,cur[0],cur[2])}</span></div>`).join('');
   return`<div class="hof-cats">${cats.map(c=>`<button class="chip ${c===cur?'on':''}" data-hof="cat" data-k="${kind}" data-v="${c[0]}">${c[1]}</button>`).join('')}</div><div class="hof-list">${body}</div>`}
 function vHof(){const tab=ui.hof.tab||'hall',T=[['hall','🏛️ 명예의 전당'],['B','야수 통산 순위'],['P','투수 통산 순위']];
   const inner=!hofCfg()?'<div class="hof-msg">온라인 명예의 전당은 공식 웹사이트 버전에서 열려요.</div>':tab==='hall'?vHofHall():vHofRank(tab);
@@ -7844,6 +7844,10 @@ if(typeof document!=='undefined'){document.addEventListener('input',e=>{if(e.tar
     render()},true)}
 /* 웹사이트 버전에선 claude.ai 계정 저장 안내 숨김 */
 {const _vs20=vSlots;vSlots=function(){let h=_vs20();try{if(typeof window!=='undefined'&&window.WEB_BUILD)h=h.replace(/<div class="sl-h" style="margin-top:12px"><span>☁️ 계정 저장[\s\S]*<\/div>$/,'</div>')}catch(e){}return h}}
+
+/* 투수 명예의 전당 점수: 선발 편 / 불펜 편(마무리·셋업) 따로 */
+{const _hq=hofQuery;hofQuery=function(kind,col){const m=String(col).split('@');if(m.length<2)return _hq(kind,col);return _hq(kind,m[0])+(m[1]==='SP'?'&prole=eq.SP':'&prole=in.(CL,RP)')}}
+{const _hf=hofFmt;hofFmt=function(r,col,d){return _hf(r,String(col).split('@')[0],d)}}
 
 /* ===================== 제작자 용돈 주기 · 홈 버튼 ===================== */
 const TIP_BANK='KB국민은행',TIP_ACC='93770201727073',TIP_ACC_FMT='937702-01-727073';
