@@ -1891,7 +1891,7 @@ function followGame(o){
       if(fld===my&&!isB&&role!=='none'){const lead=G.R[my]-G.R[1-my];
         if(role==='SP'){if(inn===1&&!used){pitching=true;used=true}else if(pitching&&(pc>lim-(_bigPS0&&Math.abs(G.R[0]-G.R[1])<=2&&!_ace0?6:0)||(ra>=(o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'')?4:5)&&inn>=3)||inn>9)){pitching=false;snap(`${it} — ${name} 마운드를 내려간다 (${ip(mp.outs)}이닝 ${ra}실점, 투구수 ${pc})`,'sub')}}
         else if(!used&&crisis&&!G.crTried&&inn===crIn&&lead>=0&&lead<=3){G.crTried=1;pendC=true}
-        else if(!used&&((role==='CL'&&inn>=9&&lead>=1&&lead<=3)||(multiG&&inn===8&&lead>=0&&lead<=3)||(multiG&&inn>=9&&lead===0)||(role==='SU'&&inn===8&&lead>=0&&lead<=3)||(role==='MR'&&((inn===6&&mrOk(lead,0))||(inn===7&&mrOk(lead,1))))||(o.intl&&role==='CL'&&inn>=9&&lead>=0&&lead<=4)||(bigPS&&role!=='CL'&&inn===psEnt&&lead>=-3&&lead<=4)||(bigPS&&role==='CL'&&inn>=9&&lead>=-1&&lead<=4)||(bigPS&&inn===9&&(role==='SU'||role==='MR')&&R()<.6)||(bigPS&&role==='CL'&&inn===9&&R()<.35))){pitching=true;used=true;relInn=1;relLead=lead;snap(`${it} — ${name} 마운드에 오른다 (${lead>0?`${lead}점 리드`:lead===0?'동점':`${-lead}점 차`})${multiG&&inn>=9&&lead===0?' — 연장 승부':''}`,'sub')}
+        else if(!used&&((role==='CL'&&inn>=9&&lead>=1&&lead<=3)||(multiG&&inn===8&&lead>=0&&lead<=3)||(multiG&&inn>=9&&lead===0)||(role==='SU'&&inn===8&&lead>=0&&lead<=3)||(role==='MR'&&(o.intl?(inn>=6&&inn<=8&&Math.abs(lead)<=3):((inn===6&&mrOk(lead,0))||(inn===7&&mrOk(lead,1)))))||(o.intl&&role==='CL'&&inn>=9&&lead>=0&&lead<=4)||(bigPS&&role!=='CL'&&inn===psEnt&&lead>=-3&&lead<=4)||(bigPS&&role==='CL'&&inn>=9&&lead>=-1&&lead<=4)||(bigPS&&inn===9&&(role==='SU'||role==='MR')&&R()<.6)||(bigPS&&role==='CL'&&inn===9&&R()<.35))){pitching=true;used=true;relInn=1;relLead=lead;snap(`${it} — ${name} 마운드에 오른다 (${lead>0?`${lead}점 리드`:lead===0?'동점':`${-lead}점 차`})${multiG&&inn>=9&&lead===0?' — 연장 승부':''}`,'sub')}
         else if(role!=='SP'&&pitching){if(crisisCont){crisisCont=0;relInn++;snap(`${it} — ${name} 이어서 마운드를 지킨다`,'me')}else if(multiG&&relInn<2&&ra<=1&&Math.abs(G.R[my]-G.R[1-my])<=4){relInn++;snap(`${it} — ${name} 한 이닝 더 간다!`,'me')}else if(multiG&&relInn===2&&G._go3){relInn++;G.cl3=1;G._p23=R()<.45;snap(`${it} — ${name} 3이닝째 마운드에 선다!`,'me')}else if(role==='CL'&&(bigPS||inn>=10||o.intl)&&relInn===2&&ra===0&&R()<.3){relInn++;G.cl3=1;snap(`${it} — ${name} 3이닝째 마운드에 선다!`,'me')}else pitching=false}}
       while(outs<3){
         if(fld===my&&isB&&role==='start'&&ME.pos==='C'&&b[0]&&!b[1]&&outs<2&&R()<.075){const armD=DV(E('arm')),csP=cl(.13+(armD-50)*.0065,.08,.5),diff=G.R[my]-G.R[1-my],close=Math.abs(diff)<=2&&inn>=6,lateBig=close&&inn>=8;
@@ -9261,11 +9261,11 @@ function wbcRun(){const y=S.y,n=wbcName(y),nf=natForm(),bn=nf?nf.bonus:0,o=ovrE(
     wbcArticle(g,{oppN,stage,title,strong:WBC_STRONG.includes(oppN),rival:oppN==='대만'||oppN==='일본'});
     S.queue.push({type:'game',g});games.push(g);return g};
   /* 1라운드 */
-  const spGame=sp?(o>=66?1:0):-1;
+  const spT=sp?wbcTier():null,spGame=sp?(spT==='ace'?pool.indexOf('일본'):spT==='mid'?pool.indexOf(pick(['체코','호주'])):-1):-1;
   const others=[];for(let i=0;i<pool.length;i++)for(let j=i+1;j<pool.length;j++)others.push([pool[i],pool[j]]);others.sort(()=>R()-.5);
   const simO=([a,b])=>{const aw=R()<wbcPWin(WBC_R[a],WBC_R[b]);const ra=Math.max(0,Math.round(rn(4.2-(WBC_R[a]-55)*.25,2))),rb=Math.max(0,Math.round(rn(4.2-(WBC_R[b]-55)*.25,2)));if(aw){T[a].w++;T[b].l++}else{T[b].w++;T[a].l++}T[a].ra+=rb;T[b].ra+=ra;T[a].outs+=27;T[b].outs+=27;return`${a} ${aw?'승':'패'} ${b}`};
   const table=()=>['한국',...pool].map(t=>({t,...T[t],rpo:T[t].ra/Math.max(1,T[t].outs)})).sort((a,b)=>b.w-a.w||a.l-b.l||a.rpo-b.rpo);
-  pool.forEach((t,i)=>{const g=play(t,`${n} 1라운드 C조 ${i+1}차전`,`대한민국 vs ${t} · 도쿄돔`,'pool',65,true,sp?(i===spGame?'SP':'none'):null);const my=g.my,kr=g.R[my],op=g.R[1-my];
+  pool.forEach((t,i)=>{const g=play(t,`${n} 1라운드 C조 ${i+1}차전`,`대한민국 vs ${t} · 도쿄돔`,'pool',65,true,sp?(i===spGame?'SP':wbcRP(spT,t)):null);const my=g.my,kr=g.R[my],op=g.R[1-my];
     if(g.win){T.한국.w++;T[t].l++}else{T.한국.l++;T[t].w++}T.한국.ra+=op;T.한국.outs+=27;T[t].ra+=kr;T[t].outs+=27;
     const left=pool.length-i,k=Math.ceil(others.length/left),done=others.splice(0,k).map(simO);try{wbcPostCm(g,table(),i,pool.length)}catch(e){}
     if(i<pool.length-1){const tb=table();S.queue.push({type:'wbcmid',y,n,st:tb,rk:tb.findIndex(x=>x.t==='한국')+1,res:`대한민국 ${kr}:${op} ${t} ${g.win?'승':'패'}`,others:done.map(x=>x.replace(/(\S+) 승 (\S+)/,'$1 승 vs $2').replace(/(\S+) 패 (\S+)/,'$2 승 vs $1')),next:pool[i+1],gi:i+1})}});
@@ -9273,9 +9273,9 @@ function wbcRun(){const y=S.y,n=wbcName(y),nf=natForm(),bn=nf?nf.bonus:0,o=ovrE(
   const st=table();
   const rk=st.findIndex(x=>x.t==='한국')+1,adv=rk<=2;S._wbcPL=(st.find(x=>x.t==='한국')||{}).l||0;S.queue.push({type:'wbcpool',y,n,st,rk,adv});try{if(!adv)wbcPostCm(games[games.length-1],st,pool.length-1,pool.length,true);else wbcPostCm(games[games.length-1],st,pool.length-1,pool.length,false,true)}catch(e){}
   let res=adv?'8강':'1라운드 탈락',last=games[games.length-1];
-  if(adv){const qo=rk===1?pick(['베네수엘라','푸에르토리코']):pick(['도미니카','베네수엘라']);const g=play(qo,`${n} 8강`,`대한민국 vs ${qo} · 마이애미`,'qf',80,true,sp?(spGame===0?'SP':'none'):null);last=g;
-    if(g.win){res='4강';const so=pick(['미국','일본','도미니카'].filter(x=>x!==qo));const g2=play(so,`${n} 준결승`,`대한민국 vs ${so} · 마이애미`,'sf',95,false,sp?'none':null);last=g2;
-      if(g2.win){const fo=pick(['미국','일본','도미니카','베네수엘라'].filter(x=>x!==qo&&x!==so));const g3=play(fo,`${n} 결승전`,`대한민국 vs ${fo} · 마이애미`,'final',95,false,sp?'none':null);last=g3;res=g3.win?'우승':'준우승'}}}
+  if(adv){const qo=rk===1?pick(['베네수엘라','푸에르토리코']):pick(['도미니카','베네수엘라']);const g=play(qo,`${n} 8강`,`대한민국 vs ${qo} · 마이애미`,'qf',80,true,sp?wbcRP(spT,qo):null);last=g;
+    if(g.win){res='4강';const so=pick(['미국','일본','도미니카'].filter(x=>x!==qo));const g2=play(so,`${n} 준결승`,`대한민국 vs ${so} · 마이애미`,'sf',95,false,sp?(spT==='ace'?'SP':wbcRP(spT,so)):null);last=g2;
+      if(g2.win){const fo=pick(['미국','일본','도미니카','베네수엘라'].filter(x=>x!==qo&&x!==so));const g3=play(fo,`${n} 결승전`,`대한민국 vs ${fo} · 마이애미`,'final',95,false,sp?wbcRP(spT,fo,1):null);last=g3;res=g3.win?'우승':'준우승'}}}
   S.hist.nat=(S.hist.nat||0)+1;S.ach.nat=S.ach.nat||y;S.rel.fame=cl(S.rel.fame+4,0,100);ME.xp+=4;news(`${n} 대표팀 ${res}.`);
   if(res==='우승'){S.awards.push({y,n:`${n} 우승`});S.rel.fame=cl(S.rel.fame+8,0,100);celebrate('trophy',`${n} 우승`,'대한민국 국가대표 · 세계 정상',[])}
   else if(res==='준우승'){S.awards.push({y,n:`${n} 준우승`});S.rel.fame=cl(S.rel.fame+5,0,100)}
@@ -9397,6 +9397,9 @@ function wbcPostCm(g,tb,gi,np,fin,advF){const a=(S.arts||[]).find(x=>x.id===g.ai
   out=out.filter(c=>!BLAND.test(String(c&&c.t||'')));
   const add=L.filter(t=>!seenHas('wko:'+t)).sort(()=>R()-.5).slice(0,ko?5:3).map((t,i)=>{seenAdd('wko:'+t);return mkC(josaFix(t),R()<.5?[{nk:pick(NICKS),t:pick(['ㄹㅇ 인정','이건 박제','눈물 난다 진짜','개추 박고 감']),up:ri(100,1500)}]:[],{up:ri(3000,9600)})});
   out=add.concat(out)}catch(e){}return out}}
+/* WBC 선발 기준: 1선발급(종합 82+)만 일본전·준결승 선발 · 애매한 선발(74~81)은 약팀 상대 선발 · 그 아래는 불펜 · 선발 아닌 날엔 접전 불펜으로 가끔 */
+function wbcTier(){try{const d=DV(ovrE());return d>=82?'ace':d>=74?'mid':'pen'}catch(e){return'pen'}}
+function wbcRP(t,opp,fin){try{const strong=/일본|미국|도미니카|베네수엘라|푸에르토리코/.test(opp||'');const p=t==='pen'?(strong?.55:.45):t==='mid'?(strong?.4:.25):(fin?.35:.15);return R()<p?'MR':'none'}catch(e){return'none'}}
 
 /* ===================== 은퇴 카드 멘트: 그 선수의 가장 특출난 3~5가지를 엮기 (합니다체 · 비유) ===================== */
 function retStory(){try{
