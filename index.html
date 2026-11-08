@@ -1619,7 +1619,7 @@ function monthStep(rep){
     S.rel.coach+=fd*.03;rep.errN=(rep.errN||0)+g.m.E;rep.errG=(rep.errG||0)+g.m.G;}if(g&&S.stage==='pro')S.mom=cl((S.mom||0)*.45+ps*.7,-3,3);
   if(S.stage==='pro'&&!['off','pre','inj'].includes(role)){const lvl=ONE.includes(role)?1:(role==='fB'||role==='fP')?2:0,pl=S.lvl1||0;
     if(lvl&&pl&&lvl!==pl&&S.ach.debut){if(lvl===1){rep.lines.push(`1군 콜업! ${pick(['2군에서 보여준 게 통했다.','감독이 직접 불렀다.','엔트리에 이름이 올라갔다.'])}`);news(`${S.y}년 ${S.m}월 1군 콜업.`);if(R()<.5)article(`${ME.name}, 1군 콜업`,`${shortTeam()} 벤치가 ${jo(ME.name,'을','를')} 다시 불러올렸다. ${pick(['퓨처스에서 감을 되찾았다는 평가','최근 2군 성적이 결정적이었다는 후문','주전 부상 공백을 메울 카드'])}.`,'move')}
-      else{rep.lines.push(`1군 엔트리 말소… ${pick(['2군에서 재정비한다.','감독은 "열흘 뒤에 보자"고 했다.','최근 부진이 길었다.'])}`);news(`${S.y}년 ${S.m}월 1군 말소.`)}}
+      else{rep.lines.push(`1군 엔트리 말소… ${pick(['2군에서 재정비한다.','감독은 "열흘 뒤에 보자"고 했다.','최근 부진이 길었다.'])}`);news(`${S.y}년 ${S.m}월 1군 말소.`);try{if(S._dnH!==slH()){S._dnH=slH();const w=wkSplit();if(w)rep.lines.push(w.trim())}}catch(e){}}}
     if(lvl)S.lvl1=lvl}
   if(g&&(ONE.includes(role)||['start','fB','fP','ace','hsP'].includes(role))){const bad=ps<=-1,m=g.m;let ln='';
     if(g.kind==='B'&&m.PA>=15&&bad)ln=`부진 (${S.m}월 타율 ${avg(m)} · OPS ${ops(m)}) — 감독 신뢰 −${(-ps*1.2).toFixed(1)}`;
@@ -3460,8 +3460,7 @@ function vRecord(){let h=header();
     h+=`<div class="lsub">${[['team','팀 순위'],['bat','타자 순위'],['pit','투수 순위']].map(([k,l])=>`<button class="${ls===k?'on':''}" data-act="lseg" data-v="${k}">${l}</button>`).join('')}</div>`;
     if(ls==='team'){const st=standings(),tt=st[0].w+st[0].l,lw=st[0].w,ll=st[0].l;
       h+=`<div class="card"><div class="row"><span class="lbl sp">${S.y} KBO 정규시즌</span><span class="tiny muted">${tt?`${tt}경기 기준`:'개막 전'}</span></div>${tt?`<div class="tblw"><table class="tbl nv"><thead><tr><th>순위</th><th class="l">팀</th><th>승률</th><th>게임차</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>연속</th><th>최근10</th></tr></thead><tbody>${st.map((x,i)=>{const gb=((lw-x.w)+(x.l-ll))/2,rec=(S.lg.rec||[])[x.i],sk=streakOf(rec);return`<tr class="${x.i===my?'me':''}${i===4?' cut':''}"><td><b>${i+1}</b></td><td class="l">${crest(TEAMS[x.i].nick,18)}${TEAMS[x.i].nick}</td><td><b>${f3(x.w,x.w+x.l)}</b></td><td>${gb?gb.toFixed(1):'-'}</td><td>${x.w+x.l+x.d}</td><td>${x.w}</td><td>${x.l}</td><td>${x.d}</td><td class="${sk.endsWith('승')?'up':'dn'}">${sk}</td><td>${last10(rec)}</td></tr>`}).join('')}</tbody></table></div><div class="tiny muted">5위까지 포스트시즌 진출 · 게임차는 1위 기준</div>`:'<span class="small muted">정규시즌은 전반기에 개막해요.</span>'}</div>`;
-      const rv=S.rival;h+=`<div class="card"><span class="lbl">라이벌</span><div class="row"><div class="sp"><b>${rv.name}</b> <span class="small muted">${rv.pos} · ${rv.team!=null&&rv.team>=0?`${TEAMS[rv.team].city} ${TEAMS[rv.team].nick}`:rv.school}</span></div><span class="small">${word(rv.o)} · <b class="num">${Math.round(DV(rv.o))}</b></span></div>
-        <div class="row small"><span class="sp">나 ${Math.round(DV(ovrE()))}</span><span>${rv.name} ${Math.round(DV(rv.o))}</span></div><div class="vs"><b style="width:${cl(ovrE()/(ovrE()+rv.o)*100,5,95)}%"></b></div></div>`}
+      }
     else{const pit=ls==='pit',cats=pit?RKP:RKB,cat=(pit?ui.lcatP:ui.lcatB)||cats[0][0],r=ranking(cat,pit),d=r.def,top=r.list.slice(0,10),mine=r.list.find(x=>x.me);
       h+=`<div class="cats">${cats.map(c=>`<button class="${c[0]===cat?'on':''}" data-act="lcat" data-v="${c[0]}">${c[1]}</button>`).join('')}</div>`;
       const sub=x=>pit?`${x.s.G}경기 ${ip(x.s.outs)}이닝`:`${x.s.G}경기 ${x.s.PA}타석`;
@@ -8621,7 +8620,7 @@ function mlbSlump(){try{const {b,p}=yearTot(S.y,['MLB']);if(isP()){if(p.outs<45)
 ACT.mlbreset=function(){const now=S.y*12+S.m;S.mlbReset={until:now+2};if(S.mlbFarm)S.mlbFarm.f=false;ME.form=cl((ME.form||0)+3,-6,6);ME.fat=cl(ME.fat-20,0,100);ME.hid.men=cl(ME.hid.men+3,20,80);S.rel.fame=Math.max(0,S.rel.fame-2);
   news(`${S.y}년 ${S.m}월 트리플A 재정비 결정.`);return`트리플A로 내려가 한 달 동안 폼을 다시 잡기로 했다.`+wkSplit()};
 ACT.mlbstay=function(a){S.rel.fame=(S.rel.fame||0)+2;ME.hid.men=cl(ME.hid.men-2,20,80);S.rel.coach=cl((S.rel.coach||50)-(a&&a.again?5:3),0,100);S.mlbStayY=S.y;
-  if(a&&a.again&&R()<.5){S.mlbReset={until:S.y*12+S.m+2};return'버티겠다고 했지만, 일주일 뒤 감독은 결국 트리플A행을 통보했다. "한 달만 내려가 있어라."'}
+  if(a&&a.again&&R()<.5){S.mlbReset={until:S.y*12+S.m+2};return'버티겠다고 했지만, 일주일 뒤 감독은 결국 트리플A행을 통보했다. "한 달만 내려가 있어라."'+wkSplit()}
   return'"버티겠습니다." 감독은 고개를 끄덕였다. 매 타석, 매 이닝이 시험대다.'};
 /* ===================== KBO: 부진하면 2군 재정비 선택 · 감독 신뢰나 팀 분위기가 바닥이면 말없이 2군 통보
    - 부진 면담: 1군 주전(투수는 선발·필승조 포함)인데 타자 OPS .650 미만(120타석+) / 투수 ERA 5.80 초과(30이닝+), 5~8월 반 시즌 한 번, 확률 40%
@@ -8644,9 +8643,9 @@ function kboSlump(){try{const {b,p}=yearTot(S.y,['KBO']);if(isP()){const e=eraN(
 ACT.kboreset=function(){S.kboDown={until:S.y*12+S.m+2,why:'reset'};ME.form=cl((ME.form||0)+3,-6,6);ME.fat=cl(ME.fat-20,0,100);ME.hid.men=cl(ME.hid.men+3,20,80);news(`${S.y}년 ${S.m}월 2군 재정비.`);
   return'2군에서 한 달 동안 밸런스를 다시 잡기로 했다.'+wkSplit()};
 ACT.kbostay=function(a){S.rel.fame=(S.rel.fame||0)+2;ME.hid.men=cl(ME.hid.men-2,20,80);S.rel.coach=cl((S.rel.coach??50)-(a&&a.again?5:3),0,100);S.kboStayY=S.y;
-  if(a&&a.again&&R()<.5){S.kboDown={until:S.y*12+S.m+2,why:'stay'};return'버티겠다고 했지만 며칠 뒤 엔트리에서 이름이 빠졌다. 결국 2군행이다.'}
+  if(a&&a.again&&R()<.5){S.kboDown={until:S.y*12+S.m+2,why:'stay'};return'버티겠다고 했지만 며칠 뒤 엔트리에서 이름이 빠졌다. 결국 2군행이다.'+wkSplit()}
   return'"버티겠습니다." 감독은 말없이 고개만 끄덕였다.'};
-ACT.kbodown=function(){ME.hid.men=cl(ME.hid.men-2,20,80);return'퓨처스 구장으로 향하는 버스 안. 한 달 뒤엔 다시 올라가야 한다.'};
+ACT.kbodown=function(){ME.hid.men=cl(ME.hid.men-2,20,80);return'퓨처스 구장으로 향하는 버스 안. 한 달 뒤엔 다시 올라가야 한다.'+wkSplit()};
 /* 댓글에서 내 이름이 문장 맨 앞에 오면 성까지 붙여서 (지성 미쳤다 → 이지성 미쳤다) · 부르는 말(지성아/지성이)은 그대로 */
 function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;const full=ME.name,gn=full.slice(1);
   const re=new RegExp('(^|[.!?…~ㅋㅎ]\\s+|\\n)'+gn+'(?![아야]|'+gn+')','g');return String(t).replace(re,(m,pre,off,str)=>{const before=str.slice(Math.max(0,off+pre.length-1),off+pre.length);if(before===full[0])return m;return pre+full})}catch(e){return t}}
@@ -10360,9 +10359,9 @@ function shortTools(n){try{let w=(typeof weakTools==='function'?weakTools():[]).
 function openFutCheck(){try{if(S.stage!=='pro'||!S.pro||S.pro.league!=='KBO'||S.openFutY===S.y||S.pro.debut>S.y||(S.spLesson&&S.y*12+3<S.spLesson.until))return;if((S.queue||[]).some(q=>/보직|개막 엔트리/.test(q.title||'')))return;
   const r=decideRoleAt(3);if(r!=='fB'&&r!=='fP')return;S.openFutY=S.y;const w=shortTools(2);if(!w.length)return;const ws=w.join('·'),dev=!!S.pro.dev;
   S.queue.push({title:'📋 개막 엔트리 통보',text:`스프링캠프 마지막 날, 감독이 불렀다.\n"${dev?'아직은 육성 선수 신분이다. ':''}솔직히 말할게. 아직 ${jo(ws,'이','가')} 아쉽다. 그래서 2군에서부터 시작한다."\n"거기서 그 부분 끌어올려서 보여주면, 그때 바로 부른다."`,
-    ch:[{t:'"알겠습니다. 금방 올라가겠습니다"',s:'2군에서 시즌 시작 · 멘탈 조금↑ · 감독 신뢰 조금↑',act:'openFut',arg:{ok:1}},{t:'아무 말 없이 고개를 끄덕인다',s:'2군에서 시즌 시작 · 속은 답답함 · 멘탈 조금↓',act:'openFut',arg:{ok:0}}]})}catch(e){}}
+    ch:[{t:'"알겠습니다. 금방 올라가겠습니다"',s:'2군에서 시즌 시작 · 약점 집중 보완 · 멘탈 조금↑ · 감독 신뢰 조금↑',act:'openFut',arg:{ok:1}},{t:'아무 말 없이 고개를 끄덕인다',s:'2군에서 시즌 시작 · 약점 집중 보완 · 속은 답답함 · 멘탈 조금↓',act:'openFut',arg:{ok:0}}]})}catch(e){}}
 {const _msO=monthStep;monthStep=function(rep){_msO(rep);if(S.m===2)openFutCheck()}}
-ACT.openFut=function(a){if(a&&a.ok){ME.hid.men=cl(ME.hid.men+1,20,80);S.rel.coach=cl((S.rel.coach??50)+1,0,100);return'퓨처스 구장 라커에 짐을 풀었다. 1군 콜이 올 때까지 할 일은 정해져 있다.'}ME.hid.men=cl(ME.hid.men-1,20,80);return'버스 창밖이 유난히 길게 느껴졌다. 그래도 공은 다시 잡아야 한다.'};
+ACT.openFut=function(a){const W=wkSplit();S._dnH=S.y+'-1';if(a&&a.ok){ME.hid.men=cl(ME.hid.men+1,20,80);S.rel.coach=cl((S.rel.coach??50)+1,0,100);return'퓨처스 구장 라커에 짐을 풀었다. 1군 콜이 올 때까지 할 일은 정해져 있다.'+W}ME.hid.men=cl(ME.hid.men-1,20,80);return'버스 창밖이 유난히 길게 느껴졌다. 그래도 공은 다시 잡아야 한다.'+W};
 CRIT.add('openFut');
 
 /* ===== 투수 보직 첫 면담: 고교 입학 직후 스프링캠프 · 프로 첫 스프링캠프 — 감독이 어디서 던지고 싶은지 묻는다 ===== */
