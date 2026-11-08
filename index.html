@@ -1320,7 +1320,8 @@ function ceilAt(k){const a=S&&S.me===ME?age():16,g=gtOf();return capOf(k)-Math.m
 const talentM=()=>cl(.8+(ME.pot-46)/34*.4,.8,1.2);
 const talentG=p=>p>=74?'S':p>=68?'A':p>=62?'B':p>=56?'C':'D';
 const E=k=>{const v=raw(k);return v>0?v+itemBonus(k):0};
-const eff=k=>{const v=E(k);return v>0?v+ME.form*.8-Math.max(0,ME.fat-60)/3-mlbPen(k)+spBonus(k):0};
+const eff=k=>{const v=E(k);return v>0?(v+ME.form*.8-Math.max(0,ME.fat-60)/3-mlbPen(k)+spBonus(k))*primeM():0};
+function primeM(){try{if(!S||S.stage!=='pro')return 1;const a=S.y-S.birth;return a>=26&&a<=31?1.05:1}catch(e){return 1}}
 function ars(f=E){const q=PITCHES.map(k=>f(k)).filter(v=>v>0).sort((a,b)=>b-a);const g=i=>q[i]??Math.max(33,(q[0]||0)*.6);return g(0)*.42+g(1)*.32+g(2)*.26+(q.length>=4?2:0)}
 const pSyn=(f=E)=>{const n=PITCHES.filter(k=>f(k)>=40).length,pc=f('pcl')||45;return(pc-50)*.09*Math.max(.5,n/3)};
 const stuffC=(f=E)=>f('velo')*.31+f('stf')*.32+ars(f)*.37+pSyn(f)+(sk('spin')?3:0);
@@ -10295,9 +10296,9 @@ const TR_SCALE=.9;
 try{TR.forEach(t=>{if(!t||!t.a||typeof t.d!=='string')return;t.d=t.d.replace(/([+−-])(\d+(?:\.\d+)?)(%p?)/g,(m,sg,n,u)=>{const v=Math.round(parseFloat(n)*TR_SCALE*10)/10;return sg+(v%1?v.toFixed(1):String(v))+u})})}catch(e){}
 {const _taS=trAdj;trAdj=function(type,ctx,season){const o=_taS(type,ctx,season);try{o.hit*=TR_SCALE;o.k*=TR_SCALE;o.bb*=TR_SCALE;o.gap*=TR_SCALE;o.hr=1+(o.hr-1)*TR_SCALE}catch(e){}return o}}
 
-/* 33세부터 훈련 효과 미세 감소: 오른 만큼에 (1−0.03×(나이−32)) 적용 · 최소 ×0.8 */
-{const _tmA=trainMonth;trainMonth=function(rep){const a=(()=>{try{return age()}catch(e){return 0}})();if(a<33||!ME)return _tmA(rep);
-  const r0={...ME.r},p0=ME.pt?{...ME.pt}:null;const out=_tmA(rep);try{const f=Math.max(.7,1-.03*Math.pow(1.25,a-33));
+/* 30세부터 훈련 효과 서서히 감소: 오른 만큼에 (1−0.02×1.25^(나이−30)) 적용 · 최소 ×0.7 */
+{const _tmA=trainMonth;trainMonth=function(rep){const a=(()=>{try{return age()}catch(e){return 0}})();if(a<30||!ME)return _tmA(rep);
+  const r0={...ME.r},p0=ME.pt?{...ME.pt}:null;const out=_tmA(rep);try{const f=Math.max(.7,1-.02*Math.pow(1.25,a-30));
   for(const k in r0){if(typeof ME.r[k]==='number'&&typeof r0[k]==='number'&&ME.r[k]>r0[k])ME.r[k]=r0[k]+(ME.r[k]-r0[k])*f}
   if(p0&&ME.pt)for(const k in p0){if(typeof ME.pt[k]==='number'&&typeof p0[k]==='number'&&ME.pt[k]>p0[k]&&p0[k]>0)ME.pt[k]=p0[k]+(ME.pt[k]-p0[k])*f}}catch(e){}return out}}
 
@@ -10397,13 +10398,12 @@ function dnMark(){try{S._dnH=slH()}catch(e){}}
 /* 내가 훈련 중인 변화구(훈련 탭에서 고른 구종) → 없으면 가장 좋은 변화구 */
 function myBrk(){try{const pp=S.plan&&S.plan.pitch;if(pp&&pp!=='FB'&&PITCHES.includes(pp)&&(ME.pt[pp]||0)>0)return pp;return PITCHES.filter(p=>p!=='FB'&&(ME.pt[p]||0)>0).sort((x,y)=>ME.pt[y]-ME.pt[x])[0]||null}catch(e){return null}}
 
-/* ===== 투수 시즌 기록 업적: 10·20·30·40 세이브/홀드, 10·20·30승, 첫 세이브·첫 홀드 (달성마다 성장 포인트 숫자에 비례) ===== */
-(function(){const at=ACH.findIndex(a=>a[0]==='first_w')+1,add=[['first_qs','프로 첫 퀄리티스타트','P'],['first_sv','프로 첫 세이브','P'],['first_hld','프로 첫 홀드','P'],['w10','시즌 10승','P'],['w20','시즌 20승','P'],['w30','시즌 30승','P'],['sv10','시즌 10세이브','P'],['sv20','시즌 20세이브','P'],['sv30','시즌 30세이브','P'],['hld10','시즌 10홀드','P'],['hld20','시즌 20홀드','P'],['hld30','시즌 30홀드','P'],['hld40','시즌 40홀드','P']];
+/* ===== 투수 시즌 기록 업적: 10·20·30·40 세이브/홀드, 10·20·30승 (달성마다 성장 포인트 숫자에 비례) ===== */
+(function(){const at=ACH.findIndex(a=>a[0]==='first_w')+1,add=[['first_qs','프로 첫 퀄리티스타트','P'],['w10','시즌 10승','P'],['w20','시즌 20승','P'],['w30','시즌 30승','P'],['sv10','시즌 10세이브','P'],['sv20','시즌 20세이브','P'],['sv30','시즌 30세이브','P'],['hld10','시즌 10홀드','P'],['hld20','시즌 20홀드','P'],['hld30','시즌 30홀드','P'],['hld40','시즌 40홀드','P']];
   ACH.splice(at,0,...add.filter(a=>!ACH.some(b=>b[0]===a[0])))})();
 {const _msA=monthStep;monthStep=function(rep){_msA(rep);try{if(!isP()||S.stage!=='pro'||!S.pro)return;const A=S.ach,y=S.y,PL=['KBO','MLB'],p=yearTot(y,PL).p,t=careerTot(PL).p;
   const hit=(id,txt,xp)=>{if(A[id])return;A[id]=y;ME.xp+=xp;feat(`${txt} (성장 포인트 +${xp})`,xp>=2)};
-  if(t.SV)hit('first_sv','프로 첫 세이브',1);if(t.HLD)hit('first_hld','프로 첫 홀드',1);
-  [10,20,30].forEach(n=>{if(p.W>=n)hit('w'+n,`시즌 ${n}승`,n/10)});
+    [10,20,30].forEach(n=>{if(p.W>=n)hit('w'+n,`시즌 ${n}승`,n/10)});
   [10,20,30,40].forEach(n=>{if(p.SV>=n)hit(n===40?'sv40':'sv'+n,`시즌 ${n}세이브`,n/10);if(p.HLD>=n)hit('hld'+n,`시즌 ${n}홀드`,n/10)})}catch(e){}}}
 
 /* ===== 매년 스프링캠프 보직 면담 (프로 2년차부터) · 잘해온 투수는 체력이 조금 모자라도 선발 대우 ===== */
