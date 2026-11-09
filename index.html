@@ -10746,7 +10746,7 @@ if(typeof document!=='undefined'){try{const st=document.createElement('style');s
 {const _sbD=simBat;simBat=function(role,tg,L,row,lvk){const r=_sbD.apply(this,arguments);try{if(!isP()&&row&&row.b&&r&&r.m&&r.m.G){const g=r.m.G;row.b._dsum=(row.b._dsum||0)+defScore()*g;row.b._psum=(row.b._psum||0)+(PADJ[ME.pos]||0)*g;row.b._dg=(row.b._dg||0)+g}}catch(e){}return r}}
 bWARsplit=function(b,lv){if(!b||!b.PA)return{o:0,d:0};const s=b.H-b.D-b.T-b.HR,w=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.03*b.HR)/b.PA,raa=(w-.33)/1.2*b.PA,f=b.G/140;
   const has=b._dg>0,ds=has?b._dsum/b._dg:defScore(),pj=has?b._psum/b._dg:(PADJ[ME.pos]||0);
-  const dhc=!!b._dh,dr=dhc?0:cl((x=>x<0?x*1.0:x*.78)((ds-(LV[lv]||51))*.45+(sk('glove')?2.7:0)+(sk('laser')?1.8:0)),-9,11)*f-b.E*.25,pa_=dhc?-13:pj;const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+pa_*f)/10*mg}};
+  const dhc=!!b._dh,dr=dhc?0:cl((x=>x<0?x*1.0:x*.88)((ds-(LV[lv]||51))*.45+(sk('glove')?2.7:0)+(sk('laser')?1.8:0)),-9,11)*f-b.E*.25,pa_=dhc?-13:pj;const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+pa_*f)/10*mg}};
 
 /* 경기 화면: 공수교대 배너 크게 · 오른쪽 위 삼진 배지 제거 · 타구 포물선 살짝 빠르게 */
 {const _vfH=vFollow;vFollow=function(g){let h=_vfH(g);try{const e=g.ev[Math.min(g.idx,g.ev.length-1)],L=e&&e.last;
