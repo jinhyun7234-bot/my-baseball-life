@@ -9203,7 +9203,7 @@ if(typeof CRIT!=='undefined'){CRIT.add('mlbReMinor');CRIT.add('mlbIndy')}
 {const _aw=awards;awards=function(rep){_aw(rep);try{if(isP()||!(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'))return;const rows=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB');if(!rows.length)return;
   if(S.awards.some(a=>a.y===S.y&&/골드글러브|실버슬러거/.test(a.n)))return;const b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB());if(b.G<110)return;
   const sp=bWARsplit(b,'MLB'),lg=(()=>{try{return mlbSeed().lg==='NL'?'내셔널리그':'아메리칸리그'}catch(e){return'아메리칸리그'}})(),pn=POS[ME.pos]||'지명타자',dh=ME.pos==='DH'||(S.dhConv&&S.y>=S.dhConv),got=[];
-  const rel=sp.d-(PADJ[ME.pos]||0)*b.G/140/10*1.08,pg=dh?0:rel<.15?0:rel>=.45?.9:(rel-.15)/.3*.9,ps=b.PA<450?0:sp.o<3.0?0:sp.o>=6.2?.95:(sp.o-3.0)/3.2*.95;
+  const rel=sp.d-(PADJ[ME.pos]||0)*b.G/140/10*1.08,ggLo=.15+({SS:-.2,LF:.04}[ME.pos]||0),ggT=Math.min(1,Math.max(0,(rel-ggLo)/.3)),pg=dh?0:.9*ggT*ggT*(3-2*ggT),ps=b.PA<450?0:sp.o<3.0?0:sp.o>=6.2?.95:(sp.o-3.0)/3.2*.95;
   if(R()<pg){const n=`${lg} 골드글러브 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 골드글러브 수상`,1)}
   if(R()<ps){const n=`${lg} 실버슬러거 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 실버슬러거 수상`,1)}
   if(!got.length)return;S.rel.fame=cl(S.rel.fame+3*got.length,0,100);rep.lines.push(`${got.join(' · ')} 수상!`);news(`${ME.name}, ${got.join(' · ')} 수상.`);
