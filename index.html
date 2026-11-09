@@ -1348,7 +1348,7 @@ const ip=o=>`${Math.floor(o/3)}.${o%3}`;
 const blankB=()=>({G:0,PA:0,AB:0,H:0,D:0,T:0,HR:0,RBI:0,R:0,BB:0,K:0,SB:0,CS:0,E:0,GDP:0});
 const blankP=()=>({G:0,GS:0,W:0,L:0,SV:0,HLD:0,outs:0,H:0,R:0,BB:0,K:0,HR:0,CG:0,SHO:0,NH:0});
 const addTo=(a,b)=>{for(const k in b)if(typeof b[k]==='number')a[k]=(a[k]||0)+b[k]};
-const PADJ={C:2,SS:5,'2B':2,CF:2,'3B':1,RF:-6,LF:-6,'1B':-9};
+const PADJ={C:2,SS:5,'2B':2,CF:2,'3B':1,RF:-6,LF:-6,'1B':-11};
 /* WAR 분리: oWAR = 타격 득점 + 대체선수 보정 / dWAR = 수비 득점 + 포지션 보정 (WAR = oWAR + dWAR) */
 function bWARsplit(b,lv){if(!b||!b.PA)return{o:0,d:0};const s=b.H-b.D-b.T-b.HR,w=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.03*b.HR)/b.PA,raa=(w-.33)/1.2*b.PA,f=b.G/140;
   const dhc=!!b._dh,dr=dhc?0:cl((x=>x<0?x*1.25:x)((defScore()-(LV[lv]||51))*.45+(sk('glove')?2.7:0)+(sk('laser')?1.8:0)),-15,15)*f-b.E*.25,pa_=dhc?-13:(PADJ[ME.pos]||0);const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+pa_*f)/10*mg}}
@@ -10782,6 +10782,7 @@ POSPRIO['3B']=[['pow'],['arm'],['fld','rng'],['con'],['spd']];
 prioW=function(pos){const L=POSPRIO[pos]||POSPRIO.DH,w={};L.forEach((g,i)=>{const sh=PRIO_SLOT[i]||0;g.forEach(k=>w[k]=(w[k]||0)+sh/g.length)});
   if(pos==='LF'&&w.pow!=null&&w.rng!=null){w.pow-=.025;w.rng+=.025}
   if(pos==='3B'){Object.assign(w,{pow:.25,arm:.22,fld:.11,rng:.11,con:.17,spd:.14})}
+  if(pos==='1B'&&w.pow>.01){w.pow-=.01;w.fld=(w.fld||0)+.01} /* v588: 1루수 파워 1%p → 타구처리 */
   const t=Object.values(w).reduce((a,b)=>a+b,0)||1;for(const k in w)w[k]/=t;return w};
 prioHtml=function(){const L=POSPRIO[ME.pos]||POSPRIO.DH;return L.map(g=>g.map(k=>`${PRIO_LBL[k]} <span class="num ${gcls(prioVal(k))}">${DV(prioVal(k)).toFixed(0)}</span>`).join('·')).join(' <span class="muted">›</span> ')};
 prioTxt=function(pos){return(POSPRIO[pos]||POSPRIO.DH).map(g=>g.map(k=>PRIO_LBL[k]).join('·')).join(' › ')};
