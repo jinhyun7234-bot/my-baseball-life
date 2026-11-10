@@ -10936,10 +10936,10 @@ try{const st=document.createElement('style');st.textContent='.hv-rcp.hv-long{jus
   S.cmUsed=S.cmUsed||{};S.cmN=(S.cmN||0)+1;const N=S.cmN,U=S.cmUsed,WIN=150,G=/^(ㄹㅇ|222|인정|ㅋ+|개추|미쳤다|레전드|가자!*|ㅠ+)$/,keep=[],drop=[];
   const key=c=>c&&typeof c.t==='string'?c.t.replace(/\s+/g,''):'',used=t=>{const v=U[_hA(t)];return!!v&&v>1&&N-v<WIN},nr=()=>keep.filter(c=>c&&!c.rl).length;
   const tgt=a.cm.filter(c=>c&&!c.rl).length;
-  a.cm.forEach(c=>{const t=key(c);if(!c||c.rl||t.length<=6||G.test(t)){keep.push(c);return}(used(t)?drop:keep).push(c)});
-  for(let k=0;k<3&&nr()<tgt;k++){let ex=[];try{ex=comments(tone,x)||[]}catch(e){}ex.forEach(c=>{const t=key(c);if(c&&!c.rl&&t.length>6&&!used(t)&&!keep.some(z=>key(z)===t)&&nr()<tgt)keep.push(c)})}
+  a.cm.forEach(c=>{const t=key(c);if(!c||c.rl||t.length<=4||G.test(t)){keep.push(c);return}(used(t)?drop:keep).push(c)});
+  for(let k=0;k<3&&nr()<tgt;k++){let ex=[];try{ex=comments(tone,x)||[]}catch(e){}ex.forEach(c=>{const t=key(c);if(c&&!c.rl&&t.length>4&&!used(t)&&!keep.some(z=>key(z)===t)&&nr()<tgt)keep.push(c)})}
   if(!nr()&&drop.length)keep.push(drop[0]);
-  keep.forEach(c=>{const t=key(c);if(c&&!c.rl&&t.length>6)U[_hA(t)]=N});a.cm=keep}catch(e){}return r}}
+  keep.forEach(c=>{const t=key(c);if(c&&!c.rl&&t.length>4)U[_hA(t)]=N});a.cm=keep}catch(e){}return r}}
 
 /* v580: MLB — 동체시력 기준(84) 미달이면 삼진↑ · 볼배합 기준(84) 미달이면 탈삼진↓(맞혀짐) · 곡선식 (설명 노노) */
 function mlbOn(){try{return!!(S&&S.stage==='pro'&&S.pro&&S.pro.league==='MLB'&&!S.pro.minor)}catch(e){return false}}
