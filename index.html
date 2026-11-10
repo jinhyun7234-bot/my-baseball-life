@@ -11021,7 +11021,7 @@ try{if(typeof document!=='undefined'){const st=document.createElement('style');s
   const Q=P.map(josaFix).filter(t=>!have.has(t)&&!seenHas('bb:'+t)).sort(()=>R()-.5).slice(0,need);
   Q.forEach(t=>{seenAdd('bb:'+t);out.push(mkC(t,[pick(['축하축하','ㄹㅇ 축하','건강하게만 자라라','아빠 화이팅','귀엽겠다 ㅠㅠ'])],{up:ri(80,1800)}))})}catch(e){}return out}}
 /* v599: 국가대표(WBC 등) 경기 기사 댓글 보강 — 활약·단계(8강·준결승·결승)·승패 반영, 최소 4개 */
-{const _cmW=comments;comments=function(tone,x){let out=_cmW(tone,x);try{if(!x||!x.wbc||!Array.isArray(out)||out.length>=5)return out;const gn=giv(ME.name),P=isP(),o=x.opp||'상대',W=!!x.win,st=x.st,stN={pool:'1라운드',qf:'8강',sf:'준결승',final:'결승'}[st]||'국제대회';
+{const _cmW=comments;comments=function(tone,x){let out=_cmW(tone,x);try{if(!x||!x.wbc||!Array.isArray(out)||out.length>=9)return out;const gn=giv(ME.name),P=isP(),o=x.opp||'상대',W=!!x.win,st=x.st,stN={pool:'1라운드',qf:'8강',sf:'준결승',final:'결승'}[st]||'국제대회';
   const hr=x.gHR||0,h=x.gH||0,rbi=x.gRBI||0,pa=x.gPA||0,K=x.K||0,io=x.ipO||0,ra=x.ra||0,L=[];
   if(!P&&x.played){
     if(hr>=2)L.push(`${stN}에서 멀티홈런 실화냐 ${gn} 국대 영웅이다`,`${o} 투수들 ${gn} 타석만 되면 떨겠다 ㅋㅋ 홈런 두 방`,`국제대회 멀티홈런은 진짜 역사에 남는다`,`${gn} 홈런 두 개 다 소리부터 달랐다`,`이 경기 하이라이트는 ${gn} 혼자 다 먹음`);
@@ -11037,9 +11037,17 @@ try{if(typeof document!=='undefined'){const st=document.createElement('style');s
   if(!P&&hr&&W)L.push(`도파민 터지는 경기였다 ${gn} 고맙다`);
   L.push(`${stN} 경기 보면서 손에 땀 났다`,`태극마크 달고 뛰는 ${gn} 보기 좋다`,`국대 유니폼이 잘 어울린다 ${gn}`,`응원하는 맛이 있는 경기였다`,`${o} 상대로 쉽지 않은 경기였다`,`이런 경기 보려고 야구 본다`,`중계 해설도 ${gn} 칭찬하더라`,`다음 경기 선발 라인업도 기대된다`);
   if(W)L.push('이기니까 다 좋다 ㅋㅋ','오늘 밤은 기분 좋게 잔다','대한민국 야구 아직 살아있다');else L.push('오늘은 상대가 더 잘했다 인정','아쉽지만 고개 숙이지 말자','이 경험이 다음 대회 자산이다');
+  const bigW=W&&(st==='sf'||st==='final'||x.rival),star=x.good&&x.played;
+  if(bigW){L.push('마지막 아웃 잡고 다들 끌어안을 때 나도 울었다','더그아웃 뛰쳐나오는 장면에서 눈물 터졌다 ㅠㅠ','이게 국대 야구다 진짜 가슴이 벅차다','몇 년 만에 이렇게 소리 지르면서 봤는지 모르겠다','아빠랑 같이 보다가 둘 다 울었다 ㅋㅋㅋ','오늘 일 못 하겠다 하이라이트만 계속 돌려본다','이 경기 평생 못 잊는다',`${stN}에서 이걸 이기네 미쳤다 진짜`,'야구 보길 잘했다 진심으로');
+    if(x.close)L.push('끝까지 졸이면서 봤다 심장 남아나질 않는다','한 점 차 승리라 더 짜릿하다 소름 계속 돋는다');
+    if(st==='final')L.push('세계 최고다 대한민국!!!','우승 순간 동네에서 함성 소리 들렸다 ㅋㅋㅋ','오늘은 온 국민이 야구팬이다');}
+  if(W&&x.rival&&o==='일본')L.push('한일전은 이겨야 맛이다 ㅋㅋㅋ 속이 다 시원하다','한일전 승리는 몇 번을 봐도 짜릿하다','일본 잡고 올라간다 이 맛에 국대 야구 본다',st==='sf'||st==='final'?`${stN} 한일전 승리 이건 역사다`:'한일전 이긴 날은 치킨이다');
+  if(star&&bigW){L.push(`평생 ${gn} 숭배할 것`,`${ME.name} 이름 석 자 평생 기억한다`,`오늘부로 ${gn} 국민 영웅 등극`,`${gn} 동상 세워라 진심이다`,`우리 애 이름 후보 1순위 ${gn} ㅋㅋㅋ`,`${gn} 앞으로 뭘 하든 무조건 응원한다`,`${gn} 없었으면 오늘 못 이겼다 MVP 줘라`);
+    if(!P&&hr)L.push(`${gn} 홈런 나올 때 집에서 소리 질러서 옆집에서 벽 쳤다 ㅋㅋ`,`그 홈런 타구 소리 아직도 귀에 맴돈다`);
+    if(P)L.push(`${gn} 마운드에서 포효할 때 소름 돋았다`,`그 공 하나하나에 국민들 다 숨죽였다`);}
   const sc=`${x.kr}-${x.op}`;L.push(W?`${o}전 ${sc} 승리 기분 좋다`:`${o}전 ${sc}… 아쉬운 경기`,W?`${stN} ${o}전 ${sc} 이 스코어 기억하자`:`${stN} ${o}전 ${sc} 패배 다음엔 갚아주자`,!x.played?`${gn} 오늘은 쉬어갔지만 다음 경기 기대한다`:P?`${gn} ${ip(io)}이닝 던진 거 수고했다`:`${gn} 오늘 ${pa}타석 ${h}안타`,W?`${o} 잡고 분위기 탔다 이대로 가자`:`${o} 강하긴 하다 그래도 다음이 있다`);
   const CLB=/연봉|FA|먹튀|정규시즌|1군|2군|퓨처스|트레이드|구단|우리 팀|가을야구|한국시리즈|월드시리즈/;out=out.filter(c=>!CLB.test((c&&c.t)||''));
-  const have=new Set(out.map(c=>c&&c.t)),need=Math.max(0,ri(4,6)-out.length);
+  const have=new Set(out.map(c=>c&&c.t)),need=Math.max(0,(bigW?ri(7,9):ri(4,6))-out.length);
   if(!S.wbUsed||S.wbUsed._y!==S.y)S.wbUsed={_y:S.y};const hA=t=>{let h=5381;t=t.replace(/\s+/g,'');for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return(h>>>0).toString(36)},CU=S.cmUsed||{};const Q=L.map(josaFix).filter(t=>!have.has(t)&&!S.wbUsed[t]&&!CU[hA(t)]).sort(()=>R()-.5).slice(0,need);
   Q.forEach(t=>{S.wbUsed[t]=1;out.push(mkC(t,[pick(['대한민국 화이팅','국뽕 차오른다','ㄹㅇ 소름','이게 국대지','다음 경기도 가자'])],{up:ri(200,3000)}))})}catch(e){}return out}}
 
