@@ -425,7 +425,7 @@ body.fs #app{max-width:none;padding:0;min-height:100%}
 .rc-tn{font-size:.74rem;font-weight:800;line-height:1.25}.rc-ty{font-size:.64rem;color:rgba(255,255,255,.5);line-height:1.3;font-variant-numeric:tabular-nums}
 .rc-none{font-size:.82rem;color:rgba(255,255,255,.45)}
 .rc-foot{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rc-foot span{font-size:.7rem;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.8)}
-.lsub{display:flex;gap:6px;margin:2px 0}.lsub button{flex:1;appearance:none;border:0;background:var(--soft);color:var(--ink2);font-weight:700;font-size:.85rem;padding:10px 0;border-radius:12px;cursor:pointer}.lsub button.on{background:var(--ink);color:#fff}
+.lsub{display:flex;gap:6px;margin:2px 0}.lsub button{flex:1;appearance:none;border:0;background:var(--soft);color:var(--ink2);font-weight:700;font-size:.85rem;padding:10px 0;border-radius:12px;cursor:pointer}.lsub button.on{background:var(--ink);color:var(--surface)}
 .cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.cats::-webkit-scrollbar{display:none}.cats button{flex:none;appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink2);font-weight:700;font-size:.8rem;padding:7px 12px;border-radius:999px;cursor:pointer}.cats button.on{border-color:var(--seam);color:var(--seam-t);background:rgba(49,130,246,.08)}
 .tbl.nv{font-size:.8rem;min-width:520px}.tbl.nv td,.tbl.nv th{padding:9px 5px;white-space:nowrap}.tbl.nv tr.me td{background:rgba(49,130,246,.08);font-weight:700}.tbl.nv tr.cut td{border-bottom:2px solid var(--seam)}.tbl.nv td.up{color:var(--bad)}.tbl.nv td.dn{color:var(--seam-t)}
 .rk{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line)}.rk:last-child{border-bottom:0}.rk.me{background:rgba(49,130,246,.08);border-radius:10px}
@@ -8569,7 +8569,7 @@ function wrCount(){try{document.querySelectorAll('.wr-cnt').forEach(el=>{if(el.d
   let av='';try{const lk=L.row.extra.look||{};if(ss.av&&lk.nh!=null){const fake={look:{nh:lk.nh},body:lk.body||'표준'};av=nsImg(nsURL(nsKey(fake),{team:(L.row.extra.D&&L.row.extra.D.av&&L.row.extra.D.av.c1)||null}),150)}}catch(e){}
   h=h.slice(0,a)+wrSlide(ss,i,sl.length,{embed:1,av})+h.slice(b)}catch(e){}setTimeout(wrCount,30);return h}}
 /* 해외(MLB·NPB) 계약도 기록 → 리캡 '인생 계약'은 KBO FA와 해외 계약 중 원화 기준 총액이 가장 큰 것 */
-{const _ab=ACT.abroad;ACT.abroad=function(a){const r=_ab(a);try{if(a&&!a.stay&&a.per&&a.yrs)(S.abList=S.abList||[]).push({y:S.y+1,lg:a.lg,tname:S.pro&&S.pro.tname||a.tname||a.lg,yrs:a.yrs,tot:a.per*a.yrs})}catch(e){}return r}}
+{const _ab=ACT.abroad;ACT.abroad=function(a){const r=_ab(a);try{if(a&&a.per&&a.yrs)(S.abList=S.abList||[]).push({y:S.y+1,lg:a.lg,tname:S.pro&&S.pro.tname||a.tname||a.lg,yrs:a.yrs,tot:a.per*a.yrs})}catch(e){}return r}}
 {const _rs=recapSlides;recapSlides=function(){const sl=_rs();try{const kb=(S.faList||[]).map(f=>({...f,nm:TEAMS[f.team]?TEAMS[f.team].city+' '+TEAMS[f.team].nick:'',lg:'KBO'})),ab=(S.abList||[]).map(f=>({...f,nm:String(f.tname||'').replace(/\s*\((MLB|NPB)\)/,'')}));
   const best=kb.concat(ab).sort((a,b)=>b.tot-a.tot)[0];const i=sl.findIndex(s=>s.ey==='인생 계약');
   if(best){const s={th:'teal',ey:'인생 계약',big:`${best.yrs}년 ${money(best.tot)}`,sub:`${best.y}년, ${best.nm}${best.lg!=='KBO'?` (${best.lg})`:''}.${best.lg==='MLB'?`\n총액 ${usd2(best.tot/USDM)}.`:''}\n그 가치를 증명하는 한 해였다.`};if(i>=0)sl[i]=s;else{const j=sl.findIndex(x=>x.ey==='영구결번'||x.ey==='팬들의 한마디'||x.last);sl.splice(j<0?sl.length-1:j,0,s)}}}catch(e){}return sl}}
