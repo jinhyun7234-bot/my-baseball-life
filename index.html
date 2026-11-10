@@ -1353,7 +1353,7 @@ const ip=o=>`${Math.floor(o/3)}.${o%3}`;
 const blankB=()=>({G:0,PA:0,AB:0,H:0,D:0,T:0,HR:0,RBI:0,R:0,BB:0,K:0,SB:0,CS:0,E:0,GDP:0});
 const blankP=()=>({G:0,GS:0,W:0,L:0,SV:0,HLD:0,outs:0,H:0,R:0,BB:0,K:0,HR:0,CG:0,SHO:0,NH:0});
 const addTo=(a,b)=>{for(const k in b)if(typeof b[k]==='number')a[k]=(a[k]||0)+b[k]};
-const PADJ={C:10.8,SS:9.0,'2B':2.2,CF:4.0,'3B':0.0,RF:-4.0,LF:-7.5,'1B':-12.5};
+const PADJ={C:10.8,SS:9.0,'2B':2.2,CF:2.5,'3B':0.0,RF:-4.0,LF:-7.5,'1B':-12.5};
 /* WAR 분리: oWAR = 타격 득점 + 대체선수 보정 / dWAR = 수비 득점 + 포지션 보정 (WAR = oWAR + dWAR) */
 function bWARsplit(b,lv){if(!b||!b.PA)return{o:0,d:0};const s=b.H-b.D-b.T-b.HR,w=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.03*b.HR)/b.PA,raa=(w-.33)/1.2*b.PA,f=b.G/140;
   const dhc=!!b._dh,dr=dhc?0:cl((x=>x<0?x*1.25:x)((defScore()-(LV[lv]||51))*.45+(sk('glove')?2.7:0)+(sk('laser')?1.8:0)),-15,15)*f-b.E*.25,pa_=dhc?-13:(PADJ[ME.pos]||0);const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+pa_*f)/10*mg}}
@@ -1798,7 +1798,7 @@ function awards(rep){
   const mvN=S.awards.filter(a=>a.n==='정규시즌 MVP').length,mvL=S.awards.some(a=>a.n==='정규시즌 MVP'&&a.y===S.y-1);if((isP()?(w>=6.5&&w+tcnt*.12>rn(7.4+(mvL?.45:0)+Math.min(.9,mvN*.18),.7)):(b.PA>=400&&mvpM(w,b,'KBO')+tcnt*.12>rn(8.23+(mvL?.45:0)+Math.min(.9,mvN*.18),.7)))){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
   const prior=S.rows.filter(r=>r.lv==='KBO'&&r.y<S.y),priorPA=prior.reduce((s,r)=>s+r.b.PA,0),priorO=prior.reduce((s,r)=>s+r.p.outs,0);
   if(!S.ach.roy&&S.y-S.pro.debut<5&&priorPA<60&&priorO<90&&(b.PA>=150||p.outs>=120)&&w>rn(2.4,.8)){give('신인왕');S.ach.roy=S.y}
-  if(isP()){if(w>3.7&&R()<ggProb(w+tcnt*.08,'P'))give('골든글러브 (투수)')}else if(b.G>=100&&w>3.7&&R()<ggProb(w+tcnt*.08,ME.pos))give(`골든글러브 (${POS[ME.pos]})`);
+  if(isP()){if(w>3.7&&R()<ggProb(w+tcnt*.08,'P'))give('골든글러브 (투수)')}else if(b.G>=100&&(w+(ME.pos==='C'?1:0))>3.7&&R()<ggProb(w+(ME.pos==='C'?1:0)+tcnt*.08,ME.pos))give(`골든글러브 (${POS[ME.pos]})`);
   if(got.some(x=>x.startsWith('골든')))S.ach.gg=S.ach.gg||S.y;
   const top=(c,pt,v,lo)=>{if(S.pro.league!=='KBO')return false;const r=ranking(c,pt).list;return !!(r.length&&(r[0].me||r.some(x=>x.me&&x.v===r[0].v))&&(v===undefined||v>0))};
   if(!isP()){if(top('avg',0))give('타격왕');if(top('hr',0,b.HR))give('홈런왕');if(top('rbi',0,b.RBI))give('타점왕');if(top('sb',0,b.SB))give('도루왕');if(top('h',0,b.H))give('최다안타');if(top('r',0,b.R))give('득점왕');if(top('obp',0))give('출루율왕');if(top('slg',0))give('장타율왕')}
@@ -2020,7 +2020,7 @@ function faEvent(o,w,f){
    투수 6.9 · 포수 4.8 · 1루 4.8 · 2루 4.7 · 3루 6.5 · 유격 5.1 · 외야 6.0(3자리라 기준 −0.6) · 지명 4.3
    평균에 가까우면 약 65%, 평균 +1이면 90%대, 평균 −1.5면 15% 안팎, 평균 −2 아래면 거의 없음 · WAR 3.7 이하는 절대 수상 불가, 3.7~4.7 구간은 0%에서 부드럽게 올라감 */
 const GG_AVG={P:6.9,C:4.8,'1B':4.8,'2B':4.7,'3B':6.5,SS:5.1,LF:6.0,CF:6.0,RF:6.0,DH:4.3};
-const GG_M={C:4.05,'1B':4.26,'2B':5.2,'3B':4.72,SS:5.53,LF:5.32,CF:5.52,RF:5.18}; /* 같은 포지션 안 비교: 포지션별 기준 (v608 재보정 — 포지션별 수상 빈도 같게) */
+const GG_M={C:5.03,'1B':4.76,'2B':5.15,'3B':4.25,SS:5.75,LF:4.55,CF:5.76,RF:5.06}; /* 같은 포지션 안 비교: 포지션별 기준 (v608 재보정 — 포지션별 수상 빈도 같게) */
 function ggProb(w,pos){if(w<=3.7)return 0;const m=GG_M[pos]??((GG_AVG[pos]||5)-(/^(LF|CF|RF)$/.test(pos)?.6:0)-.35),t=Math.min(1,(w-3.7)/1.0),ramp=t*t*(3-2*t);return ramp/(1+Math.exp(-(w-m)/.5))}
 function releaseCut(o,w,a,L){try{if(a<27)return false;
   const AW=/MVP|최우수|골든글러브|왕|다승|구원|탈삼진|평균자책|세이브|타점|도루|올스타/;if((S.awards||[]).some(x=>x&&x.y>=S.y-1&&AW.test(x.n)&&!/우승$/.test(x.n)))return false;
@@ -2371,8 +2371,8 @@ function spdHit(v){return v<70?-Math.pow((70-v)/35,1.3)*.013:Math.min(.01,Math.p
 function hrPw(){try{const p=DV(eff('pow'));return p<60?Math.max(.55,Math.pow(1.018,p-60)):Math.min(1.06,Math.pow(1.003,p-60))}catch(e){return 1}}
 
 /* v608: MVP — 포지션별 기준 (같은 포지션 안 비교 성격): WAR + OPS(포지션 기준 대비) 합산 지수 · 곡선 확률 · 수비 포지션은 타격 기준 낮게 · 규정 타석만 채우면 됨 */
-const MVP_O0={MLB:{C:.834,'1B':1.019,'2B':.886,'3B':.963,SS:.844,LF:1.017,CF:.865,RF:.969,DH:1.03},KBO:{C:.921,'1B':1.099,'2B':.976,'3B':1.039,SS:.943,LF:1.088,CF:.963,RF:1.076,DH:1.11}};
-const MVP_SH={C:-1.22,'1B':.43,'2B':.01,'3B':.39,SS:-.11,LF:.79,CF:.12,RF:.68,DH:1.0};
+const MVP_O0={MLB:{C:.843,'1B':1.029,'2B':.901,'3B':.966,SS:.858,LF:1.01,CF:.863,RF:.96,DH:1.04},KBO:{C:.921,'1B':1.096,'2B':.969,'3B':1.04,SS:.947,LF:1.097,CF:.968,RF:1.069,DH:1.11}};
+const MVP_SH={C:-1.43,'1B':.64,'2B':-.02,'3B':-.13,SS:.27,LF:.28,CF:-.02,RF:.18,DH:1.0};
 function mvpM(w,b,lg){try{if(!b||!b.AB)return w;const ops=(b.H+(b.BB||0))/(b.AB+(b.BB||0))+(b.H+(b.D||0)+2*(b.T||0)+3*(b.HR||0))/b.AB,pos=ME.pos;return w+12*(ops-((MVP_O0[lg]||MVP_O0.MLB)[pos]??1.0))-(MVP_SH[pos]??.5)}catch(e){return w}}
 
 /* ===================== POSITION / ORDER / GROWTH TYPE ===================== */
@@ -9220,7 +9220,7 @@ if(typeof CRIT!=='undefined'){CRIT.add('mlbReMinor');CRIT.add('mlbIndy')}
 {const _aw=awards;awards=function(rep){_aw(rep);try{if(isP()||!(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'))return;const rows=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB');if(!rows.length)return;
   if(S.awards.some(a=>a.y===S.y&&/골드글러브|실버슬러거/.test(a.n)))return;const b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB());if(b.G<110)return;
   const sp=bWARsplit(b,'MLB'),lg=(()=>{try{return mlbSeed().lg==='NL'?'내셔널리그':'아메리칸리그'}catch(e){return'아메리칸리그'}})(),pn=POS[ME.pos]||'지명타자',dh=ME.pos==='DH'||(S.dhConv&&S.y>=S.dhConv),got=[];
-  const rel=sp.d-(PADJ[ME.pos]||0)*b.G/140/10*1.08,ggLo=({C:.107,'1B':.979,'2B':.424,'3B':.272,SS:.443,LF:.519,CF:.613,RF:.546}[ME.pos]??.5),ggT=Math.min(1,Math.max(0,(rel-ggLo)/.3)),pg=dh?0:.9*ggT*ggT*(3-2*ggT),ssLo={C:.702,'1B':.879,'2B':.755,'3B':.828,SS:.688,LF:.85,CF:.738,RF:.818,DH:.91}[ME.pos]??.85,ssO=b.AB?(b.H+(b.BB||0))/(b.AB+(b.BB||0))+(b.H+(b.D||0)+2*(b.T||0)+3*(b.HR||0))/b.AB:0,ssT=Math.min(1,Math.max(0,(ssO-ssLo)/.12)),ps=b.PA<450?0:.95*ssT*ssT*(3-2*ssT);
+  const rel=sp.d-(PADJ[ME.pos]||0)*b.G/140/10*1.08,ggLo=({C:.096,'1B':.971,'2B':.574,'3B':.249,SS:.656,LF:.467,CF:.607,RF:.454}[ME.pos]??.5),ggT=Math.min(1,Math.max(0,(rel-ggLo)/.3)),pg=dh?0:.9*ggT*ggT*(3-2*ggT),ssLo={C:.706,'1B':.874,'2B':.762,'3B':.824,SS:.702,LF:.854,CF:.719,RF:.818,DH:.91}[ME.pos]??.85,ssO=b.AB?(b.H+(b.BB||0))/(b.AB+(b.BB||0))+(b.H+(b.D||0)+2*(b.T||0)+3*(b.HR||0))/b.AB:0,ssT=Math.min(1,Math.max(0,(ssO-ssLo)/.12)),ps=b.PA<450?0:.95*ssT*ssT*(3-2*ssT);
   if(R()<pg){const n=`${lg} 골드글러브 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 골드글러브 수상`,1)}
   if(R()<ps){const n=`${lg} 실버슬러거 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 실버슬러거 수상`,1)}
   if(!got.length)return;S.rel.fame=cl(S.rel.fame+3*got.length,0,100);rep.lines.push(`${got.join(' · ')} 수상!`);news(`${ME.name}, ${got.join(' · ')} 수상.`);
@@ -10762,7 +10762,7 @@ if(typeof document!=='undefined'){try{const st=document.createElement('style');s
 {const _sbD=simBat;simBat=function(role,tg,L,row,lvk){const r=_sbD.apply(this,arguments);try{if(!isP()&&row&&row.b&&r&&r.m&&r.m.G){const g=r.m.G;row.b._dsum=(row.b._dsum||0)+defScore()*g;row.b._psum=(row.b._psum||0)+(PADJ[ME.pos]||0)*g;row.b._dg=(row.b._dg||0)+g}}catch(e){}return r}}
 bWARsplit=function(b,lv){if(!b||!b.PA)return{o:0,d:0};const s=b.H-b.D-b.T-b.HR,w=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.03*b.HR)/b.PA,raa=(w-.33)/1.2*b.PA,f=b.G/140;
   const has=b._dg>0,ds=has?b._dsum/b._dg:defScore(),pj=has?b._psum/b._dg:(PADJ[ME.pos]||0);
-  const dhc=!!b._dh,dr=dhc?0:cl((x=>x<0?x*1.3:x*1.7)((ds-(LV[lv]||51))*.45+(sk('glove')?2.7:0)+(sk('laser')?1.8:0)),-18,20)*f*({C:.25,'3B':.8}[ME.pos]||1)-b.E*.25,pa_=dhc?-15.1:pj; /* v593: 실제 WAR처럼 — 포지션 보정 실제값(140경기 환산), 포수는 포지션 보정 위주·수비 점수 ×0.25, 못하는 쪽 하한 −18 */const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+pa_*f)/10*mg}};
+  const dhc=!!b._dh,dr=dhc?0:cl((x=>x<0?x*1.3:x*1.7)((ds-(LV[lv]||51))*.45+(sk('glove')?2.7:0)+(sk('laser')?1.8:0)),-18,20)*f*({C:.25,'3B':.8,SS:1.3,'2B':1.3,CF:1.2}[ME.pos]||1)-b.E*.25,pa_=dhc?-15.1:pj; /* v593: 실제 WAR처럼 — 포지션 보정 실제값(140경기 환산), 포수는 포지션 보정 위주·수비 점수 ×0.25, 못하는 쪽 하한 −18 */const mg=lv==='MLB'?1.08:1;return{o:(raa+20*b.PA/600)/10*mg,d:(dr+pa_*f)/10*mg}};
 
 /* 경기 화면: 공수교대 배너 크게 · 오른쪽 위 삼진 배지 제거 · 타구 포물선 살짝 빠르게 */
 {const _vfH=vFollow;vFollow=function(g){let h=_vfH(g);try{const e=g.ev[Math.min(g.idx,g.ev.length-1)],L=e&&e.last;
