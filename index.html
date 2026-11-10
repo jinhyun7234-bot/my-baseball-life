@@ -1417,6 +1417,12 @@ function DV(v){return 20+(v-20)*4/3}
 
 function ctlSyn(){try{if(!isP())return 0;const c=DV(eff('ctl')),q=DV(eff('pcl')||45);return 0}catch(e){return 0}}
 
+/* v620 곡선 헬퍼: 시그모이드 · 스무스스텝 · 매끄러운 구간 보간 */
+function sg(x){return 1/(1+Math.exp(-x))}
+function s01(x){x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)}
+function knot(x,xs,ys){if(x<=xs[0])return ys[0];const n=xs.length;if(x>=xs[n-1])return ys[n-1];for(let i=1;i<n;i++)if(x<=xs[i]){const t=s01((x-xs[i-1])/(xs[i]-xs[i-1]));return ys[i-1]+(ys[i]-ys[i-1])*t}return ys[n-1]}
+function ageTrM(a){return knot(a,[19,22,26,29.5,32.5,35],[1.2,1.1,.9,.55,.35,.2])}
+
 /* ===================== ROLE & LEVEL ===================== */
 function decideRole(){
   const o=selScore();
@@ -1463,7 +1469,7 @@ function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp
   m.AB++;
   const hit=cl(.325+dvc(con)*.00325+Math.min(8,dv(sp))*.0006+Math.min(15,Math.max(0,DV(sp)-60))*.00055+spdHit(DV(sp))+(sk('hitm')?.012:0)+lefty,.18,.47),hitNS=cl(.325+dvc(con)*.00325+(sk('hitm')?.012:0)+lefty,.18,.47);
   if(R()<hit){m.H++;gl.H++;if(risp&&S.rsp)S.rsp.h++;
-    const hr=(hitNS/hit)*Math.pow(.325/hitNS,.45)*1.04*cl(HRB0+(dvp(hrStat())>0?dvp(hrStat())*HRS1:dvp(hrStat())*HRS2)+Math.max(0,hrStat()-HRT)*HRS3,.012,.5)*(sk('power')?1.15:1)*hrPw()*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1)*(DV(eff('spd'))>=70&&(DV(eff('con'))+DV(eff('pow')))/2<65?.93:1),tr=cl(.015+dv(sp)*.0008,.002,.06),db=cl(.19+dvp(eff('pow'))*.0015+dv(sp)*.001,.06,.34),q=R();
+    const hr=(hitNS/hit)*Math.pow(.325/hitNS,.45)*1.04*cl(HRB0+(dvp(hrStat())>0?dvp(hrStat())*HRS1:dvp(hrStat())*HRS2)+Math.max(0,hrStat()-HRT)*HRS3,.012,.5)*(sk('power')?1.15:1)*hrPw()*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1)*(1-.07*sg((DV(eff('spd'))-70)/2.5)*sg((65-(DV(eff('con'))+DV(eff('pow')))/2)/2.5)),tr=cl(.015+dv(sp)*.0008,.002,.06),db=cl(.19+dvp(eff('pow'))*.0015+dv(sp)*.001,.06,.34),q=R();
     const n=on.filter(Boolean).length;
     if(q<hr){m.HR++;gl.HR++;m.R++;const x=1+n;m.RBI+=x;gl.RBI+=x;if(n===3)gl.GS=1;if(sp>=60&&R()<(sp-57)*.0012)gl.iphr=1;return}
     if(q<hr+tr){m.T++;gl.T++;m.RBI+=n;gl.RBI+=n;reach(3);return}
@@ -1528,7 +1534,7 @@ function pitchGame(L,type){const pv=x=>{const d=x-L-pitB(L);return d>16?16*PITC+
   return{outs:Math.min(outs,27),H,R:Rn,BB,K,HR,pc}}
 /* 불펜 승패: 등판수·ERA에 따라 (20경기 ERA 4점대 초반≈2승2패, 후반≈1승3패) */
 function reliefDec(t,g,row,m){const tp=blankP();try{addTo(tp,row.p);addTo(tp,m)}catch(e){}const e=tp.outs>=9?tp.R*27/tp.outs:4.3;
-  const d=(t==='CL'?.14:t==='SU'?.18:.17)*(e>5.5?.75:1);if(R()>=d)return 0;
+  const d=(t==='CL'?.14:t==='SU'?.18:.17)*(1-.25*sg((e-5.5)/.3));if(R()>=d)return 0;
   const ws=cl(.5-(e-4.2)*.42,.08,.72),p=g.R?Math.max(.03,ws-.4):Math.min(.88,ws+.2);return R()<p?1:-1}
 function simPit(role,tg,L,row,lvk){
   const m=blankP(),apps=[],st=S.str,d=`${S.m}월`,pro=PRO.includes(lvk);
@@ -1572,7 +1578,7 @@ function lineTxt(g){if(!g)return'';const m=g.m;
 function grow(k,amt){const cur=raw(k);if(ME.pt&&k in ME.pt&&cur===0)return;if(!(k in ME.r)&&!(ME.pt&&k in ME.pt))return;
   const room=cl((ceilAt(k)-cur)/18,0,1),v=cl(cur+amt*room*talentM(),20,capOf(k));if(k in ME.r)ME.r[k]=v;else ME.pt[k]=v}
 function trainMonth(rep){
-  const al=S.plan.alloc,intM=[.6,1,1.45][S.plan.int],a=age(),ageM=(a<=19?1.2:a<=23?1.1:a<=27?.9:a<=30?.55:a<=33?.35:.2)*gtM();
+  const al=S.plan.alloc,intM=[.6,1,1.45][S.plan.int],a=age(),ageM=ageTrM(a)*gtM();
   let effM=(.55+ME.hid.we/80*.75)*(1+itemSum('eff'));if(S.stage==='mil'&&S.mil.type==='현역')effM*=.3;
   const rest=al.rest||0;
   if(ME.inj){rep.rehab=1;return-8}
@@ -1856,7 +1862,7 @@ function meBatPA(pR,risp){let con=eff('con')+(sk('clutch')?4:0)+(ME.hid.men-50)*
   const k=cl(.205-dvc(con)*.0042-dv(eff('eye'))*.0008+(sk('kprone')?.03:0),.05,.42),bb=cl(.082+dv(eff('eye'))*.0018+dvc(con)*.0004,.02,.2),r=R();
   if(r<k)return'K';if(r<k+bb+.01)return'BB';
   {const sv=DV(eff('spd'));if(sv>=70&&R()<.012+(sv-70)*.0008){if(R()<cl(.4+(sv-70)*.012,.4,.75)){S._lastMeSpd=1;S._bunt=1;return'1B'}return'GO'}}
-  const _hit=cl(.325+dvc(con)*.00325+Math.min(8,dv(eff('spd')))*.0006+Math.min(15,Math.max(0,DV(eff('spd'))-60))*.00055+spdHit(DV(eff('spd')))+(sk('hitm')?.012:0),.18,.47),_hitNS=cl(.325+dvc(con)*.00325+(sk('hitm')?.012:0),.18,.47);if(R()<_hit){S._lastMeSpd=1;const hr=(_hitNS/_hit)*Math.pow(.325/_hitNS,.45)*1.04*cl(HRB0+(dvp(hrStat())>0?dvp(hrStat())*HRS1:dvp(hrStat())*HRS2)+Math.max(0,hrStat()-HRT)*HRS3,.012,.5)*(sk('power')?1.15:1)*hrPw()*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1)*(DV(eff('spd'))>=70&&(DV(eff('con'))+DV(eff('pow')))/2<65?.93:1),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
+  const _hit=cl(.325+dvc(con)*.00325+Math.min(8,dv(eff('spd')))*.0006+Math.min(15,Math.max(0,DV(eff('spd'))-60))*.00055+spdHit(DV(eff('spd')))+(sk('hitm')?.012:0),.18,.47),_hitNS=cl(.325+dvc(con)*.00325+(sk('hitm')?.012:0),.18,.47);if(R()<_hit){S._lastMeSpd=1;const hr=(_hitNS/_hit)*Math.pow(.325/_hitNS,.45)*1.04*cl(HRB0+(dvp(hrStat())>0?dvp(hrStat())*HRS1:dvp(hrStat())*HRS2)+Math.max(0,hrStat()-HRT)*HRS3,.012,.5)*(sk('power')?1.15:1)*hrPw()*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1)*(1-.07*sg((DV(eff('spd'))-70)/2.5)*sg((65-(DV(eff('con'))+DV(eff('pow')))/2)/2.5)),q=R();return q<hr?'HR':q<hr+.015?'3B':q<hr+.21?'2B':'1B'}
   return pick(['GO','GO','FO','FO','LO'])}
 function mePitPA(bR,risp,tired){const L=bR,pv=x=>{const d=x-L-pitB(L);return d>16?16*PITC+(d-16)*PITC*.75:d>0?d*PITC:d},st=stuffC(eff)+kboV()+roleAdj(S._pRole||'SP')-tired+(sk('clutch')?2:0)+(ME.hid.men-50)*.12,ctl=eff('ctl')+ctlSyn(),stf=eff('stf');
   const PM=pitMods(S._pRole||'SP'),tto=PM.tto*Math.max(0,(S._pInn||1)-2),k=PM.k*cl(.185+pv(st-tto-PM.st)*.0036+pv(ctl)*.0012+(sk('kmach')?.025:0),.05,.42),bb=cl(.085-pv(ctl)*(pv(ctl)<0?.0025:.0021)+Math.max(0,60-DV(ctl))*.0007+tired*.002,.02,.2),r=R();
@@ -2026,12 +2032,12 @@ const GG_M={C:5.495,'1B':3.93,'2B':5.605,'3B':4.335,SS:5.3,LF:4.51,CF:5.61,RF:5.
 function ggProb(w,pos){if(w<=3.7)return 0;const m=GG_M[pos]??((GG_AVG[pos]||5)-(/^(LF|CF|RF)$/.test(pos)?.6:0)-.35),t=Math.min(1,(w-3.7)/1.0),ramp=t*t*(3-2*t);return ramp/(1+Math.exp(-(w-m)/.5))}
 function releaseCut(o,w,a,L){try{if(a<27)return false;
   const AW=/MVP|최우수|골든글러브|왕|다승|구원|탈삼진|평균자책|세이브|타점|도루|올스타/;if((S.awards||[]).some(x=>x&&x.y>=S.y-1&&AW.test(x.n)&&!/우승$/.test(x.n)))return false;
-  const thr=a>=38?L+2:a>=34?L-2:a>=31?L-6:L-11,needW=a>=38?1.5:a>=34?1:a>=31?.5:0;
+  const thr=L+knot(a,[29,32.5,36,39],[-11,-6,-2,2]),needW=knot(a,[29,32.5,36,39],[0,.5,1,1.5]);
   let ww=w;const cur=S.rows.filter(x=>x.y===S.y&&x.lv===S.pro.league),pa=cur.reduce((s,x)=>s+((x.b&&x.b.PA)||0)+((x.p&&x.p.O)||0)/2,0);
   if(pa<200){const prev=S.rows.filter(x=>x.y===S.y-1&&PRO.includes(x.lv)).reduce((s,x)=>s+rowWAR(x),0);ww=Math.max(w,(w+prev)/2)}
   return .8*(ww-needW)*4+.2*(o-thr)<0}catch(e){return(a>=31&&o<L-6)||(a>=34&&o<L-2)||(a>=27&&o<L-11)||(a>=38&&o<L+2)}}
 function releaseEvent(o){
-  const offers=[];TEAMS.forEach((t,i)=>{if(i!==S.pro.team&&R()<cl((o-(LV.KBO-9))/12,0,.5)*(age()>=37?.25:age()>=34?.6:1))offers.push(i)});
+  const offers=[];TEAMS.forEach((t,i)=>{if(i!==S.pro.team&&R()<cl((o-(LV.KBO-9))/12,0,.5)*knot(age(),[33,35.5,38],[1,.6,.25]))offers.push(i)});
   const ch=offers.slice(0,3).map(t=>({t:`${TEAMS[t].city} ${TEAMS[t].nick}와 계약`,s:'1년 · 최저 수준 연봉',act:'fa',arg:{team:t,yrs:1,tot:Math.max(3000,Math.round(S.pro.salary*.5/100)*100),cheap:true}}));
   ch.push({t:'은퇴한다',s:'커리어 종료',act:'retire'});if(!offers.length)ch.unshift({t:'입단 테스트를 받는다',s:'성공 확률 낮음',act:'tryout'});
   return{title:'방출 통보',text:`구단이 재계약 불가를 통보했다.${offers.length?' 그래도 관심을 보이는 구단이 있다.':' 아직 연락 온 구단이 없다.'}`,ch}}
@@ -2362,7 +2368,7 @@ for(const k in _more)if(CM[k])CM[k].push(..._more[k]);
 
 /* 세이브·홀드 기회: 신인·노장은 기회↓ (잘할수록 기회↑는 svB) (설명 노노) */
 function svFac(){try{const k=S.y;if(S._svF&&S._svF.k===k)return S._svF;const a=age();
-  const af=a<=22?.93:a<=32?1:a<=35?.95:.87;
+  const af=knot(a,[21,23,32,34,37],[.93,1,1,.95,.87]);
   const r={k,sv:af,hd:af};S._svF=r;return r}catch(e){return{sv:1,hd:1}}}
 
 /* 홈런 결정 능력치: 파워 80% · 컨택 10% · 선구안 5% · 동체시력 5% (MLB: 파워 70 · 컨택 10 · 선구안 10 · 동체시력 10) */
@@ -2386,10 +2392,10 @@ function batOrder(L){const c=E('con'),p=E('pow'),s=E('spd'),e=E('eye'),t=c*.36+p
   const prof={1:s*.45+e*.3+c*.25,2:c*.5+e*.3+s*.2,3:c*.5+p*.5,4:p*.75+c*.25,5:p*.6+c*.4,6:(c+p)/2,7:(c+s)/2,8:c*.6+e*.4,9:s*.5+c*.5};
   const cand=t>=5?[4,3,1,2,5]:t>=1?[1,2,5,3,6]:t>=-3?[6,2,7,5]:[7,8,9];let best=cand[0],bv=-1e9;cand.forEach((o,i)=>{const v=prof[o]-i*.6;if(v>bv){bv=v;best=o}});return best}
 const GTYPE={
-  '조숙형':{m:a=>a<=18?1.6:a<=21?1.1:a<=25?.8:a<=29?.65:.5,dec:29,dr:1},
+  '조숙형':{m:a=>knot(a,[17,20,23.5,27.5,31],[1.6,1.1,.8,.65,.5]),dec:29,dr:1},
   '평균형':{m:a=>1,dec:30,dr:1},
-  '만성형':{m:a=>a<=18?.65:a<=21?.85:a<=25?1.3:a<=29?1.45:a<=32?1.15:1,dec:32,dr:1},
-  '꾸준형':{m:a=>a<=21?.9:a<=27?1:1.2,dec:31,dr:.7}};
+  '만성형':{m:a=>knot(a,[17,20,23.5,27.5,31,34],[.65,.85,1.3,1.45,1.15,1]),dec:32,dr:1},
+  '꾸준형':{m:a=>knot(a,[20,24.5,29],[.9,1,1.2]),dec:31,dr:.7}};
 const gtOf=()=>GTYPE[(ME&&ME.gt)||'평균형']||GTYPE['평균형'];
 const gtM=()=>gtOf().m(age());
 const GTHINT={'조숙형':'일찍 완성되는 타입 같다. 지금 쌓아둔 게 평생 간다','평균형':'차근차근 크는 정석적인 타입이다','만성형':'아직 몸이 덜 여물었다. 20대 중반에 확 필 수 있는 늦게 피는 꽃','꾸준형':'급하게 크진 않지만 오래 버틸 몸이다'};
@@ -2522,7 +2528,7 @@ function toolPools(){const pos=[],neg=[];if(S.stage==='ret')return{pos,neg};cons
 
 /* ===== 훈련 화면 ===== */
 function vTrainPlan(){ensurePlan();const p=S.plan,M=menus(),al=p.alloc,months=PMON[S.phase].length,a_=age();
-  const ageM=(a_<=19?1.2:a_<=23?1.1:a_<=27?.9:a_<=30?.55:a_<=33?.35:.2)*gtM(),effM=(.55+ME.hid.we/80*.75)*(1+itemSum('eff')),G=.784*effM*ageM*(S.phase===0?1.15:.8);
+  const ageM=ageTrM(a_)*gtM(),effM=(.55+ME.hid.we/80*.75)*(1+itemSum('eff')),G=.784*effM*ageM*(S.phase===0?1.15:.8);
   const est=k=>{const key=k==='brk'?p.pitch:k,cur=raw(key);if(k==='brk'&&!cur)return-1;const room=cl((ceilAt(key)-cur)/18,0,1)*talentM();let v=G*months*((al[k]||0)/100)*room*(p.mul[k]||1)*(k==='brk'?1.4:k==='pow'||k==='velo'?1+itemSum('pw'):1);if(p.useCard&&p.card&&p.card.w[k])v+=G*months*p.card.w[k]*.35*room;return v};
   const ks=isP()?[...PIT,'brk']:[...BAT],ests=ks.map(k=>[k,est(k)]).filter(x=>x[1]>=.05||x[1]===-1).sort((a,b)=>b[1]-a[1]);
   const fl=(12.5*(1-al.rest/100)-al.rest*.3+(p.useCard&&p.card?p.card.f/months:0)+(S.phase?14:0))/.58,lv=ME.inj?['재활 중','dn']:fl<25?['낮음','up']:fl<50?['보통','']:fl<65?['높음 · 부상 주의','dn']:['매우 높음 · 장기 부상 위험','dn'];
@@ -3759,7 +3765,7 @@ const pwork=()=>S&&isP()&&(S.pwT||0)>0?2:1;
 {const _sp=simPit;simPit=function(role,tg,L,row,lvk){const w=pwork();return _sp(role,w===2?Math.round(tg*1.32):w===0?Math.round(tg*.88):tg,L,row,lvk)}}
 {const _pg=pitchGame;pitchGame=function(L,type){const w=pwork();if(w===1)return _pg(L,type);const st=ME.r.sta,add=w===2?(type==='SP'?18:8):(type==='SP'?-9:-4);ME.r.sta=st+(type==='SP'?add/.55:add/.1);try{return _pg(L,type)}finally{ME.r.sta=st}}}
 {const _ms=monthStep;monthStep=function(rep){const w=pwork(),f0=ME.fat,inj0=ME.inj;_ms(rep);if(!isP())return;const g=S.lastGame,played=g&&g.kind==='P'&&g.m&&g.m.G>0;
-  if(w===2&&played){const gain=g.m.outs/60;['stf','ctl'].forEach(k=>{if(ME.r[k]<ceilAt(k))ME.r[k]=Math.min(ceilAt(k),ME.r[k]+.18*gain*(age()<=27?1:.6))});ME.hid.men=cl(ME.hid.men+.12*gain,20,80);ME.xp+=.4*gain+.5;
+  if(w===2&&played){const gain=g.m.outs/60;['stf','ctl'].forEach(k=>{if(ME.r[k]<ceilAt(k))ME.r[k]=Math.min(ceilAt(k),ME.r[k]+.18*gain*knot(age(),[26,29],[1,.6]))});ME.hid.men=cl(ME.hid.men+.12*gain,20,80);ME.xp+=.4*gain+.5;
     ME.fat=cl(ME.fat+4,0,100);S.armW=(S.armW||0)+1+g.m.outs/40;rep.pw=(rep.pw||0)+1;
     if(!ME.inj&&!inj0){const risk=.012+Math.max(0,(S.armW||0)-6)*.006+Math.max(0,ME.fat-60)*.002+Math.max(0,age()-30)*.002;if(R()<risk*cl(1-(ME.hid.dur-50)/80,.5,1.6))armInjury(rep)}}
   else if(w===0){ME.fat=cl(ME.fat-3,0,100);S.armW=Math.max(0,(S.armW||0)-1.2)}
@@ -4877,7 +4883,7 @@ function pitchInfo(){const g=k=>eff(k);const good=PITCHES.filter(k=>g(k)>=50),fa
 /* 경기 안 보정: 원툴 선발은 타순 한 바퀴 돌면(3회~) 읽혀서 맞음 · 빠른 변화구 없으면 삼진↓ · 느린 공 없으면 장타·홈런↑ */
 function pitMods(type){if(!isP())return{k:1,hr:1,tto:0,st:0};const I=pitchInfo(),SP=type==='SP'||type==='ace';
   let tto=0,st=0;if(SP){tto=I.nGood<=1?PITW_TTO[0]:I.nGood===2?PITW_TTO[1]:0;st=I.nGood<=1?PITW_ST:0;if(S.brkFocus===S.y&&S.phase===1)st+=2}
-  const k=SP?(I.fast<44?.8:I.fast<50?.9:1):(I.fast<44?.92:1),hr=SP?(I.slow<44?1.2:I.slow<50?1.08:1):(I.slow<44?1.06:1);return{k,hr,tto,st}}
+  const k=SP?knot(I.fast,[41,46,50],[.8,.9,1]):knot(I.fast,[40,44],[.92,1]),hr=SP?knot(I.slow,[41,46,50],[1.2,1.08,1]):knot(I.slow,[40,44],[1.06,1]);return{k,hr,tto,st}}
 const PITW_TTO=[2.8,1.7],PITW_ST=1.3;
 /* 시즌 전 보직 상담 */
 {const _ny8=newYear;newYear=function(){const r=_ny8();try{if(isP()&&S.stage==='pro'&&S.pro&&!S.pro.dev&&S.pro.debut<S.y&&!ME.inj&&!(S.queue||[]).some(q=>q.ch&&q.ch.some(c=>c.act==='devp'))){const I=pitchInfo(),nm=PITCHES.filter(k=>eff(k)>=50).map(k=>LBL[k]).join('·')||'없음';
@@ -5310,7 +5316,7 @@ function g1Lines(x){const nm=ME.name,gn=giv(nm),gI=jo(gn,'이','가'),win=x.win!
 
 /* ===================== 성적 애매한 젊은 타자는 주전 보장 없음 · 내 실책 언급 · '감독 약점 잡았냐' 댓글 ===================== */
 function batOPS(){try{const lg=S.pro.league,{b}=yearTot(S.y,[lg]);return{ops:b.PA?opsN(b):null,pa:b.PA}}catch(e){return{ops:null,pa:0}}}
-{const _pp=psPick;psPick=function(base,gn,g7,need){const r=_pp(base,gn,g7,need);try{if(!isP()&&r==='start'){const {ops,pa}=batOPS(),yrs=proYears();if(pa>=100&&ops!=null&&(ops<.7||(yrs<=3&&ops<.76))&&R()<(ops<.68?.6:.45))return'bench'}}catch(e){}return r}}
+{const _pp=psPick;psPick=function(base,gn,g7,need){const r=_pp(base,gn,g7,need);try{if(!isP()&&r==='start'){const {ops,pa}=batOPS(),yrs=proYears();if(pa>=100&&ops!=null&&R()<.62*sg(((yrs<=3?.755:.695)-ops)/.012))return'bench'}}catch(e){}return r}}
 {const _dr4=decideRole;decideRole=function(){let r=_dr4();try{if(!isP()&&r==='start'&&S.stage==='pro'&&S.pro&&proYears()<=3){const {ops,pa}=batOPS();if(pa>=150&&ops!=null&&ops<.68&&R()<.4)r='bench'}}catch(e){}return r}}
 /* 포스트시즌·국제대회에서 내 실책 */
 {const _c29=comments;comments=function(tone,x){let out=_c29(tone,x);try{if(!x||!(x.ps||x.intl)||!(x.gErr>=1)||!S||!ME)return out;const gn=giv(ME.name),win=x.win!==false;
@@ -5636,7 +5642,7 @@ let _dfK='',_dfV=0;function dOvr(){const k=(S&&S.y)+'-'+(S&&S.m)+'-'+(ME&&ME.nam
     if(!S.mlbFarm||S.mlbFarm.k!==k){const w=weakTools().length;S.mlbFarm={k,f:w>=2?R()<.85:w===1?R()<.45:false}}
     if(S.mlbFarm.f)r=isP()?'fP':'fB'}
   /* 수비 안 되는 지명타자 유형: 방망이가 식으면 대타 신세 */
-  if(!isP()&&r==='start'&&S.stage==='pro'&&dhType()){const {ops,pa}=batOPS();if(pa>=120&&ops!=null&&ops<.75&&R()<(ops<.7?.7:.5))r='bench'}}catch(e){}return r}}
+  if(!isP()&&r==='start'&&S.stage==='pro'&&dhType()){const {ops,pa}=batOPS();if(pa>=120&&ops!=null&&R()<.72*sg((.745-ops)/.015))r='bench'}}catch(e){}return r}}
 /* 5) 힌트 댓글: 메이저는 툴이 골고루 */
 function toolHintLines(){const gn=giv(ME.name),w=weakTools().filter(k=>k!=='pitches'),wn=w.map(k=>TOOLN[k]),P=isP(),o=[],inMLB=S.pro&&S.pro.league==='MLB',farm=S.role==='fB'||S.role==='fP';
   if(inMLB&&farm&&weakTools().length)return[[`${gn} 마이너에서 툴 다듬고 올라오면 된다`,[`${wn[0]||'구종'} 잡히기 전엔 콜업 힘들 듯`,'메이저는 구멍 하나만 있어도 바로 파고듦']],[`트리플A에서 ${wn[0]||'서드피치'} 보완 중이라던데`,['이거 고치면 바로 올라간다','메이저 벽 느끼는 중인 듯']]];
@@ -5750,7 +5756,7 @@ faValue=function(o,w){const a=age(),aw=S.awards.filter(x=>x.y>=S.y-1),bonus=(aw.
   let m=1;if(w>=3&&a<37)m=1+w*.3;if(young&&w>=4)m=Math.max(m,1+w*.45);
   if(mvp)m=Math.max(m,young?3.0+Math.max(0,w-6)*.3:2.0);if(roy)m=Math.max(m,2.0);
   const ww=lgWARs('KBO',3);if(ww.length>=3&&ww.every(v=>v>=3))m*=1.15;
-  const cap=young?6:a<=30?3.5:2.5;m=Math.min(m,cap);if(m<=1.05)return r;
+  const cap=young?6:knot(a,[29,32],[3.5,2.5]);m=Math.min(m,cap);if(m<=1.05)return r;
   const nv=Math.round(Math.max(cur*m,3000)/100)*100;if(nv<=sal.arg.v)return r;
   q.ch.forEach(c=>{if(c.act==='sal'&&c.arg){if(c.arg.v<nv)c.arg.v=nv;if(c.arg.k==='ok')c.s=`${money(c.arg.v)} · 감독 신뢰↑`;if(c.arg.k==='arb')c.arg.f=Math.max(c.arg.f||0,Math.round(nv*1.15/100)*100)}});
   q.text=`구단 제시액: ${money(nv)} (현재 ${money(cur)}, +${Math.round((nv/cur-1)*100)}%). 올해 WAR ${(w/WARK(S.pro&&S.pro.league)).toFixed(1)}.${mvp?' MVP에 걸맞은 대우를 약속했다.':roy?' 신인왕다운 대우다.':''}`}catch(e){}return r}}
@@ -6276,7 +6282,7 @@ function interp(T,x){if(x<=T[0][0])return T[0][1];for(let i=1;i<T.length;i++)if(
   const q=S.queue.slice(n0).find(x=>x&&x.title&&/연봉 협상/.test(x.title)&&!x.type);if(!q)return r;const sal=q.ch.find(c=>c.act==='sal');if(!sal)return r;
   const cur=S.pro.salary,_rp=(()=>{try{if(!isP())return{b:0};const p=yearTot(S.y,['KBO']).p;return{b:(p.SV||0)*.06+(p.HLD||0)*.045,sv:p.SV||0,h:p.HLD||0}}catch(e){return{b:0}}})(),w0=lastWAR(),w=w0+_rp.b,a=age(),young=proYears()<=6&&a<=27,mvp=S.awards.some(x=>x.y===S.y&&/정규시즌 MVP/.test(x.n));
   /* 이정후(키움) 커브: 2.7천→1.1억(WAR3)→2.3억(4.5)→3.9억(5.5)→5.5억(6.6)→7.5억(6.0)→11억(8.9) */
-  const kc=interp([[.3,1.0],[.6,.5],[1.1,.24],[2.3,.13],[4,.065],[6,.058],[10,.05]],cur/10000);let m=w>=1?1+kc*w:w>=0?1+.1*w:(cur>=10000?.85:.95);if(!young&&w>=1)m=1+kc*w*.8;
+  const kc=interp([[.3,1.0],[.6,.5],[1.1,.24],[2.3,.13],[4,.065],[6,.058],[10,.05]],cur/10000);const kq=young?kc:kc*.8;let m=w>=0?1+w*(kq+(.1-kq)*Math.max(0,1-w)):1+((cur>=10000?.85:.95)-1)*s01(-w/.5);
   if(young&&mvp)m=Math.max(m,3);
   if(cur>=20000&&w<1.5)m=Math.min(m,cl(.5+Math.max(0,w-1)*.3,.5,.9));
   let nv=Math.round(Math.max(3000,cur*m)/100)*100;let cap=Math.max(cur,typeof salCap==='function'?salCap():200000);if(young)cap=Math.max(cur,Math.min(cap,Math.round(100000+cl(w-6,0,2)*10000)));nv=Math.min(nv,cap);
@@ -8088,7 +8094,7 @@ function faScaleOffer(c,a){try{if(!c||c.act!=='fa'||!c.arg||!c.arg.tot)return c;
   if(y>6){f*=6/y;c.s=c.s.replace(new RegExp('^'+y+'년'),'6년');y=6;A.yrs=6}
   if(a<40&&y<2&&!A.cheap){f*=2;c.s=c.s.replace(/^1년/,'2년');y=2;A.yrs=2}
   if(a>=35&&a<=39&&y>3&&!A.optY){f*=3/y;c.s=c.s.replace(new RegExp('^'+y+'년'),'3년');y=3;A.yrs=3}
-  const cap=(a<=31?250000:a<=34?220000:a<=37?170000:a<=39?130000:100000)*(.86+R()*.14),per=A.tot*f/y,np=Math.min(cap,per*.8);f*=np/per;
+  const cap=knot(a,[30,33,36,38.5,41],[250000,220000,170000,130000,100000])*(.86+R()*.14),per=A.tot*f/y,np=Math.min(cap,per*.8);f*=np/per;
   if(Math.abs(f-1)<.01)return c;const sc=t=>t&&t.replace(/(\d+(?:\.\d+)?)억|([\d,]+)만원/g,(m,e,w)=>money(Math.max(100,Math.round((e?+e*10000:+w.replace(/,/g,''))*f/100)*100)));
   A.tot=Math.max(10000,Math.round(A.tot*f/1000)*1000);c.s=sc(c.s);c.d=sc(c.d);return c}catch(e){return c}}
 {const _fe=faEvent;faEvent=function(o,w,f){const q=_fe(o,w,f);try{const a=age();q.ch.forEach(c=>faScaleOffer(c,a))}catch(e){}return q}}
@@ -8199,7 +8205,7 @@ function defWeak(){try{return!isP()&&posFit()<ovrE()-4}catch(e){return false}}
    주력(표시) 35 미만 45%, 45 미만 25% · 큰 경기는 ×1.3 · 점수 차 3점 이내일 때만 */
 {const _fg2=followGame;followGame=function(o){const g=_fg2(o);try{if(isP()||!g||!g.pl||!g.pl.length||!g.ev)return g;const sp=DV(eff('spd'));if(sp>=45)return g;
   const last=g.pl[g.pl.length-1];if(!last||last.i<8||!['1B','BB','2B'].includes(last.t)||Math.abs(last.my-last.op)>3)return g;
-  let p=sp<35?.45:.25;if(o.intl||/차전|결승/.test(o.title||''))p*=1.3;if(R()>=p)return g;
+  let p=knot(sp,[30,40],[.45,.25]);if(o.intl||/차전|결승/.test(o.title||''))p*=1.3;if(R()>=p)return g;
   const nm=ME.name;let k=-1;for(let i=g.ev.length-1;i>=0;i--){const e=g.ev[i];if(/\bme\b/.test(e.c)&&e.t&&e.t.indexOf(nm+':')>=0){k=i;break}}if(k<0)return g;
   const e=g.ev[k];g.ev.splice(k+1,0,{...e,t:`${last.i}회 — 대주자 투입. ${jo(nm,'은','는')} 여기까지, 벤치로 들어간다`,c:'sub'});g.pr=1}catch(e){}return g}}
 /* 가을야구 엔트리 제외 이유: 부상이면 부상이라고 확실히 */
@@ -8717,9 +8723,9 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
   const give=n=>{got.push(n);S.awards.push({y:S.y,n});S.rel.fame=cl(S.rel.fame+6,0,100);feat(`${S.y} ${n} 수상`,1)};
   const pMVP=P||b.PA<450?0:.97/(1+Math.exp(-(mvpM(w,b,'MLB')-9.98)/.55));if(R()<pMVP){give(`${lg} MVP`);S.rel.fame=cl(S.rel.fame+6,0,100)}
   if(P){const pt=rows.reduce((a,r)=>(addTo(a,r.p),a),blankP()),ip=pt.outs/3,era=pt.outs?Math.round(pt.R*27/pt.outs*100)/100:99,rel=(pt.GS||0)<(pt.G||0)/2;
-   const okSP=!rel&&ip>=170&&era<=2.2,okRP=rel&&ip>=65&&era<=1.2&&(pt.SV||0)>=40;let pc=0;
-   if(okSP)pc=w<6.5?0:w>=9.2?.93:1/(1+Math.exp(-(w-7.7)/.45));else if(okRP)pc=w>=4.2?.08:0;
-   if(okSP&&era<=1.7&&ip>=190)pc=Math.max(pc,.45);if(R()<pc)give(`${lg} 사이영상`)}
+   let pc=0;
+   if(!rel)pc=.95*sg((w-7.7)/.45)*sg((ip-165)/5)*sg((2.3-era)/.08);else pc=.08*sg((w-4.2)/.25)*sg((ip-62)/3)*sg((1.27-era)/.05)*sg(((pt.SV||0)-38)/1.5);
+   if(!rel)pc=Math.max(pc,.45*sg((1.77-era)/.05)*sg((ip-185)/4));if(R()<pc)give(`${lg} 사이영상`)}
   if(!got.length)return;const main=got[0],una=/MVP/.test(main)&&w>=11;rep.lines.push(`${main} 수상!${una?' (만장일치)':''}`);news(`${S.y} ${got.join(', ')} 수상.`);
   celebrate(/MVP/.test(main)?'mvp':'trophy',main,`${S.y} MLB 시상식 · WAR ${w.toFixed(1)}${una?' · 만장일치':''}`,got.slice(1));
   const firstM=S.awards.filter(a=>/리그 MVP/.test(a.n)&&!/정규시즌/.test(a.n)).length<=1;article(una?`${ME.name}, 만장일치 ${main}!${firstM?' 한국인 최초의 역사':' 또 한 번 역사를 쓰다'}`:`${ME.name}, ${got.join('·')} 수상`,`${jo(ME.name,'은','는')} 올 시즌 WAR ${w.toFixed(1)}을 기록하며 메이저리그 최고의 선수로 우뚝 섰다.`,'award')}catch(e){}}}
@@ -8772,12 +8778,12 @@ function tradeComments(from,to,star,rich,big){const gn=giv(ME.name),cln=v=>Strin
 ACT.dhyes=function(){S.dhConv=S.y+1;news(`${S.y+1}시즌부터 지명타자 전향.`);try{article(`${ME.name}, 내년부터 지명타자 전향`,`${jo(ME.name,'은','는')} 수비 부담을 덜고 타격에 집중한다.`,'mix',{})}catch(e){}return'글러브를 내려놓기로 했다. 이제 방망이로만 말한다.'};
 ACT.dhno=function(){return'"아직 수비 자신 있습니다." 감독은 "지켜보겠다"고만 했다.'};
 {const _dr=decideRole;decideRole=function(){let r=_dr();try{if(!S.dhConv||S.y<S.dhConv||isP()||S.stage!=='pro')return r;ME.fat=cl(ME.fat-2,0,100);if(r==='start'){S.dhNow=1;
-  const {ops,pa}=batOPS(),p=pa>=100&&ops!=null?(ops>=.85?.03:ops>=.78?.07:ops>=.72?.12:.18):.10;if(R()<p){S.dhNow=0;r='bench'}}}catch(e){}return r}}
+  const {ops,pa}=batOPS(),p=pa>=100&&ops!=null?knot(ops,[.70,.75,.815,.87],[.18,.12,.07,.03]):.10;if(R()<p){S.dhNow=0;r='bench'}}}catch(e){}return r}}
 {const _pp=psPick;psPick=function(base,gn,g7,need){const r=_pp(base,gn,g7,need);try{if(S.dhConv&&S.y>=S.dhConv&&!isP()&&r==='start')S._dhG=1}catch(e){}return r}}
 {const _sb=simBat;simBat=function(role,tg,L,row,lvk){const r=_sb(role,tg,L,row,lvk);try{if(S.dhConv&&S.y>=S.dhConv&&row&&row.b&&!isP())row.b._dh=1}catch(e){}return r}}
 /* 지명타자로 나온 경기: 7~9회 접전에서 출루하면 대주자로 자주 교체 (주력 느릴수록 더 자주) */
 {const _fg=followGame;followGame=function(o){const g=_fg(o);try{if(isP()||!g||!g.dh||g.pr||!g.pl||!g.pl.length||!g.ev)return g;const last=g.pl[g.pl.length-1];
-  if(!last||last.i<7||!['1B','BB','2B'].includes(last.t)||Math.abs(last.my-last.op)>3)return g;const sp=DV(eff('spd'));let p=sp<45?.6:sp<55?.45:sp<65?.3:.15;if(o.intl||/차전|결승/.test(o.title||''))p*=1.2;if(R()>=p)return g;
+  if(!last||last.i<7||!['1B','BB','2B'].includes(last.t)||Math.abs(last.my-last.op)>3)return g;const sp=DV(eff('spd'));let p=knot(sp,[40,50,60,70],[.6,.45,.3,.15]);if(o.intl||/차전|결승/.test(o.title||''))p*=1.2;if(R()>=p)return g;
   const nm=ME.name;let k=-1;for(let i=g.ev.length-1;i>=0;i--){const e=g.ev[i];if(/\bme\b/.test(e.c)&&e.t&&e.t.indexOf(nm+':')>=0){k=i;break}}if(k<0)return g;
   g.ev.splice(k+1,0,{...g.ev[k],t:`${last.i}회 — 대주자 투입. 지명타자 ${jo(nm,'은','는')} 여기까지, 벤치로 들어간다`,c:'sub'});g.pr=1}catch(e){}return g}}
 function phaseStatTbl(rows,P){const ok=rows.filter(([l,m])=>m&&(P?m.outs:m.PA));if(!ok.length)return'';
@@ -9068,7 +9074,7 @@ const phF=()=>{try{return S&&S.stage==='pro'?(S.phF||0):0}catch(e){return 0}};
   if(sp>=tot*.5)return'SP';return sv>=hld*1.5&&sv>0?'CL':'RP'}catch(e){return _hp(p)}}}
 /* ===== 20대 스토브리그 보너스: 훈련 안 한 능력치도 아주 살짝씩 오름 (오른 만큼 상대 수준도 같이 올려 성적 인플레 방지) ===== */
 function stoveOn(){try{const a=age();return S&&S.stage==='pro'&&S.phase===0&&a>=20&&a<=29&&!ME.inj&&S.stage!=='mil'}catch(e){return false}}
-{const _tm=trainMonth;trainMonth=function(rep){const r=_tm(rep);try{if(stoveOn()){const ks=isP()?[...PIT,...PITCHES.filter(k=>ME.pt[k]>0)]:[...BAT];const a=age(),amt=a<=25?.08:.065;let sum=0,n=0;
+{const _tm=trainMonth;trainMonth=function(rep){const r=_tm(rep);try{if(stoveOn()){const ks=isP()?[...PIT,...PITCHES.filter(k=>ME.pt[k]>0)]:[...BAT];const a=age(),amt=knot(a,[24,27],[.08,.065]);let sum=0,n=0;
   ks.forEach(k=>{const b=raw(k);grow(k,amt);const d=raw(k)-b;if(d>0){sum+=d;n++}});const avg=ks.length?sum/ks.length:0;S.stoveAdj=(S.stoveAdj||0)+avg*.85;if(rep){rep.stoveG=(rep.stoveG||0)+avg}}}catch(e){}return r}}
 const stA=()=>{try{return S&&S.stage==='pro'?(S.stoveAdj||0):0}catch(e){return 0}};
 {const _b=batPA;batPA=function(L,m,gl){return _b(isP()?L:L+stA(),m,gl)}}
@@ -9126,7 +9132,7 @@ function rkMajor(){try{return S.pro.league==='MLB'&&!S.pro.dev&&!/^f/.test(S.rol
 {const _ny=newYear;newYear=function(){const y0=S.y-1;let note=null;try{const p=S.pro;if(S.stage==='pro'&&p&&p.rk&&p.league==='MLB'){const rows=S.rows.filter(r=>r.y===y0&&r.lv==='MLB'),b=blankB(),q=blankP();rows.forEach(r=>{addTo(b,r.b);addTo(q,r.p)});
     const full=isP()?(q.GS>=15||q.G>=45||q.outs>=360):b.G>=100,part=isP()?(q.G>=12||q.outs>=90):b.G>=40;const add=full?1:part?.5:0;p.svc=Math.round(((p.svc||0)+add)*10)/10;
     const w=rows.reduce((a,r)=>a+rowWAR(r),0),svc=p.svc;let usd,kind;
-    if(svc<3){usd=MLB_MIN+Math.min(.08,svc*.02);kind='pre';if(w>=5&&add)note={bonus:+(w>=8?2.5:w>=6.5?1.6:1.0).toFixed(1)}}
+    if(svc<3){usd=MLB_MIN+Math.min(.08,svc*.02);kind='pre';if(w>=4&&add){const bb=knot(w,[4,5,6.5,8],[0,1,1.6,2.5]);if(bb>=.1)note={bonus:+bb.toFixed(1)}}}
     else if(svc<6){const yr=Math.floor(svc)-2,mk=cl(.78+Math.max(0,w+(isP()?(q.SV||0)*.06+(q.HLD||0)*.045:0))*7.6,.78,60),fr=[.18,.30,.45][Math.min(2,yr-1)];usd=+Math.max(MLB_MIN+.3,mk*fr,(p.rkSal||0)/USDM*1.08).toFixed(2);kind='arb'}
     if(usd){p.rkSal=Math.round(usd*USDM/100)*100;note=Object.assign(note||{},{usd,kind,svc,w,add})}
     if(svc<6)p.years=Math.max(p.years||0,Math.ceil(6-svc)+1);else p.rk=0}}catch(e){}
@@ -9669,7 +9675,7 @@ function sbAnimate(){try{if(typeof document==='undefined'||!S||ui.simming)return
 {const _r=render;render=function(){_r.apply(this,arguments);try{sbAnimate()}catch(e){}}}
 /* ===== 투수 변화구: 변화구 훈련을 안 해도 아는 구종은 조금씩 자람 · 변화구 훈련 시에도 살짝 더 (비공개) ===== */
 {const _tm=trainMonth;trainMonth=function(rep){const inj=ME&&ME.inj;const p0=ME&&ME.pt?{...ME.pt}:null;const out=_tm(rep);
-  try{if(!isP()||inj||!p0)return out;const a=age(),am=a<=23?1.1:a<=27?.9:a<=30?.55:a<=33?.35:.2,int=[.7,1,1.25][S.plan.int]||1,brk=(S.plan.alloc||{}).brk||0;
+  try{if(!isP()||inj||!p0)return out;const a=age(),am=Math.min(1.1,ageTrM(a)),int=[.7,1,1.25][S.plan.int]||1,brk=(S.plan.alloc||{}).brk||0;
     PITCHES.forEach(k=>{if(!(p0[k]>0)||!(ME.pt[k]>0))return;const g=ME.pt[k]-p0[k];if(g>0&&brk)ME.pt[k]=cl(ME.pt[k]+g*.15,20,capOf(k))})}catch(e){}return out}}
 /* ===== 어깨 좋은 외야수: 시즌 보살 누적(비공개) + 보살 칭찬 댓글 ===== */
 const isOF=()=>['LF','CF','RF'].includes(ME&&ME.pos);
@@ -9839,7 +9845,7 @@ function draftVol(lv){try{const b=blankB(),p=blankP();S.rows.filter(r=>r.lv===lv
   if(isP()){if(p.outs<30)return 0;const ip=p.outs/3,k9=p.K*9/ip;return cl((k9-7)*.45,-1.5,2.5)+cl(ip/60,0,1.5)}
   if(b.PA<40)return 0;return cl(b.HR*.18,0,2)+cl(b.SB*.06,0,1.2)+cl(((b.BB||0)-(b.SO||b.K||0)*.5)/b.PA*8,-1,1)}catch(e){return 0}}
 function draftTool(){try{if(isP()){const best=Math.max(...PITCHES.filter(k=>k!=='FB').map(k=>raw(k)));return cl((DV(E('velo'))-50)*.06,-1.5,2.5)+cl((DV(best)-50)*.04,-1,1.5)}
-  const pr=POSPRIO[ME.pos]||POSPRIO.DH,top=pr.slice(0,3).map(g=>Math.max(...g.map(k=>DV(prioVal(k)))));const mn=top.reduce((a,b)=>a+b,0)/top.length;return cl((mn-50)*.07,-2,3)+(Math.min(...top)>=60?.8:0)}catch(e){return 0}}
+  const pr=POSPRIO[ME.pos]||POSPRIO.DH,top=pr.slice(0,3).map(g=>Math.max(...g.map(k=>DV(prioVal(k)))));const mn=top.reduce((a,b)=>a+b,0)/top.length;return cl((mn-50)*.07,-2,3)+.8*sg((Math.min(...top)-60)/2.5)}catch(e){return 0}}
 /* 고교 무대에서 활약하기 조금 쉽게 */
 {const _b=batPA;batPA=function(L,m,gl){return _b(S&&S.stage==='hs'?L-1.2:L,m,gl)}}
 {const _mb=meBatPA;meBatPA=function(pR,risp){return _mb(S&&S.stage==='hs'?pR-1.2:pR,risp)}}
@@ -9956,12 +9962,12 @@ function synCnt(vals,st,lv){return vals.filter(d=>d>=st).length}
 function toolW(vals,st,bat){const v=vals.slice().sort((a,b)=>b-a),W=bat?[.24,.22,.2,.18,.16]:v.length>=5?[.32,.26,.2,.14,.08]:[.34,.28,.22,.16],s=v.reduce((t,d,i)=>t+d*(W[i]||0),0)/W.slice(0,v.length).reduce((a,b)=>a+b,0);return cl((s-st)*.04+.05,-.3,.6)}
 function synVal(n,T){const i=Math.max(1,Math.min(5,n)),lo=Math.floor(i),hi=Math.min(5,lo+1),t=i-lo;return T[lo]+(T[hi]-T[lo])*t}
 function arsenalAdj(){try{if(!isP())return 0;const lv=lgLv(),f=LGF[lv]||.5,L=LV[lv]||LV.KBO,qt=Math.max(55,DV(L)-2),at=Math.max(50,qt-10);
-  const ds=PITCHES.filter(k=>k!=='FB'&&raw(k)>0).map(k=>E(k));const q=ds.filter(v=>DV(v)>=qt).reduce((t,v)=>t+Math.min(1,pkW(v)*1.6),0),a=ds.reduce((t,v)=>t+pkW(v)*1.25,0);
+  const ds=PITCHES.filter(k=>k!=='FB'&&raw(k)>0).map(k=>E(k));const q=ds.reduce((t,v)=>t+sg((DV(v)-qt+2)/1.2)*Math.min(1,pkW(v)*1.6),0),a=ds.reduce((t,v)=>t+pkW(v)*1.25,0);
   const role=(S._pRole||((S.role==='SP'||ME.pos==='SP')?'SP':'RP'));let v;
-  if(role==='SP'){const ok=q>=3||(q>=2&&a>=4);if(ok)v=.95+Math.min(.6,Math.max(0,a-3)*.2);else if(q===2)v=.25;else if(q===1)v=a>=3?-.05:-.15;else v=-.3}
-  else{if(q>=1){v=.55+(q>=2?.35:0)+Math.min(.5,Math.max(0,q-2)*.25)+(a>=3?.1:0)+Math.min(.2,Math.max(0,a-3)*.1);if(lv==='MLB')v*=1.3}else v=a>=2?-.1:-.2}
+  if(role==='SP'){const b=knot(q,[0,1,2,3],[-.3,-.1,.25,.95]);v=b+(.95-b)*s01((q-1.5)/.5)*s01((a-3.5)/.5);v+=Math.min(.6,Math.max(0,a-3)*.2)*s01((q-2)/1)*s01((a-3)/1)}
+  else{const rq=s01(q);v=knot(q,[0,1,2],[-.15,.55,.9])+Math.min(.5,Math.max(0,q-2)*.25)+rq*(.1*s01((a-2.5)/.5)+Math.min(.2,Math.max(0,a-3)*.1));if(v>0&&lv==='MLB')v*=1+.3*rq}
   const pc=DV(E('pcl'));if(v>0)v*=cl(.7+(pc-50)/100,.5,1.25);v+=(pc-55)*.012*Math.min(a,4)/4;
-  const core=(role==='SP'?['velo','stf','ctl','sta','pcl']:['velo','stf','ctl','pcl']).filter(k=>k in ME.r||k==='pcl'),st=DV(L)-2,n=synCnt(core.map(k=>DV(E(k))),st,lv);
+  const core=(role==='SP'?['velo','stf','ctl','sta','pcl']:['velo','stf','ctl','pcl']).filter(k=>k in ME.r||k==='pcl'),st=DV(L)-2,n=core.reduce((t,k)=>t+sg((DV(E(k))-st+2)/1.2),0);
   v+=lv==='MLB'?toolW(core.map(k=>DV(E(k))),st):synVal(n,{1:-.25,2:-.1,3:.15,4:.4,5:.55});return v*f}catch(e){return 0}}
 pitDivAdj=arsenalAdj;
 function batDivAdj(){try{if(isP())return 0;const lv=lgLv(),f=LGF[lv]||.5,L=LV[lv]||LV.KBO,st=DV(L)-2;
