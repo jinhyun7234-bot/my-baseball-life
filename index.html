@@ -2823,9 +2823,9 @@ function vRecap(){const sl=recapSlides(),i=cl(ui.recap,0,sl.length-1),s=sl[i];
 /* ===== 세부 지표 (wRC+, oWAR/dWAR, FIP, fWAR/rWAR …) ===== */
 function advB(b,lv){if(!b.PA)return{woba:0,wrc:0,owar:0,dwar:0};const s=b.H-b.D-b.T-b.HR,woba=(.69*b.BB+.89*s+1.27*b.D+1.62*b.T+2.03*b.HR)/b.PA,raa=(woba-.33)/1.2*b.PA,ow=(raa+20*b.PA/600)/10,w=bWAR(b,lv);
   const bip=b.AB-b.K-b.HR;return{woba,wrc:Math.round(100+(woba-.33)*600),owar:ow,dwar:w-ow,babip:bip>0?(b.H-b.HR)/bip:0}}
-function advP(p){const i=p.outs/3;if(!i)return{fip:0,k9:0,bb9:0,hr9:0,whip:0,fwar:0,rwar:0};const e=p.R*9/i;
-  return{fip:(13*p.HR+3*p.BB-2*p.K)/i+3.2,k9:p.K*9/i,bb9:p.BB*9/i,hr9:p.HR*9/i,whip:(p.H+p.BB)/i,fwar:pWAR(p),rwar:((4.7-e)/9*i+.035*i)/10}}
-function advRows(rows){if(isP()){const p=blankP();let rw=0,fw=0;rows.forEach(r=>{addTo(p,r.p);const a=advP(r.p);rw+=a.rwar;fw+=a.fwar});const a=advP(p);return[['FIP',a.fip.toFixed(2)],['fWAR',fw.toFixed(1)],['rWAR',rw.toFixed(1)],['K/9',a.k9.toFixed(1)],['BB/9',a.bb9.toFixed(1)],['WHIP',a.whip.toFixed(2)]]}
+function advP(p,lv){const i=p.outs/3;if(!i)return{fip:0,k9:0,bb9:0,hr9:0,whip:0,fwar:0,rwar:0};const e=p.R*9/i;
+  return{fip:(13*p.HR+3*p.BB-2*p.K)/i+3.2,k9:p.K*9/i,bb9:p.BB*9/i,hr9:p.HR*9/i,whip:(p.H+p.BB)/i,fwar:pWAR(p,lv),rwar:((4.7-e)/9*i+.035*i)/10}}
+function advRows(rows){if(isP()){const p=blankP();let rw=0,fw=0;rows.forEach(r=>{addTo(p,r.p);const a=advP(r.p,r.lv);rw+=a.rwar;fw+=a.fwar});const a=advP(p);return[['FIP',a.fip.toFixed(2)],['fWAR',fw.toFixed(1)],['rWAR',rw.toFixed(1)],['K/9',a.k9.toFixed(1)],['BB/9',a.bb9.toFixed(1)],['WHIP',a.whip.toFixed(2)]]}
   const b=blankB();let ow=0,dw=0;rows.forEach(r=>{addTo(b,r.b);const a=advB(r.b,r.lv);ow+=a.owar;dw+=a.dwar});const a=advB(b,rows[0]?rows[0].lv:'KBO');return[['wRC+',a.wrc],['wOBA',f3v(a.woba)],['oWAR',ow.toFixed(1)],['dWAR',Math.abs(dw)<.05?'0.0':(dw>0?'+':'')+dw.toFixed(1)],['BABIP',f3v(a.babip||0)],['볼삼비',(b.K?b.BB/b.K:0).toFixed(2)]]}
 
 /* ===================== 커뮤·유튜브·쇼츠 말투 레파토리 대확장 ===================== */
@@ -2990,7 +2990,7 @@ function vStatTable(){const pit=isP(),lvSel=ui.stlv||'KBO',inLv=r=>lvSel==='abro
   const rows=S.rows.filter(r=>inLv(r)&&(r.b.PA||r.p.outs||r.b.G||r.p.G)).sort((a,b)=>b.y-a.y);
   const cB=[['G',b=>b.G],['타율',b=>avg(b)],['타석',b=>b.PA],['타수',b=>b.AB],['득점',b=>b.R],['안타',b=>b.H],['2타',b=>b.D],['3타',b=>b.T],['홈런',b=>b.HR],['타점',b=>b.RBI],['도루',b=>b.SB],['볼넷',b=>b.BB],['삼진',b=>b.K],['병살',b=>b.GDP||0],['실책',b=>b.E],['출루',b=>obp(b)],['장타',b=>slg(b)],['OPS',b=>ops(b)]];
   const cP=[['ERA',p=>era(p)],['G',p=>p.G],['선발',p=>p.GS],['승',p=>p.W],['패',p=>p.L],['세',p=>p.SV],['홀',p=>p.HLD],['이닝',p=>ip(p.outs)],['피안타',p=>p.H],['피홈런',p=>p.HR],['볼넷',p=>p.BB],['삼진',p=>p.K],['WHIP',p=>p.outs?((p.H+p.BB)*3/p.outs).toFixed(2):'-'],['완투',p=>p.CG],['완봉',p=>p.SHO]];
-  const cols=pit?cP:cB,adv=r=>{if(pit)return advP(r.p);const x=bWARsplit(r.b,r.lv);return{...advB(r.b,r.lv),ow:x.o,dw:x.d}};
+  const cols=pit?cP:cB,adv=r=>{if(pit)return advP(r.p,r.lv);const x=bWARsplit(r.b,r.lv);return{...advB(r.b,r.lv),ow:x.o,dw:x.d}};
   const line=(y,team,b,p,w,ad,cls)=>`<tr class="${cls||''}"><td class="l stk"><b>${y}</b>${team?`<span class="stteam">${esc(team)}</span>`:''}</td>${cols.map(([,f])=>`<td>${f(pit?p:b)}</td>`).join('')}${pit?`<td>${ad.fip.toFixed(2)}</td>`:`<td>${ad.wrc}</td><td>${(ad.ow||0).toFixed(2)}</td><td>${(ad.dw||0).toFixed(2)}</td>`}<td><b>${w.toFixed(2)}</b></td></tr>`;
   const tb=blankB(),tp=blankP();let tw=0;rows.forEach(r=>{addTo(tb,r.b);addTo(tp,r.p);tw+=rowWAR(r)});
   const tad=pit?advP(tp):advB(tb,lvSel==='KBO'?'KBO':rows[0]?rows[0].lv:'KBO');if(!pit){tad.ow=0;tad.dw=0;rows.forEach(r=>{const x=bWARsplit(r.b,r.lv);tad.ow+=x.o;tad.dw+=x.d})}
