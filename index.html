@@ -1464,7 +1464,7 @@ function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp
   const k=cl(.205-dvc(con)*.0042-dv(eff('eye'))*.0008-(sk('eyem')?.01:0)+(sk('kprone')?.03:0),.05,.42);
   const bb=cl(.082+dv(eff('eye'))*.0018+dvc(con)*.0004+(sk('eyem')?.015:0),.02,.2);
   const r=R(),sp=eff('spd');m.PA++;if(risp&&S.rsp)S.rsp.pa++;
-  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<.9*Math.min(.3,((E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)+Math.max(0,DV(E('spd'))-78)*.004)*(sk('thief')?1.36:1)*cl(1+(DV(E('eye'))-65)*.006,.88,1.18)*s01((cl(.55+(E('spd')-L)*.013+(sk('thief')?.054:0),.3,.95)-.6)/.15))){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.054:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
+  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<.9*Math.min(.3,((E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)+Math.max(0,DV(E('spd'))-78)*.004)*(sk('thief')?1.36:1)*cl(1+(DV(E('eye'))-65)*.006,.88,1.18)*s01((cl(.55+(E('spd')-L)*.013+(sk('thief')?.054:0),.3,.95)-.6)/.15)*s01((DV(E('spd'))-76)/14))){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.054:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
     if(R()<cl(([0,.18,.31,.48][b]+Math.min(5,dv(sp))*.004)*(S._tmF||1),.05,.6))m.R++};
   if(r<k){m.AB++;m.K++;return}
   if(r<k+bb+.01){m.BB++;gl.ob++;reach(1);if(on[0]&&on[1]&&on[2])m.RBI++;return}
@@ -11126,7 +11126,7 @@ function wbcWon(){try{return(S.awards||[]).some(a=>a&&/WBC 우승/.test(String(a
 {const MG=/무관|반지 (하나 )?없|반지 0개|반지가 없|우승 (한 번도 )?못 해|우승 경험(이)? 없|유관 선수다|유관 DNA/;
  const _cWB=comments;comments=function(tone,x){let out=_cWB(tone,x);try{if(!Array.isArray(out)||!wbcWon())return out;let k=0;
   out=out.filter(c=>{if(c&&!c.rl&&MG.test(String(c.t||''))){k++;return false}return true});out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!MG.test(String(r&&r.t||'')))});
-  if(k&&R()<.7){const gn=giv(ME.name),L=['WBC 우승한 선수한테 무관 소리는 좀 아니지',`${jo(gn,'은','는')} WBC 우승 경험 있는 유관 선수다`,'국대에서 세계 정상 찍어본 선수라 큰 경기 경험은 충분함','클럽 반지는 아직이어도 WBC 우승이 있잖아'].filter(t=>!seenHas(t));
+  if(k&&R()<.7){const gn=giv(ME.name),L=['WBC 우승한 선수한테 무관 소리는 좀 아니지','국대에서 세계 정상 찍어본 선수라 큰 경기 경험은 충분함','클럽 반지는 아직이어도 WBC 우승이 있잖아',`${gn} 국대 우승은 해봤으니 이제 소속팀 반지만 남았다`].filter(t=>!seenHas(t));
    if(L.length){const t=pick(L);seenAdd(t);out.splice(Math.min(2,out.length),0,mkC(josaFix(t),[]))}}}catch(e){}return out}}
 
 /* v610: 호수비 댓글 확장 — 투수 리액션·동료 반응·판단력·송구·선행주자·실점 억제 (내 경기 호수비 1개 이상일 때) + 글러브 수상 기사엔 시즌 수비 모음집 댓글 */
@@ -11473,6 +11473,54 @@ function slumpDefLines(gn,pn){return[`${gn} 점점 수비형 ${pn}가 되어가�
       const defGood=dpace>=1.2||(x.gGreat||0)>=1,p=sg((bar-ops)/.03)*(defGood?1:0)*.55;
       if(R()<p){const pn=POS[ME.pos]||'수비수',gn=giv(ME.name),L=slumpDefLines(gn,pn).map(josaFix).filter(t=>!seenHas(t));
         if(L.length){const t=pick(L);seenAdd(t);out.splice(Math.min(out.length,1+ri(0,2)),0,mkC(t,R()<.5?[{nk:pick(NICKS),t:pick(['ㄹㅇ ㅋㅋㅋ','수비는 인정','타격만 좀…','이러다 9번 고정','그래도 수비가 어디냐']),up:ri(30,400)}]:[],{up:ri(400,3000)}))}}}}
+ }catch(e){}return out}}
+
+
+/* ===== v645 댓글 묶음 =====
+ ① 리그 우승(한국시리즈·월드시리즈) 반지가 없으면 '유관기운·유관 선수·우승 DNA'처럼 반지 있는 선수에게만 맞는 말은 빼기 (국제대회 금메달은 유관 아님)
+ ② 포스트시즌: 시리즈 앞서다 한 판 지면 '아직 우리가 유리하다' 위로
+ ③ 설레발 밈 '기세' (2023 롯데 김상수 → 기세데이 → 추락 → 팬들 금기어): 팀이 1위·연승일 때 가끔 "마 이게 우리팀의 기세다" + 답글은 전부 '그 단어 금지'
+ ④ 몇 시즌 부진하다 올해 잘하면 '드디어 터지네'
+ ⑤ 우승 가뭄: 우승 기사엔 몇 년 만인지 언급(10년+ 무조건, 겹치지 않게) · 시즌 중 1위면 "드디어 N년 만에 '그거' 가능하냐?" + 답글 '설레발 노노'
+ ⑥ 포스트시즌 2차전(탈락 걸린 경기 아님)에 가끔 "○○○ 여자친구 있을까???" + 답글은 '마 갱기에 집중 안하나' (손아섭 짤 밈 — 경기와 상관없는 잡담에 쓰는 말)
+    경기와 상관없는 잡담 댓글(치어리더·먹거리·외모 등)에도 가끔 같은 답글 */
+function leagueRings(){try{return(S.awards||[]).filter(a=>a&&/^(한국시리즈|월드시리즈) 우승$/.test(String(a.n||''))).length}catch(e){return 0}}
+const RINGY=/유관기운|유관의 신|유관 선수|유관 DNA|유관 레전드|유관 기운|반지 있는 선수|우승해 본 선수|우승 DNA|우승 경험자|반지의 힘|짬바 유관/;
+const OFFTOPIC=/치어리더|응원단장|치킨|맥주|떡볶이|먹거리|직관 음식|잘생|존잘|여자친구|남자친구|연애/;
+const GAENGGI=['마 갱기에 집중 안하나','마! 갱기에 집중해라','마 갱기...','지금 그게 중요하나? 마 갱기에 집중 안하나','마갱집','마 갱기에 집중 좀 하자'];
+const GISE_RE=['우리 팀은 그 단어 언급 금지다','그 단어 쓰지 마라 제발','아 그 단어 꺼내지 마라 불길하다','그 단어는 우리 팀 금지어다 지워라','그 단어 나오면 지는 거 모르냐','2023년 잊었냐 그 단어 금지다'];
+function lastTitleGap(){try{const my=S.pro.team,BASE=[2023,2019,null,2022,2021,1999,2014,2024,1992,2020];const last=(S.champs||{})[my]??BASE[my];return last==null?'never':S.y-last}catch(e){return null}}
+{const _cV5=comments;comments=function(tone,x){let out=_cV5(tone,x);try{if(!Array.isArray(out)||!S||!ME||!S.pro)return out;x=x||{};
+  const gn=giv(ME.name),re=(L,n)=>L.slice().sort(()=>R()-.5).slice(0,n).map(t=>({nk:pick(NICKS),t,up:ri(40,900)}));
+  const put=(t,reps,up,at)=>{t=josaFix(t);if(seenHas(t))return false;seenAdd(t);out.splice(Math.min(out.length,at==null?1+ri(0,2):at),0,mkC(t,reps||[],{up:up||ri(500,4000)}));return true};
+  const isRingArt=tone==='ring'||tone==='ws'||(x.clinch&&x.win&&/한국시리즈|월드시리즈/.test(String(x.title||'')));
+  /* ① */
+  if(!leagueRings()&&!isRingArt){out=out.filter(c=>!RINGY.test(String((c&&c.t)||'')));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(q=>!RINGY.test(String((q&&q.t)||'')))})}
+  const kbo=S.pro.league==='KBO',my=S.pro.team,ps=!!(x.ps&&!x.intl),title=String(x.title||'');
+  /* ② */
+  if(ps&&x.win===false&&S._psSer&&S._psSer.W>S._psSer.L&&R()<.85){const s=S._psSer;
+    const L=['아직 시리즈 유리하다 내일 다시 다잡고 하자',`${s.W}승 ${s.L}패 아직 우리가 앞서 있다 쫄 거 없다`,'한 판 졌다고 흔들릴 필요 없음 아직 유리함','오늘 건 빨리 잊고 내일 끝내자','시리즈는 길게 봐야지 아직 우리 쪽이다','져도 되는 경기 하나 쓴 거다 내일 잡자'];
+    put(pick(L.filter(t=>!seenHas(josaFix(t))))||L[0],re(['ㅇㅇ 아직 유리함','내일 잡으면 됨','멘탈 잡자','맞다 쫄지 마라'],R()<.6?1:0),ri(1500,5000),0)}
+  /* ③ 기세 */
+  if(kbo&&!ps&&!x.intl&&!x.wbc&&x.win!==false&&S.stage==='pro'&&!S.pro.minor&&S._giseY!==S.y&&S.m>=4&&S.m<=8&&!/결승|준결승|라운드|올림픽|아시안게임|WBC|프리미어|2군|퓨처스|부상|방출|트레이드/.test(title+' '+String(tone))){const st=standings(),rk=st.findIndex(z=>z.i===my)+1,sk=streakOf((S.lg.rec||[])[my]);const n=+(String(sk).match(/^(\d+)승/)||[])[1]||0;
+    if((rk===1||n>=5)&&R()<(n>=5?.4:.2)){S._giseY=S.y;put(pick(['마 이게 우리팀의 기세다','마 이게 우리팀의 "기세"다','이게 바로 우리팀의 기세다 ㅋㅋㅋ']),re(GISE_RE,2+ri(0,1)),ri(800,3000))}}
+  /* ④ 드디어 터지네 */
+  if(S._burstY!==S.y&&(x.gPA>0||x.ipO>0||tone==='hype')){const lvs=['KBO','MLB'],cur=S.rows.filter(r=>r.y===S.y&&lvs.includes(r.lv)),prevY=[S.y-1,S.y-2,S.y-3];
+    const prevW=prevY.map(y=>S.rows.filter(r=>r.y===y&&lvs.includes(r.lv)).reduce((s,r)=>s+rowWAR(r),0)),bad=prevW.filter(w=>w<1.8).length,had=prevY.filter(y=>S.rows.some(r=>r.y<=y)).length;
+    const G=cur.reduce((s,r)=>s+((r.b&&r.b.G)||(r.p&&r.p.G)||0),0),wNow=cur.reduce((s,r)=>s+rowWAR(r),0),pace=isP()?wNow:(G?wNow/G*140:0),good=x.win!==false&&!x.intl&&(x.gH>=2||x.gHR>=1||(x.ipO>=18&&(x.ra||0)<=2)||tone==='hype');
+    if(had>=2&&bad>=2&&G>=25&&pace>=3.8&&good&&R()<.45){S._burstY=S.y;put(pick([`드디어 터지네`,`${gn} 드디어 터졌다 몇 년을 기다렸냐`,'존버는 승리한다 ㅠㅠ',`${gn} 이제야 포텐 터지네`,'그동안 까던 사람들 다 어디 갔냐 ㅋㅋ',`몇 년 동안 욕먹더니 ${gn} 드디어 해내네`]),re(['ㄹㅇ 기다린 보람 있다','올해는 진짜 다르다','반짝 아니길','드디어 ㅠㅠ'],R()<.7?1:0),ri(1200,5000))}}
+  /* ⑤ 우승 가뭄 */
+  if(kbo&&isRingArt&&S.pro){const d=S.drought;const has=out.some(c=>/년 만의 우승|년 만에 우승|창단 첫 우승|년 만에 반지/.test(String((c&&c.t)||'')));
+    if(!has&&d!=null&&(d==='never'||d>=10||(d>=4&&R()<.6))){const t=d==='never'?'창단 첫 우승 실화냐 ㅠㅠ':pick([`${d}년 만의 우승 ㅠㅠㅠ`,`${d}년 걸렸다 진짜 ${d}년`,`${d}년 만에 우승이라니 오래 살고 볼 일이다`,`${d}년 기다린 보람이 있다 ㅠㅠ`]);
+      put(t,re(['울었다 ㄹㅇ','이 날만 기다렸다','평생 못 잊는다','아빠한테 전화했다 ㅠㅠ'],1+ri(0,1)),ri(8000,20000),0)}}
+  if(kbo&&!ps&&!isRingArt&&!x.intl&&S.stage==='pro'&&S._geuY!==S.y&&S.m>=5&&S.m<=8){const st=standings(),rk=st.findIndex(z=>z.i===my)+1,g=lastTitleGap();
+    const ex=out.find(c=>c&&/그거["'”]? ?가능/.test(String(c.t||'')));
+    if(ex&&rk===1&&g!=null&&(g==='never'||g>=5)){S._geuY=S.y;ex.t=g==='never'?`드디어 창단 첫 "그거" 가능하냐?`:`드디어 ${g}년 만에 "그거" 가능하냐?`;ex.re=Array.isArray(ex.re)?ex.re:[];if(!ex.re.some(q=>/설레발/.test(String(q&&q.t||''))))ex.re.unshift({nk:pick(NICKS),t:'설레발 노노',up:ri(100,900)})}
+    else if(!ex&&rk===1&&g!=null&&(g==='never'||g>=5)&&!x.intl&&R()<.22){S._geuY=S.y;put(g==='never'?`드디어 창단 첫 "그거" 가능하냐?`:`드디어 ${g}년 만에 "그거" 가능하냐?`,re(['설레발 노노','쉿 그 얘기 하지 마라','아직 시즌 안 끝났다 설레발 금지','그거 얘기하면 부정 탄다 지워라','설레발 치다 망한 거 한두 번이냐'],2),ri(1000,4000))}}
+  /* ⑥ 여자친구 잡담 + 마 갱기에 집중 안하나 */
+  const m=/(\d+)차전/.exec(title),gno=m?+m[1]:0,wc=/와일드카드/.test(title);
+  if(ps&&gno===2&&!wc&&!/한국시리즈|월드시리즈/.test(title)&&!x.clinch&&!(S._psSer&&S._psSer.L>=3)&&R()<.35){put(`${ME.name} 여자친구 있을까???`,re(GAENGGI,2+ri(0,1)),ri(300,1500))}
+  out.forEach(c=>{if(c&&OFFTOPIC.test(String(c.t||''))&&!/여자친구 있을까/.test(String(c.t||''))&&R()<.25){c.re=Array.isArray(c.re)?c.re:[];if(!c.re.some(q=>/갱기|마갱집/.test(String(q&&q.t||''))))c.re.push({nk:pick(NICKS),t:pick(GAENGGI),up:ri(50,800)})}});
  }catch(e){}return out}}
 
 /* ===================== 첫 화면 일러스트 (사용자 제공 이미지) ===================== */
