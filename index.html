@@ -11386,8 +11386,8 @@ ACT.clDown=function(){const now=S.y*12+S.m;S.clDown={until:now+3};ME.hid.men=cl(
 if(typeof CRIT!=='undefined')CRIT.add('clDown');
 {const _drCD=decideRole;decideRole=function(){let r=_drCD();try{const x=S.clDown;if(!x)return r;const now=S.y*12+S.m;if(now>=x.until||S.stage!=='pro'){S.clDown=null;return r}if(r==='CL')return'SU'}catch(e){}return r}}
 
-/* 노쇠에 성장 타입 반영 (곡선, 29→33세에 걸쳐 서서히): 조숙형 빨리 꺾임 ×1.3 · 만성형 ×.95 · 꾸준형 ×.85 (설명 노노) */
-{const _agGT=agingTick;agingTick=function(){const b=ME&&ME.r?{...ME.r}:null;_agGT();try{if(!b)return;const a=age(),T={'조숙형':1.3,'만성형':.95,'꾸준형':.85}[ME.gt||'평균형'];if(!T)return;const m=1+(T-1)*s01((a-29)/4);for(const k in b){if(typeof b[k]==='number'&&typeof ME.r[k]==='number'&&ME.r[k]<b[k])ME.r[k]=cl(b[k]-(b[k]-ME.r[k])*m,20,99)}}catch(e){}}}
+/* 노쇠에 성장 타입 반영 (곡선, 29→33세에 걸쳐 서서히): 조숙형 빨리 꺾임 ×1.27 · 만성형 ×.95 · 꾸준형 ×.85 (설명 노노) */
+{const _agGT=agingTick;agingTick=function(){const b=ME&&ME.r?{...ME.r}:null;_agGT();try{if(!b)return;const a=age(),T={'조숙형':1.27,'만성형':.95,'꾸준형':.85}[ME.gt||'평균형'];if(!T)return;const m=1+(T-1)*s01((a-29)/4);for(const k in b){if(typeof b[k]==='number'&&typeof ME.r[k]==='number'&&ME.r[k]<b[k])ME.r[k]=cl(b[k]-(b[k]-ME.r[k])*m,20,99)}}catch(e){}}}
 
 /* ===== FA 시장 (v635): 최근 3년 성적 + 나이로 '찾는 구단'이 정해짐 · 38세+ 계약은 1~2년 (설명 노노) =====
    시즌 가치 = 판정용 WAR + 세이브×.06 + 홀드×.045 + 이닝 보너스(120→200이닝: 0→+0.8)
