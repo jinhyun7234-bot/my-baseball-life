@@ -9239,8 +9239,8 @@ if(typeof CRIT!=='undefined'){CRIT.add('mlbReMinor');CRIT.add('mlbIndy')}
   if(S.awards.some(a=>a.y===S.y&&/골드글러브|실버슬러거/.test(a.n)))return;const b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB());if(b.G<110)return;
   const sp=bWARsplit(b,'MLB'),lg=(()=>{try{return mlbSeed().lg==='NL'?'내셔널리그':'아메리칸리그'}catch(e){return'아메리칸리그'}})(),pn=POS[ME.pos]||'지명타자',dh=ME.pos==='DH'||(S.dhConv&&S.y>=S.dhConv),got=[];
   const rel=sp.d-(PADJ[ME.pos]||0)*b.G/140/10*1.08,ggLo=({C:0.63,'1B':1.002,'2B':0.709,'3B':0.159,SS:0.876,LF:0.593,CF:0.712,RF:0.549}[ME.pos]??.5),ggT=Math.min(1,Math.max(0,(rel-ggLo)/.3)),pg=dh?0:.9*ggT*ggT*(3-2*ggT),ssLo={C:0.7,'1B':0.881,'2B':0.765,'3B':0.811,SS:0.733,LF:0.872,CF:0.732,RF:0.829,DH:.91}[ME.pos]??.85,ssO=b.AB?(b.H+(b.BB||0))/(b.AB+(b.BB||0))+(b.H+(b.D||0)+2*(b.T||0)+3*(b.HR||0))/b.AB:0,ssT=Math.min(1,Math.max(0,(ssO-ssLo)/.12)),ps=b.PA<450?0:.95*ssT*ssT*(3-2*ssT);
-  if(R()<pg){const n=`${lg} 골드글러브 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 골드글러브 수상`,1)}
-  if(R()<ps){const n=`${lg} 실버슬러거 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 실버슬러거 수상`,1)}
+  if(R()<pg){const n=`${lg} 골드글러브 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 골드글러브 수상`,1);if(S.celSeen)delete S.celSeen['골드글러브수상'];celebrate('feat','골드글러브 수상',`${S.y} ${lg} · ${pn} 최고의 수비`)}
+  if(R()<ps){const n=`${lg} 실버슬러거 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 실버슬러거 수상`,1);if(S.celSeen)delete S.celSeen['실버슬러거수상'];celebrate('feat','실버슬러거 수상',`${S.y} ${lg} · ${pn} 최고의 타격`)}
   if(!got.length)return;S.rel.fame=cl(S.rel.fame+3*got.length,0,100);rep.lines.push(`${got.join(' · ')} 수상!`);news(`${ME.name}, ${got.join(' · ')} 수상.`);
   article(`${ME.name}, ${got.map(n=>n.replace(/ \(.+\)/,'')).join('·')} 수상`,`${jo(ME.name,'이','가')} ${got.length===2?'공수 겸장으로 인정받았다.':/골드/.test(got[0])?'메이저리그 최고 수준의 수비를 인정받았다.':'메이저리그 최고 수준의 타격을 인정받았다.'}`,'award')}catch(e){}}}
 /* 타이틀 개수 (개인 타이틀 + 골든글러브·골드글러브·실버슬러거) */
