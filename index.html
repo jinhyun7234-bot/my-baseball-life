@@ -2121,7 +2121,7 @@ function choose(i){const q=S.queue[0];if(!q)return;const c=q.ch[i];S.queue.shift
 function careerTot(lv){const b=blankB(),p=blankP();let w=0;S.rows.forEach(r=>{if(lv&&!lv.includes(r.lv))return;addTo(b,r.b);addTo(p,r.p);if(PRO.includes(r.lv))w+=rowWAR(r)});return{b,p,w}}
 function retire(why){const t=careerTot(PRO),aw=S.awards;
   const score=typeof hofScore==='function'?hofScore(t.w):t.w+aw.filter(a=>a.n.includes('MVP')).length*6+aw.filter(a=>a.n.includes('골든')).length*2+aw.filter(a=>/왕|최다/.test(a.n)).length*2+S.hist.rings*2+Math.min(6,S.hist.nat)+(S.ach.record?5:0);
-  const hofLine=(()=>{try{if(!isP())return 105;const sh=typeof hofSpShare==='function'?hofSpShare():(hofProle(t.p)==='SP'?1:0);return Math.round(58+37*sh)}catch(e){return 105}})(),hof=score>=hofLine;if(hof)S.ach.hof=S.y;
+  const hofLine=(()=>{try{if(!isP())return 100;const sh=typeof hofSpShare==='function'?hofSpShare():(hofProle(t.p)==='SP'?1:0);return Math.round(58+37*sh)}catch(e){return 105}})(),hof=score>=hofLine;if(hof)S.ach.hof=S.y;
   S.ended={y:S.y,age:age(),why,score:Math.round(score),hof};S.stage='ret';S.queue=S.queue.filter(q=>q.type==='game'||q.type==='award');if(hof)celebrate('hof','명예의 전당 헌액',`${S.y} · 커리어 점수 ${Math.round(score)} · 통산 WAR ${t.w.toFixed(1)}`);news(`${why}.${hof?' 명예의 전당 헌액!':''}`);
   article(hof?`'전설' ${ME.name}, 명예의 전당 헌액`:`${ME.name}, ${age()}세에 현역 은퇴`,`프로 통산 WAR ${t.w.toFixed(1)}. ${hof?'첫 투표에서 압도적 지지를 받았다.':'정든 그라운드에 작별을 고했다.'}`,'retire');save()}
 function checkAch(){const A=S.ach,y=S.y,t=careerTot(PRO);
@@ -2426,12 +2426,12 @@ function lpYear(){ensureLP();S.lp.forEach(p=>{p.a++;const d=p.a<=27?rn(1,1.5):p.
 const pois=l=>{let L=Math.exp(-l),k=0,p=1;do{k++;p*=R()}while(p>L&&k<40);return k-1};
 function lpSimB(p,n){const m=p.s,str=S.lg.str[p.t],om=[.75,.85,1.15,1.3,1.2,1,.95,.9,.85][(p.o||5)-1];
   for(let g=0;g<n;g++){if(R()>.93)continue;m.G++;const pa=4+(p.o<=3?1:0)*(R()<.5?1:0)+(R()<.25?1:0)-(p.o>=7&&R()<.3?1:0);
-    for(let i=0;i<pa;i++){m.PA++;const bb=cl(.075+(p.eye-55)*.0022,.03,.16);if(R()<bb){m.BB++;if(R()<cl((p.spd-50)*.01,0,.32)){if(R()<.72)m.SB++;else m.CS++}continue}
-      m.AB++;const h=cl(.258+(p.con-55)*.0045+(str-50)*.00045,.17,.37);if(R()>h){if(R()<.22)m.K++;if(R()<.09*om)m.RBI+=R()<.5?1:0;continue}
-      m.H++;const hr=cl(.1+(p.pow-55)*.0075,.02,.32)*pfOf(p.t)*1.05,r=R();
+    for(let i=0;i<pa;i++){m.PA++;const bb=cl(.075+(p.eye-55)*.0022+.1*s01((p.eye-54)/12),.03,.22);if(R()<bb){m.BB++;if(R()<.3)m.R++;if(R()<cl((p.spd-50)*.01,0,.32)+.1*s01((p.spd-65)/12)){if(R()<.72)m.SB++;else m.CS++}continue}
+      m.AB++;const h=cl(.258+(p.con-55)*.0045+(str-50)*.00045+.012*s01((p.con-60)/12),.17,.38);if(R()>h){if(R()<.22)m.K++;if(R()<.09*om)m.RBI+=R()<.5?1:0;continue}
+      m.H++;const hr=cl(.1+(p.pow-55)*.0075,.02,.32)*pfOf(p.t)*1.05*(1-.12*s01((p.pow-65)/12)),r=R();
       if(r<hr){m.HR++;m.R++;m.RBI+=1+(R()<.42*om?1:0)+(R()<.12*om?1:0)}else if(r<hr+.19){m.D++;m.RBI+=R()<.32*om?1:0;if(R()<.5)m.R++}else if(r<hr+.2+cl((p.spd-50)*.0008,0,.03)){m.T++;m.RBI+=R()<.5*om?1:0;if(R()<.6)m.R++}
-      else{m.RBI+=R()<.19*om?1:0;if(R()<cl((p.spd-48)*.016,0,.45)){if(R()<.74)m.SB++;else m.CS++}if(R()<.4)m.R++}}}}
-function lpSimP(p,n){const m=p.s,str=S.lg.str[p.t],era0=cl(4.4-(p.r-56)*.17,1.5,7);
+      else{m.RBI+=R()<.19*om?1:0;if(R()<cl((p.spd-48)*.016,0,.45)+.25*s01((p.spd-58)/14)){if(R()<.74)m.SB++;else m.CS++}if(R()<.4)m.R++}}}}
+function lpSimP(p,n){const m=p.s,str=S.lg.str[p.t],era0=cl(4.4-(p.r-56)*.17,1.5,7)*(1+.14*s01((p.r-60)/10));
   if(p.k==='SP'){const st=Math.round(n/5+rn(0,.35));for(let i=0;i<st;i++){m.G++;m.GS++;const ip=cl(5.7+(p.r-56)*.06+rn(0,1.2),1.5,9),outs=Math.round(ip*3),er=pois(era0*ip/9);m.outs+=outs;m.R+=er;m.K+=pois(ip*(.82+(p.r-56)*.018));m.BB+=pois(ip*cl(.36-(p.r-56)*.006,.15,.6));m.H+=pois(ip*cl(.95-(p.r-56)*.014,.6,1.3));
     if(outs>=27){m.CG++;if(!er)m.SHO++}const wp=cl(.6+(str-50)*.0055-er*.09+(ip-5)*.04,.05,.92);if(ip>=5&&R()<wp)m.W++;else if(R()<cl(.18+er*.08-(str-50)*.0036,.05,.8))m.L++}}
   else{const apps=Math.round(n*(p.k==='CL'?.42:.46)*rn(1,.12));for(let i=0;i<apps;i++){m.G++;const outs=R()<.85?3:ri(1,5);m.outs+=outs;const er=pois(era0*.92*outs/27);m.R+=er;m.K+=pois(outs/3*(1+(p.r-56)*.02));m.BB+=pois(outs/3*.38);m.H+=pois(outs/3*cl(.9-(p.r-56)*.014,.55,1.3));
