@@ -1326,7 +1326,9 @@ const talentM=()=>cl(.8+(ME.pot-46)/34*.4,.8,1.2);
 const talentG=p=>p>=74?'S':p>=68?'A':p>=62?'B':p>=56?'C':'D';
 const E=k=>{const v=raw(k);return v>0?v+itemBonus(k):0};
 const eff=k=>{const v=E(k);return v>0?(v+ME.form*.8-Math.max(0,ME.fat-60)/3-mlbPen(k)+spBonus(k))*primeM():0};
-function primeM(){try{if(!S||S.stage!=='pro')return 1;const a=S.y-S.birth;return a>=26&&a<=31?(ME.type==='P'?1.05:1.03):1}catch(e){return 1}}
+/* 전성기 보정(곡선) — 성장 타입별 구간. 조숙형은 없음. 꾸준형은 넓고 낮게 (면적 = 평균형과 동일) */
+const PRIME_W={'평균형':[24.5,26.5,30.5,32.5],'만성형':[26,28,32,34],'꾸준형':[23.5,25.5,32.5,34.5]};
+function primeM(){try{if(!S||S.stage!=='pro')return 1;const a=S.y-S.birth,gt=(ME&&ME.gt)||'평균형',w=PRIME_W[gt];if(!w)return 1;const P=ME.type==='P',A=gt==='꾸준형'?(P?.03:.02):(P?.05:.03);return 1+A*knot(a,w,[0,1,1,0])}catch(e){return 1}}
 function pkW(v){const d=DV(v);return d<=40?0:d>=70?1:Math.pow((d-40)/30,2.2)}
 function ars(f=E){const q=PITCHES.map(k=>f(k)).filter(v=>v>0).sort((a,b)=>b-a);const fb=Math.max(33,(q[0]||0)*.6);const g=i=>{const v=q[i];if(v==null)return fb;if(i===0)return v;return v>fb?fb+(v-fb)*pkW(v):v};return g(0)*.42+g(1)*.32+g(2)*.26+(q[3]?2*pkW(q[3]):0)}
 const pSyn=(f=E)=>{const n=PITCHES.reduce((t,k)=>t+(f(k)>0?pkW(f(k)):0),0),pc=f('pcl')||45;return(pc-50)*.09*Math.max(.5,n/3)};
@@ -1706,7 +1708,7 @@ function phaseEnd(rep,tot0){
   if(S.mood&&S.mood.bold&&main){if(ps<0){S.rel.fame-=6;news('"큰소리치더니…" 지난 인터뷰가 역풍을 맞았다.')}else S.rel.fame+=3;S.mood.bold=0}
   // one event per phase at most
   if(S.stage!=='ret'&&!S.queue.length&&R()<.42){
-    if(main&&S.stage==='pro'&&S.pro.league!=='MLB'&&Math.abs(ps)>=(isP()&&ME.pos==='RP'&&(S.rel.fame||0)<45?1.8:1.2)&&R()<(isP()&&ME.pos==='RP'?.3:.5))S.queue.push(interview(ps,main));
+    if(main&&S.stage==='pro'&&S.pro.league!=='MLB'&&Math.abs(ps)>=(isP()&&ME.pos==='RP'?1.2+.6*(1-s01(((S.rel.fame||0)-35)/20)):1.2)&&R()<(isP()&&ME.pos==='RP'?.3:.5))S.queue.push(interview(ps,main));
     else{const ev=randEvent();if(ev)S.queue.push(ev)}}
   if(!ME.inj&&ME.fat>=65&&S.stage!=='ret')S.queue.push({title:'⚠️ 피로 경고',text:`피로도 ${Math.round(ME.fat)}. 이대로 쉬지 않고 훈련하거나 계속 출전하면 장기 부상 위험이 크게 올라간다.\n(내구성 ${Math.round(ME.hid.dur)} · 피로 75 이상이면 큰 부상 확률↑)`,ch:[{t:'서브 훈련을 휴식으로 (권장)',s:'피로↓ 부상 위험↓ · 이번 기간 성장↓',act:'restplan'},{t:'괜찮다, 그대로 간다',s:'부상 위험 감수',r:'무리하는 만큼 위험도 커진다.'}]});
   if(S.phCel){const t=S.phCel.t.replace(/^\d+월 /,'').replace(/!+$/,'');celebrate(/신기록/.test(t)?'record':'feat',t,`${S.y} ${PHASE[S.phase]} · ${shortTeam()}`);(S.phCelX||[]).filter(x=>x!==S.phCel.t).forEach(x=>{const t2=x.replace(/^\d+월 /,'').replace(/!+$/,'');celebrate('feat',t2,`${S.y} ${PHASE[S.phase]} · ${shortTeam()}`)});S.phCel=null}S.phCelX=[];
@@ -2423,7 +2425,7 @@ function initLP(){const L=[];LPN.forEach((T,t)=>{T.b.forEach((n,i)=>L.push(mkLP(
   L.filter(p=>p.k==='B').forEach((p,i)=>p.o=(i%5)+1);return L}
 function ensureLP(){if(!S.lp)S.lp=initLP();if(!S.lg.d)S.lg.d=TEAMS.map(()=>0);if(!S.lg.rec)S.lg.rec=TEAMS.map(()=>[])}
 function lpYear(){ensureLP();S.lp.forEach(p=>{p.a++;const d=p.a<=27?rn(1,1.5):p.a<=31?rn(0,1.5):rn(-1.6,1.5);
-  if(p.k==='B'){p.con=cl(p.con+d,30,80);p.pow=cl(p.pow+d,25,82);p.spd=cl(p.spd+(p.a>29?-1:0)+rn(0,1),20,80);p.eye=cl(p.eye+d*.6,30,80)}else p.r=cl(p.r+d,38,80);
+  if(p.k==='B'){p.con=cl(p.con+d,30,80);p.pow=cl(p.pow+d,25,82);p.spd=cl(p.spd-s01((p.a-28)/3)+rn(0,1),20,80);p.eye=cl(p.eye+d*.6,30,80)}else p.r=cl(p.r+d,38,80);
   if(p.a>=36&&R()<(p.a-35)*.2){const nm=legendName(p.t,p.k),np=mkLP(p.t,nm||mkName(),p.k,nm?2:0);np.a=ri(20,23);np.o=p.o;if(nm)news(`${TEAMS[p.t].nick} 신인 ${nm} 1군 합류 — "어디서 많이 본 이름인데?"`);Object.assign(p,np)}
   p.s=p.k==='B'?blankB():blankP()})}
 const pois=l=>{let L=Math.exp(-l),k=0,p=1;do{k++;p*=R()}while(p>L&&k<40);return k-1};
@@ -5322,7 +5324,7 @@ function g1Lines(x){const nm=ME.name,gn=giv(nm),gI=jo(gn,'이','가'),win=x.win!
 
 /* ===================== 성적 애매한 젊은 타자는 주전 보장 없음 · 내 실책 언급 · '감독 약점 잡았냐' 댓글 ===================== */
 function batOPS(){try{const lg=S.pro.league,{b}=yearTot(S.y,[lg]);return{ops:b.PA?opsN(b):null,pa:b.PA}}catch(e){return{ops:null,pa:0}}}
-{const _pp=psPick;psPick=function(base,gn,g7,need){const r=_pp(base,gn,g7,need);try{if(!isP()&&r==='start'){const {ops,pa}=batOPS(),yrs=proYears();if(pa>=100&&ops!=null&&R()<.62*sg(((yrs<=3?.755:.695)-ops)/.012))return'bench'}}catch(e){}return r}}
+{const _pp=psPick;psPick=function(base,gn,g7,need){const r=_pp(base,gn,g7,need);try{if(!isP()&&r==='start'){const {ops,pa}=batOPS(),yrs=proYears();if(pa>=100&&ops!=null&&R()<.62*sg((knot(yrs,[3,5],[.755,.695])-ops)/.012))return'bench'}}catch(e){}return r}}
 {const _dr4=decideRole;decideRole=function(){let r=_dr4();try{if(!isP()&&r==='start'&&S.stage==='pro'&&S.pro&&proYears()<=3){const {ops,pa}=batOPS();if(pa>=150&&ops!=null&&ops<.68&&R()<.4)r='bench'}}catch(e){}return r}}
 /* 포스트시즌·국제대회에서 내 실책 */
 {const _c29=comments;comments=function(tone,x){let out=_c29(tone,x);try{if(!x||!(x.ps||x.intl)||!(x.gErr>=1)||!S||!ME)return out;const gn=giv(ME.name),win=x.win!==false;
@@ -6288,7 +6290,7 @@ function interp(T,x){if(x<=T[0][0])return T[0][1];for(let i=1;i<T.length;i++)if(
   const q=S.queue.slice(n0).find(x=>x&&x.title&&/연봉 협상/.test(x.title)&&!x.type);if(!q)return r;const sal=q.ch.find(c=>c.act==='sal');if(!sal)return r;
   const cur=S.pro.salary,_rp=(()=>{try{if(!isP())return{b:0};const p=yearTot(S.y,['KBO']).p;return{b:(p.SV||0)*.06+(p.HLD||0)*.045,sv:p.SV||0,h:p.HLD||0}}catch(e){return{b:0}}})(),w0=lastWAR(),w=w0+_rp.b,a=age(),young=proYears()<=6&&a<=27,mvp=S.awards.some(x=>x.y===S.y&&/정규시즌 MVP/.test(x.n));
   /* 이정후(키움) 커브: 2.7천→1.1억(WAR3)→2.3억(4.5)→3.9억(5.5)→5.5억(6.6)→7.5억(6.0)→11억(8.9) */
-  const kc=interp([[.3,1.0],[.6,.5],[1.1,.24],[2.3,.13],[4,.065],[6,.058],[10,.05]],cur/10000);const kq=young?kc:kc*.8;let m=w>=0?1+w*(kq+(.1-kq)*Math.max(0,1-w)):1+((cur>=10000?.85:.95)-1)*s01(-w/.5);
+  const kc=interp([[.3,1.0],[.6,.5],[1.1,.24],[2.3,.13],[4,.065],[6,.058],[10,.05]],cur/10000);const kq=young?kc:kc*.8;let m=w>=0?1+w*(kq+(.1-kq)*Math.max(0,1-w)):1+(knot(cur,[6000,14000],[.95,.85])-1)*s01(-w/.5);
   if(young&&mvp)m=Math.max(m,3);
   if(cur>=20000&&w<1.5)m=Math.min(m,cl(.5+Math.max(0,w-1)*.3,.5,.9));
   let nv=Math.round(Math.max(3000,cur*m)/100)*100;let cap=Math.max(cur,typeof salCap==='function'?salCap():200000);if(young)cap=Math.max(cur,Math.min(cap,Math.round(100000+cl(w-6,0,2)*10000)));nv=Math.min(nv,cap);
@@ -7085,7 +7087,7 @@ function bigDay(tone,x){try{if(['ws','ring','gold','mvp','retire'].includes(tone
 {const _c107=comments;comments=function(tone,x){let out=_c107(tone,x);try{if(!S||!ME)return out;const big=bigDay(tone,x),ps=x&&(x.ps||x.intl);
   if(x&&(x.gPA!=null||x.ipO!=null)){const P=isP(),badD=P?((x.ipO||0)>=3&&(x.ra||0)>=4):((x.gPA||0)>=3&&!(x.gH)&&!(x.gRBI)),goodD=P?((x.ipO||0)>=15&&(x.ra||0)<=2):((x.gHR||0)>=1||(x.gH||0)>=3||(x.gRBI||0)>=3);if(badD){const PR=/할 만큼 했|혼자 (야구|캐리|다 했)|멱살|캐리|영웅|대활약|MVP|역시 .{0,4}신|신 강림|ㅅㅅㅅ|스타성|해결사|게토레이/;out=out.filter(c=>c.must||!PR.test(c.t))}if(goodD){const NG=/무안타|침묵|버스 탔|버스 탑승|방망이 실종|배트 대신 우산/;out=out.filter(c=>c.must||!NG.test(c.t))}}
   const fm0=(S.rel&&S.rel.fame)||0,minN=big?6:ps?(fm0<15?2:4):(fm0<15?1:fm0<40?2:3);if(out.length<minN){S.cmFill=S.cmFill&&S.cmFill.y===S.y?S.cmFill:{y:S.y,u:{}};const base=((typeof CM!=='undefined'&&(CM[tone]||CM.mix))||[]).filter(t=>typeof t==='string'&&!/[{}]/.test(t)&&!(typeof HATE!=='undefined'&&HATE.test(t))&&!(typeof HARSH!=='undefined'&&HARSH.test(t))&&!S.cmFill.u[t]&&!out.some(c=>c.t===t));base.sort(()=>R()-.5).slice(0,minN-out.length).forEach(t=>{S.cmFill.u[t]=1;out.push(mkC(t,[],{}))})}
-  const fm=(S.rel&&S.rel.fame)||0,fmul=fm<15?.45:fm<30?.65:fm<50?.85:1,cap=Math.max(big?8:2,Math.round((big?ri(14,18):ps?ri(7,10):ri(4,7))*(big?Math.max(.7,fmul):fmul)));if(out.length>cap){const must=out.filter(c=>c.must),rest=out.filter(c=>!c.must);const mk=Math.min(must.length,Math.max(cap-2,Math.ceil(cap*.7)));out=must.slice(0,mk).concat(rest.slice(0,cap-mk))}
+  const fm=(S.rel&&S.rel.fame)||0,fmul=knot(fm,[7,22,40,55],[.45,.65,.85,1]),cap=Math.max(big?8:2,Math.round((big?ri(14,18):ps?ri(7,10):ri(4,7))*(big?Math.max(.7,fmul):fmul)));if(out.length>cap){const must=out.filter(c=>c.must),rest=out.filter(c=>!c.must);const mk=Math.min(must.length,Math.max(cap-2,Math.ceil(cap*.7)));out=must.slice(0,mk).concat(rest.slice(0,cap-mk))}
   out.forEach(c=>{if(c.re&&c.re.length){const n=big?Math.min(c.re.length,2):R()<.35?0:R()<.7?1:2;c.re=c.re.slice(0,n)}})}catch(e){}return out}}
 /* ===================== 특성 2차: 같은손/반대손 삭제 · 투구수·보직·이닝·점수 상황형 10개 ===================== */
 const DEL_TR2={b_same:25,b_opp:20,p_same:25,p_opp:20};
@@ -10329,7 +10331,7 @@ FEV2.forEach(e=>FEV.push(e));
 /* 전 시즌 WAR 3 이상이면 FA 시장에서 계약 제안이 끊기지 않게: 원 소속팀 재계약(+가끔 타 구단) 보장. 은퇴 선택지는 그대로 */
 {const _feW=faEvent;faEvent=function(o,w,f){const q=_feW(o,w,f);try{const lw=Math.max(+w||0,typeof lastWAR==='function'?(lastWAR()||0):0);if(!q||!q.ch||lw<2.95)return q;
   const has=q.ch.some(c=>c.act==='fa'&&c.arg&&!c.arg.cheap&&!c.arg.ret);if(has)return q;
-  const a=age(),y=a>=40?1:a>=37?(R()<.5?1:2):2,per=Math.max(20000,Math.round((typeof faValue==='function'?faValue(Math.max(o,48),lw):60000)*(a>=40?.75:.9)/1000)*1000),cur=S.pro.team;
+  const a=age(),y=a>=40?1:a>=37?(R()<.5?1:2):2,per=Math.max(20000,Math.round((typeof faValue==='function'?faValue(Math.max(o,48),lw):60000)*knot(a,[38,41],[.9,.75])/1000)*1000),cur=S.pro.team;
   const mk=(t,yy,pp,stay)=>{const tot=Math.round(pp*yy/10000)*10000;return{t:`${TEAMS[t].city} ${TEAMS[t].nick}${stay?' (잔류)':''}`,s:`${yy}년 최대 ${money(tot)}`,d:`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/yy)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상 시 연 ${money(tot*.15/yy)})`,act:'fa',arg:{team:t,yrs:yy,tot}}};
   const add=[mk(cur,y,per,true)];if(R()<.55){const o2=shuffle(TEAMS.map((t,i)=>i).filter(i=>i!==cur))[0];add.push(mk(o2,1,Math.round(per*.95/1000)*1000,false))}
   q.ch=q.ch.filter(c=>c.act!=='tryout');const ri2=q.ch.findIndex(c=>c.act==='retire');q.ch.splice(ri2>=0?ri2:q.ch.length,0,...add);
@@ -10843,7 +10845,7 @@ POSPRIO.CF=[['rng'],['spd'],['con'],['arm'],['pow']];
 function mlbO(o){try{if(isP())return o;return .2*o+.8*(prioScore()-3)}catch(e){return o}}
 {const _aoT=abroadOffers;abroadOffers=function(o){return _aoT(mlbO(o))}}
 /* 홈런 미세 조정: 파워가 낮아도 컨택·선구안·동체시력이 다 좋으면 아주 살짝↑ · 수비가 안 좋으면 아주 살짝↓ (설명 노노) */
-{const _hp5=hrPw;hrPw=function(){let m=_hp5();try{if(!isP()){const pw=DV(eff('pow')),ce=(DV(eff('con'))+DV(eff('eye'))+DV(eff('vis')))/3;if(ce>75)m*=1+Math.min(.06,(ce-75)*.003)*(pw<85?1:.5);
+{const _hp5=hrPw;hrPw=function(){let m=_hp5();try{if(!isP()){const pw=DV(eff('pow')),ce=(DV(eff('con'))+DV(eff('eye'))+DV(eff('vis')))/3;if(ce>75)m*=1+Math.min(.06,(ce-75)*.003)*(1-.5*s01((pw-80)/10));
   const df=Math.max(DV(E('rng')),DV(E('fld')),DV(E('arm')))*.5+(DV(E('rng'))+DV(E('fld'))+DV(E('arm')))/3*.5;if(df<60&&!S.dhNow)m*=Math.max(.95,1-(60-df)*.0025)}}catch(e){}return m}}
 
 /* MLB: 핵심 지표 중 평균 미달이 있으면 전체 성적도 하락 (설명 노노)
