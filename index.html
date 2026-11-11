@@ -2028,7 +2028,7 @@ function faEvent(o,w,f){
    투수 6.9 · 포수 4.8 · 1루 4.8 · 2루 4.7 · 3루 6.5 · 유격 5.1 · 외야 6.0(3자리라 기준 −0.6) · 지명 4.3
    평균에 가까우면 약 65%, 평균 +1이면 90%대, 평균 −1.5면 15% 안팎, 평균 −2 아래면 거의 없음 · WAR 3.7 이하는 절대 수상 불가, 3.7~4.7 구간은 0%에서 부드럽게 올라감 */
 const GG_AVG={P:6.9,C:4.8,'1B':4.8,'2B':4.7,'3B':6.5,SS:5.1,LF:6.0,CF:6.0,RF:6.0,DH:4.3};
-const GG_M={C:5.586,'1B':3.854,'2B':5.214,'3B':4.385,SS:5.455,LF:3.727,CF:5.796,RF:5.318}; /* 같은 포지션 안 비교: 포지션별 기준 (v608 재보정 — 포지션별 수상 빈도 같게) */
+const GG_M={C:5.514,'1B':4.311,'2B':4.95,'3B':4.492,SS:5.321,LF:4.356,CF:5.797,RF:5.157}; /* 같은 포지션 안 비교: 포지션별 기준 (v608 재보정 — 포지션별 수상 빈도 같게) */
 function ggProb(w,pos){if(w<=3.7)return 0;const m=GG_M[pos]??((GG_AVG[pos]||5)-(/^(LF|CF|RF)$/.test(pos)?.6:0)-.35),t=Math.min(1,(w-3.7)/1.0),ramp=t*t*(3-2*t);return ramp/(1+Math.exp(-(w-m)/.5))}
 function releaseCut(o,w,a,L){try{if(a<27)return false;
   const AW=/MVP|최우수|골든글러브|왕|다승|구원|탈삼진|평균자책|세이브|타점|도루|올스타/;if((S.awards||[]).some(x=>x&&x.y>=S.y-1&&AW.test(x.n)&&!/우승$/.test(x.n)))return false;
@@ -2379,7 +2379,7 @@ function spdHit(v){return v<70?-Math.pow((70-v)/35,1.3)*.013:Math.min(.01,Math.p
 function hrPw(){try{const p=DV(eff('pow'));return p<60?Math.max(.55,Math.pow(1.018,p-60)):Math.min(1.06,Math.pow(1.003,p-60))}catch(e){return 1}}
 
 /* v608: MVP — 포지션별 기준 (같은 포지션 안 비교 성격): WAR + OPS(포지션 기준 대비) 합산 지수 · 곡선 확률 · 수비 포지션은 타격 기준 낮게 · 규정 타석만 채우면 됨 */
-const MVP_O0={MLB:{C:0.858,'1B':1.041,'2B':0.871,'3B':0.97,SS:0.835,LF:1.048,CF:0.767,RF:0.942,DH:1.04},KBO:{C:0.941,'1B':1.087,'2B':0.94,'3B':1.02,SS:0.931,LF:1.038,CF:0.997,RF:1.112,DH:1.11}};
+const MVP_O0={MLB:{C:0.857,'1B':1.022,'2B':0.86,'3B':0.964,SS:0.849,LF:1.047,CF:0.78,RF:0.946,DH:1.04},KBO:{C:0.931,'1B':1.098,'2B':0.921,'3B':1.016,SS:0.929,LF:1.077,CF:0.998,RF:1.113,DH:1.11}};
 const MVP_SH={C:-1.225,'1B':0.175,'2B':0.19,'3B':0.125,SS:0.135,LF:0.485,CF:-0.05,RF:0.115,DH:1.0};
 function mvpM(w,b,lg){try{if(!b||!b.AB)return w;const ops=(b.H+(b.BB||0))/(b.AB+(b.BB||0))+(b.H+(b.D||0)+2*(b.T||0)+3*(b.HR||0))/b.AB,pos=ME.pos;return w+12*(ops-((MVP_O0[lg]||MVP_O0.MLB)[pos]??1.0))-(MVP_SH[pos]??.5)}catch(e){return w}}
 
@@ -2427,7 +2427,7 @@ const pois=l=>{let L=Math.exp(-l),k=0,p=1;do{k++;p*=R()}while(p>L&&k<40);return 
 function lpSimB(p,n){const m=p.s,str=S.lg.str[p.t],om=[.75,.85,1.15,1.3,1.2,1,.95,.9,.85][(p.o||5)-1];
   for(let g=0;g<n;g++){if(R()>.93)continue;m.G++;const pa=4+(p.o<=3?1:0)*(R()<.5?1:0)+(R()<.25?1:0)-(p.o>=7&&R()<.3?1:0);
     for(let i=0;i<pa;i++){m.PA++;const bb=cl(.075+(p.eye-55)*.0022+.1*s01((p.eye-54)/12),.03,.22);if(R()<bb){m.BB++;if(R()<.3)m.R++;if(R()<cl((p.spd-50)*.01,0,.32)+.1*s01((p.spd-65)/12)){if(R()<.72)m.SB++;else m.CS++}continue}
-      m.AB++;const h=cl(.258+(p.con-55)*.0045+(str-50)*.00045+.012*s01((p.con-60)/12),.17,.38);if(R()>h){if(R()<.22)m.K++;if(R()<.09*om)m.RBI+=R()<.5?1:0;continue}
+      m.AB++;const h=cl(.258+(p.con-55)*.0045+(str-50)*.00045+.007*s01((p.con-60)/12),.17,.38);if(R()>h){if(R()<.22)m.K++;if(R()<.09*om)m.RBI+=R()<.5?1:0;continue}
       m.H++;const hr=cl(.1+(p.pow-55)*.0075,.02,.32)*pfOf(p.t)*1.05*(1-.12*s01((p.pow-65)/12)),r=R();
       if(r<hr){m.HR++;m.R++;m.RBI+=1+(R()<.42*om?1:0)+(R()<.12*om?1:0)}else if(r<hr+.19){m.D++;m.RBI+=R()<.32*om?1:0;if(R()<.5)m.R++}else if(r<hr+.2+cl((p.spd-50)*.0008,0,.03)){m.T++;m.RBI+=R()<.5*om?1:0;if(R()<.6)m.R++}
       else{m.RBI+=R()<.19*om?1:0;if(R()<cl((p.spd-48)*.016,0,.45)+.25*s01((p.spd-58)/14)){if(R()<.74)m.SB++;else m.CS++}if(R()<.4)m.R++}}}}
@@ -8727,7 +8727,7 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
   const pMVP=P||b.PA<450?0:.97/(1+Math.exp(-(mvpM(w,b,'MLB')-9.98)/.55));if(R()<pMVP){give(`${lg} MVP`);S.rel.fame=cl(S.rel.fame+6,0,100)}
   if(P){const pt=rows.reduce((a,r)=>(addTo(a,r.p),a),blankP()),ip=pt.outs/3,era=pt.outs?Math.round(pt.R*27/pt.outs*100)/100:99,rel=(pt.GS||0)<(pt.G||0)/2;
    let pc=0;
-   if(!rel)pc=.95*sg((w-7.65)/.5)*sg((ip-160)/6)*sg((2.9-era)/.15);else pc=.08*sg((w-3.0)/.25)*sg((ip-62)/3)*sg((1.27-era)/.05)*sg(((pt.SV||0)-38)/1.5);
+   if(!rel)pc=.95*sg((w-7.9)/.5)*sg((ip-160)/6)*sg((2.9-era)/.15);else pc=.08*sg((w-3.0)/.25)*sg((ip-62)/3)*sg((1.27-era)/.05)*sg(((pt.SV||0)-38)/1.5);
    if(!rel)pc=Math.max(pc,.45*sg((1.77-era)/.05)*sg((ip-185)/4));if(R()<pc)give(`${lg} 사이영상`)}
   if(!got.length)return;const main=got[0],una=/MVP/.test(main)&&w>=11;rep.lines.push(`${main} 수상!${una?' (만장일치)':''}`);news(`${S.y} ${got.join(', ')} 수상.`);
   celebrate(/MVP/.test(main)?'mvp':'trophy',main,`${S.y} MLB 시상식 · WAR ${w.toFixed(1)}${una?' · 만장일치':''}`,got.slice(1));
@@ -9231,7 +9231,7 @@ if(typeof CRIT!=='undefined'){CRIT.add('mlbReMinor');CRIT.add('mlbIndy')}
 {const _aw=awards;awards=function(rep){_aw(rep);try{if(isP()||!(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'))return;const rows=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB');if(!rows.length)return;
   if(S.awards.some(a=>a.y===S.y&&/골드글러브|실버슬러거/.test(a.n)))return;const b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB());if(b.G<110)return;
   const sp=bWARsplit(b,'MLB'),lg=(()=>{try{return mlbSeed().lg==='NL'?'내셔널리그':'아메리칸리그'}catch(e){return'아메리칸리그'}})(),pn=POS[ME.pos]||'지명타자',dh=ME.pos==='DH'||(S.dhConv&&S.y>=S.dhConv),got=[];
-  const rel=sp.d-(PADJ[ME.pos]||0)*b.G/140/10*1.08,ggLo=({C:0.063,'1B':0.967,'2B':0.642,'3B':0.223,SS:0.711,LF:0.484,CF:0.667,RF:0.415}[ME.pos]??.5),ggT=Math.min(1,Math.max(0,(rel-ggLo)/.3)),pg=dh?0:.9*ggT*ggT*(3-2*ggT),ssLo={C:0.683,'1B':0.874,'2B':0.755,'3B':0.805,SS:0.706,LF:0.866,CF:0.72,RF:0.8,DH:.91}[ME.pos]??.85,ssO=b.AB?(b.H+(b.BB||0))/(b.AB+(b.BB||0))+(b.H+(b.D||0)+2*(b.T||0)+3*(b.HR||0))/b.AB:0,ssT=Math.min(1,Math.max(0,(ssO-ssLo)/.12)),ps=b.PA<450?0:.95*ssT*ssT*(3-2*ssT);
+  const rel=sp.d-(PADJ[ME.pos]||0)*b.G/140/10*1.08,ggLo=({C:0.069,'1B':0.97,'2B':0.641,'3B':0.164,SS:0.772,LF:0.454,CF:0.664,RF:0.46}[ME.pos]??.5),ggT=Math.min(1,Math.max(0,(rel-ggLo)/.3)),pg=dh?0:.9*ggT*ggT*(3-2*ggT),ssLo={C:0.69,'1B':0.869,'2B':0.752,'3B':0.806,SS:0.714,LF:0.853,CF:0.716,RF:0.809,DH:.91}[ME.pos]??.85,ssO=b.AB?(b.H+(b.BB||0))/(b.AB+(b.BB||0))+(b.H+(b.D||0)+2*(b.T||0)+3*(b.HR||0))/b.AB:0,ssT=Math.min(1,Math.max(0,(ssO-ssLo)/.12)),ps=b.PA<450?0:.95*ssT*ssT*(3-2*ssT);
   if(R()<pg){const n=`${lg} 골드글러브 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 골드글러브 수상`,1)}
   if(R()<ps){const n=`${lg} 실버슬러거 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 실버슬러거 수상`,1)}
   if(!got.length)return;S.rel.fame=cl(S.rel.fame+3*got.length,0,100);rep.lines.push(`${got.join(' · ')} 수상!`);news(`${ME.name}, ${got.join(' · ')} 수상.`);
@@ -11295,7 +11295,7 @@ if(typeof CRIT!=='undefined')CRIT.add('mlbOptOut');
 /* 약점 집중 보완(+1.5 분배)은 1년에 한 번 — 이미 받은 해엔 선택지 문구에서 빼기 */
 {const _advWk=advance;advance=function(){const r=_advWk.apply(this,arguments);try{if(S&&S._wkY===S.y)(S.queue||[]).forEach(q=>{if(!q||q._wkS||!Array.isArray(q.ch))return;q._wkS=1;q.ch.forEach(c=>{if(c&&typeof c.s==='string')c.s=c.s.replace(/ · 약점 집중 보완|약점 집중 보완 · /g,'')})})}catch(e){}return r}}
 /* v622 댓글 정리(최종): 세로드립(릴레이) 조각이 다른 댓글에 끼어 쪼개지지 않게 한데 모으기 · 한 기사 안에서 같은 답글 중복 제거 */
-{const _cFin=comments;comments=function(tone,x){let out=_cFin.apply(this,arguments);try{if(!Array.isArray(out))return out;
+{const _cFin=comments;comments=function(tone,x){let out=_cFin.apply(this,arguments);try{if(!Array.isArray(out))return out;if(tone==='injury'){const BAD=/(변화구|헛스윙|타이밍|무안타|침묵|병살|방망이가|실점|볼넷|제구|삼진 잡|4타수|기록지)/,OK=/(부상|이탈|복귀|재활|수술|몸|건강|쾌유|회복|빨리|아프)/;out=out.filter(c=>!(c&&typeof c.t==='string'&&BAD.test(c.t)&&!OK.test(c.t)))}
   const i0=out.findIndex(c=>c&&c.rl);if(i0>=0){const rl=out.filter(c=>c&&c.rl),rest=out.filter(c=>!(c&&c.rl));rest.splice(Math.min(i0,rest.length),0,...rl);out=rest}
   const seen=new Set(out.map(c=>c&&typeof c.t==='string'?c.t:''));out.forEach(c=>{if(!c||!Array.isArray(c.re))return;c.re=c.re.filter(r=>{const t=typeof r==='string'?r:r&&r.t;if(!t||seen.has(t))return false;seen.add(t);return true})})}catch(e){}return out}}
 /* v622 기사 단위 최종: 보충 댓글로 생긴 답글 중복까지 기사 전체에서 제거 */
@@ -11314,8 +11314,8 @@ reliefDec=function(t,g,row,m){const tp=blankP();try{addTo(tp,row.p);addTo(tp,m)}
   if(R()<pd){const ws=.2+.55*q,p=g.R?ws*.45:Math.min(.9,ws*1.15);return R()<p?1:-1}
   const fat=s01(((tp.G||0)-50)/25);if(g.R&&R()<base*.05*fat)return-1;return 0};
 /* v625 가상 리그: 매 시즌 일부 선수에게 '커리어 하이' 기복 — 가끔 괴물 시즌(50홈런대·출루율 5할 근처·210안타) 나오게 (꼬리 긴 분포) */
-{const _lyH=lpYear;lpYear=function(){_lyH.apply(this,arguments);try{(S.lp||[]).forEach(p=>{p.hot=0;if(R()<.05){const h=2-Math.log(1-R())*2.4;p.hot=Math.min(10,h)}else if(R()<.05)p.hot=-Math.min(5,1-Math.log(1-R())*1.5)})}catch(e){}}}
-{const _lsbH=lpSimB;lpSimB=function(p,n){const h=p&&p.hot||0;if(!h)return _lsbH(p,n);const f=R()<.5?['con','eye']:['pow','con'];const d={con:h*(f.includes('con')?1:.5),pow:h*(f.includes('pow')?1:.4),eye:h*(f.includes('eye')?1:.5)};for(const k in d)p[k]+=d[k];try{return _lsbH(p,n)}finally{for(const k in d)p[k]-=d[k]}}}
+{const _lyH=lpYear;lpYear=function(){_lyH.apply(this,arguments);try{(S.lp||[]).forEach(p=>{p.hot=0;if(R()<.05){const h=1.8-Math.log(1-R())*1.8;p.hot=Math.min(7,h)}else if(R()<.05)p.hot=-Math.min(5,1-Math.log(1-R())*1.5)})}catch(e){}}}
+{const _lsbH=lpSimB;lpSimB=function(p,n){const h=p&&p.hot||0;if(!h)return _lsbH(p,n);const f=R()<.5?['con','eye']:['pow','con'];const d={con:h*(f.includes('con')?.6:.3),pow:h*(f.includes('pow')?1:.4),eye:h*(f.includes('eye')?.7:.35)};for(const k in d)p[k]+=d[k];try{return _lsbH(p,n)}finally{for(const k in d)p[k]-=d[k]}}}
 {const _lspH=lpSimP;lpSimP=function(p,n){const h=p&&p.hot||0;if(!h)return _lspH(p,n);p.r+=h*.8;try{return _lspH(p,n)}finally{p.r-=h*.8}}}
 /* v626 리그 환경(타고투저↔투고타저): 리그별로 해마다 천천히 흐름이 바뀜(몇 년씩 이어짐) + 가끔 공인구 교체 같은 급변 — 내 성적·가상 리그 선수 모두 같이 영향 (설명 노노)
    양수 = 타고투저(타자 유리) · 음수 = 투고타저 */
@@ -11325,9 +11325,11 @@ function envTick(){try{S.env=S.env||{};['KBO','MLB'].forEach(lg=>{const e=S.env[
 {const _nyE=newYear;newYear=function(){const r=_nyE.apply(this,arguments);envTick();return r}}
 const myEnv=()=>{try{return S.stage==='pro'&&S.pro&&PRO.includes(S.pro.league)&&!S.pro.minor?lgEnv(S.pro.league):0}catch(e){return 0}};
 /* 타자: 가상 리그 타자와 똑같이 컨택 +v · 파워 +1.3v (같은 환경을 같은 방식으로) */
-{const _sbE=spBonus;spBonus=function(k){let v=_sbE(k);try{if(!isP()&&(k==='con'||k==='pow')){const e=myEnv();if(e)v+=k==='con'?e:e*1.3}}catch(er){}return v}}
-{const _pgE=pitchGame;pitchGame=function(L,type){return _pgE(isP()?L+myEnv()*.9:L,type)}}
-{const _mpE=mePitPA;mePitPA=function(bR,risp,tired){return _mpE(isP()?bR+myEnv()*.9:bR,risp,tired)}}
+/* (v630) 타자 환경: 능력치 대신 결과 확률에 직접 — 안타 확률 +0.5%p/단위 · 홈런 비중 ×(1+6%/단위) → 리그 평균 wOBA 변화(+.0063/단위)와 일치 */
+{const _shE=spdHit;spdHit=function(v){let x=_shE(v);try{if(!isP())x+=.005*myEnv()}catch(er){}return x}}
+{const _hpE=hrPw;hrPw=function(){let m=_hpE();try{if(!isP())m*=1+.06*myEnv()}catch(er){}return m}}
+{const _pgE=pitchGame;pitchGame=function(L,type){return _pgE(isP()?L+myEnv()*.45:L,type)}}
+{const _mpE=mePitPA;mePitPA=function(bR,risp,tired){return _mpE(isP()?bR+myEnv()*.45:bR,risp,tired)}}
 /* 가상 KBO 리그 선수도 같은 환경 */
 {const _lsbE=lpSimB;lpSimB=function(p,n){const v=lgEnv('KBO');if(!v||!p)return _lsbE(p,n);p.con+=v;p.pow+=v*1.3;try{return _lsbE(p,n)}finally{p.con-=v;p.pow-=v*1.3}}}
 {const _lspE=lpSimP;lpSimP=function(p,n){const v=lgEnv('KBO');if(!v||!p)return _lspE(p,n);p.r-=v*.9;try{return _lspE(p,n)}finally{p.r+=v*.9}}}
