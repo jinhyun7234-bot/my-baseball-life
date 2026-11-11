@@ -1464,7 +1464,7 @@ function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp
   const k=cl(.205-dvc(con)*.0042-dv(eff('eye'))*.0008-(sk('eyem')?.01:0)+(sk('kprone')?.03:0),.05,.42);
   const bb=cl(.082+dv(eff('eye'))*.0018+dvc(con)*.0004+(sk('eyem')?.015:0),.02,.2);
   const r=R(),sp=eff('spd');m.PA++;if(risp&&S.rsp)S.rsp.pa++;
-  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<Math.min(.3,((E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)+Math.max(0,DV(E('spd'))-78)*.004)*(sk('thief')?1.36:1)*cl(1+(DV(E('eye'))-65)*.006,.88,1.18))){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.054:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
+  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<.9*Math.min(.3,((E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)+Math.max(0,DV(E('spd'))-78)*.004)*(sk('thief')?1.36:1)*cl(1+(DV(E('eye'))-65)*.006,.88,1.18))){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.054:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
     if(R()<cl(([0,.18,.31,.48][b]+Math.min(5,dv(sp))*.004)*(S._tmF||1),.05,.6))m.R++};
   if(r<k){m.AB++;m.K++;return}
   if(r<k+bb+.01){m.BB++;gl.ob++;reach(1);if(on[0]&&on[1]&&on[2])m.RBI++;return}
@@ -2030,7 +2030,7 @@ function faEvent(o,w,f){
    투수 6.9 · 포수 4.8 · 1루 4.8 · 2루 4.7 · 3루 6.5 · 유격 5.1 · 외야 6.0(3자리라 기준 −0.6) · 지명 4.3
    평균에 가까우면 약 65%, 평균 +1이면 90%대, 평균 −1.5면 15% 안팎, 평균 −2 아래면 거의 없음 · WAR 3.7 이하는 절대 수상 불가, 3.7~4.7 구간은 0%에서 부드럽게 올라감 */
 const GG_AVG={P:6.9,C:4.8,'1B':4.8,'2B':4.7,'3B':6.5,SS:5.1,LF:6.0,CF:6.0,RF:6.0,DH:4.3};
-const GG_M={C:5.514,'1B':4.311,'2B':4.95,'3B':4.492,SS:5.321,LF:4.356,CF:5.797,RF:5.157}; /* 같은 포지션 안 비교: 포지션별 기준 (v608 재보정 — 포지션별 수상 빈도 같게) */
+const GG_M={C:6.65,'1B':4.311,'2B':4.95,'3B':4.492,SS:5.321,LF:4.356,CF:5.797,RF:5.157}; /* 같은 포지션 안 비교: 포지션별 기준 (v608 재보정 — 포지션별 수상 빈도 같게) */
 function ggProb(w,pos){if(w<=3.7)return 0;const m=GG_M[pos]??((GG_AVG[pos]||5)-(/^(LF|CF|RF)$/.test(pos)?.6:0)-.35),t=Math.min(1,(w-3.7)/1.0),ramp=t*t*(3-2*t);return ramp/(1+Math.exp(-(w-m)/.5))}
 function releaseCut(o,w,a,L){try{if(a<27)return false;
   const AW=/MVP|최우수|골든글러브|왕|다승|구원|탈삼진|평균자책|세이브|타점|도루|올스타/;if((S.awards||[]).some(x=>x&&x.y>=S.y-1&&AW.test(x.n)&&!/우승$/.test(x.n)))return false;
