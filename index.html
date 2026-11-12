@@ -5148,12 +5148,12 @@ function vetLines(tone,x){const P=isP(),nm=ME.name,gn=giv(nm),sur=nm[0],a=age(),
   if(P&&ME.body==='거구')o.push(`어릴 땐 형들 똥 치우고, 나이 들어서 오니 동생들 똥 치우고... ${sur}뚱 그는 왜 항상..`);
   try{const st=standings(),i=st.findIndex(z=>z.i===S.pro.team);if(T&&i>=6)o.push('그때도 소년가장이었는데 지금은 그냥 가장이네 ㅋㅋㅋㅋ',`${nick} 팬으로 진짜 미안하고 안쓰럽고 대견하고 존경스러운 ${gn}.. 아프지 말고 몸 관리 잘해주세요`)}catch(e){}
   return o}
-function bullpenLines(x){const nm=ME.name,gn=giv(nm),i=ip(x.ipO),k=x.K||0,o=[];const iWin=x.win!==false;
-  o.push(`${gn}: 해내야 한다 (${i}이닝 ${x.ra?x.ra+'실점':'무실점'}${k?` ${k}K`:''})\n불펜: 딸깍 (0.1이닝 3실점)`,`아니 ${jo(nm,'이','가')} 쌔빠지게 던지면 뭐함... 불펜이 진짜 다 망치는데 아오....`,`진짜 감독이 ${gn} 승 안 만들어주려고 작정한 경기 잘 봤네요!(ㅜㅜ`,`이렇게 잘 깔아줬는데 왜 거기서 그 투수를 쳐올리냐구우웃!!!`,'불펜 진짜 너무했다 아직도 화가 안 풀리네요',`${gn} 다음에 그 불펜 올리는 건 미친 건지 진짜 감독 뇌에 팀 망칠 생각만 있나`);
+function bullpenLines(x){const nm=ME.name,gn=giv(nm),i=ip(x.ipO),k=x.K||0,o=[];const iWin=x.win!==false,opR=x.opR!=null?x.opR:(x.op!=null?x.op:0),pr=Math.max(0,opR-(x.ra||0));
+  o.push(`${gn}: 해내야 한다 (${i}이닝 ${x.ra?x.ra+'실점':'무실점'}${k?` ${k}K`:''})\n불펜: 딸깍 (${pr}실점)`,`아니 ${jo(nm,'이','가')} 쌔빠지게 던지면 뭐함... 불펜이 진짜 다 망치는데 아오....`,`진짜 감독이 ${gn} 승 안 만들어주려고 작정한 경기 잘 봤네요!(ㅜㅜ`,`이렇게 잘 깔아줬는데 왜 거기서 그 투수를 쳐올리냐구우웃!!!`,'불펜 진짜 너무했다 아직도 화가 안 풀리네요',`${gn} 다음에 그 불펜 올리는 건 미친 건지 진짜 감독 뇌에 팀 망칠 생각만 있나`);
   if(iWin)o.unshift('와 이렇게 압도적인 피칭을 했으니 당연히 승리투수가 됐겠죠?');else o.push('진짜 너무 죄송합니다 ㅜㅜ');return o}
 {const _c22=comments;comments=function(tone,x){let out=_c22(tone,x);try{if(!S||!ME||S.stage!=='pro'||!S.pro)return out;const add=[];S.vetY=S.vetY||{};
   /* 호투했는데 승리 못 챙김 (불펜 방화) */
-  if(isP()&&x&&(x.ps||x.intl)&&x.ipO>=15&&(x.ra||0)<=1&&!x.pW&&(x.win!==false||(x.myR||0)>=3)){const L=bullpenLines(x).filter(t=>!seenHas(t));for(let i=0;i<2&&L.length;i++){const t=i===0&&x.win!==false?L.shift():L.splice(ri(0,L.length-1),1)[0];seenAdd(t);add.push(t)}}
+  if(isP()&&x&&(x.ps||x.intl)&&x.ipO>=15&&(x.ra||0)<=1&&!x.pW&&(x.win!==false||(x.myR!=null?x.myR:(x.kr||0))>=3)&&((x.opR!=null?x.opR:(x.op!=null?x.op:0))-(x.ra||0))>=1){const L=bullpenLines(x).filter(t=>!seenHas(t));for(let i=0;i<2&&L.length;i++){const t=i===0&&x.win!==false?L.shift():L.splice(ri(0,L.length-1),1)[0];seenAdd(t);add.push(t)}}
   /* 베테랑 */
   const good=['hype','psHero','feat','award','record','psWin','ring','ws','gold'].includes(tone)||(x&&(x.ps||x.intl)&&(isP()?x.ipO>=15&&(x.ra||0)<=2:(x.gH||0)>=2||(x.gHR||0)>=1));
   if(age()>=36&&good&&R()<.65){const L=vetLines(tone,x).filter(t=>!seenHas(t)&&S.vetY[t.slice(0,6)]!==S.y);const n=(x&&(x.ps||x.intl))?2:1;for(let i=0;i<n&&L.length;i++){const t=L.splice(ri(0,L.length-1),1)[0];seenAdd(t);S.vetY[t.slice(0,6)]=S.y;add.push(t)}}
@@ -9361,7 +9361,7 @@ function vWbcEnd(q){const t={우승:'🏆 세계 정상!',준우승:'🥈 준우
 function wbcArticle(g,c){try{const my=g.my,kr=g.R[my],op=g.R[1-my],P=isP(),mb=g.mb||{},mp=g.mp||{},win=g.win,diff=kr-op;
   const ra=+(((g.myLine||'').match(/(\d+)실점/)||[0,0])[1]),played=P?mp.outs>0:mb.PA>0,good=played&&(P?((mp.outs>=9&&ra<=1)||(mp.outs>=3&&ra===0&&(mp.K>=2||mp.SV))):(mb.H>=2||mb.HR>=1||mb.RBI>=2)),bad=played&&(P?ra>=3:(mb.PA>=3&&mb.H===0));
   const st=c.stage,stN={pool:'1라운드',qf:'8강',sf:'준결승',final:'결승'}[st];const head=win?(g.mercy?`대한민국, ${c.oppN}에 ${kr}-${op} 콜드승… ${ME.name} ${g.myLine}`:`대한민국, ${c.oppN} ${kr}-${op} 격파… ${ME.name} ${g.myLine}`):(g.mercy?`대한민국, ${c.oppN}에 ${kr}-${op} 콜드패… 세계의 벽`:`대한민국, ${c.oppN}에 ${kr}-${op} ${Math.abs(diff)<=2?'석패':'패배'}… ${ME.name} ${g.myLine}`);
-  article(`[${stN}] ${head}`,`${c.title}. ${ME.name}: ${g.myLine}.`,'intl',{wbc:1,intl:true,title:c.title,win,opp:c.oppN,strong:c.strong,rival:c.rival,close:Math.abs(diff)<=2,mercy:!!g.mercy,good,bad,played,st,kr,op,ra,gH:mb.H||0,gHR:mb.HR||0,gRBI:mb.RBI||0,gPA:mb.PA||0,ipO:mp.outs||0,pH:mp.H||0,pBB:(mp.BB||0)+(mp.HBP||0),K:mp.K||0,pl:g.pl||[],pp:g.pp||[]});g.aid=S.artId}catch(e){}}
+  article(`[${stN}] ${head}`,`${c.title}. ${ME.name}: ${g.myLine}.`,'intl',{wbc:1,intl:true,title:c.title,win,opp:c.oppN,strong:c.strong,rival:c.rival,close:Math.abs(diff)<=2,mercy:!!g.mercy,good,bad,played,st,kr,op,ra,gH:mb.H||0,gHR:mb.HR||0,gRBI:mb.RBI||0,gPA:mb.PA||0,ipO:mp.outs||0,pH:mp.H||0,pBB:(mp.BB||0)+(mp.HBP||0),K:mp.K||0,pW:mp.W||0,sv:mp.SV||0,myR:kr,opR:op,pl:g.pl||[],pp:g.pp||[]});g.aid=S.artId}catch(e){}}
 /* WBC 기사: 소속팀·시즌 얘기 걸러내고 국가대표 상황 댓글로 */
 {const CLUB=/연봉|FA|먹튀|시즌|정규|팀 순위|1군|2군|퓨처스|트레이드|감독 교체|프런트|단장|우리 팀|팀 성적|가을야구|포스트시즌|한국시리즈|월드시리즈|직관|사직|잠실|구단|등장곡|굿즈|유니폼 마킹|신인왕|골든글러브|골글|MVP 각|우승 반지/;
  const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.wbc||!Array.isArray(out))return out;out=out.filter(c=>!CLUB.test(c.t||'')&&!(TEAMS||[]).some(t=>(c.t||'').includes(t.nick))&&!(!x.played&&/안 쓴|놔두고|아끼다|안 올렸|안 썼|왜 안 /.test(c.t||'')));out.forEach(c=>{if(c.re)c.re=c.re.filter(q=>!CLUB.test(q.t||''))});
@@ -12064,6 +12064,7 @@ function cmJac(a,b){if(!a.size||!b.size)return 0;let n=0;for(const x of a)if(b.h
   L.forEach(c=>{if(c)delete c._dr});
   const T=S._cmTop||[];if(K.length>2&&K[0]&&!fx(K[0])&&cmFam(K[0].t)&&T.some(Boolean)){const j=K.findIndex((c,i)=>i>0&&c&&!fx(c)&&!cmFam(c.t));if(j>0){const A0=K[0],B=K[j],u=A0.up;A0.up=B.up;B.up=u;K[0]=B;K[j]=A0}}
   S._cmTop=T.concat([K[0]&&cmFam(K[0].t)||null]).slice(-4);
+  try{const un=new Set();K.forEach(c=>{if(!c||c.rl||!c.nk)return;if(un.has(c.nk)){const alt=NICKS.filter(n=>!un.has(n));if(alt.length)c.nk=pick(alt)}un.add(c.nk)})}catch(e){}
   a.cm=K;S._cmFH=H.concat([Object.keys(used)]).slice(-8);
   K.forEach(c=>{if(c&&!c.rl){const n=cmNorm2(c.t);if(n.length>=6){hist.push(n);NX[hk(n)]=aid}}});S._cmNH=hist.slice(-150);
   for(const k in NX)if(aid-NX[k]>=50)delete NX[k];S._cmNX=NX}catch(e){}return r}}
