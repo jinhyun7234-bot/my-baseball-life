@@ -3913,7 +3913,7 @@ const DEVP={fsp:['2군에서 선발 수업','퓨처스 로테이션을 돌며 �
   pen:['1군 불펜에서 경험 쌓기','짧게 던지며 1군 타자와 붙는다 · 성장 포인트↑ · 구속·구위·멘탈↑ · 선발 체력은 그대로'],
   stay:['선발 경쟁에 도전','지금 위치에서 감독 평가대로 간다']};
 {const _ny5=newYear;newYear=function(){const r=_ny5();try{if(isP()&&S.stage==='pro'&&S.pro&&!S.pro.dev&&proYears()<=5&&age()<=27&&S.pro.debut<=S.y&&!ME.inj){const L=LV[S.pro.league],o=selScore();
-    if(o<L+5&&R()<.75){S.queue.push({title:'⚾ 올 시즌 투수 진로',text:`투수코치와 면담했다. "${o<L?'아직 1군 선발로는 이르다.':'선발 한 자리를 노려볼 만하다.'} 올해 어떻게 키울지 정하자."`,ch:Object.entries(DEVP).map(([k,[t,s]])=>({t,s,act:'devp',arg:{k}}))})}}}catch(e){}return r}}
+    if(o<L+5&&R()<.75&&S.yrRoleQY!==S.y){S.devQY=S.y;S.queue.push({title:'⚾ 올 시즌 투수 진로',text:`투수코치와 면담했다. "${o<L?'아직 1군 선발로는 이르다.':'선발 한 자리를 노려볼 만하다.'} 올해 어떻게 키울지 정하자."`,ch:Object.entries(DEVP).map(([k,[t,s]])=>({t,s,act:'devp',arg:{k}}))})}}}catch(e){}return r}}
 ACT.devp=function(a){S.devPlan={y:S.y,k:a.k};if(a.k==='fsp'){ME.pos='SP';return'퓨처스에서 선발로 몸을 만든다. 1군은 내년을 노린다.'}if(a.k==='pen')return'불펜에서 1군 공기를 마셔보기로 했다.';return'정면 승부다. 캠프에서 보여주자.'};
 CRIT.add('devp');
 {const _dr=decideRole;decideRole=function(){const r=_dr();if(!isP()||S.stage!=='pro'||!S.devPlan||S.devPlan.y!==S.y||['inj','off','pre'].includes(r))return r;
@@ -10434,7 +10434,7 @@ CRIT.add('openFut');
   if(S.stage==='hs'&&!S.hsRoleQ&&(S.grade||1)===1&&(S.m===2||S.m===3)){S.hsRoleQ=1;
     S.queue.push({title:'⚾ 첫 스프링캠프 — 보직',text:'입학하고 처음 맞는 스프링캠프. 감독이 불펜 피칭을 지켜보다 물었다.\n"너는 어디서 던지고 싶냐? 긴 이닝 끌고 가는 선발이냐, 짧게 세게 막는 불펜이냐."',
       ch:[{t:'선발로 던지고 싶습니다',s:'체력·변화구·볼배합 +1 · 긴 이닝에 피로↑',act:'hsRole',arg:{k:'SP'}},{t:'불펜에서 던지고 싶습니다',s:'구속·구위 +1 · 긴 이닝 경험은 적음',act:'hsRole',arg:{k:'RP'}},{t:'감독님께 맡기겠습니다',s:'지금 스타일 그대로 · 감독 신뢰↑ · 워크에식·멘탈 조금↑ · 능력치 보너스 없음',act:'hsRole',arg:{k:''}}]});return}
-  if(S.stage==='pro'&&S.pro&&!S.proRoleQ&&S.m===2&&(S.pro.debut<=S.y||S.pro.dev)){S.proRoleQ=1;S.proRoleQY=S.y;S.rpAsk=S.rpAsk||{sta:Math.round(DV(E('sta'))),ng:0,team:S.pro.team,lg:S.pro.league};
+  if(S.stage==='pro'&&S.pro&&!S.proRoleQ&&S.m===2&&S.devQY!==S.y&&(S.pro.debut<=S.y||S.pro.dev)){S.proRoleQ=1;S.proRoleQY=S.y;S.rpAsk=S.rpAsk||{sta:Math.round(DV(E('sta'))),ng:0,team:S.pro.team,lg:S.pro.league};
     S.queue.push({title:'⚾ 프로 첫 스프링캠프 — 보직',text:(S.pro.dev?'육성 선수로 맞는 첫 스프링캠프. 퓨처스 감독이 따로 불렀다.\n"1군 올라가면 어디서 던지고 싶나? 지금부터 그쪽으로 만들자."':'프로에서 맞는 첫 스프링캠프. 감독이 따로 불렀다.\n"데뷔하고 나면 어디서 뛰고 싶나? 네 생각부터 듣고 싶다."')+'\n\n여기서 고른 보직은 다음 시즌에도 그대로 이어진다.',
       ch:[{t:'선발 로테이션',s:'이닝·승수·큰 계약 · 체력 부담 · 준비가 덜 됐으면 2군 선발 수업부터',act:'proRole',arg:{k:'SP'}},{t:'필승조 (셋업)',s:'홀드·꾸준함 · 화려함은 덜함',act:'proRole',arg:{k:'SU'}},{t:'마무리',s:'세이브·클러치 · 블론 한 번에 욕먹음',act:'proRole',arg:{k:'CL'}},{t:'감독에게 맡긴다',s:'감독이 내 능력에 맞는 보직을 정함 · 감독 신뢰↑',act:'proRole',arg:{k:'any'}}]})}}catch(e){}}}
 ACT.hsRole=function(a){const up=(k,d)=>{const r=d*.75;if(ME.r&&k in ME.r)ME.r[k]=cl(ME.r[k]+r,20,capOf(k));else if(ME.pt&&k in ME.pt&&ME.pt[k]>0)ME.pt[k]=cl(ME.pt[k]+r,20,capOf(k))};
@@ -10473,7 +10473,7 @@ function myBrk(){try{const pp=S.plan&&S.plan.pitch;if(pp&&pp!=='FB'&&PITCHES.inc
 /* ===== 매년 스프링캠프 보직 면담 (프로 2년차부터) · 잘해온 투수는 체력이 조금 모자라도 선발 대우 ===== */
 function provenP(){try{const t=careerTot(['KBO','MLB']).p;const pw=S.rows.filter(x=>x.y===S.y-1&&['KBO','MLB'].includes(x.lv)).reduce((q,x)=>q+rowWAR(x),0);return pw>=3||t.GS>=60||(t.SV+t.HLD)>=80}catch(e){return false}}
 function spOKy(){try{const pv=provenP(),ng=pitchInfo().nGood;if(age()<33&&spOKNow())return true;if(age()>=33&&spStaOK()&&ng>=2)return true;return E('sta')>=(pv?36:42)&&ng>=1}catch(e){return false}}
-{const _msY=monthStep;monthStep=function(rep){_msY(rep);try{if(!isP()||S.stage!=='pro'||!S.pro||S.pro.dev||S.m!==2||ME.inj)return;if(S.proRoleQY===S.y||S.yrRoleQY===S.y||!S.proRoleQ||S.pro.debut>=S.y)return;
+{const _msY=monthStep;monthStep=function(rep){_msY(rep);try{if(!isP()||S.stage!=='pro'||!S.pro||S.pro.dev||S.m!==2||ME.inj)return;if(S.proRoleQY===S.y||S.yrRoleQY===S.y||S.devQY===S.y||!S.proRoleQ||S.pro.debut>=S.y)return;/* v661: 투수 진로 면담을 한 해엔 보직 면담 생략 (1년에 한 번) */
   S.yrRoleQY=S.y;const cur=ME.pos==='SP'?'선발':S.rpPref==='CL'?'마무리':'불펜',pv=provenP();
   S.queue.push({title:'⚾ 올 시즌 보직 면담',text:`스프링캠프. 감독이 따로 불렀다.\n"지난 시즌엔 ${jo(cur,'이었지','였지')}. 올해는 어디서 던지고 싶나?"${pv?'\n"그동안 해준 게 있으니까 네 의견을 최대한 들어주마."':''}\n\n여기서 고른 보직은 다음 시즌에도 그대로 이어진다.`,
     ch:[{t:'선발 로테이션',s:'이닝·승수·큰 계약 · 체력 부담 · 체력·구종이 모자라면 불펜에서 시작',act:'yrRole',arg:{k:'SP'}},{t:'필승조 (셋업)',s:'홀드·꾸준함 · 화려함은 덜함',act:'yrRole',arg:{k:'SU'}},{t:'마무리',s:'세이브·클러치 · 블론 한 번에 욕먹음',act:'yrRole',arg:{k:'CL'}},{t:'감독에게 맡긴다',s:'감독이 내 능력에 맞는 보직을 정함 · 감독 신뢰↑',act:'yrRole',arg:{k:'any'}}]})}catch(e){}}}
