@@ -12056,17 +12056,36 @@ function cmJac(a,b){if(!a.size||!b.size)return 0;let n=0;for(const x of a)if(b.h
   const TH=/^(retire|hof|legend|tour|vet|retno)/.test(String(tone||'')),fx=c=>!c||c.rl||c.must||c.my;
   const H=S._cmFH||[],rc=f=>H.slice(-6).filter(h=>h.includes(f)).length,hist=S._cmNH||[];
   const L=a.cm.slice(),used={},minN=Math.min(L.length,4);
-  L.forEach(c=>{if(fx(c))return;const f=cmFam(c.t);if(!f||(TH&&f==='vet'))return;if(used[f]){c._dr=1;return}if(R()>=[1,.6,.35,.2][Math.min(3,rc(f))])c._dr=1;else used[f]=1});
+  L.forEach(c=>{if(fx(c))return;const f=cmFam(c.t);if(!f||(TH&&f==='vet'))return;if(used[f]){c._dr=1;return}if(R()>=[1,.5,.3,.15][Math.min(3,rc(f))])c._dr=1;else used[f]=1});
   const HB=hist.map(h=>[h,cmBig(h)]);
   const NX=S._cmNX||{},aid=S.artId||0,hk=n=>{let h=7;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))|0;return(h>>>0).toString(36)};
-  L.forEach(c=>{if(fx(c)||c._dr)return;const n=cmNorm2(c.t);if(n.length<6)return;const k=hk(n);if(NX[k]!=null&&aid-NX[k]<50){c._dr=2;return}const bg=cmBig(n);if(HB.some(([h,hb])=>h===n||(Math.abs(h.length-n.length)<12&&cmJac(bg,hb)>=.7)))c._dr=2});
+  const fx2=c=>!c||c.rl||c.my;
+  L.forEach(c=>{if(fx2(c)||c._dr)return;const n=cmNorm2(c.t);if(n.length<6)return;const k=hk(n);if(NX[k]!=null&&aid-NX[k]<50){c._dr=2;return}const bg=cmBig(n);if(HB.some(([h,hb])=>h===n||(Math.abs(h.length-n.length)<12&&cmJac(bg,hb)>=.7)))c._dr=2});
   let K=L.filter(c=>!c||!c._dr);if(K.length<minN){L.filter(c=>c&&c._dr).sort((p,q)=>p._dr-q._dr).slice(0,minN-K.length).forEach(c=>{c._dr=0;const f=cmFam(c.t);if(f)used[f]=1});K=L.filter(c=>!c||!c._dr)}
   L.forEach(c=>{if(c)delete c._dr});
+  /* v671: 커리어 전체 사용 횟수 — 이미 2번 이상 나온 문장은 빼고, 빠진 자리는 아직 안 나온 상황 댓글로 채움 */
+  const U=S._cmUse||{},uk=c=>{const n=cmNorm2(c.t);return n.length<6?null:hk(n)},uo=c=>{const k=uk(c);return k?(U[k]||0):0};
+  if(K.length>6){const cand=K.filter(c=>!fx2(c)&&uo(c)>=2).sort((p,q)=>uo(q)-uo(p));while(K.length>6&&cand.length){const c=cand.shift();K=K.filter(z=>z!==c)}}
+  const L0=a.cm.length;
+  if(K.length<L0&&typeof cmCats==='function'&&typeof CMLIB!=='undefined'){try{const hd0=S._hd;S._hd=head||'';const cats=cmCats(tone,x)||[];S._hd=hd0;const neg=['bad','psGoat','psLose','injury','faBig'].includes(tone);
+    for(const id of cats){if(K.length>=L0)break;const pool=(CMLIB[id]||[]).filter(l=>{const t=l[0];if(isP()&&BATW.test(t))return false;if(!isP()&&PITW.test(t))return false;if(id===12&&(neg!==NICK_NEG.test(t)))return false;const f=cmFill(t);if(seenHas(f))return false;const n=cmNorm2(f);return !(n.length>=6&&(U[hk(n)]||NX[hk(n)]!=null))});
+      while(K.length<L0&&pool.length){const l=pool.splice(ri(0,pool.length-1),1)[0],t=cmFill(l[0]);seenAdd(t);const f=cmFam(t);if(f&&used[f])continue;if(f)used[f]=1;
+        K.splice(Math.min(K.length,ri(2,6)),0,{lib:1,nk:pick(NICKS),fl:null,t,up:Math.round(ri(60,600)*(1+((S.rel&&S.rel.fame)||0)/25)),dn:ri(1,40),ago:pick(AGO),re:l.slice(1).map(r=>({nk:pick(NICKS),t:cmFill(r),up:ri(20,300)}))})}}}catch(e){}}
+  /* 인기 댓글 자리: 위쪽 3개 중 가장 덜 나온(처음 보는) 문장을 맨 위로 */
+  try{let bi=0,bs=1e9;for(let i=0;i<Math.min(3,K.length);i++){const c=K[i];if(fx(c))continue;const sc=uo(c)*3+(cmFam(c.t)?1:0)+i*.5;if(sc<bs){bs=sc;bi=i}}
+    if(bi>0&&K[0]&&!fx(K[0])){const A0=K[0],B=K[bi],u=A0.up;A0.up=B.up;B.up=u;K[0]=B;K[bi]=A0}}catch(e){}
+  /* 답글: 같은 기사 안 반복 X · 최근 30개 기사에 나온 답글(5자 넘는 것)은 빼고, 답글이 다 빠지면 짧은 공감 답글로 */
+  const RX=S._cmRX||{};
+  try{const rs=new Set(),GR=['ㄹㅇ','인정','222','ㅇㅈ','이건 맞음','공감 백배','딱 내 생각','나도 이 생각했음','정확하다','완전 동의','이 댓글 찾으러 옴','맞는 말만 하네','이거지','ㄹㅇ 공감','할 말을 대신 해주네','반박 불가','이건 인정','개추','ㅋㅋㅋ 정답','나만 그런 거 아니었네'];
+    K.forEach(c=>{if(!c||!Array.isArray(c.re)||!c.re.length||c.rl)return;const n0=c.re.length;c.re=c.re.filter(q=>{const t=String(q&&q.t||q||'');if(t.length<=5)return true;const k='r'+hk(t);if(rs.has(t)||(RX[k]!=null&&aid-RX[k]<30))return false;rs.add(t);RX[k]=aid;return true});
+      if(!c.re.length&&n0){const g=GR.filter(t=>!rs.has(t));const t=pick(g.length?g:GR);rs.add(t);c.re=[{nk:pick(NICKS),t,up:ri(15,260)}]}})}catch(e){}
+  for(const k in RX)if(aid-RX[k]>=30)delete RX[k];S._cmRX=RX;
   const T=S._cmTop||[];if(K.length>2&&K[0]&&!fx(K[0])&&cmFam(K[0].t)&&T.some(Boolean)){const j=K.findIndex((c,i)=>i>0&&c&&!fx(c)&&!cmFam(c.t));if(j>0){const A0=K[0],B=K[j],u=A0.up;A0.up=B.up;B.up=u;K[0]=B;K[j]=A0}}
   S._cmTop=T.concat([K[0]&&cmFam(K[0].t)||null]).slice(-4);
   try{const un=new Set();K.forEach(c=>{if(!c||c.rl||!c.nk)return;if(un.has(c.nk)){const alt=NICKS.filter(n=>!un.has(n));if(alt.length)c.nk=pick(alt)}un.add(c.nk)})}catch(e){}
   a.cm=K;S._cmFH=H.concat([Object.keys(used)]).slice(-8);
-  K.forEach(c=>{if(c&&!c.rl){const n=cmNorm2(c.t);if(n.length>=6){hist.push(n);NX[hk(n)]=aid}}});S._cmNH=hist.slice(-150);
+  K.forEach(c=>{if(c&&!c.rl){const n=cmNorm2(c.t);if(n.length>=6){hist.push(n);const k=hk(n);NX[k]=aid;U[k]=(U[k]||0)+1}}});S._cmNH=hist.slice(-150);
+  {const ks=Object.keys(U);if(ks.length>3000){let d=0;for(const k of ks){if(U[k]<=1){delete U[k];if(++d>=600)break}}}}S._cmUse=U;
   for(const k in NX)if(aid-NX[k]>=50)delete NX[k];S._cmNX=NX}catch(e){}return r}}
 
 /* ===================== 첫 화면 일러스트 (사용자 제공 이미지) ===================== */
