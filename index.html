@@ -1963,7 +1963,7 @@ function followGame(o){
     const sc=`${G.R[my]}-${G.R[1-my]}`,opp=G.ab[1-my];
     const head=o.clinch&&G.win&&/월드시리즈/.test(o.title)?`${G.ab[my]}, ${S.y} 월드시리즈 우승! ${ME.name} ${myLine}`:o.clinch&&G.win&&/한국시리즈/.test(o.title)?`${G.ab[my]}, ${S.y} 한국시리즈 우승! ${ME.name} ${myLine}`:o.clinch&&G.win?`${G.ab[my]}, ${opp} 꺾고 ${o.title.replace(/ \d+차전/,'')} 통과… ${ME.name} ${myLine}`:G.win?(G.mvp?pick([`'${myLine}' ${ME.name}, ${o.title} 지배했다`,`${ME.name} 원맨쇼… ${o.title} ${sc} 승리`,`가을의 주인공 ${ME.name}`]):`${o.title}, ${opp}에 ${sc} 승리… ${ME.name} ${myLine}`)
       :goat?pick([`${ME.name}, ${o.title}서 침묵… ${myLine}`,`'${myLine}' ${ME.name}, 고개 숙였다`,`${opp}에 ${G.R[1-my]}-${G.R[my]} 패배, ${ME.name}에게 쏟아진 비판`]):`${o.title} ${G.R[my]}-${G.R[1-my]} 석패… ${ME.name} "다음엔 꼭"`;
-    article(head,`${o.sub}. ${ME.name}: ${myLine}.`,tone,{csLog:G.csLog||null,ent:G.ent||null,ue:mp.UR||0,cl3:!!G.cl3,phc:G.phCtx||null,line:myLine,ipO:isB?0:mp.outs,pH:isB?0:(mp.H||0),pBB:isB?0:(mp.BB||0)+(mp.HBP||0),ra:isB?0:ra,sv:mp.SV||0,gH:mb.H,gRBI:mb.RBI,gPA:mb.PA,intl:!!o.intl,title:o.title,...(isB?{gHR:mb.HR,gXB:mb.D+mb.T+mb.HR}:{}),gGreat:G.def?G.def.g:0,gAst:G.def?(G.def.a||0):0,gErr:G.def?G.def.e:0,lsc:G.line,mySide:my,ps:o.intl?null:/한국시리즈/.test(o.title)?'KS':'PS',win:G.win,clinch:!!o.clinch,pl:G.pl||[],pp:G.pp||[],gBB:mb.BB||0,gSB:mb.SB||0,gCS:mb.CS||0,gK:mp.K||0,pW:mp.W||0,sub:o.sub||'',inns:G.line[0].length,hrMy:(G.HRt||[0,0])[my],hrLog:G.hrLog||[],hrOp:(G.HRt||[0,0])[1-my],elim:!G.win&&(/지면 탈락|마지막 승부/.test(o.sub||'')||(!!o.intl&&!/동메달/.test(o.title)&&/준결승|결승/.test(o.title))||/결승전|동메달/.test(o.title)),last:/결승|동메달/.test(o.title)||(!!o.clinch&&G.win)||(!G.win&&/지면 탈락|마지막 승부/.test(o.sub||'')),myR:G.R[my],opR:G.R[1-my],opp:G.ab[1-my],home:my===1,role,K:isB?mb.K:mp.K,outs:mp.outs});G.aid=S.artId}
+    article(head,`${o.sub}. ${ME.name}: ${myLine}.`,tone,{csLog:G.csLog||null,ent:G.ent||null,ue:mp.UR||0,cl3:!!G.cl3,phc:G.phCtx||null,line:myLine,ipO:isB?0:mp.outs,pH:isB?0:(mp.H||0),pBB:isB?0:(mp.BB||0)+(mp.HBP||0),ra:isB?0:ra,sv:mp.SV||0,pL:isB?0:(mp.L||0),gH:mb.H,gRBI:mb.RBI,gPA:mb.PA,intl:!!o.intl,title:o.title,...(isB?{gHR:mb.HR,gXB:mb.D+mb.T+mb.HR}:{}),gGreat:G.def?G.def.g:0,gAst:G.def?(G.def.a||0):0,gErr:G.def?G.def.e:0,lsc:G.line,mySide:my,ps:o.intl?null:/한국시리즈/.test(o.title)?'KS':'PS',win:G.win,clinch:!!o.clinch,pl:G.pl||[],pp:G.pp||[],gBB:mb.BB||0,gSB:mb.SB||0,gCS:mb.CS||0,gK:mp.K||0,pW:mp.W||0,sub:o.sub||'',inns:G.line[0].length,hrMy:(G.HRt||[0,0])[my],hrLog:G.hrLog||[],hrOp:(G.HRt||[0,0])[1-my],elim:!G.win&&(/지면 탈락|마지막 승부/.test(o.sub||'')||(!!o.intl&&!/동메달/.test(o.title)&&/준결승|결승/.test(o.title))||/결승전|동메달/.test(o.title)),last:/결승|동메달/.test(o.title)||(!!o.clinch&&G.win)||(!G.win&&/지면 탈락|마지막 승부/.test(o.sub||'')),myR:G.R[my],opR:G.R[1-my],opp:G.ab[1-my],home:my===1,role,K:isB?mb.K:mp.K,outs:mp.outs});G.aid=S.artId}
   const bigG=/결승|한국시리즈/.test(o.title);
   if(!o.quiet&&G.mvp&&G.win&&isB&&mb.HR)feat(`${o.title} 결정적 홈런`,bigG);
   else if(!o.quiet&&G.mvp&&G.win&&!isB)feat(`${o.title} 호투로 승리 견인`,bigG);
@@ -4797,7 +4797,8 @@ function traitLines(tone,x){const P=isP(),gn=giv(ME.name),pos=['hype','psHero','
     rng:()=>[`수비 범위 미쳤다 그걸 잡네`],fld:()=>[`포구가 너무 부드러움 수비로 투수 살림`],arm:()=>[`어깨 레이저 주자 잡는 거 소름`]};
   const pk=(m,k)=>{const L=m[k]?m[k]():[];return L.length?pick(L):null};
   S.traitY=S.traitY||{};const fresh=k=>S.traitY[k]!==String(S.y);
-  if((neg||(!pos&&R()<.5))&&weak.length){const k=weak.find(fresh);if(k){const t=pk(W,k);if(t){out.push(t);S.traitY[k]=String(S.y)}}}
+  const gr=(()=>{try{return perfGrade()}catch(e){return'none'}})(),okS=gr==='elite'||gr==='good';
+  if((neg||(!pos&&!okS&&R()<.5))&&weak.length){const k=weak.find(fresh);if(k){const t=pk(W,k);if(t){out.push(t);S.traitY[k]=String(S.y)}}}
   else if(pos&&strong.length){const k=strong.find(z=>fresh('s'+z));if(k){const t=pk(ST,k);if(t){out.push(t);S.traitY['s'+k]=String(S.y)}}}
   /* 좋은 날에도 약점 한 줄(간헐적): "다 좋은데 ~" */
   if(pos&&weak.length&&R()<.25){const k=weak.find(fresh);if(k&&avgO(k)>=58){const t=pk(W,k);if(t){out.push(t);S.traitY[k]=String(S.y)}}}
@@ -6608,8 +6609,19 @@ CM.franMove=['오피셜 떴다 ㄷㄷ','스토브리그 최대 이슈 터졌다'
    :w>=10?[`왕의 귀환!!! ${gn} 돌아왔다`,`메이저 WAR ${ws}면 진짜 성공하고 온 거다`,`미국에서 증명하고 온 선수 클래스가 다르다`,`${tn} 이번 스토브리그 최대 승자`,`${gn} 복귀 경기 무조건 직관 간다`,`메이저 물 먹고 온 선수는 여유가 다르지`,`${gn} 돌아왔으니 올해 MVP는 정해졌다`,`메이저 ${ws} WAR 레벨이 KBO 오면 어떻게 되는지 보자`,`이 계약은 무조건 남는 장사다`,`미국에서 쌓은 커리어 존중한다 웰컴백`]
    :w>=3?[`메이저에서 ${ws} WAR면 충분히 할 만큼 하고 왔다`,`돌아온 메이저리거 ${gn} 환영한다`,`미국 경험이 KBO에선 확실히 무기가 될 듯`,`${tn} 좋은 영입했다`,`해외에서 고생 많았다 이제 집에서 편하게 하자`]
    :[`미국에선 아쉬웠지만 KBO에선 다르다`,`돌아온 것도 용기다 ${gn} 환영`,`메이저 경험은 어디 안 간다 KBO에서 보여줘라`,`해외 도전 고생했다 이제 다시 시작이다`];
-  if(mb.orig||mb.last)T.push(mb.orig?`그래도 결국 친정 ${tn}로 돌아왔네 낭만이다`:`마지막 KBO 팀 ${tn}로 돌아왔다 의리 지켰네`);
-  T.filter(s=>!seenHas(s)).sort(()=>R()-.5).slice(0,w>=10?6:4).forEach(s=>{seenAdd(s);add.push(mkC(s,R()<.6?[pick(w>=10?['미쳤다 진짜','유니폼 바로 산다','KBO 판도 바뀐다','이게 낭만이지']:['환영한다','응원한다','잘해보자'])]:[],{up:ri(800,6000),must:1}))});
+  const P=isP();for(let i=T.length-1;i>=0;i--){if(P&&/KBO 투수들/.test(T[i]))T[i]=T[i].replace('KBO 투수들','KBO 타자들')}
+  if(mb.orig||mb.last)T.push(mb.orig?`그래도 결국 친정 ${jo(tn,'으로','로')} 돌아왔네 낭만이다`:`마지막 KBO 팀 ${jo(tn,'으로','로')} 돌아왔다 의리 지켰네`);
+  /* v680: 메이저에서 잘하고 돌아온 선수 — '왕의 귀환' 서사 더 (실제 복귀 반응 유형: 금의환향·시범경기 매진·유니폼 품절·개막전 선발·상대 타자/투수 긴장·친정 낭만) · 상황별로 골라 1개씩 */
+  let X=[];try{const kY=S.rows.filter(r=>r.lv==='KBO'&&r.y<S.y).map(r=>r.y),N=kY.length?S.y-Math.max(...kY):0,A=(S.awards||[]).map(z=>z.n||''),a=age();
+    const cy=A.some(n=>/사이영/.test(n)),mv=A.some(n=>/(아메리칸|내셔널)리그 MVP/.test(n)),ggm=A.some(n=>/골드글러브/.test(n)),ws=A.some(n=>/^월드시리즈 우승$/.test(n));
+    const G=[],Q=[],W=[],TMN=[],AG=[];
+    if(w>=10){G.push('금의환향 그 자체다','구단 SNS 공지 올라오자마자 서버 터짐 ㅋㅋ','유니폼 예약 판매 벌써 품절이란다','이 선수 복귀는 KBO 흥행 보증수표다','시범경기부터 매진 각이다','상대 팀 팬들도 박수 쳐 줄 복귀다',N?`${N}년을 기다렸다 이제 매일 볼 수 있다`:'드디어 KBO에서 이 선수를 본다');
+      Q.push(...(P?['KBO 타자들 이제 진짜 메이저 공 구경하게 생겼다','개막전 선발은 고민할 필요도 없겠네','괴물이 돌아왔다 이제 상대 팀들 계산 다시 해야 한다']:['KBO 투수들 이제 큰일 났다 메이저 방망이가 돌아왔다','타이틀 경쟁은 벌써 끝났다고 봐야지','메이저 투수들 공 치던 눈이면 KBO는 쉬워 보이겠다']));
+      if(cy)W.push('사이영상 투수가 KBO 마운드에 선다고? 이건 리그 역사다');if(mv)W.push('메이저 MVP가 KBO 타석에 선다… 이걸 내 눈으로 보다니');if(ggm&&!P)W.push('메이저 골드글러브 수비를 KBO에서 매일 볼 수 있다');if(ws)W.push('월드시리즈 반지 끼고 돌아온 선수는 클래스가 다르다');
+      if(mb.orig&&N)TMN.push(`${N}년 만에 친정 유니폼… 떠날 때 약속 지키고 돌아왔다`,`${tn} 팬들한테는 이게 크리스마스 선물이다`);else if(!mb.orig)TMN.push(`${tn} 팬들 진짜 땡잡았다`,`${tn} 프런트 이번엔 일 제대로 했다`);
+      if(a>=35)AG.push('커리어 마지막은 한국에서… 마지막 불꽃 기대한다','은퇴 전에 KBO에서 다시 볼 수 있어서 다행이다');else if(a<=31)AG.push('아직 전성기 나이에 돌아왔으면 KBO 씹어먹는 건 시간문제');}
+    X=[G,Q,W,TMN,AG].map(L=>L.filter(t=>!seenHas(t))).filter(L=>L.length).map(L=>pick(L))}catch(e){}
+  T.filter(s=>!seenHas(s)).sort(()=>R()-.5).slice(0,Math.max(2,(w>=10?6:4)-X.length)).concat(X).forEach(s=>{seenAdd(s);add.push(mkC(josaFix(s),R()<.6?[pick(w>=10?['미쳤다 진짜','유니폼 바로 산다','KBO 판도 바뀐다','이게 낭만이지','왕의 귀환 인정','직관 예매 각']:['환영한다','응원한다','잘해보자'])]:[],{up:ri(800,6000),must:1}))});
   out=add.concat(out.filter(c=>!/왕의 귀환|레전드의 귀환|약팀|운빨|반짝|툴도/.test(c.t)).slice(0,3))}catch(e){}return out}}
 
 /* ===================== 가을야구 · 국가대표 결승 댓글 매트릭스 (팀 결과 × 내 활약 × 특수 상황 × 이력) ===================== */
@@ -6908,8 +6920,9 @@ const TM={
  elim:[["올해 야구도 여기까지구나",["내년에 보자"]],["이제 야구 대신 스토브리그가 메인 이벤트다",[]],["내년에는 제발 봄부터 잘하자",[]],["오늘 잘한 선수들은 욕먹지 않았으면 좋겠다",[]],["중요한 순간 선수 기용이 아쉽다",["결과론이지 뭐"]]],
  half1:[["전반기 상위권 마무리 후반기도 이대로만 가자",["아직 설레발 금지"]],["이 페이스면 올해 진짜 해볼 만하다",[]]],
  half1C:[["역시 우승 DNA는 어디 안 간다 전반기부터 상위권",["가을에 올라가기만 하면 우리 거"]],["디펜딩 챔피언답게 순위표 꼭대기가 익숙하네",[]],["이 팀은 이제 상위권이 기본값임 ㅋㅋ",["목표는 무조건 우승"]],["전반기 상위권? 우리한텐 당연한 거고 목표는 반지다",[]]],
- halfMid:[["전반기 중위권… 후반기에 치고 올라가야 한다",[]],["가을야구 커트라인 싸움 빡세겠다",[]]],
- halfLow:[["전반기 하위권은 좀 심했다 후반기엔 달라져야지",["올해도 가을은 쉬나…"]]],
+ halfMid:[["{n} 전반기 중위권… 후반기에 치고 올라가야 한다",[]],["{n} 가을야구 커트라인 싸움 빡세겠다",["5강 싸움은 끝까지 간다"]],["{n} 치고 올라갈 힘이 있는지는 후반기에 보자",[]]],
+ halfLow:[["{n} 전반기 하위권은 좀 심했다 후반기엔 달라져야지",["올해도 가을은 쉬나…"]],["{n}는 왜 매년 성적이 이 모양이냐",["프런트부터 바뀌어야 한다"]],["{n} 타선이 너무 약하다 점수를 못 낸다",["외국인 타자라도 바꿔라"]],["{n} 불펜만 안정돼도 이 순위는 아닌데",["매일 방화쇼 보는 기분"]],["{n} 이 순위면 감독 경질 얘기 나오는 게 당연하다",["감독 혼자 책임은 아니지"]],["{n} 팬 하기 진짜 힘들다 ㅠ",["그래도 야구장은 간다"]],["{n} 올해도 가을야구는 물 건너가는 분위기",["아직 후반기 남았다 포기 이르다"]],["{n} 리빌딩 할 거면 확실하게 하자 어중간한 게 제일 싫다",[]]],
+ halfBot:[["{n} 탈꼴찌가 목표가 되면 안 되는 팀인데",["현실은 꼴찌 싸움"]],["{n} 순위표 밑에서 찾는 게 더 빠르다 ㅠ",[]]],
  regTop:[["오늘 승리로 1위 경쟁 다시 불붙었다",["아직 설레발 금지"]],["1위 자리 비워놔라 ㅋㅋ",[]],["올해는 진짜 우승이다",["벌써 행복회로 돌리네"]]],
  regTopL:[["오늘 패배는 순위 경쟁에서 꽤 아프다",[]],["1위 경쟁하다가 경쟁만 하고 끝나겠네",["아직 끝난 거 아니다 남은 경기 잡자"]]],
  regIn:[["드디어 가을야구 간다!",["이 순간 기다렸다"]],["이제부터 진짜 야구 시작이다",[]],["진출은 축하하지만 지금 경기력으론 보완할 게 많다",[]],["이제 야구장에 가을 냄새 나겠네",[]]],
@@ -6933,8 +6946,8 @@ const TM={
       if(win&&w===need&&l>=2&&w0<=l0){const lead=(hs.match(/^L+/)||[''])[0].length;if(lead>=2)put('comeback',`0승 ${lead}패`);else put('comeback2')}
       if(!win&&l===need&&!/결승/.test(t))put('elim')}
     if(P){const ipO=x.ipO||0,ra=x.ra||0;if(ipO>=27&&!ra)put('pCG');else if((x.gK||0)>=10)put('pK10');else if(ipO>=18&&ra<=3)put('pQS')}}
-  else if(S.pro&&S.pro.league==='KBO'&&S.m>=6&&S.m<=8&&cmX('tmHalf'+S.y)){/* 전반기 결산 즈음 팀 순위 한 줄만 */
-    try{const st=standings(),i=st.findIndex(z=>z.i===S.pro.team);if(i<=1){const my=S.pro.team,ch=(S.champs||{})[my],recent=(ch!=null&&S.y-ch<=3)||S.awards.filter(a=>a.n==='한국시리즈 우승'&&a.y>=S.y-5).length>=2;put(recent?'half1C':'half1')}else if(i<=4)put('halfMid');else put('halfLow')}catch(e){}}
+  else if(S.pro&&S.pro.league==='KBO'&&!S.pro.dev&&!/퓨처스|2군/.test(String(S._hd||''))&&S.m>=6&&S.m<=8&&cmX('tmHalf'+S.y)){/* 전반기 결산 즈음 팀 순위 한 줄만 */
+    try{const st=standings(),i=st.findIndex(z=>z.i===S.pro.team),tn=TEAMS[S.pro.team].nick;if(i<=1){const my=S.pro.team,ch=(S.champs||{})[my],recent=(ch!=null&&S.y-ch<=3)||S.awards.filter(a=>a.n==='한국시리즈 우승'&&a.y>=S.y-5).length>=2;put(recent?'half1C':'half1')}else if(i<=4)put('halfMid',tn);else{put('halfLow',tn);if(i>=8&&R()<.5)put('halfBot',tn);try{const g=perfGrade();if(g==='elite'||g==='good'){const gn=giv(ME.name);add.push(mkC(pick([`${gn} 혼자 고생한다 ${tn}가 좀 도와줘라`,`${gn} 성적 보면 팀 순위가 너무 아깝다`,`${jo(gn,'은','는')} 할 만큼 하는데 ${tn}가 안 받쳐준다`]),[],{up:ri(400,2500)}))}}catch(e){}}}catch(e){}}
   if(add.length)out.splice(Math.min(out.length,2),0,...add.slice(0,2))}catch(e){}return out}}
 
 /* ===================== 내 기록을 짚는 댓글: 이번 가을 누적·시리즈 누적·가을 통산 / 정규시즌 페이스 ===================== */
@@ -9366,7 +9379,7 @@ function vWbcEnd(q){const t={우승:'🏆 세계 정상!',준우승:'🥈 준우
 function wbcArticle(g,c){try{const my=g.my,kr=g.R[my],op=g.R[1-my],P=isP(),mb=g.mb||{},mp=g.mp||{},win=g.win,diff=kr-op;
   const ra=+(((g.myLine||'').match(/(\d+)실점/)||[0,0])[1]),played=P?mp.outs>0:mb.PA>0,good=played&&(P?((mp.outs>=9&&ra<=1)||(mp.outs>=3&&ra===0&&(mp.K>=2||mp.SV))):(mb.H>=2||mb.HR>=1||mb.RBI>=2)),bad=played&&(P?ra>=3:(mb.PA>=3&&mb.H===0));
   const st=c.stage,stN={pool:'1라운드',qf:'8강',sf:'준결승',final:'결승'}[st];const head=win?(g.mercy?`대한민국, ${c.oppN}에 ${kr}-${op} 콜드승… ${ME.name} ${g.myLine}`:`대한민국, ${c.oppN} ${kr}-${op} 격파… ${ME.name} ${g.myLine}`):(g.mercy?`대한민국, ${c.oppN}에 ${kr}-${op} 콜드패… 세계의 벽`:`대한민국, ${c.oppN}에 ${kr}-${op} ${Math.abs(diff)<=2?'석패':'패배'}… ${ME.name} ${g.myLine}`);
-  article(`[${stN}] ${head}`,`${c.title}. ${ME.name}: ${g.myLine}.`,'intl',{wbc:1,intl:true,title:c.title,win,opp:c.oppN,strong:c.strong,rival:c.rival,close:Math.abs(diff)<=2,mercy:!!g.mercy,good,bad,played,st,kr,op,ra,gH:mb.H||0,gHR:mb.HR||0,gRBI:mb.RBI||0,gPA:mb.PA||0,ipO:mp.outs||0,pH:mp.H||0,pBB:(mp.BB||0)+(mp.HBP||0),K:mp.K||0,pW:mp.W||0,sv:mp.SV||0,myR:kr,opR:op,pl:g.pl||[],pp:g.pp||[]});g.aid=S.artId}catch(e){}}
+  article(`[${stN}] ${head}`,`${c.title}. ${ME.name}: ${g.myLine}.`,'intl',{wbc:1,intl:true,title:c.title,win,opp:c.oppN,strong:c.strong,rival:c.rival,close:Math.abs(diff)<=2,mercy:!!g.mercy,good,bad,played,st,kr,op,ra,gH:mb.H||0,gHR:mb.HR||0,gRBI:mb.RBI||0,gPA:mb.PA||0,ipO:mp.outs||0,pH:mp.H||0,pBB:(mp.BB||0)+(mp.HBP||0),K:mp.K||0,pW:mp.W||0,pL:mp.L||0,sv:mp.SV||0,myR:kr,opR:op,pl:g.pl||[],pp:g.pp||[]});g.aid=S.artId}catch(e){}}
 /* WBC 기사: 소속팀·시즌 얘기 걸러내고 국가대표 상황 댓글로 */
 {const CLUB=/연봉|FA|먹튀|시즌|정규|팀 순위|1군|2군|퓨처스|트레이드|감독 교체|프런트|단장|우리 팀|팀 성적|가을야구|포스트시즌|한국시리즈|월드시리즈|직관|사직|잠실|구단|등장곡|굿즈|유니폼 마킹|신인왕|골든글러브|골글|MVP 각|우승 반지/;
  const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!x||!x.wbc||!Array.isArray(out))return out;out=out.filter(c=>!CLUB.test(c.t||'')&&!(TEAMS||[]).some(t=>(c.t||'').includes(t.nick))&&!(!x.played&&/안 쓴|놔두고|아끼다|안 올렸|안 썼|왜 안 /.test(c.t||'')));out.forEach(c=>{if(c.re)c.re=c.re.filter(q=>!CLUB.test(q.t||''))});
@@ -12061,6 +12074,8 @@ function cmJac(a,b){if(!a.size||!b.size)return 0;let n=0;for(const x of a)if(b.h
   const TH=/^(retire|hof|legend|tour|vet|retno)/.test(String(tone||'')),fx=c=>!c||c.rl||c.must||c.my;
   /* v678: WBC 기사 정리 — 시즌용 잡담·리그 용어·N차전·메달/반지·틀린 장소·상황 안 맞는 반응 빼기 */
   try{if(x&&x.wbc)wbcSanitize(a,x)}catch(e){}
+  /* v680: 패전투수가 아닌데 '패전' 댓글 X (경기 기사에 패전 정보가 있을 때) */
+  try{if(x&&isP()&&x.pL!=null&&!x.pL){a.cm=a.cm.filter(c=>!c||c.my||!/패전/.test(String(c.t||'')));a.cm.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(q=>!/패전/.test(String(q&&q.t||q||'')))})}}catch(e){}
   /* v679: 답글 짝 맞추기 — 비난·욕설 댓글이 아닌데 '이건 선 넘었지·어그로 ㄴㄴ·님 혹시 타팬?·반박 박제함' 답글이 달리던 것 */
   try{const NEG=/못하|최악|욕|태업|혈압|답답|왜 이렇게|그만|은퇴해|빼라|민폐|망했|망신|쓰레기|ㅉ|한심|실망|어이없|짜증|무너|탓|노답|거품|고평가|먹튀|돈값|정신 차려|작아지|선풍기|집에 두고|우물 안|개구리|동네 야구|역적|구멍|폭망|방화|사과해/,HOT=/선 넘었|어그로|타팬|박제|쉴드 불가|실드 불가/,SOFT=['그건 좀 오바고','스탯 보고 말하자','표본 너무 적은데 벌써?','아직 설레발은 이르다','ㅇㅈ','ㄹㅇ 이거지','이게 맞다'];
     a.cm.forEach(c=>{if(!c||!Array.isArray(c.re)||NEG.test(String(c.t||'')))return;c.re=c.re.map(q=>{const t=String(q&&q.t||q||'');if(!HOT.test(t))return q;return Object.assign({},typeof q==='object'?q:{nk:pick(NICKS),up:ri(5,120)},{t:pick(SOFT)})})})}catch(e){}
