@@ -1721,14 +1721,12 @@ function seasonFeats(rep){
     if(qual&&b.H/b.AB>=.3&&b.HR>=30&&b.RBI>=100){feat(`3할·30홈런·100타점 달성`,1);S.ach.triple=S.ach.triple||y}
     if(b.H>=200){feat(`시즌 ${b.H}안타`,1);S.ach.h200=S.ach.h200||y}
     if(b.HR>=50){feat(`시즌 ${b.HR}홈런 고지`,1);S.ach.hr50=S.ach.hr50||y}
-    if(aw.includes('타격왕')&&aw.includes('홈런왕')&&aw.includes('타점왕'))feat('타격 트리플 크라운!',1);
     if(kbo){bookCheck('sHR',b.HR);bookCheck('sH',b.H);bookCheck('sRBI',b.RBI);bookCheck('sSB',b.SB);bookCheck('sR',b.R);if(qual)bookCheck('sAVG',+(b.H/b.AB).toFixed(3),v=>v.toFixed(3).replace(/^0/,''))}
     const s20=yearsStreak(t=>t.b.HR>=20),s3=yearsStreak(t=>t.b.PA>=446&&t.b.H/t.b.AB>=.3),s100=yearsStreak(t=>t.b.H>=100);
     if(s20>=3)feat(`${s20}년 연속 20홈런`,s20%5===0);if(s3>=3)feat(`${s3}년 연속 3할 타율`,s3%5===0);if(s100>=5)feat(`${s100}년 연속 100안타`,s100%5===0)}
   else{
     if(p.W>=20)feat(`시즌 ${p.W}승 투수`,1);if(p.K>=200){feat(`시즌 ${p.K}탈삼진`,1);S.ach.k200=S.ach.k200||y}if(p.SV>=40){feat(`시즌 ${p.SV}세이브`,1);S.ach.sv40=S.ach.sv40||y}
     if(p.outs>=432&&eraN(p)<2){feat(`1점대 평균자책점 (${era(p)})`,1);S.ach.era2=S.ach.era2||y}
-    if(aw.includes('다승왕')&&aw.includes('평균자책점왕')&&aw.includes('탈삼진왕'))feat('투수 트리플 크라운!',1);
     if(kbo){bookCheck('sW',p.W);bookCheck('sK',p.K);bookCheck('sSV',p.SV)}
     const w10=yearsStreak(t=>t.p.W>=10),k150=yearsStreak(t=>t.p.K>=150),sv20=yearsStreak(t=>t.p.SV>=20);
     if(w10>=3)feat(`${w10}년 연속 10승`,w10%5===0);if(k150>=3)feat(`${k150}년 연속 150탈삼진`,k150%5===0);if(sv20>=3)feat(`${sv20}년 연속 20세이브`,sv20%5===0)}
@@ -6999,7 +6997,7 @@ function f3m(v){return v.toFixed(3).replace(/^0/,"")}
   if(py.length){const bp=P?py.sort((a,b)=>(a.p.R*27/a.p.outs)-(b.p.R*27/b.p.outs))[0]:py.sort((a,b)=>((b.b.HR||0)*3+(b.b.H||0)/Math.max(1,b.b.AB)*20)-((a.b.HR||0)*3+(a.b.H||0)/Math.max(1,a.b.AB)*20))[0];
     if(P)A(`${bp.y}년 가을 ERA ${(bp.p.R*27/bp.p.outs).toFixed(2)} 그 가을의 ${gn}는 진짜 무적이었다`,[]);else A(`${bp.y}년 가을 ${bp.b.HR?bp.b.HR+'홈런 ':''}타율 ${(bp.b.H/Math.max(1,bp.b.AB)).toFixed(3).replace(/^0/,'')} 그 가을 잊을 수가 없다`,['가을의 남자였다'])}
   /* 대기록 */
-  const fts=featsClean(S.feats||[]).filter(f=>/사이클링|노히트|퍼펙트|트리플 크라운|40-40|30-30|50홈런|신기록|1점대|20승/.test(f.t));
+  const fts=featsClean(S.feats||[]).filter(f=>/사이클링|노히트|퍼펙트|40-40|30-30|50홈런|신기록|1점대|20승/.test(f.t));
   fts.slice(0,2).forEach(f=>A(`${f.y}년 ${f.t.replace(/^\d{4} /,'')} 그 경기 직관 갔었다 평생 자랑거리`,['나도 중계로 봤는데 소름이었다']));
   /* 통산 */
   if(!P){if(tb.H>=2000)A(`통산 ${tb.H}안타 이건 아무나 못 하는 거다`,[]);if(tb.HR>=300)A(`통산 ${tb.HR}홈런 거포의 커리어`,[]);else if(tb.HR>=150&&tb.H<2000)A(`통산 ${tb.H}안타 ${tb.HR}홈런 꾸준함의 상징`,[])}
@@ -7037,7 +7035,7 @@ function featFam(t){t=String(t);let m;
   if(m=t.match(/시즌 (\d+)승/))return['w',+m[1]];if(m=t.match(/시즌 (\d+)탈삼진/))return['k',+m[1]];if(m=t.match(/시즌 (\d+)세이브/))return['sv',+m[1]];
   if(m=t.match(/시즌 (\d+)안타/))return['h',+m[1]];if(m=t.match(/시즌 (\d+)도루/))return['sb',+m[1]];if(m=t.match(/(\d+)타점/))return['rbi',+m[1]];
   if(/퍼펙트/.test(t))return['nohit',2];if(/노히트/.test(t))return['nohit',1];return null}
-function featsClean(arr,perYear){const best={};(arr||[]).forEach(f=>{const fm=featFam(f.t);if(!fm)return;const k=fm[0]+(perYear?'@'+f.y:'');if(!best[k]||fm[1]>best[k].v)best[k]={v:fm[1],f}});return(arr||[]).filter(f=>{const fm=featFam(f.t);if(!fm)return true;const k=fm[0]+(perYear?'@'+f.y:'');return best[k].f===f})}
+function featsClean(arr,perYear){arr=(arr||[]).filter(f=>!/트리플 크라운/.test(String(f&&f.t||'')));const best={};(arr||[]).forEach(f=>{const fm=featFam(f.t);if(!fm)return;const k=fm[0]+(perYear?'@'+f.y:'');if(!best[k]||fm[1]>best[k].v)best[k]={v:fm[1],f}});return(arr||[]).filter(f=>{const fm=featFam(f.t);if(!fm)return true;const k=fm[0]+(perYear?'@'+f.y:'');return best[k].f===f})}
 
 /* ===================== 상점: 능력치별 훈련 효과 장비 · 업그레이드된 장비 중복 구매 버튼 제거 ===================== */
 const TRAIN_ITEMS=[
@@ -8536,7 +8534,7 @@ function wrMilestones(){const P=isP(),out=[],ys=wrSeasons();const cum={H:0,HR:0,
   else{const q=ys.filter(s=>s.b.PA>=400);const bh=ys.slice().sort((a,b)=>(b.b.HR||0)-(a.b.HR||0))[0],ba=q.slice().sort((a,b)=>b.b.H/b.b.AB-a.b.H/a.b.AB)[0],bt=ys.slice().sort((a,b)=>(b.b.H||0)-(a.b.H||0))[0],bsb=ys.slice().sort((a,b)=>(b.b.SB||0)-(a.b.SB||0))[0];
     if(bh&&bh.b.HR>=30)out.push({y:bh.y,t:`시즌 ${bh.b.HR}홈런`,big:bh.b.HR>=45});if(ba&&ba.b.H/ba.b.AB>=.330)out.push({y:ba.y,t:`시즌 타율 ${(ba.b.H/ba.b.AB).toFixed(3).replace(/^0/,'')}`,big:ba.b.H/ba.b.AB>=.370});if(bt&&bt.b.H>=180)out.push({y:bt.y,t:`시즌 ${bt.b.H}안타`,big:bt.b.H>=200});if(bsb&&bsb.b.SB>=40)out.push({y:bsb.y,t:`시즌 ${bsb.b.SB}도루`})}
   /* 업적 · 진기록 */
-  try{(S.feats||[]).filter(f=>f.big&&/신기록|사이클링|노히트|퍼펙트|트리플 크라운|40-40|30-30|인사이드 더 파크|완봉/.test(f.t)).forEach(f=>{const t=String(f.t).replace(/^\d+월 /,'').replace(/<[^>]*>/g,'');if(!out.some(o=>o.t===t))out.push({y:f.y,t,big:true})})}catch(e){}
+  try{(S.feats||[]).filter(f=>f.big&&/신기록|사이클링|노히트|퍼펙트|40-40|30-30|인사이드 더 파크|완봉/.test(f.t)).forEach(f=>{const t=String(f.t).replace(/^\d+월 /,'').replace(/<[^>]*>/g,'');if(!out.some(o=>o.t===t))out.push({y:f.y,t,big:true})})}catch(e){}
   return out.sort((a,b)=>(b.big?1:0)-(a.big?1:0)||a.y-b.y).slice(0,8).sort((a,b)=>a.y-b.y)}
 recapSlides=function(){const e=S.ended||{},P=isP(),t=careerTot(PRO),b=t.b,p=t.p,ys=wrSeasons(),dr=S.pro&&S.pro.draft;
   const first=S.rows.length?Math.min(...S.rows.map(r=>r.y)):S.y,yrs=(e.y||S.y)-first+1,best=ys.slice().sort((a,b)=>b.w-a.w)[0],sl=[];
@@ -9017,7 +9015,7 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
     const eV=typeof lgEnv==='function'?lgEnv('MLB'):0;if(q&&avg>=rn(.33,.012)+eV*.008)give('타격왕');if(b.HR>=Math.round(rn(46,4)*(1+eV*.09)))give('홈런왕');if(b.RBI>=Math.round(rn(125,8)*(1+eV*.04)))give('타점왕');if(b.SB>=Math.round(rn(50,7)))give('도루왕');
     if(b.H>=Math.round(rn(200,8)*(1+eV*.02)))give('최다안타');if(b.R>=Math.round(rn(122,7)*(1+eV*.04)))give('득점왕');if(q&&obp>=rn(.425,.015)+eV*.008)give('출루율왕');if(q&&slg>=rn(.615,.025)+eV*.02)give('장타율왕')}
   if(!got.length)return;rep.lines.push(`MLB ${got.join('·')} 타이틀 획득!`);{const ex=got.length>1?got.map(n=>'MLB '+n):[];ex._gx=4*got.length;celebrate('crown',got.length>1?`MLB ${got.length}관왕`:`MLB ${got[0]}`,`${S.y} 메이저리그 개인 타이틀${got.length>1?' · '+got.join('·'):''}`,ex)}news(`${ME.name}, ${S.y} 메이저리그 ${got.join('·')} 차지`);
-  if(P&&got.includes('다승왕')&&got.includes('평균자책점왕')&&got.includes('탈삼진왕'))feat('MLB 투수 트리플 크라운!',1);if(!P&&got.includes('타격왕')&&got.includes('홈런왕')&&got.includes('타점왕'))feat('MLB 타격 트리플 크라운!',1);
+  /* v673: 트리플 크라운 별도 축하 X — n관왕 화면으로 통일 */
   article(`${ME.name}, 메이저리그 ${got.join('·')} 등극`,`${jo(ME.name,'이','가')} 올 시즌 메이저리그 ${got.join(', ')} 타이틀을 거머쥐었다.`,'award')}catch(e){}}}
 /* MLB(및 산하 마이너) 감독은 이름 없이 '감독'으로 */
 {const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(S.stage==='pro'&&S.pro&&S.pro.league!=='KBO'&&S.coach!=='감독')S.coach='감독'}catch(e){}}}
