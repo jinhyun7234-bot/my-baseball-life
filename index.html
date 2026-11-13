@@ -4008,7 +4008,7 @@ function cmFill(t){const N=ME.name,S1=N[0],G=N.slice(1),G1=G[0]||'';
 const BATW=/타율|타석|안타|출루|홈런|타점|배트|병살|잔루|초구|타격|타구|무안타|OPS|타출장|스윙|공이 다 보이|타순|4번|중심타선|득점권|볼넷|삼진 먹|결승타|도루|주루|수비|타선|쳐줘|쳐라|방망이|대타|장타/,PITW=/이닝|투구|평자|ERA|구속|마운드|선발|불펜|볼배합/;
 const NICK_NEG=/잔루|병살|아니잖아|초구|견들|망임/;
 {const _art=article;article=function(head,body,tone,x){S._hd=head||'';try{return _art(head,body,tone,x)}finally{S._hd=''}}}
-function cmPGood(x){try{if(!x)return false;return isP()?(((x.ipO||0)>=15&&(x.ra||0)<=2)||((x.ipO||0)>0&&(x.ipO||0)<9&&!x.ra)):((x.gH||0)>=2||(x.gHR||0)>=1)}catch(e){return false}}
+function cmPGood(x){try{if(!x)return false;return isP()?(((x.ipO||0)>=15&&(x.ra||0)<=2)||((x.ipO||0)>0&&!x.ra)):((x.gH||0)>=2||(x.gHR||0)>=1)}catch(e){return false}}
 function cmCats(tone,x){const pg=cmPGood(x),c=[],pos=['hype','psHero','feat','award','record','psWin','debut','return','legend','mlbBig','ring','ws','gold','faFair','salary','mix'].includes(tone),neg=['bad','psGoat','psLose','injury','faBig'].includes(tone),
   hd=S._hd||'',B=!isP(),gr=(()=>{try{return perfGrade()}catch(e){return'none'}})(),ps=x&&(x.ps||x.intl),great=ps&&typeof bigGreat==='function'&&bigGreat(x),rings=S.hist.rings||0,now=S.y*12+S.m;
   if(tone==='love')c.push(7);
@@ -8282,10 +8282,11 @@ function cmFill(s,gn){return s.replace(/\{g\}/g,gn).replace(/\{f\}/g,ME.name)}
   let n=[0,2,3,5,8][lv]+(fame>=60?2:fame>=30?1:0);if(P&&ME.pos==='RP'&&fame<45&&!hero)n=Math.max(1,Math.round(n*.45));else if(!hero)n=Math.max(1,Math.round(n*.8));const add=[],pick2=(L,k,re)=>{L.filter(s=>!seenHas(cmFill(s,gn))).sort(()=>R()-.5).slice(0,k).forEach(s=>{const t=cmFill(s,gn);seenAdd(t);add.push(mkC(t,R()<.55?[pick(re)]:[],{up:Math.round(ri(400,2600)*(1+lv*.6)*(1+fame/60)),must:1}))})};
   const mine=P?{g:CMB.goodP,b:CMB.badP,h:CMB.ksHeroP}:{g:CMB.goodB,b:CMB.badB,h:CMB.ksHeroB};
   if(ring){pick2(good||!played?CMB.ringA:CMB.ringPoor.concat(CMB.ringA),Math.ceil(n*.6),CMB_RE.ring);n-=Math.ceil(n*.6)}
-  if(good&&!win&&!hero){pick2(CMB.loseGood.filter(t=>!/원맨쇼|혼자 야구/.test(t)),2,['고생했다','할 만큼 했다','팀이 문제다 오늘은']);pick2(CMB.loseOk,Math.max(1,Math.ceil(n/2)),CMB_RE.bad)}
+  const loseOk=P?CMB.loseOk.filter(t=>!/쳤지|안타 쳐도|타석|방망이/.test(t)):CMB.loseOk,zeroP=P&&ipO>0&&ra===0&&!(x.ent&&x.ent.irs>0);
+  if(good&&!win&&!hero){pick2(CMB.loseGood.filter(t=>!/원맨쇼|혼자 야구/.test(t)),2,['고생했다','할 만큼 했다','팀이 문제다 오늘은']);pick2(loseOk,Math.max(1,Math.ceil(n/2)),CMB_RE.bad)}
   else if(good){if(hero&&lv>=3){pick2(mine.h,2,CMB_RE.good);n-=2}const k=Math.max(0,n);pick2(CMB.goodA,Math.ceil(k/2),CMB_RE.good);pick2(mine.g,Math.floor(k/2),CMB_RE.good);if(!win)pick2(CMB.loseGood,1,CMB_RE.good)}
   else if(bad){const k=Math.max(0,Math.ceil(n*.7));if(win){pick2(CMB.winBad,Math.min(2,k),CMB_RE.good);pick2(mine.b,Math.max(0,k-2),CMB_RE.bad)}else{pick2(CMB.badA,Math.ceil(k/2),CMB_RE.bad);pick2(mine.b,Math.floor(k/2),CMB_RE.bad)}}
-  else if(!ring){const k=Math.max(1,Math.floor(n/2));pick2(win?CMB.winMeh:CMB.badA.slice(0,6),k,win?CMB_RE.meh:CMB_RE.bad)}
+  else if(!ring){const k=Math.max(1,Math.floor(n/2));if(zeroP&&!win)pick2(['{g} 짧게 나와서 할 일은 하고 내려갔다','{g} 탓은 아니다 오늘은 타선이 문제','{g}는 막을 만큼 막았다','{g} 올라온 이닝은 깔끔했는데 팀이 졌네'],1,['ㅇㅇ 투수 탓은 아님','타선이 문제다 오늘은']);else pick2(win?CMB.winMeh:CMB.badA.slice(0,6),k,win?CMB_RE.meh:CMB_RE.bad)}
   /* 섞어서 끼우기: 맨 위 1~2개는 원래 댓글 유지 */
   add.forEach((c,i)=>out.splice(Math.min(out.length,1+i*2),0,c))}catch(e){}return out}}
 /* 경기 끝 화면: 큰 경기일수록 댓글을 더 보여주기 */
@@ -12784,7 +12785,9 @@ const ELP686=/무난하다|무난한 |무난 그 자체|평범|평균 정도|딱
 function elite686(x){try{const P=isP(),lg=S.pro&&S.pro.league;if(!lg)return false;const t=yearTot(S.y,[lg]);
   if(P){const hE=x.era!=null?parseFloat(x.era):NaN,sE=t.p.outs>=45?eraN(t.p):null;if(!isNaN(hE)&&hE<2&&x.ipO==null)return true;if(x.ipO!=null&&(x.ra||0)===0&&(x.ipO||0)>=3&&(sE!=null&&sE<2.5||x.ps))return true;return false}
   const hO=x.ops!=null?parseFloat(x.ops):NaN;if(!isNaN(hO)&&hO>=.95&&x.gPA==null)return true;if(x.gPA!=null&&((x.gHR||0)>=2||(x.gH||0)>=4||(typeof bigGreat==='function'&&bigGreat(x))))return true;return false}catch(e){return false}}
+const ZNEG687=/답답|별로|혈압|정신 차려|운빨|뽀록|실망|못하네|못했|아니잖아|한심|노답|왜 저래|내려가라|빼라|2군|불안하다|거품|할 말이 없|TV 끈|작아지|출근 안 함|폼 어디|비호감|걱정된다|바닥이다|죽었다|안 좋아 보인다/,ZOK687=/뒤집어씌|탓 1도|탓은 아니|탓하지|무죄|할 만큼|잘 던졌|막을 만큼|타선|팀이 졌|팀이 문제/;
 function fix686(a,x){if(!a||!Array.isArray(a.cm)||!x||!ME||!S||S.stage!=='pro')return;const game=x.ipO!=null||x.gPA!=null,P=isP(),el=elite686(x);
+  if(P&&game&&(x.ipO||0)>0&&(x.ra||0)===0&&!(x.ent&&x.ent.irs>0)&&(x.pBB||0)<3){const gn=giv(ME.name),me=new RegExp(gn+'|'+ME.name+'|이형');const zb=t=>{t=String(t||'');return(me.test(t)&&ZNEG687.test(t)&&!ZOK687.test(t))||/분유값 벌어야지|정신 차려라|이건 좀 아니잖아/.test(t)};a.cm=a.cm.filter(c=>c&&!zb(c.t));a.cm.forEach(c=>{if(Array.isArray(c.re))c.re=c.re.filter(q=>q&&!zb(q.t))})}
   const bad=t=>{t=String(t||'');return(game&&P&&/승리투수 됐어야/.test(t)&&!(x.win===true&&x.pW===0))||(game&&P&&/승리투수 (이 선수 )?줘야/.test(t)&&!(x.win===true&&x.pW===0&&!((x.sv||0)>0)&&(x.ra||0)===0))||(game&&P&&/홈런 맞아도 뒤돌아보며/.test(t)&&(x.pHR||0)===0)||(game&&/자연재해다/.test(t)&&x.win===false)||(el&&(P?ELP686:ELB686).test(t))};
   a.cm=a.cm.filter(c=>c&&!bad(c.t));a.cm.forEach(c=>{if(Array.isArray(c.re))c.re=c.re.filter(q=>q&&!bad(q.t))})}
 {const _ar686=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_ar686.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0){fix686(a,x);cm686(a,x,tone);slurClean(a)}}catch(e){}return r}}
