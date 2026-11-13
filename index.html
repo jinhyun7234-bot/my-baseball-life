@@ -2183,7 +2183,7 @@ function profilePools(){const neg=[],pos=[],{b,p}=yearTot(S.y),tb=careerTot(PRO)
     if(E('ctl')<45){neg.push('카운트 싸움을 못 함 맨날 풀카운트');if(ip>=20&&p.BB/ip*9>=4)neg.push(`볼넷 ${p.BB}개 볼질 좀 그만`)}
     if(ip>30&&p.HR/ip*9>1.3)neg.push(`피홈런 ${p.HR}개… 배팅볼이냐`,'실투 하나가 꼭 담장 넘어감');
     if(ME.pos==='SP'&&E('sta')<45)neg.push('5이닝 넘기는 걸 못 봄','100구 근처 가면 구위 뚝 떨어짐');
-    if(E('velo')>=65)pos.push(`구속 ${kmh(E('velo'))} 찍히는 거 보고 소름`,'직구 하나로 윽박지름');
+    if(E('velo')>=71)pos.push(`구속 ${kmh(E('velo'))} 찍히는 거 보고 소름`,'직구 하나로 윽박지름');else if(E('velo')>=64)pos.push('직구 힘으로 윽박지르는 스타일');
     if(E('ctl')>=65)pos.push('제구가 거의 기계','포수 미트만 보고 던지는 느낌')}
   return{neg,pos}}
 const GWAN={up:['유관기운 ㄷㄷ 올해 반지 간다','{n} 있는 팀이 우승한다 이건 과학임','유관기운 미쳤다 ㅋㅋㅋ','{y}년 차 짬바 유관기운 풀가동','이 폼이면 올해는 진짜 유관 각','반지 냄새 난다','유관의 신 강림'],
@@ -3120,9 +3120,9 @@ function offerTbl(q){return'';const fa=q.ch.filter(c=>c.act==='fa'&&c.arg&&c.arg
 {const _sp5=situPools;situPools=function(){const r=_sp5(),g=perfGrade(),good=g==='elite'||g==='good',f=ME.name[0];
   if(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'&&good)r.pos.push('MLB에서도 통하네 ㄷㄷ','KBO 출신이 메이저에서 이게 된다고?','메이저에서도 클라스는 못 숨기네');
   if(!isP()&&g==='elite'&&(proYears()>=4||mlbW()>=3)&&(careerTot(PRO).w>=20||mlbW()>=5))r.pos.push(`${f}추강대엽 아니냐 이제`,`이추강대엽 순위 다시 매겨야 함 ${f}추강대엽 가자`,`${f}추강대엽 인정하는 사람?`);
-  if(isP()&&S.stage==='pro'){const v=+kmh(E('velo'));if(v>=155&&good)r.pos.push(`${v}km/h 실화냐 ㄷㄷ`,`${v} 던지는 투수가 우리 팀에 있다니`,'전광판 구속 찍힐 때마다 관중석 술렁임');if(v>=162)r.pos.push(`${Math.round(v)}km/h면 메이저에서도 탑급 구속인데`)}
+  if(isP()&&S.stage==='pro'){const v=+kmh(E('velo'));if(v>=157.5&&good)r.pos.push(`${v}km/h 실화냐 ㄷㄷ`,`${v} 던지는 투수가 우리 팀에 있다니`,'전광판 구속 찍힐 때마다 관중석 술렁임');if(v>=162)r.pos.push(`${Math.round(v)}km/h면 메이저에서도 탑급 구속인데`)}
   return r}}
-{const _cl2=ctxLines;ctxLines=function(tone,x){const L=_cl2(tone,x);if(x&&x.gHR&&!isP()){const v=S.pro&&S.pro.league==='MLB'?150+Math.round(Math.pow(R(),1.6)*11):145+Math.round(Math.pow(R(),1.6)*10);L.push(`${v}km/h를 받아치네 ㄷㄷ`,`${v}짜리 직구를 넘겨버림`)}return L}}
+{const _cl2=ctxLines;ctxLines=function(tone,x){const L=_cl2(tone,x);if(x&&x.gHR&&!isP()&&R()<.4){const v=158+Math.round(Math.pow(R(),1.8)*(S.pro&&S.pro.league==='MLB'?5:3));L.push(`${v}km/h를 받아치네 ㄷㄷ`,`${v}짜리 직구를 넘겨버림`)}return L}}
 {const _tl3=trainLevels;trainLevels=function(rep){_tl3(rep);const gm=Object.values(rep.games||{}).find(x=>x.m&&(x.m.PA||x.m.outs));
   if(rep.slumpD>=.5&&gm&&perfScore(gm)<=-.5)rep.lines.push(gm.kind==='B'?`이번 기간 부진 (타율 ${avg(gm.m)} · OPS ${ops(gm.m)}) — 감독 신뢰 −${rep.slumpD.toFixed(1)}`:`이번 기간 난조 (ERA ${era(gm.m)}) — 감독 신뢰 −${rep.slumpD.toFixed(1)}`);
   if(rep.rspD>=.5)rep.lines.push(`찬스마다 침묵 (득점권 ${rep.rspPA}타석 ${rep.rspH}안타) — 감독 신뢰 −${rep.rspD.toFixed(1)}`)}}
@@ -4791,7 +4791,7 @@ function traitLines(tone,x){const P=isP(),gn=giv(ME.name),pos=['hype','psHero','
     fld:()=>[`수비 들어가면 불안함 공 오면 기도부터 함`,`${O()}전 그 실책 아직도 기억남`],
     arm:()=>[`어깨가 약해서 주자가 막 뜀`,`송구가 원바운드로 굴러가는 거 실화냐 ㅋㅋ`]};
   const ST={pcl:()=>[`볼배합이 진짜 영리함 ${O()} 완전히 속았다`,`직구 기다리는 타이밍에 체인지업 ㅋㅋ ${O()} 헛스윙하는 거 봤냐`],
-    ctl:()=>[`포수 미트에 레이저 꽂음`,`볼넷 하나 안 주는 칼제구`],velo:()=>[`${v}km/h 꽂히면 ${O()}도 배트가 늦음`,`전광판 ${v} 찍힐 때 관중석 술렁임`],
+    ctl:()=>[`포수 미트에 레이저 꽂음`,`볼넷 하나 안 주는 칼제구`],velo:()=>v>=157.5?[`${v}km/h 꽂히면 ${O()}도 배트가 늦음`,`전광판 ${v} 찍힐 때 관중석 술렁임`]:v>=152?[`직구 힘으로 밀어붙이는 스타일 ${O()}도 밀리더라`,`구속보다 볼끝이 좋아서 체감은 더 빠를 듯`]:[`구속은 평범한데 직구 볼끝이 살아 있음`],
     stf:()=>[`구위가 묵직해서 맞아도 안 뻗음`,`${jo(O(),'이','가')} 정타 맞혔는데 내야 뜬공 ㅋㅋ 공 끝 미쳤다`],sta:()=>[`100구 넘어도 구속 그대로 체력 괴물`],
     con:()=>[`${O()} 공도 다 커트해냄 컨택 미쳤음`,`어떻게 던져도 맞혀냄 ㅋㅋ`],pow:()=>[`맞으면 그냥 넘어감 파워가 다름`,`${O()} 상대로 친 타구 비거리 봤냐`],
     eye:()=>[`볼넷 골라내는 눈이 미쳤음`,`유인구에 꿈쩍도 안 함 투수가 질려함`],spd:()=>[`1루 땅볼도 세이프 만들어냄`,`${O()} 포수 송구 전에 이미 2루 도착`],
@@ -5100,8 +5100,8 @@ if(typeof document!=='undefined')document.addEventListener('click',ev=>{const b=
 function pHypeLines(tone,x){if(!isP()||S.stage!=='pro')return[];const nm=ME.name,gn=giv(nm),v=Math.round(+kmh(E('velo'))),{p}=perfStat(),e=p.outs>=30?p.R*27/p.outs:9,o=[],
   good=['hype','psHero','feat','award','record','psWin','ring','ws','gold','mlbBig'].includes(tone)||(x&&x.ps&&x.win&&(x.ra||0)===0&&(x.ipO||0)>=3),cl=S.role==='CL'||(x&&x.role==='CL')||ME.pos==='RP'&&p.SV>=10,a=age();
   if(!good)return(a>=37&&['bad','psLose','psGoat'].includes(tone))?[`어렸을 때 내 야구의 전부였던 ${jo(nm,'을','를')} 욕할 수가 없다`,`요즘 페이스 떨어졌어도 ${gn} 전성기 돌직구는 영원히 기억함`]:[];
-  if(v>=153)o.push(`전광판 ${v} 찍힐 땐 전율이다 ㄹㅇ`,'대포소리 ㄷㄷ 미트 터지는 소리 중계로 다 들림','포수 손 줘언나 아프겠다..','이 공은 진짜 돌이다 ㅋㅋㅋㅋ','진짜 공이 사라졌다가 다시 나옴',`타자들 직구 하나 노리고 휘두르는데 그 직구가 안 맞으니 미칠 노릇일 듯`,`${gn} 직구에 타자들 추풍낙엽처럼 쓰러지네`,`이 공 미쳤다 ㄹㅇ`);
-  if(v>=150&&E('ctl')>=64)o.push('돌직구에 가려진 미친 제구력',`구속도 구속인데 볼끝이랑 디셉션이 미쳤음 체감은 160임`);
+  if(v>=157.5)o.push(`전광판 ${v} 찍힐 땐 전율이다 ㄹㅇ`,'대포소리 ㄷㄷ 미트 터지는 소리 중계로 다 들림','포수 손 줘언나 아프겠다..','이 공은 진짜 돌이다 ㅋㅋㅋㅋ','진짜 공이 사라졌다가 다시 나옴',`타자들 직구 하나 노리고 휘두르는데 그 직구가 안 맞으니 미칠 노릇일 듯`,`${gn} 직구에 타자들 추풍낙엽처럼 쓰러지네`,`이 공 미쳤다 ㄹㅇ`);
+  if(v>=154&&E('ctl')>=64)o.push('돌직구에 가려진 미친 제구력',`구속도 구속인데 볼끝이랑 디셉션이 미쳤음 체감은 160임`);
   if(cl&&(p.SV>=15||(x&&x.sv))&&e<=2.8)o.push('돌부처 강림했네','수호신 강림했네 ㄷㄷ',`상대 팀 입장에선 ${gn} 나오면 걍 질 것 같음 진짜 치트키급`,`9회에 ${gn} 올라오면 경기 끝 ㅋㅋ 채널 돌려도 됨`,`${gn}한테 삼진 당한 타자들 나중에 다 코치·해설 하고 있을 듯`,`${gn} 등장곡 나오면 상대 벤치 표정부터 굳음`);
   if(cl&&a>=36&&p.SV>=10)o.push(`${gn}한테 추풍낙엽처럼 당한 타자들은 지금 코치·해설 하는데 ${gn}은 아직도 세이브 올리고 있음`);
   if(!cl&&ME.pos==='SP'&&p.outs>=90&&e<=2.9)o.push(`${gn} 선발 나오는 날은 걍 1승 깔고 감`,`상대 타선 ${gn} 만나는 날 단체로 휴가 쓰고 싶을 듯`);
@@ -12553,7 +12553,7 @@ function cm684(a,x,tone){if(!a||!Array.isArray(a.cm)||!x||!ME||!S||!S.pro)return
       const t=`최강${tn} 히어로 누구 ${nm} 그는 누구인가 ${sc?sc+' 출신으로 ':''}${deb?deb+'년 1군에 데뷔해 ':''}통산 ${t0.b.HR||0}홈런 ${t0.b.H||0}안타를 쌓아 온 우리 팀의 자랑 ${gn} 오늘도 담장을 넘겼다 ${gn} 슨수는 앞으로도 하이볼만 참아 주시길 바랍니다 행보카세요`;
       if(!seenHas(t)){seenAdd(t);put(t,[rr(pick(['복붙 장인 ㅋㅋㅋ','이거 응원가로 만들자','어디서 이런 걸 써 오냐 ㅋㅋ']))],ri(2000,8000));n++}}catch(e){}}
   /* ④ 파이어볼러 불펜 */
-  if(P&&ps&&game&&(x.ra||0)===0&&(x.ipO||0)>=3&&(x.ipO||0)<=9&&n<2&&R()<.4){const v=+kmh(E('velo'));if(v>=155){const vv=Math.round(v),L=[`${vv}km/h 꽂는 거 보고 소주 한잔 하고 싶어졌다`,`불펜에서 ${vv} 던지는 게 말이 되냐 공포 그 자체`,`${gn}의 ${vv} 직구 시즌 끝나면 벌써 그리울 듯`];if(ME.pos==='SP')L.push(`선발 투수가 불펜으로 나와서 ${vv} 던지면 반칙이지`);if(put(take(L),[rr(pick(['전광판 보고 눈 비볐다','타자들 배트가 안 따라감','이게 진짜 강속구지']))]))n++}}
+  if(P&&ps&&game&&(x.ra||0)===0&&(x.ipO||0)>=3&&(x.ipO||0)<=9&&n<2&&R()<.4){const v=+kmh(E('velo'));if(v>=157.5){const vv=Math.round(v),L=[`${vv}km/h 꽂는 거 보고 소주 한잔 하고 싶어졌다`,`불펜에서 ${vv} 던지는 게 말이 되냐 공포 그 자체`,`${gn}의 ${vv} 직구 시즌 끝나면 벌써 그리울 듯`];if(ME.pos==='SP')L.push(`선발 투수가 불펜으로 나와서 ${vv} 던지면 반칙이지`);if(put(take(L),[rr(pick(['전광판 보고 눈 비볐다','타자들 배트가 안 따라감','이게 진짜 강속구지']))]))n++}}
   /* ⑤ 우승 신문 */
   if(ring&&lg==='KBO'&&S._news684!==S.y&&R()<(typeof S.drought==='number'&&S.drought>=5?.55:.3)){S._news684=S.y;const t=take(['우승 신문 겨우 구했다 ㅅㅂ ㅋㅋ','편의점 세 군데 돌아서 우승 신문 샀다','우승 특별판 1분 만에 매진이래 ㅋㅋㅋ','벌써 우승 신문 당근 가격 미쳤다 ㅋㅋ','우승 신문은 코팅해서 평생 소장한다']);put(t,[rr(pick(['나도 사러 간다','리셀까지 하냐 ㅋㅋ','가보로 남긴다']))],ri(2000,8000))}
   /* ⑥ 타이거스 코시 불패 */
@@ -12736,7 +12736,7 @@ function cm686(a,x,tone){if(!a||!Array.isArray(a.cm)||!ME||!S||!S.pro)return;x=x
     if(prof&&first&&S._ab686p!==S.y){S._ab686p=S.y;const L=[],o=ovrE(),lv=LV.MLB,yg=age();
       if(o>=lv+4)L.push(['한국 야구의 이레귤러다 가서 당당하게 보여 줘라',['이 정도 툴이면 메이저에서도 주전감']]);else if(o<lv-2)L.push(['솔직히 메이저에서 통할지는 반반이다',[rr('로스터 들면 다행이라는 사람도 있던데','그런 소리 듣던 선수들이 오히려 더 잘하더라')]]);
       if(!P&&['SS','2B','3B'].includes(ME.pos)){const d=(DV(E('fld'))+DV(E('rng')))/2;if(d<lv-2)L.push([`메이저는 수비 안 되면 바로 벤치다 ${POS[ME.pos]} 수비가 제일 걱정`,[rr('멀티 포지션 연습 빡세게 해야 됨')]]);else if(d>=lv+3)L.push([`${POS[ME.pos]} 수비는 메이저 가서도 바로 통한다 이게 제일 큰 무기`,[rr('글러브 하나로 먹고 살 수 있는 수준')]])}
-      if(P){const v=Math.round(+kmh(E('velo')));if(v<=145)L.push([`구속 ${v}로 메이저 타자들 상대 되겠냐는 사람 많은데 제구로 먹고 사는 투수다`,[rr('메이저는 실투 하나에 넘어간다','그래서 더 보고 싶다 제구로 이기는 거')]]);else if(v>=155)L.push([`${v} 던지는 투수면 메이저 가서도 무기다`,[rr('구속은 거기서도 상위권임')]])}
+      if(P){const v=Math.round(+kmh(E('velo')));if(v<=145)L.push([`구속 ${v}로 메이저 타자들 상대 되겠냐는 사람 많은데 제구로 먹고 사는 투수다`,[rr('메이저는 실투 하나에 넘어간다','그래서 더 보고 싶다 제구로 이기는 거')]]);else if(v>=156)L.push([`${v} 던지는 투수면 메이저 가서도 무기다`,[rr('구속은 거기서도 상위권임')]])}
       if(yg<=26)L.push([`${koAge(yg)}에 넘어가는 게 맞다 전성기를 미국에서 보내라`,[]]);else if(yg>=31)L.push(['나이가 좀 걸리긴 한다 계약 기간 내내 버텨야 할 텐데',[rr('몸 관리만 하면 된다')]]);
       if(kt)L.push([`${kt} 팬들은 많이 섭섭하겠다 그래도 꿈은 응원해야지`,[rr('내년 라인업 보니까 벌써 허전하다')]],[`나중에 돌아올 땐 무조건 ${kt}로 와라`,[rr('친정 복귀 각 벌써 재고 있다 ㅋㅋ')]]);
       L.push([`${gn} 영어 공부는 하고 가냐 ㅋㅋ`,[rr('통역 있는데 무슨 ㅋㅋ','그래도 더그아웃에선 영어 써야지')]]);
@@ -12814,7 +12814,8 @@ function fact688(a,x,tone){try{if(!a||!Array.isArray(a.cm)||!ME||!S||S.stage!=='
     if(P&&/이닝이터|불펜 쉬는 날|투구 ?수 관리도 완벽|로테이션 (지키|돈다)/.test(t)&&rp&&!/불펜이냐|선발 전환|선발로 (써|가|돌려)|선발 욕심/.test(t))return true;
     if(P&&!game&&(m=>m&&+m[1]<100)(t.match(/(\d+)K 실화/)))return true;
     if(P&&/제구 칼이다|칼제구|제구 (장인|마스터|예술)/.test(t)&&ctlV<58&&!(game&&(x.pBB||0)===0&&(x.ipO||0)>=12))return true;
-    if(P&&/구속 찍히는 거 보고|구속 (미쳤|괴물)|파이어볼러|광속구|불같은 강속구/.test(t)&&velo&&velo<148)return true;
+    if(P&&/구속 찍히는 거 보고|구속 (미쳤|괴물)|파이어볼러|광속구|불같은 강속구/.test(t)&&velo&&velo<155)return true;
+    if(P&&/km\/h 실화냐|km\/h 꽂는 거 보고|전광판 \d+ 찍힐 땐 전율|공이 사라졌다가|대포소리/.test(t)&&velo&&velo<157.5)return true;
     if(P&&/사이영급|사이영 (각|후보)/.test(t)&&!/\?$/.test(t)&&(sERA==null||sERA>2.9))return true;
     if(P&&/ERA \d\.\d+면 사이영급/.test(t)&&(sERA==null||sERA>2.9))return true;
     if(/병역 특례 축하|특례 축하|군면제 ㅊㅋ|군 면제 축하/.test(t)&&!(milS==='none'||(milS==='exempt'&&S.mil.exY===S.y)))return true;
@@ -12903,7 +12904,7 @@ const CMSTD={
   B:{eliteHR:2,eliteH:4,goodH:2,badPA:4},
   seasonSP:[2.5,3.3,4.5],seasonRP:[2.0,3.0,4.5],seasonOPS:[.95,.83,.70,.68],halfERA:[2.5,3.3,4.5],halfOPS:[.95,.80,.68],
   minSP:150,minRP:60,minPA:150,
-  type:{power:62,contact:62,speed:70,eye:62,glove:62,weakGlove:50,fire:152,finesse:146,control:65,wild:50},
+  type:{power:62,contact:62,speed:70,eye:62,glove:62,weakGlove:50,fire:155,fast:158,finesse:146,control:65,wild:50},
   age:{young:24,prime:32,vet:35,old:36},
   margin:{one:1,close:2,blow:5,slug:13,duel:3}};
 function stdRP(){try{if(!isP())return false;if(ME.pos!=='SP')return true;const {p}=yearTot(S.y,[S.pro.league]);return p.G>=8&&(p.GS||0)<p.G/2}catch(e){return false}}
@@ -12986,7 +12987,7 @@ function dr695(a){try{const d=S.pro&&S.pro.draft;if(!d||!ME)return;const C=S._dr
     else if(C.rv.rd>rd&&rd<=3)X.push([`고교 라이벌 ${rn2}보다 먼저 불렸네`,['프로 가면 또 모르는 거임','일단 평가는 이쪽이 앞섰다']])}
   /* ③ 포지션·유형 */
   const Y=[];try{const km=P?Math.floor(+kmh(E('velo'))):0;
-    if(P&&km>=150)Y.push([`${sn} 때 이미 ${km}km 던졌으면 말 다 했지`,['프로 와서 몸 만들면 더 나온다','구속은 타고나는 거라 이게 제일 크다']]);
+    if(P&&km>=(U?153:151))Y.push([`${sn} 때 이미 ${km}km 던졌으면 말 다 했지`,['프로 와서 몸 만들면 더 나온다','구속은 타고나는 거라 이게 제일 크다']]);
     if(P&&String(ME.hand||'').startsWith('좌'))Y.push(['좌완은 일단 뽑고 보는 게 맞다',['좌완 귀한 거 다들 알지']]);
     if(P&&km&&km<144&&DV(E('ctl'))>=62)Y.push(['구속은 평범해도 제구 되는 투수가 오래 간다',['몸 만들면 구속도 더 붙는다']]);
     if(P&&ME.pos==='RP')Y.push(['불펜이면 1군 맛은 생각보다 빨리 볼 수도 있다',['짧게 던지는 거부터 시작하면 된다']]);
