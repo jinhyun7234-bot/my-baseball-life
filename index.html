@@ -1406,7 +1406,7 @@ function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp
   if(R()<hit){m.H++;gl.H++;if(risp&&S.rsp)S.rsp.h++;
     const hr=(hitNS/hit)*Math.pow(.325/hitNS,.45)*1.04*cl(HRB0+(dvp(hrStat())>0?dvp(hrStat())*HRS1:dvp(hrStat())*HRS2)+Math.max(0,hrStat()-HRT)*HRS3,.012,.5)*(sk('power')?1.15:1)*hrPw()*(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?pfOf(S.pro.team):1)*(1-.07*sg((DV(eff('spd'))-70)/2.5)*sg((65-(DV(eff('con'))+DV(eff('pow')))/2)/2.5)),tr=cl(.015+dv(sp)*.0008,.002,.06),db=cl(.19+dvp(eff('pow'))*.0015+dv(sp)*.001,.06,.34),q=R();
     const n=on.filter(Boolean).length;
-    if(q<hr){m.HR++;gl.HR++;m.R++;const x=1+n;m.RBI+=x;gl.RBI+=x;if(n===3)gl.GS=1;if(sp>=60&&R()<(sp-57)*.0012)gl.iphr=1;return}
+    if(q<hr){m.HR++;gl.HR++;m.R++;const x=1+n;m.RBI+=x;gl.RBI+=x;if(n===3)gl.GS=1;if(sp>=60&&R()<(sp-57)*.0003)gl.iphr=1;return}
     if(q<hr+tr){m.T++;gl.T++;m.RBI+=n;gl.RBI+=n;reach(3);return}
     if(q<hr+tr+db){m.D++;gl.D++;const x=(on[2]?1:0)+(on[1]?1:0)+(on[0]&&R()<.4?1:0);m.RBI+=x;gl.RBI+=x;reach(2);return}
     gl.S1++;const x=(on[2]?1:0)+(on[1]&&R()<.6?1:0);m.RBI+=x;gl.RBI+=x;reach(1);return}
