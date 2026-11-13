@@ -1982,7 +1982,7 @@ function draftEvent(){
   const rv=S.rival.o+S.rival.pot*.55,rr=Math.max(1,Math.round(1000*(1-phi((rv-71)/8))+rn(0,6)));
   if(S.rival.team==null){if(rr<=110){S.rival.team=order[(rr-1)%10];news(`라이벌 ${S.rival.name}, ${Math.ceil(rr/10)}라운드 ${TEAMS[S.rival.team].nick} 지명.`)}else S.rival.team=-1}
   const ch=[],intro=`${yr+1} KBO 신인 드래프트. 스카우트 종합 평가는 전국 ${rank}위 수준으로 알려졌다.`;
-  if(rank<=110){const t=order[(rank-1)%10],rd=Math.ceil(rank/10),bonus=rank<=10?Math.round(35000-rank*1900):rank<=20?9000:rank<=30?7000:rank<=50?5000:rank<=80?4000:3000;
+  if(rank<=110){const t=order[(rank-1)%10],rd=Math.ceil(rank/10),bonus=Math.round((3000+28270*Math.exp(-(rank-1)/8)+3730*Math.exp(-(rank-1)/60))/100)*100;
     if(rank<=4&&o>=46){const mb=Math.round((5-rank)*25000+40000);ch.push({t:'MLB 구단의 마이너 계약 제안을 받아들인다',s:`계약금 ${money(mb)} · 루키리그부터 · 해외 직행`,act:'mlbDirect',arg:{bonus:mb}})}
     ch.push({t:`${TEAMS[t].city} ${TEAMS[t].nick} 입단 계약`,s:`${rd}라운드 전체 ${rank}순위 · 계약금 ${money(bonus)}`,act:'draftSign',arg:{team:t,rd,pick:rank,bonus}});
     if(lv==='hs')ch.push({t:'지명을 거부하고 대학에 진학한다',s:'4년 뒤 다시 드래프트에 도전',act:'univ'});
@@ -2563,7 +2563,7 @@ function seenExact(t){S.cmSeen=S.cmSeen||{};return!!(S.cmSeen[cmKey(t)]||(typeof
 function seenHas(t){return!!(S.cmSeen&&S.cmSeen[cmKey(t)])}
 function seenAdd(t){S.cmSeen=S.cmSeen||{};S.cmSeen[cmKey(t)]=1}
 function curLvL(){return LV[lvOf(S.role&&!['off','pre','inj','army'].includes(S.role)?S.role:(S.lvl1===2?'fB':'start'))]||45}
-function situPools(){const pos=[],neg=[],L=curLvL(),{b,p}=yearTot(S.y,[...PRO,'fut','hs','univ']),nz=ME.name.slice(1),hi=k=>E(k)>=L+9,lo=k=>E(k)<=L-5;
+function situPools(tone,x){const pos=[],neg=[],L=curLvL(),{b,p}=yearTot(S.y,[...PRO,'fut','hs','univ']),nz=ME.name.slice(1),hi=k=>E(k)>=L+9,lo=k=>E(k)<=L-5;
   const sn=S.rSnap||{},up=k=>(raw(k)-(sn[k]??raw(k)));
   if(!isP()&&b.PA>=40){const of=['LF','CF','RF'].includes(ME.pos),avgv=b.AB?b.H/b.AB:0,kr=b.K/b.PA,bbr=b.BB/b.PA;
     if(hi('arm'))pos.push('보살 레전드 ㄷㄷ','어깨 미쳤다 완전 레이저빔',`${nz} 앞에서 한 베이스 더 가는 주자 없음 ㅋㅋ`,'송구 보고 소름 돋음 보살 머신',of?'외야에서 노바운드로 홈까지 꽂아버림':'깊은 타구 잡고 노스텝 송구 실화?',of?'우익수 앞 안타에 1루 주자 3루 못 감 ㅋㅋ 어깨 무서워서':'1루까지 송구가 빨랫줄이네');
@@ -2598,7 +2598,7 @@ function situPools(){const pos=[],neg=[],L=curLvL(),{b,p}=yearTot(S.y,[...PRO,'f
       if(pk.b&&kb.HR>=12)pos.push(`잠실에서 ${kb.HR}홈런이면 다른 구장 가면 30개 넘음`,'잠실 쓰면서 이 정도면 찐 거포');if(pk.b)neg.push('잠실 아니었으면 홈런 될 타구가 2루타 됐네 ㅠ','잠실 외야가 홈런 다 먹음');
       if(t===8&&kb.HR>=10)pos.push('사직 담장 높은데 이 정도면 대단');if(t===5)neg.push('대전 몬스터월에 막힌 타구 몇 개냐 ㅋㅋ')}
     if(isP()&&kp.outs>=90){const e=kp.R*27/kp.outs;if(pk.b&&e<3.5)neg.push('잠실 구장빨 거품 아님?','잠실 떠나면 ERA 1점 오른다 ㅋㅋ','넓은 구장 버프 받는 중');if(pk.s&&e<3.8)pos.push(`${pk.n}에서 이 ERA면 진짜 찐이다`,'탁구장에서 이렇게 막는 건 실력임');if(pk.s&&e>=4.8)neg.push(`${pk.n}에서 던지면 어쩔 수 없음 ㅋㅋ 다 넘어감`)}
-    if(t===2&&R()<.3)pos.push('고척돔이라 우천 취소 없어서 기록 쌓기 좋겠다')}
+    if(t===2&&R()<.3&&!(x&&(x.ps||x.intl||x.wbc))&&['mix','hype','feat','record','salary'].includes(String(tone)))pos.push('고척돔이라 우천 취소 없어서 기록 쌓기 좋겠다')}
   return{pos,neg}}
 /* toolPools: 실제 기록과 맞을 때만 */
 {const _tp=toolPools;toolPools=function(){const {b,p}=yearTot(S.y,[...PRO,'fut','hs','univ']);if(!isP()&&b.PA<60)return{pos:[],neg:[]};if(isP()&&p.outs<60)return{pos:[],neg:[]};const r=_tp(),kr=b.PA?b.K/b.PA:0;
@@ -2616,7 +2616,7 @@ function comments(tone,x){const c={...cmCtx(x),nz:ME.name.slice(1)},pit=isP(),ou
   const gw=proYears()>=8&&S.pro.league==='KBO'?(good?GWAN.up:badT&&!S.hist.rings?GWAN.down:null):null;
   const flairT=()=>R()<.55&&S.pro&&S.pro.league==='KBO'?TEAMS[S.pro.team].nick:R()<.7?pick(TEAMS).nick:null;
   const richSal=S.pro&&S.pro.salary>=50000,ok=t=>richSal||!/\{sal\}|연봉|몸값/.test(t);
-  const prof=profilePools(),situ=situPools(),negT=['bad','psGoat','psLose','faBig','injury'].includes(tone),posT=['hype','psHero','feat','award','faFair','salary','mix','record','psWin','gold','ring','debut','return','legend','mlbBig','ws'].includes(tone),celeb=['ws','ring','gold','award','record','feat','psHero','psWin','debut','return','legend','mlbBig'].includes(tone);
+  const prof=profilePools(),situ=situPools(tone,x),negT=['bad','psGoat','psLose','faBig','injury'].includes(tone),posT=['hype','psHero','feat','award','faFair','salary','mix','record','psWin','gold','ring','debut','return','legend','mlbBig','ws'].includes(tone),celeb=['ws','ring','gold','award','record','feat','psHero','psWin','debut','return','legend','mlbBig'].includes(tone);
   const PW=/장타력|장타가 쩐|장타 미쳤|홈런 페이스|넘어감|넘겨버|넘어가|힘이 좋|힘 미쳤|파워 미쳤|거포|대포|라이언킹|국민타자|담장|홈런 치는|타구 속도|50홈런|56호|빅보이|조선의 4번|홈런공장|홈런왕/,XB=/2루타|장타/;
   const sb=yearTot(S.y,[...PRO,'fut','hs','univ']).b,seasonPow=isP()||sb.HR>=Math.max(4,sb.PA/45);
   const powOK=t=>{if(isP())return true;if(x&&x.gHR!=null){if(!x.gHR&&PW.test(t))return false;if(!x.gXB&&XB.test(t))return false;return true}return seasonPow||!PW.test(t)};
@@ -3122,7 +3122,7 @@ function offerTbl(q){return'';const fa=q.ch.filter(c=>c.act==='fa'&&c.arg&&c.arg
   if(!isP()&&g==='elite'&&(proYears()>=4||mlbW()>=3)&&(careerTot(PRO).w>=20||mlbW()>=5))r.pos.push(`${f}추강대엽 아니냐 이제`,`이추강대엽 순위 다시 매겨야 함 ${f}추강대엽 가자`,`${f}추강대엽 인정하는 사람?`);
   if(isP()&&S.stage==='pro'){const v=+kmh(E('velo'));if(v>=155&&good)r.pos.push(`${v}km/h 실화냐 ㄷㄷ`,`${v} 던지는 투수가 우리 팀에 있다니`,'전광판 구속 찍힐 때마다 관중석 술렁임');if(v>=162)r.pos.push(`${Math.round(v)}km/h면 메이저에서도 탑급 구속인데`)}
   return r}}
-{const _cl2=ctxLines;ctxLines=function(tone,x){const L=_cl2(tone,x);if(x&&x.gHR&&!isP()){const v=S.pro&&S.pro.league==='MLB'?ri(156,168):ri(148,157);L.push(`${v}km/h를 받아치네 ㄷㄷ`,`${v}짜리 직구를 넘겨버림`)}return L}}
+{const _cl2=ctxLines;ctxLines=function(tone,x){const L=_cl2(tone,x);if(x&&x.gHR&&!isP()){const v=S.pro&&S.pro.league==='MLB'?150+Math.round(Math.pow(R(),1.6)*11):145+Math.round(Math.pow(R(),1.6)*10);L.push(`${v}km/h를 받아치네 ㄷㄷ`,`${v}짜리 직구를 넘겨버림`)}return L}}
 {const _tl3=trainLevels;trainLevels=function(rep){_tl3(rep);const gm=Object.values(rep.games||{}).find(x=>x.m&&(x.m.PA||x.m.outs));
   if(rep.slumpD>=.5&&gm&&perfScore(gm)<=-.5)rep.lines.push(gm.kind==='B'?`이번 기간 부진 (타율 ${avg(gm.m)} · OPS ${ops(gm.m)}) — 감독 신뢰 −${rep.slumpD.toFixed(1)}`:`이번 기간 난조 (ERA ${era(gm.m)}) — 감독 신뢰 −${rep.slumpD.toFixed(1)}`);
   if(rep.rspD>=.5)rep.lines.push(`찬스마다 침묵 (득점권 ${rep.rspPA}타석 ${rep.rspH}안타) — 감독 신뢰 −${rep.rspD.toFixed(1)}`)}}
@@ -3666,7 +3666,7 @@ function cardData(){const pit=isP(),t=careerTot(PRO),b=t.b,p=t.p,ret=S.stage==='
   const dbY=(()=>{const ys=S.rows.filter(r=>PRO.includes(r.lv)).map(r=>r.y);return ys.length?Math.min(...ys):9999})(),AMR=/고교|대학|전국|청룡|봉황|황금사자|금사자|대통령배|협회장|주니어|U-?18|대회 최우수선수/,AWc=(S.awards||[]).filter(a=>!(a.y<dbY&&!/WBC|올림픽|아시안|프리미어/.test(a.n))&&!AMR.test(a.n));
   const ORD=['ws','ring','mvp','medal','glove','crown','rookie','trophy'];
   const tro=AWc.map(a=>({k:awardKind(a.n),n:a.n,y:a.y})).sort((a,b)=>ORD.indexOf(a.k)-ORD.indexOf(b.k)||a.y-b.y);
-  const pers=AWc.filter(a=>!isTeam(a.n)),grp={};pers.forEach(a=>{let k=a.n.replace(/^\d{4} /,'').replace(/\s*\(.*\)/,'').trim();if(/정규시즌 MVP/.test(k))k='MVP';(grp[k]=grp[k]||0,grp[k]++)});
+  const pers=AWc.filter(a=>!isTeam(a.n)),grp={};pers.forEach(a=>{let k=a.n.replace(/^\d{4} /,'').replace(/\s*\(.*\)/,'').trim();if(/^(정규시즌|아메리칸리그|내셔널리그) MVP$/.test(k))k='MVP';else k=k.replace(/^(아메리칸리그|내셔널리그) /,'');(grp[k]=grp[k]||0,grp[k]++)});
   const pills=Object.entries(grp).sort((a,b)=>(b[0]==='MVP')-(a[0]==='MVP')||b[1]-a[1]).slice(0,3).map(([k,v])=>`${k} ${v}`);
   if(pills.length<3&&S.hist.allstar)pills.push(`올스타 ${S.hist.allstar}`);if(pills.length<3&&S.hist.nat)pills.push(`국가대표 ${S.hist.nat}`);
   const mvp=AWc.filter(a=>/정규시즌 MVP|리그 MVP/.test(a.n)).length;
@@ -6390,7 +6390,7 @@ function fillN(s,gn){return String(s).replace(/\{n\}(이|가)(?=[\s,.!?ㅋㅠ]|$
     '이 수비 보려고 직관 간다','리플레이 10번 돌려봄','이게 왜 잡히냐고 ㅋㅋㅋ 물리법칙 무시',`${gn}한테 공 가면 그냥 아웃이네`,'투수 모자 벗고 인사하는 거 봐 ㅋㅋ',
     '수비범위 어처구니가 없네ㅋㅋㅋㅋ',`잡고 팬들 보면서 세레머니하는 거까지 완벽하다`,`평소엔 그냥 잡고 공 던지고 들어오는데 저렇게 세레머니 하는 거 보고 소름 돋았다… ${gn}는 뭐든 팬들을 끓어오르게 하는 그런 게 있음`,
     `현장 직관했는데 수비 위치 반대쪽으로 치우쳐 있었는데도 미친 스타트 끊더니 설마설마…? 하고 있다가 다이빙으로 잡고 나서 어퍼컷 세레머니 ㄷㄷ`,'이 수비 하나가 경기 승패를 갈랐다고 봄',`정말 든든한 ${pn} ${gn} 그저 작품`];
-  if(OF)L.push(`${gn} 펜스 앞에서 날아다님`,'홈런 하나 지워버렸다','광고판 앞에서 슈퍼맨 됨','슬라이딩 각도 미쳤다 교과서에 실어라','방망이 맞는 순간 안타인 줄 알았는데','펜스에 부딪히면서 끝까지 공 안 놓는 거 봐라','야 이거 못 잡으면 2타점이었다 ㄷㄷ',`${gn} 외야 수비는 이미 리그 원탑`,'다이빙하는데 모자 날아가는 거 간지 미쳤다',
+  if(OF)L.push(`${gn} 펜스 앞에서 날아다님`,'이거 빠졌으면 무조건 장타였다','광고판 앞에서 슈퍼맨 됨','슬라이딩 각도 미쳤다 교과서에 실어라','방망이 맞는 순간 안타인 줄 알았는데','펜스에 부딪히면서 끝까지 공 안 놓는 거 봐라','타구 판단 보소 처음부터 거기 서 있던 것 같음',`${gn} 외야 수비는 이미 리그 원탑`,'다이빙하는데 모자 날아가는 거 간지 미쳤다',
     `${pick(['좌타자','우타자'])}가 저 위치로 치면 공이 휘어져 나가서 더 잡기 힘든데 ${gn} 다이빙캐치는 진짜 예술임`);
   else L.push('그걸 걷어내고 1루 송구까지 ㄷㄷ','빠지는 줄 알았는데 몸 날려서 막네','글러브 토스 미쳤다 ㅋㅋㅋ','역모션으로 잡고 노스텝 송구 이게 되냐','타구 바운드 맞추는 거 예술이다','내야 땅볼은 일단 다 잡고 보는 놈',`${gn} 앞으로 가면 안타가 안 됨`);
   if(x.ps&&x.win)L.push('세레머니 하는 거 보고 아 이겼다 싶었다');if((x.ps==='KS'||/월드시리즈/.test(x.title||''))&&x.win&&x.clinch)L.push(`이때 이미 우승을 확신했다는 ${gn}`,'이 수비 나오고 아 우승이다 싶었다…',`우승 확정 짓는 수비가 ${gn}라니 각본이냐`);
@@ -6481,7 +6481,7 @@ function batEval(){if(isP()||!S.pro)return null;const {b}=yearTot(evY(),[S.pro.l
       if(a.t<=2&&['1B','DH','LF','RF'].includes(pos))L.push(`${POS[pos]||'지명타자'}가 OPS ${o}면 솔직히 아쉬움 공격으로 먹고사는 자리인데`);
       if(a.t<=2&&['C','SS'].includes(pos)&&a.o>=.75)L.push(`${POS[pos]}라 이 정도 치면 충분함 수비가 메인이지`);
       const toneOk686=a.t>=3?!['bad','psLose','psGoat','injury'].includes(String(tone)):['mix','bad','salary'].includes(String(tone));const C=toneOk686?L.filter(t=>!seenHas(t)):[];if(C.length){const t=pick(C);seenAdd(t);add.push(mkC(t,[pick(a.t>=3?['ㄹㅇ 인정','이 페이스 유지만 하자','올해 골글 가자']:['내년엔 더 잘하겠지','기대치가 높아서 그럼','그래도 꾸준히 나오는 게 어디냐'])],{up:ri(300,2400)}))}}
-    const d=evY()===S.y?defEval():null;if(d&&((d.d<=-.8||d.c<=-8)?['mix','bad','salary'].includes(String(tone)):!['ring','ws','injury','retire'].includes(String(tone)))&&cmX('dwev'+S.y)){const f=v=>(Math.abs(v)<.05?'0.0':(v>0?'+':'')+v.toFixed(1)),L=d.d>=.8?[`${gn} 수비로만 dWAR ${f(d.d)} 수비 장인`,`방망이 안 맞아도 수비로 밥값 하는 ${gn}`,`${POS[ME.pos]} 수비는 ${gn}가 리그 원탑`]:d.d<=-.8&&(DV(E('fld'))+DV(E('rng')))/2>=62?[`dWAR ${f(d.d)}는 ${POS[ME.pos]||'포지션'} 보정 탓이 크다 수비 자체는 준수함`,`${gn} 수비 못하는 거 아님 포지션 보정 때문에 dWAR가 깎인 거지`]:d.d<=-.8?[`dWAR ${f(d.d)} 실화냐 수비 좀…`,...((()=>{try{const {b}=yearTot(S.y,[S.pro.league]);return b.PA>=200&&opsN(b)>=.8}catch(e){return false}})()?[`${gn} 방망이는 좋은데 수비가 다 까먹음`]:[]),...(S.awards.some(a=>a.y===S.y&&/골든글러브|골드글러브/.test(a.n))||ME.pos==='DH'?[]:[`솔직히 ${gn}는 지명타자 가는 게 맞다`])]:[`${gn} 올해 수비 dWAR ${f(d.d)} 딱 평균 정도`,`수비는 크게 플러스도 마이너스도 아님 무난함`,`${gn} 수비는 그냥 평균은 해줌`];
+    const d=evY()===S.y?defEval():null;if(d&&((d.d<=-.8||d.c<=-8)?['mix','bad','salary'].includes(String(tone)):!['ring','ws','injury','retire'].includes(String(tone)))&&cmX('dwev'+S.y)){const f=v=>(Math.abs(v)<.05?'0.0':(v>0?'+':'')+v.toFixed(1)),L=d.d>=.8?[`${gn} 수비로만 dWAR ${f(d.d)} 수비 장인`,`방망이 안 맞아도 수비로 밥값 하는 ${gn}`,`${POS[ME.pos]} 수비는 ${gn}가 리그 원탑`]:d.d<=-.8&&(DV(E('fld'))+DV(E('rng')))/2>=62?[`dWAR ${f(d.d)}는 ${POS[ME.pos]||'포지션'} 보정 탓이 크다 수비 자체는 준수함`,`${gn} 수비 못하는 거 아님 포지션 보정 때문에 dWAR가 깎인 거지`]:d.d<=-.8?[`dWAR ${f(d.d)} 실화냐 수비 좀…`,...((()=>{try{const {b}=yearTot(S.y,[S.pro.league]);return b.PA>=200&&opsN(b)>=.8}catch(e){return false}})()?[`${gn} 방망이는 좋은데 수비가 다 까먹음`]:[]),...(S.awards.some(a=>a.y===S.y&&/골든글러브|골드글러브/.test(a.n))||ME.pos==='DH'||!(()=>{try{const {b}=yearTot(S.y,[S.pro.league]);return b.PA>=200&&opsN(b)>=.78}catch(e){return false}})()?[]:[`솔직히 ${gn}는 지명타자 가는 게 맞다`])]:[`${gn} 올해 수비 dWAR ${f(d.d)} 딱 평균 정도`,`수비는 크게 플러스도 마이너스도 아님 무난함`,`${gn} 수비는 그냥 평균은 해줌`];
       if(d.c<=-8&&(DV(E('fld'))+DV(E('rng')))/2<62)L.push(`통산 dWAR ${f(d.c)}… 수비는 이제 포기해야 할 듯`,`${gn} 수비 통산 ${f(d.c)}면 그냥 ${ME.pos==='1B'?'지타':'1루나 지타'} 가자`);if(d.c>=8)L.push(`통산 dWAR ${f(d.c)} 수비 하나로 커리어 만든 선수`);
       const C=L.filter(t=>!seenHas(t));if(C.length){const t=pick(C);seenAdd(t);add.push(mkC(t,[pick(d.d>=.8?['수비는 진짜 인정','기록이 증명한다']:d.d<=-.8&&(DV(E('fld'))+DV(E('rng')))/2>=62?['포지션 보정은 어쩔 수 없지','수비 지표가 다는 아니다']:d.d<=-.8?['수비 훈련 좀 시켜라','타격으로 커버 중 ㅋㅋ']:['평균이면 충분하지 뭐','큰 실수만 없으면 됐다','수비는 그냥 무난무난'])],{up:ri(300,2000)}))}}}
   out.splice(Math.min(out.length,1),0,...add)}catch(e){}return out}}
@@ -12942,13 +12942,15 @@ function std691(a,x,tone){try{if(!a||!Array.isArray(a.cm)||!ME||!S||S.stage!=='p
    ② 포수·유격수·2루수·중견수: 포지션 핵심 수비 투툴이 높으면 컨택을 살짝 높게 봐 줌 (곡선, 최대 +6) — 화면 설명 없음 */
 const SCW693={C:.40,SS:.40,CF:.35,'2B':.32,'3B':.22,RF:.15,LF:.12,'1B':.072};
 const SC2T693={SS:[['rng','fld'],['arm']],'2B':[['fld','rng'],['spd']],CF:[['rng'],['spd']],C:[['fld'],['arm']]};
-function scoutOvr693(base){try{if(isP()||!(ME.pos in SCW693))return base();const pos=ME.pos,w=SCW693[pos],adj={C:2,SS:2,CF:1,'2B':1,'3B':0,RF:-.5,LF:-1,'1B':-2}[pos];
+function scoutOvr693(base){try{if(isP()||!(ME.pos in SCW693))return base();const pos=ME.pos,w=SCW693[pos],adj={C:2,SS:3,CF:1,'2B':1,'3B':0,RF:-.5,LF:-1,'1B':-2}[pos];
   let cb=0;const T=SC2T693[pos];if(T){const tv=T.map(g=>Math.max(...g.map(k=>DV(E(k))))),m=(tv[0]+tv[1])/2;cb=4.5*s01((m-62)/18)}
   const con=E('con')+cb,vs=E('vis')>0?E('vis'):(con+E('eye'))/2,off=con*.342+E('pow')*.285+E('eye')*.19+E('spd')*.133+vs*.05;
   return off*(1-w)+defScore()*w+adj}catch(e){return base()}}
 {const _de693=draftEvent;draftEvent=function(){const keep=ovrE;let q;try{ovrE=function(){return scoutOvr693(keep)}}catch(e){}try{q=_de693.apply(this,arguments)}finally{ovrE=keep}return q}}
 /* v694: 고교 성적 = OPS 절반 + WAR(타격+수비 기여) 절반 — 평균·폭은 기존과 같게 맞춤 (화면 설명 없음) */
-function hsWar694(){try{let w=0,G=0;S.rows.filter(r=>r.lv==='hs'&&r.b&&r.b.PA).forEach(r=>{const x=bWARsplit(r.b,'hs');w+=(x.o||0)+(x.d||0);G+=r.b.G||0});return G>0?w/(G/140):null}catch(e){return null}}
+/* v696: 수비 부담 큰 포지션(유격수·포수 > 2루수·중견수 > 3루수)은 고교 수비 기여를 더 크게 봄 */
+const HSDW696={SS:2,C:2,'2B':1.6,CF:1.6,'3B':1.25};
+function hsWar694(){try{let w=0,G=0;const dw=HSDW696[ME.pos]||1;S.rows.filter(r=>r.lv==='hs'&&r.b&&r.b.PA).forEach(r=>{const x=bWARsplit(r.b,'hs');w+=(x.o||0)+(x.d||0)*dw;G+=r.b.G||0});return G>0?w/(G/140):null}catch(e){return null}}
 {const _cp694=careerPerf;careerPerf=function(lv){const v=_cp694(lv);try{if(lv!=='hs'||isP())return v;const b=blankB();S.rows.filter(r=>r.lv==='hs').forEach(r=>addTo(b,r.b));if(b.PA<40)return v;
   const w=hsWar694();if(w==null)return v;const opsP=cl((opsN(b)-.85)*20,-6,6),warP=cl(.92*w-4.2,-6,6);return v-opsP+(opsP+warP)/2}catch(e){return v}}}
 /* v695: 드래프트 지명 기사 댓글 — 실제 팬 반응(DC·펨코 드래프트 후기) 기반 상황별 댓글
