@@ -2330,7 +2330,7 @@ function exemptLabel(ev,res){return(ev.n.includes('아시안게임')&&res==='금
 const PRAISE=['"요즘 훈련 태도가 제일 좋다."','"네가 팀 분위기를 끌고 간다."','"이대로만 해라. 자리는 네 거다."','"오늘은 내가 너한테 배웠다."','"이게 내가 원하던 야구다."'];
 function phaseXP(rep){if(!S.gtHint&&S.phase===0&&age()>=18){S.gtHint=1;rep.lines.push(`코치 평가: "${GTHINT[ME.gt||'평균형']}"`)}let g=0;const gs=Object.values(rep.games),main=gs.find(x=>PRO.includes(x.lvk))||gs[0],ps=main?perfScore(main):0;rep.ps=ps;
   if(main&&ps>=1&&age()<27){const x=XPS(ps>=2?5:3);g+=x;S.rel.coach+=2;rep.lines.push(`감독 칭찬: ${pick(PRAISE)} (성장 포인트 +${x})`)}
-  if(!ME.inj&&(S.plan.alloc.rest||0)<=15&&ME.fat<60&&R()<.6){g+=2;rep.lines.push('누구보다 열심히 훈련했다 (성장 포인트 +2)')}
+  if(!ME.inj&&(S.plan.alloc.rest||0)<=15&&ME.fat<60&&R()<.45){g+=1;rep.lines.push('누구보다 열심히 훈련했다 (성장 포인트 +1)')}
   const bf=(rep.feats||S.phFeats||[]).filter(f=>f.big).length;if(bf){const x=XPS(Math.min(6,bf*3));g+=x;rep.lines.push(`잊지 못할 순간들 (성장 포인트 +${x})`)}
   ME.xp+=g;rep.xp=(rep.xp||0)+g}
 function neglect(rep){S.negl=S.negl||{};S.neglHit={};if(ME.inj)return;const al=S.plan.alloc;
