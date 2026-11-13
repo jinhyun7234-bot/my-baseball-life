@@ -399,7 +399,7 @@ body.fs #app{max-width:none;padding:0;min-height:100%}
 .aw-ex{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .aw-ex span{background:rgba(255,226,122,.15);color:#ffe27a;border:1px solid rgba(255,226,122,.35);border-radius:99px;padding:5px 12px;font-size:.82rem;font-weight:700;animation:popin .45s both;animation-delay:calc(var(--i)*.12s + .9s)}
 
-@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+html.rm *,html.rm *::before,html.rm *::after{animation-duration:.001ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001ms!important;transition-delay:0s!important}html.rm .flash,html.rm .trd-flash{display:none!important}
 .rcard{background:linear-gradient(160deg,var(--tc) 0%,#12161d 46%,#0b0e13 100%);color:#fff;border-radius:24px;padding:20px 18px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 18px 40px -18px rgba(0,0,0,.55);position:relative;overflow:hidden;animation:rcIn .7s cubic-bezier(.2,.9,.2,1) both}
 .rcard:before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.10) 45%,transparent 60%);transform:translateX(-100%);animation:rcShine 2.4s .6s ease-out}
 @keyframes rcIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}@keyframes rcShine{to{transform:translateX(100%)}}
@@ -1197,7 +1197,7 @@ html[data-gt="light"]{--good:#08875a;--g6:#08875a}
 .wr-end{align-self:stretch;border:0;border-radius:16px;padding:15px;background:var(--wf);color:var(--wb);font:inherit;font-weight:900;font-size:1rem;cursor:pointer}
 .wr .rcp-l,.wr .rcp-r{position:absolute;top:0;bottom:0;width:50%;background:none;border:0;z-index:3;cursor:pointer}.wr .rcp-l{left:0}.wr .rcp-r{right:0}
 .wr-end,.wr-x{position:relative;z-index:4}.wr-x{position:absolute}
-@media (prefers-reduced-motion:reduce){.wr-blob,.wr-in,.wr-bar,.wr-line{animation:none!important;stroke-dashoffset:0}}
+html.rm .wr-blob,html.rm .wr-in,html.rm .wr-bar,html.rm .wr-line{animation:none!important;stroke-dashoffset:0}
 .wr-letter{font-size:1rem;line-height:1.75;font-weight:600;background:color-mix(in srgb,var(--wf) 8%,transparent);border-radius:16px;padding:16px 16px 14px;border-left:3px solid var(--w1)}
 .wr-sig{font-size:.78rem;font-weight:700;opacity:.75;text-align:right}
 .trd{position:relative;min-height:calc(100vh - 120px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:28px 18px;overflow:hidden;color:#fff;text-align:center}
@@ -1218,7 +1218,7 @@ html[data-gt="light"]{--good:#08875a;--g6:#08875a}
 @keyframes trdStamp{from{opacity:0;transform:rotate(-14deg) scale(2.4)}to{opacity:1;transform:rotate(-14deg) scale(1)}}
 .trd-name{font-size:1.6rem;font-weight:900;display:flex;flex-direction:column;gap:2px;animation:trdUp .5s 1.2s both}.trd-name small{font-size:.8rem;font-weight:700;opacity:.8}
 .trd-sub{font-size:.95rem;line-height:1.6;opacity:.9;animation:trdUp .5s 1.35s both}
-@media (prefers-reduced-motion:reduce){.trd *{animation:none!important}}
+html.rm .trd *{animation:none!important}
 </style>
 </head>
 <body>
@@ -3391,7 +3391,7 @@ function avatar(me,color,size=72,opt={}){
 function myAvatar(size,opt={}){const t=S.stage==='pro'&&S.pro&&S.pro.league==='KBO'?TEAMS[S.pro.team]:null;return avatar(ME,teamColor(),size,{letter:t?t.ab[0]:(S.stage==='hs'?SCHOOLS[S.school].n[0]:''),...opt})}
 
 /* ===================== MOTION HELPERS ===================== */
-const reduce=()=>typeof matchMedia!=='undefined'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduce=()=>{try{return typeof document!=='undefined'&&document.documentElement.classList.contains('rm')}catch(e){return false}};
 const cu=(v,f='i')=>`<span data-cu="${v}" data-f="${f}">${fmtN(v,f)}</span>`;
 function fmtN(v,f){v=+v;return f==='3'?v.toFixed(3).replace(/^0/,''):f==='2'?v.toFixed(2):f==='1'?v.toFixed(1):Math.round(v).toLocaleString()}
 function countUps(){if(reduce())return;document.querySelectorAll('[data-cu]').forEach(el=>{const to=+el.dataset.cu,f=el.dataset.f,t0=performance.now(),d=900;
@@ -7689,12 +7689,18 @@ vTitle=(function(_v){return function(){const keep=S;S=null;let slots='';try{slot
 function themeGet(){try{return localStorage.getItem('bb_theme')==='light'?'light':'dark'}catch(e){return'dark'}}
 function themeSet(t){try{localStorage.setItem('bb_theme',t)}catch(e){}try{if(t==='light')document.documentElement.setAttribute('data-gt','light');else document.documentElement.removeAttribute('data-gt')}catch(e){}}
 if(typeof document!=='undefined')themeSet(themeGet());
-function vSettings(){const th=themeGet(),mu=!!AU.pref.music,sf=!!AU.pref.sfx;
+/* 애니메이션 효과: 켜기(기본) · 기기 설정 따르기 · 끄기 — 기기에서 '애니메이션 효과 끄기/동작 줄이기'를 켜 둬도 게임 연출은 기본으로 보여줌 */
+function motionGet(){try{const v=localStorage.getItem('bb_motion');return v==='off'||v==='auto'?v:'on'}catch(e){return'on'}}
+function motionApply(){try{const m=motionGet(),dev=typeof matchMedia!=='undefined'&&matchMedia('(prefers-reduced-motion: reduce)').matches,rm=m==='off'||(m==='auto'&&dev);document.documentElement.classList.toggle('rm',rm)}catch(e){}}
+function motionSet(v){try{localStorage.setItem('bb_motion',v)}catch(e){}motionApply()}
+if(typeof document!=='undefined')motionApply();
+function vSettings(){const th=themeGet(),mu=!!AU.pref.music,sf=!!AU.pref.sfx,mo=motionGet();
   return`<div class="scrim" data-st="close"><div class="sheet" role="dialog" aria-modal="true" data-stop="1"><div class="grab"></div><span class="ey">설정</span><h2>게임 설정</h2>
   <div class="set-sec">
     <div class="set-row"><span class="set-ic">${th==='light'?'☀️':'🌙'}</span><div class="set-t"><b>화면 테마</b><span>${th==='light'?'밝은 화면':'어두운 화면 (기본)'}</span></div><div class="set-seg"><button class="${th==='dark'?'on':''}" data-st="theme" data-v="dark">다크</button><button class="${th==='light'?'on':''}" data-st="theme" data-v="light">라이트</button></div></div>
     <div class="set-row"><span class="set-ic">🎵</span><div class="set-t"><b>배경음 (BGM)</b><span>${mu?'켜짐':'꺼짐'}</span></div><button class="set-sw ${mu?'on':''}" data-st="bgm" role="switch" aria-checked="${mu}" aria-label="배경음"></button></div>
     <div class="set-row"><span class="set-ic">🔔</span><div class="set-t"><b>효과음</b><span>${sf?'켜짐':'꺼짐'}</span></div><button class="set-sw ${sf?'on':''}" data-st="sfx" role="switch" aria-checked="${sf}" aria-label="효과음"></button></div>
+    <div class="set-row"><span class="set-ic">✨</span><div class="set-t"><b>애니메이션 효과</b><span>${mo==='on'?'항상 켜기 (기본)':mo==='auto'?'기기 설정 따르기':'끄기'}</span></div><div class="set-seg"><button class="${mo==='on'?'on':''}" data-st="motion" data-v="on">켜기</button><button class="${mo==='auto'?'on':''}" data-st="motion" data-v="auto">기기</button><button class="${mo==='off'?'on':''}" data-st="motion" data-v="off">끄기</button></div></div>
   </div>
   <div class="set-sec">
     <button class="set-link" data-st="guide"><span class="set-ic">❔</span>게임 가이드<span class="set-go">›</span></button>
@@ -7711,6 +7717,7 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
   if(k==='open')ui.settings=true;
   else if(k==='close')ui.settings=false;
   else if(k==='theme')themeSet(b.getAttribute('data-v'));
+  else if(k==='motion')motionSet(b.getAttribute('data-v'));
   else if(k==='bgm')AU.toggle('music');
   else if(k==='sfx'){AU.toggle('sfx');try{AU.sfx('tap')}catch(x){}}
   else if(k==='guide'){ui.settings=false;ui.guide='flow'}
@@ -10933,7 +10940,7 @@ if(typeof document!=='undefined'){try{const st=document.createElement('style');s
 @keyframes fldkPulse{0%,100%{transform:scale(1) rotate(-4deg)}50%{transform:scale(1.06) rotate(-4deg)}}
 @keyframes fldkFlash{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
 @keyframes fldkShake{10%,90%{transform:translate(-1px,0)}20%,80%{transform:translate(3px,1px)}30%,50%,70%{transform:translate(-5px,-1px)}40%,60%{transform:translate(5px,1px)}}
-@media (prefers-reduced-motion:reduce){.fldk,.fldkf,.fieldw.kshake{animation:none}}`;document.head.appendChild(st)}catch(e){}}
+html.rm .fldk,html.rm .fldkf,html.rm .fieldw.kshake{animation:none}`;document.head.appendChild(st)}catch(e){}}
 
 /* 수비는 불안한데 방망이로 더 갚는 타자: '수비로 1점 주고 타격으로 2점 내는 유형' */
 {const _cGV=comments;comments=function(tone,x){let out=_cGV(tone,x);try{if(!Array.isArray(out)||isP()||!x||S.stage!=='pro'||typeof defWeak!=='function'||!defWeak())return out;
@@ -10970,7 +10977,7 @@ if(typeof document!=='undefined'){try{const st=document.createElement('style');s
 @keyframes hchgIn{0%{transform:translateX(-120%) skewX(-12deg);opacity:0}18%{transform:translateX(4%) skewX(0);opacity:1}28%,78%{transform:none;opacity:1}100%{transform:translateX(120%) skewX(12deg);opacity:0}}
 @keyframes hchgWrap{0%,100%{background:transparent}}
 @keyframes hchgSpin{from{transform:rotate(-180deg)}to{transform:none}}
-@media (prefers-reduced-motion:reduce){.hchg,.hchg-in,.hchg-ic{animation:none}}`;document.head.appendChild(st)}catch(e){}}
+html.rm .hchg,html.rm .hchg-in,html.rm .hchg-ic{animation:none}`;document.head.appendChild(st)}catch(e){}}
 /* 진동: 짧게 여러 번 대신 한 번 길게 (브라우저 진동은 세기 조절이 안 돼서 길이로 세게) */
 {const _hp=haptic;haptic=function(n=8){try{if(Array.isArray(n)){const on=n.filter((x,i)=>i%2===0).reduce((a,b)=>a+b,0);n=Math.min(260,Math.round(on*1.5))}else if(n>=15)n=Math.min(260,Math.round(n*1.4))}catch(e){}return _hp(n)}}
 
@@ -11923,7 +11930,7 @@ function bDownMix(pd0,lg,yg){try{const p=cuPerfB([lg]),cur=yearTot(S.y,[lg]).b,l
 {const _ofc=openFutCheck;openFutCheck=function(){const n0=(S&&S.queue||[]).length;const r=_ofc.apply(this,arguments);try{if(S&&S.queue&&S.queue.length>n0&&S.queue.slice(n0).some(q=>q&&/개막 엔트리 통보/.test(String(q.title||'')))){
   if(S._dnPopY===S.y){S.queue=S.queue.filter((q,i)=>!(i>=n0&&/개막 엔트리 통보/.test(String(q.title||''))))}else S._dnPopY=S.y}}catch(e){}return r}}
 /* 동작 줄이기 켜진 PC: 반기 진행 화면의 월 칩은 애니메이션 대신 진행된 달을 파랗게 표시 */
-(function(){try{const s=document.createElement('style');s.textContent='@media (prefers-reduced-motion: reduce){.simm span:not([style*="opacity:.45"]){background:#3182f6!important;color:#fff!important}}';document.head.appendChild(s)}catch(e){}})();
+(function(){try{const s=document.createElement('style');s.textContent='html.rm .simm span:not([style*="opacity:.45"]){background:#3182f6!important;color:#fff!important}';document.head.appendChild(s)}catch(e){}})();
 
 /* v658: 프로 1~3년차 6개 반기 — 반기마다 독립적으로 30% 확률로 '감 잡은 반기' (그 반기 동안 본인 능력치 ×1.3) · 여러 번 터질 수 있음 · 성장 타입 무관 · 설명 노노 */
 {const _advRK=advance;advance=function(){try{if(S&&S.stage==='pro'&&S.pro&&(S.phase===1||S.phase===2)){const k=S.y+'-'+S.phase;if(S._rkK!==k){S._rkK=k;const yr=S.y-(S.pro.debut||S.y)+1;
@@ -11980,7 +11987,7 @@ function myInnEnd(g,i){try{const e=g.ev[i];if(!e||!isP()||!(e.last&&e.last.me)||
 {const _gaIE=gameAuto;gameAuto=function(){_gaIE.apply(this,arguments);try{const q=S&&nextQ();if(!q||q.type!=='game'||ui.gpause||ui.simming||ui.res!=null)return;const g=q.g;if(g.idx>=g.ev.length-1)return;
   if(myInnEnd(g,g.idx)){clearTimeout(ui.gt);const big=/시리즈|플레이오프|와일드카드|챔피언십|디비전|결승|8강|WBC|아시안게임|프리미어/.test(String(g.title||''))||g.clinch;
     ui.gt=setTimeout(()=>{if(nextQ()!==q||ui.gpause)return;stepGame(g);render()},big?1900:1700)}}catch(e){}}}
-(function(){try{const s=document.createElement('style');s.textContent='.ie-chip{flex:none;align-self:center;margin-left:auto;order:9;margin-right:14px;font-size:.72rem;font-weight:900;padding:3px 9px;border-radius:999px;background:#f4c430;color:#1a1300;box-shadow:0 0 0 2px rgba(244,196,48,.25);animation:iePop .45s cubic-bezier(.2,1.6,.4,1) both}.ie-chip.clean{background:#3ddc84;color:#04220f;box-shadow:0 0 0 2px rgba(61,220,132,.3)}@keyframes iePop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}@media (prefers-reduced-motion: reduce){.ie-chip{animation:none}}';document.head.appendChild(s)}catch(e){}})();
+(function(){try{const s=document.createElement('style');s.textContent='.ie-chip{flex:none;align-self:center;margin-left:auto;order:9;margin-right:14px;font-size:.72rem;font-weight:900;padding:3px 9px;border-radius:999px;background:#f4c430;color:#1a1300;box-shadow:0 0 0 2px rgba(244,196,48,.25);animation:iePop .45s cubic-bezier(.2,1.6,.4,1) both}.ie-chip.clean{background:#3ddc84;color:#04220f;box-shadow:0 0 0 2px rgba(61,220,132,.3)}@keyframes iePop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}html.rm .ie-chip{animation:none}';document.head.appendChild(s)}catch(e){}})();
 
 /* v663: 드래프트 스카우트 댓글 — 투수 '변화구' 툴을 구종별로 구체화
    · 좋은 변화구가 2개 이상 → '변화구 툴이 확실' 류 유지 + 'A·B 둘 다' 류
