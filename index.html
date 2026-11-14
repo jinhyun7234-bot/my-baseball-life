@@ -13333,7 +13333,7 @@ mlbO=function(o){try{if(isP())return o;const pr=POSPRIO[ME.pos],c=MLBC749[ME.pos
 function cornerSlump752(k){try{if(!(k==='con'||k==='pow')||isP()||!S||S.me!==ME||S.stage!=='pro'||!S.pro||!['1B','2B','LF','RF'].includes(ME.pos))return 0;
   const mlb=S.pro.league==='MLB'&&!S.pro.minor;let th,ex,mul,mx;
   if(mlb){th=k==='con'?77:75;ex=1.6;mul=1.65;mx=6}else if(S.pro.league==='KBO'){const y=proYears();if(y<6||y>11)return 0;th=k==='con'?72:67;ex=1.4;mul=1.1;mx=4}else return 0;
-  if(ME.pos==='2B')th-=1; /* v753: 2루수는 기준 1 낮춤 */const d=th-DV(E(k==='con'?'eye':'vis'));if(d<=0)return 0;return -Math.min(mx,mul*Math.pow(d/3,ex))}catch(e){return 0}}
+  if(ME.pos==='2B')th-=1; /* v753: 2루수는 기준 1 낮춤 */const d=th-DV(E(k==='con'?'eye':'vis'));if(d<=0)return 0;if(ME.pos==='1B'&&k==='pow')mul*=.9; /* v760: 1루수 파워 슬럼프 ×0.9 */return -Math.min(mx,mul*Math.pow(d/3,ex))}catch(e){return 0}}
 {const _spS752=spBonus;spBonus=function(k){return _spS752(k)+cornerSlump752(k)}}
 
 /* ===================== 첫 화면 일러스트 (사용자 제공 이미지) ===================== */
