@@ -13202,7 +13202,7 @@ function gtNorm712(){try{if(ME&&ME.gt&&ME.gt!=='평균형')ME.gt='평균형';if(
 ITEMS.forEach(it=>{if(it.id==='te2_rng'||it.id==='te2_fld')it.p=2500});
 /* v714: 포지션 밸런스용 '튀는 반기' (프로 전 기간 · 반기마다 확률 · 그 반기 능력 ×1.12) — 확률은 시뮬로 포지션별 통산 WAR이 비슷해지게 맞춤 (설명 노노) */
 /* v718: 확률은 전 포지션 25% 고정 · 세기는 포지션별 '점수 가산'(능력치 높아도 같은 폭) — +면 튀는 반기, −면 안 풀리는 반기 (원래 단위 기준) */
-const PH718_P=.25,PHOT714={C:{p:.25,a:13.2},'1B':{p:.25,a:-0.9},'2B':{p:.25,a:-3.1},'3B':{p:.25,a:0.9},SS:{p:.25,a:8.5},LF:{p:.25,a:-0.75},CF:{p:.25,a:-4.65},RF:{p:.25,a:-1.95}};
+const PH718_P=.25,PHOT714={C:{p:.25,a:9},'1B':{p:.25,a:-0.9},'2B':{p:.25,a:-3.1},'3B':{p:.25,a:0.9},SS:{p:.25,a:8.5},LF:{p:.25,a:-0.75},CF:{p:.25,a:-4.65},RF:{p:.25,a:-1.95}};
 function phRoll714(){try{if(!(S&&S.stage==='pro'&&S.pro&&ME&&!isP()&&(S.phase===1||S.phase===2)))return;const d=PHOT714[ME.pos];if(!d)return;const p=d.p;const k=S.y+'-'+S.phase;if(S._phK714===k)return;S._phK714=k;
   if(R()<p){S._phHot714={y:S.y,ph:S.phase,a:d.a};(S._phLog714=S._phLog714||[]).push(k)}}catch(e){}}
 {const _advP714=advance;advance=function(){phRoll714();return _advP714.apply(this,arguments)}}
