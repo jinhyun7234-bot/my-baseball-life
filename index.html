@@ -2482,7 +2482,7 @@ function vTrainPlan(){ensurePlan();const p=S.plan,M=menus(),al=p.alloc,months=PM
   const ks=isP()?[...PIT,'brk']:[...BAT],ests=ks.map(k=>[k,est(k)]).filter(x=>x[1]>=.05||x[1]===-1).sort((a,b)=>b[1]-a[1]);
   const fl=(12.5*(1-al.rest/100)-al.rest*.3+(p.useCard&&p.card?p.card.f/months:0)+(S.phase?14:0))/.58,lv=ME.inj?['재활 중','dn']:fl<25?['낮음','up']:fl<50?['보통','']:fl<65?['높음 · 부상 주의','dn']:['매우 높음 · 장기 부상 위험','dn'];
   const pickSlot=ui.tpick||'main';
-  const tile=([id,m])=>{const role=p.main===id?'main':p.sub===id?'sub':'',l=Math.floor(p.lv[id]||0),st=id==='rest'?'피로 회복':id==='vis'?LBL.vis:Object.keys(m.w).map(k=>k==='brk'?`변화구(${LBL[p.pitch]})`:LBL[k]).join(' · ');
+  const tile=([id,m])=>{const role=p.main===id?'main':p.sub===id?'sub':'',l=Math.floor(p.lv[id]||0),st=id==='rest'?'피로 회복':id==='vis'?LBL.vis:Object.keys(m.w).filter(k=>id!=='def'||k==='rng'||k==='fld').map(k=>k==='brk'?`변화구(${LBL[p.pitch]})`:LBL[k]).join(' · ');
     return`<div class="tmenu ${role}"><div class="row" style="gap:6px"><span class="tm-ic">${m.ic}</span><b class="sp">${m.n}</b></div><span class="tm-st">${st}</span><div class="tm-btns"><button class="${role==='main'?'on':''}" data-act="tset" data-v="${id}" data-s="main">메인</button><button class="${role==='sub'?'on sub':''}" data-act="tset" data-v="${id}" data-s="sub">서브</button></div></div>`};
   const neg=Object.keys(S.neglHit||{});
   return`<div class="card"><div class="row"><span class="lbl sp">${PHASE[S.phase]} 훈련</span><span class="tiny muted">${months}개월</span></div>
