@@ -13267,7 +13267,7 @@ function mlbRelease743(o){const offers=[];TEAMS.forEach((t,i)=>{if(R()<cl((o-(LV
   return _cdR743.apply(this,arguments)}}
 
 /* v744: 멘탈·워크에식·내구성 — 높을수록 오르기 어렵게(곡선) + 선택과 집중 이벤트 + 노화(30세~) 속도를 세 능력 합으로 결정 */
-function hidGain744(v){return 1-.9*s01((v-40)/32)} /* 원값 40(표시 47)까지 그대로 → 원값 60(표시 73) 약 40% → 원값 72(표시 89) 이상 10% */
+function hidGain744(v){return .9*(1-.9*s01((v-40)/32))} /* v770: 전체 ×0.9 */ /* 원값 40(표시 47)까지 그대로 → 원값 60(표시 73) 약 40% → 원값 72(표시 89) 이상 10% */
 function hidWrap744(){try{const h=ME&&ME.hid;if(!h||h.__w744)return;['men','we','dur'].forEach(k=>{let v=+h[k];if(!isFinite(v))v=50;
   Object.defineProperty(h,k,{enumerable:true,configurable:true,get(){return v},set(n){n=+n;if(!isFinite(n))return;if(n>v)n=v+(n-v)*hidGain744(v);v=n}})});
   Object.defineProperty(h,'__w744',{value:1,enumerable:false,configurable:true})}catch(e){}}
