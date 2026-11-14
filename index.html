@@ -13005,7 +13005,7 @@ function dr695(a){try{const d=S.pro&&S.pro.draft;if(!d||!ME)return;const C=S._dr
 const HOTP696={SS:.2,C:.2,'3B':.2}/* v736: 고교 튀는 반기는 유격수·포수·3루수만 20% *//* v711: 포지션 차이 제거 — 전 포지션 20% *//* v702: 수비형 포지션 확률 +4%p씩 */,HOTK699=['con','pow','eye','spd','rng','fld','arm','vis'];
 function hotNow696(){try{const p=HOTP696[ME.pos]||0;if(!p||S.stage!=='hs'||isP())return false;const k=S.y+'-'+S.phase;if(!S._hot696||S._hot696.k!==k)S._hot696={k,on:R()<p};return!!S._hot696.on}catch(e){return false}}
 {const _sbH=simBat;simBat=function(role,tg,L,row,lvk){if(lvk!=='hs'||!hotNow696())return _sbH.apply(this,arguments);const keep={},up={};
-  try{HOTK699.forEach(k=>{if(typeof ME.r[k]==='number'&&ME.r[k]>0){keep[k]=ME.r[k];up[k]=Math.max(ME.r[k],Math.min(capOf(k),ME.r[k]*1.4));ME.r[k]=up[k]}})}catch(e){}
+  try{HOTK699.forEach(k=>{if(typeof ME.r[k]==='number'&&ME.r[k]>0){keep[k]=ME.r[k];up[k]=Math.max(ME.r[k],Math.min(capOf(k),ME.r[k]*1.3));ME.r[k]=up[k]}})}catch(e){} /* v737: 1.4→1.3 */
   try{return _sbH.apply(this,arguments)}finally{for(const k in keep){const cur=ME.r[k];ME.r[k]=keep[k]+((typeof cur==='number'?cur:up[k])-up[k])}}}}
 
 /* ===================== v702: 시뮬(192 커리어)에서 찾은 버그 정리 ===================== */
