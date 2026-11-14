@@ -13328,11 +13328,11 @@ mlbO=function(o){try{if(isP())return o;const pr=POSPRIO[ME.pos],c=MLBC749[ME.pos
 /* v751: 어깨 훈련 효율 — 포수·유격수 +3%, 3루수·우익수 +1% */
 {const ARM751={C:1.03,SS:1.03,'3B':1.01,RF:1.01};const _grA751=grow;grow=function(k,amt){try{if(amt>0&&k==='arm'&&!isP()&&S&&S.me===ME&&ARM751[ME.pos])amt*=ARM751[ME.pos]}catch(e){}return _grA751(k,amt)}}
 /* v752: 1루수·2루수·좌익수·우익수 타격 슬럼프(숨김) — 선구안 모자라면 컨택↓, 동체시력 모자라면 파워↓ (경기 체감만, 능력치 그대로)
-   KBO 프로 6~11년차: 기준 선구안 70 · 동체시력 65, (모자란 양/3)^1.4, 최대 −4
-   MLB 뛰는 내내: 기준 선구안 72 · 동체시력 70, 1.5×(모자란 양/3)^1.6, 최대 −6 */
+   KBO 프로 6~11년차: 기준 선구안 70 · 동체시력 65, 1.1×(모자란 양/3)^1.4, 최대 −4
+   MLB 뛰는 내내: 기준 선구안 72 · 동체시력 70, 1.65×(모자란 양/3)^1.6, 최대 −6 (v754: 감소폭 ×1.1) */
 function cornerSlump752(k){try{if(!(k==='con'||k==='pow')||isP()||!S||S.me!==ME||S.stage!=='pro'||!S.pro||!['1B','2B','LF','RF'].includes(ME.pos))return 0;
   const mlb=S.pro.league==='MLB'&&!S.pro.minor;let th,ex,mul,mx;
-  if(mlb){th=k==='con'?72:70;ex=1.6;mul=1.5;mx=6}else if(S.pro.league==='KBO'){const y=proYears();if(y<6||y>11)return 0;th=k==='con'?70:65;ex=1.4;mul=1;mx=4}else return 0;
+  if(mlb){th=k==='con'?72:70;ex=1.6;mul=1.65;mx=6}else if(S.pro.league==='KBO'){const y=proYears();if(y<6||y>11)return 0;th=k==='con'?70:65;ex=1.4;mul=1.1;mx=4}else return 0;
   if(ME.pos==='2B')th-=1; /* v753: 2루수는 기준 1 낮춤 */const d=th-DV(E(k==='con'?'eye':'vis'));if(d<=0)return 0;return -Math.min(mx,mul*Math.pow(d/3,ex))}catch(e){return 0}}
 {const _spS752=spBonus;spBonus=function(k){return _spS752(k)+cornerSlump752(k)}}
 
