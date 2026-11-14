@@ -13391,7 +13391,7 @@ function vUnivShow(q){let line='';try{const P=isP(),b=blankB(),p=blankP();S.rows
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="univok"]');if(!b||!S)return;e.stopPropagation();const q=nextQ();if(q&&q.type==='univshow')S.queue.shift();try{save()}catch(e){}try{afterQueue()}catch(e){}try{render()}catch(e){}},true);
 /* v776: 대학 이름 (상위권 대학에서 한 글자씩) · 대학 훈련 효율 +5% · 대학/비주전 피로 덜 쌓임 */
 try{UNIVS.length=0;UNIVS.push('연서대','고리대','성균한대','한앙대','경휘대','동극대','단곡대','인화대','홍인대','건곡대')}catch(e){}
-{const _grU776=grow;grow=function(k,amt){try{if(amt>0&&S&&S.me===ME&&S.stage==='univ')amt*=1.05}catch(e){}return _grU776(k,amt)}}
+{const _grU776=grow;grow=function(k,amt){try{if(amt>0&&S&&S.me===ME&&(S.stage==='univ'||(S.stage==='pro'&&S.pro&&S.pro.dev)))amt*=1.05 /* v777: 육성선수 신분일 때도 +5% */}catch(e){}return _grU776(k,amt)}}
 {const _fmU776=fatMul;fatMul=function(){let m=_fmU776();try{if(S&&S.me===ME){const r=S.role||'',bench=['bench','reserve'].includes(r)||(S.stage==='pro'&&S.pro&&S.pro.dev&&!['start','fB','SP','fP'].includes(r));if(S.stage==='univ'||bench)m*=.85}}catch(e){}return m}}
 
 /* ===================== 첫 화면 일러스트 (사용자 제공 이미지) ===================== */
