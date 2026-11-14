@@ -12415,7 +12415,7 @@ function fwPush(why,tour){const d=fwBuild(tour),tg=tour?tgBuild():null;const q=[
 function fwRetire(why,tour){S._fwGo=1;try{retire(why)}finally{S._fwGo=0}try{const a=S.arts&&S.arts[0];if(a&&a.tone!=='x'){if(tour&&!/은퇴 투어/.test(a.body||''))a.body+=' 후반기 은퇴 투어에서 원정 구장마다 상대 팀 선수단과 팬들의 배웅을 받았고, 마지막 홈 경기 은퇴식에서는 팬들에게 큰절로 작별 인사를 했다.';if(Array.isArray(a.cm))a.cm=a.cm.filter(c=>!(c&&/은퇴식 (직관|언제|하면|때)|은퇴 투어 (해|가자|하면)/.test(String(c.t||''))));S.queue.unshift({type:'retart',aid:a.id})}}catch(e){}}
 {const _arT=ACT.retire;ACT.retire=function(a){try{if(S&&S.stage==='pro'&&S.pro&&!S._fwGo){fwPush('은퇴를 선언했다',false);return'유니폼을 벗기로 했다. 마지막으로 인사를 나눌 시간이다.'}}catch(e){}return _arT.apply(this,arguments)}}
 function vFwell(q){const d=q.d||{};let av='';try{av=pxAvatar(ME,96,{...myPxOpt()})}catch(e){}
-  return`<div class="srec fw"><div class="srec-ey">FAREWELL · ${q.sy}</div><h1 class="srec-tt">수고하셨습니다</h1><div class="srec-team">${esc(d.team||'')} · ${esc(ME.name)}</div><div class="fw-av">${av}</div>
+  return`<div class="srec fw"><div class="srec-ey">FAREWELL · ${q.sy}</div><h1 class="srec-tt">수고하셨습니다</h1><div class="srec-team">${esc(d.team||'')} · ${esc(ME.name)}</div>${/* v767: 작별 화면 캐릭터 제거 */''}
   <div class="srec-card"><p class="fw-sc">${esc(d.scene||'')}</p></div>
   ${/* v766: 동료·감독 인사 빼기 */''}
   <div class="srec-card fw-fan"><div class="srec-k">팬들의 인사</div>${(d.fans||[]).map(m=>`<div class="fw-row"><span class="fw-who">${esc(m.nk)}</span><span class="fw-say">${esc(m.t)}</span></div>`).join('')}</div>
