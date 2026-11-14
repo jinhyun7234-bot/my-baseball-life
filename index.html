@@ -13281,7 +13281,7 @@ function ageM744(){const s=hidSum744();return .55+.95*(1-s01((s-120)/160))} /* �
     if(a<32){const t=s01((a-29)/3),d1=.016*t*M,d2=.008*t*M;(isP()?['velo','sta','stf']:['spd','arm','pow','rng']).forEach(k=>{if(k in ME.r)ME.r[k]=cl(ME.r[k]-d1,20,99)});(isP()?['ctl']:['con','fld','eye']).forEach(k=>{if(k in ME.r)ME.r[k]=cl(ME.r[k]-d2*(k==='eye'?.6:k==='fld'?.3:1),20,99)})}}catch(e){}}}
 /* 선택과 집중 이벤트 — 하나를 키우면 다른 하나가 깎인다 */
 function focusEv744(){const P=isP(),pro=S.stage==='pro',mlb=pro&&S.pro&&S.pro.league==='MLB',sal=pro?S.pro.salary:3000,c1=pro?Math.max(100,Math.round(sal*.02/10)*10):30,c2=pro?Math.max(50,Math.round(sal*.012/10)*10):20;
-  const off=S.phase===0;const T=off?['camp','camp','routine']:['pain','media','junior','night'];const k=pick(T);
+  const off=S.phase===0,bk=off?'_fcOff744':'_fcIn744';if(!S[bk]||!S[bk].length)S[bk]=shuffle(off?['camp','routine']:['pain','media','junior','night']);const k=S[bk].shift(); /* 골고루: 다 한 번씩 나온 뒤 다시 섞음 */
   if(k==='camp')return{title:'🗓️ 비시즌 개인 프로그램',text:`겨울 두 달. 다 하고 싶지만 몸은 하나다.\n이번 비시즌엔 어디에 힘을 쏟을까?`,ch:[
     {t:'재활·체력 전문 센터 입소',s:`−${money(c1)} · 내구성 크게↑ · 멘탈↓ (혼자 버티는 시간)`,fx:{money:-c1,dur:4,men:-1.5},r:'몸이 한결 단단해졌다. 다만 낯선 곳에서 혼자 보낸 시간이 길었다.'},
     {t:'멘탈 코칭·명상 프로그램',s:`−${money(c2)} · 멘탈 크게↑ · 워크에식↓ (훈련량 줄어듦)`,fx:{money:-c2,men:4,we:-1.5},r:'마음이 차분해졌다. 대신 운동량은 확실히 줄었다.'},
