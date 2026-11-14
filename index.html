@@ -13308,7 +13308,7 @@ function focusEv744(){const P=isP(),pro=S.stage==='pro',mlb=pro&&S.pro&&S.pro.le
     {t:'일찍 잔다',s:'내구성↑ · 팀 분위기 조금↓',fx:{dur:2.5,chem:-1.5},r:'푹 잤다. 단톡방엔 사진이 잔뜩 올라왔다.'}]}}
 {const _ncF744=newCard;newCard=function(){const r=_ncF744.apply(this,arguments);try{if(S&&S.me===ME&&['pro','univ','hs'].includes(S.stage)&&!ME.inj){
     const off=S.phase===0,p=off?(S.stage==='pro'?.6:.4):(S.stage==='pro'?.3:.15);
-    if(R()<p&&S._fcK744!==S.y+'-'+S.phase){S._fcK744=S.y+'-'+S.phase;const q=focusEv744();if(q)S.queue.push(q)}}}catch(e){}return r}}
+    if(R()<p&&S._fcK744!==S.y+'-'+S.phase){S._fcK744=S.y+'-'+S.phase;const q=focusEv744();if(q){q.ch.forEach(c=>{try{const cost=c.fx&&c.fx.money<0?-c.fx.money:0;if(cost&&S.money<cost){const fx={};for(const k in c.fx){if(k==='money')continue;const v=c.fx[k];fx[k]=v>0&&['we','men','dur'].includes(k)?v*.5:v}c.fx=fx;c.t+=S.stage==='pro'?' (구단 지원)':' (학교 지원)';c.s=String(c.s).replace(/^−[^·]*· /,'자금 부족 · 지원 프로그램으로 대신 · ').replace(/ 크게↑/g,'↑');c.r=(S.stage==='pro'?'구단':'학교')+' 지원 프로그램으로 대신했다. 효과는 기대만큼은 아니었다.'}}catch(e){}});S.queue.push(q)} /* v779: 돈 모자라면 지원 프로그램(효과 절반) */}}}catch(e){}return r}}
 /* v744: 개인 은퇴 한계 나이 37~43 — 33세 때 멘탈+내구성+워크에식 합(곡선)과 운을 반반 섞어 정함 (설명 노노)
    한계 2년 전부터 노화 가속 → WAR 하락 → 방출 곡선 / 한계 나이에 시즌 끝나면 은퇴 */
 function limT744(){try{if(S._T744==null){if(age()<33)return 43;const u=s01((hidSum744()-130)/150);S._T744=Math.max(37,Math.min(43,Math.round(37+6*(.5*u+.5*R()))))}return S._T744}catch(e){return 43}}
