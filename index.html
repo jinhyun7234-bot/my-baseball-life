@@ -12417,7 +12417,7 @@ function fwRetire(why,tour){S._fwGo=1;try{retire(why)}finally{S._fwGo=0}try{cons
 function vFwell(q){const d=q.d||{};let av='';try{av=pxAvatar(ME,96,{...myPxOpt()})}catch(e){}
   return`<div class="srec fw"><div class="srec-ey">FAREWELL · ${q.sy}</div><h1 class="srec-tt">수고하셨습니다</h1><div class="srec-team">${esc(d.team||'')} · ${esc(ME.name)}</div><div class="fw-av">${av}</div>
   <div class="srec-card"><p class="fw-sc">${esc(d.scene||'')}</p></div>
-  <div class="srec-card"><div class="srec-k">동료들의 인사</div>${(d.mates||[]).map(m=>`<div class="fw-row"><span class="fw-who">${esc(m.who)}</span><span class="fw-say">"${esc(m.t)}"</span></div>`).join('')}</div>
+  ${/* v766: 동료·감독 인사 빼기 */''}
   <div class="srec-card fw-fan"><div class="srec-k">팬들의 인사</div>${(d.fans||[]).map(m=>`<div class="fw-row"><span class="fw-who">${esc(m.nk)}</span><span class="fw-say">${esc(m.t)}</span></div>`).join('')}</div>
   <div class="fw-me">${esc(ME.name)}: "${esc(d.me||'')}"</div></div>`}
 function vTgift(q){const row=(z,lb)=>{let c='';try{c=crest(z.nick,30)}catch(e){}return`<div class="tg-row">${c}<div class="tg-b"><span class="tg-t">${esc(lb)}</span><span class="tg-g">${esc(z.gift)}</span><span class="tg-m">${esc(z.mean)}</span></div></div>`};
