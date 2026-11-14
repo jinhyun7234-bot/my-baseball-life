@@ -13435,8 +13435,9 @@ function spdJoke786(){const gn=giv(ME.name);return[`1루 밟았다 싶으면 이
   out.splice(Math.min(ri(1,3),out.length),0,mkC(t,R()<.6?[pick(['ㄹㅇ 발은 리그 원톱','배달비는 안 받나요 ㅋㅋ','이 맛에 이 선수 봄','상대 포수 오늘 퇴근 못 함','타격만 붙으면 MVP각'])]:[]))}catch(e){}return out}}
 /* v788: 가을야구 — 정규시즌 1군 성적이 아주 나쁜 타자(OPS .640 아래부터 곡선)는 포스트시즌 엔트리 제외가 기본. 엔트리에 들어가도 선발은 없고 대타·대수비로만 */
 {const _ppB788=psPick;psPick=function(base,gn,g7,need){let r=_ppB788.apply(this,arguments);try{if(isP()||S.stage!=='pro'||!S.pro)return r;const row=S.rows.find(x=>x.y===S.y&&x.lv===S.pro.league);if(!row||!row.b||row.b.PA<40)return r;
-  const ops=opsN(row.b);if(ops>=.64)return r;const q=s01((.64-ops)/.14);
-  if(!S._psE788||S._psE788.y!==S.y)S._psE788={y:S.y,out:R()<.55+.4*q};
+  const ops=opsN(row.b),th=.64+({C:-.06,SS:-.05,CF:-.03,'2B':-.03,'3B':0,LF:.03,RF:.03,'1B':.05,DH:.06}[ME.pos]||0);if(ops>=th)return r;const q=s01((th-ops)/.14);
+  const dv=ME.pos==='C'?(DV(E('fld'))+DV(E('arm')))/2:(DV(E('fld'))+DV(E('rng')))/2,dg=s01((dv-70)/20); /* v789: 포지션별 OPS 요구치 · 수비 좋으면 엔트리 승선↑ */
+  if(!S._psE788||S._psE788.y!==S.y)S._psE788={y:S.y,out:R()<Math.max(.05,.55+.4*q-.3*dg)};
   if(S._psE788.out){S._dhG=0;S._psOrd702=null;return'none'}
   if(r==='start'||r==='pr'){S._dhG=0;S._dhWhy=null;S._psOrd702=null;return R()<.65?'bench':'none'}
   if(r==='bench'&&R()<.3)return'none'}catch(e){}return r}}
