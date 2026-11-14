@@ -1919,7 +1919,7 @@ function careerPerf(lv){const b=blankB(),p=blankP();S.rows.filter(r=>r.lv===lv).
 var DRK={n:1000,c:64,s:8};
 function draftEvent(){
   const o=ovrE(),lv=S.stage==='hs'?'hs':'univ';
-  const _pn=rn(0,3),_cp=careerPerf(lv),_vol=draftVol(lv),_tl=draftTool(),v=o+(ME.pot+_pn)*.55+_cp*2.0+_vol+_tl+S.rel.fame*.06+(isP()&&ME.hand.startsWith('좌')?3:0)-(lv==='univ'?6:0);S._drV={o,pot:(ME.pot+_pn)*.55,perf:_cp*2.0,vol:_vol,tool:_tl,fame:S.rel.fame*.06,v};
+  const _pn=rn(0,3),_cp=careerPerf(lv),_vol=draftVol(lv),_tl=draftTool(),v=o+(ME.pot+_pn)*.55+_cp*(isP()?2.6:2.0)+_vol+_tl+S.rel.fame*.06+(isP()&&ME.hand.startsWith('좌')?3:0)-(lv==='univ'?6:0);S._drV={o,pot:(ME.pot+_pn)*.55,perf:_cp*(isP()?2.6:2.0),vol:_vol,tool:_tl,fame:S.rel.fame*.06,v};
   const rank=Math.max(1,Math.round(DRK.n*(1-phi((v-DRK.c)/DRK.s))+rn(0,4))),yr=S.y,order=S.lg.prev.slice().reverse();
   const rv=S.rival.o+S.rival.pot*.55,rr=Math.max(1,Math.round(1000*(1-phi((rv-71)/8))+rn(0,6)));
   if(S.rival.team==null){if(rr<=110){S.rival.team=order[(rr-1)%10];news(`라이벌 ${S.rival.name}, ${Math.ceil(rr/10)}라운드 ${TEAMS[S.rival.team].nick} 지명.`)}else S.rival.team=-1}
@@ -13426,7 +13426,9 @@ function benchSpec782(){try{if(isP())return{b:0,k:''};const spd=DV(E('spd')),df=
   {const sh=L.slice().sort(()=>R()-.5),n=R()<.5?2:1;for(let q=0;q<n;q++)a.cm.splice(Math.min(1+q,a.cm.length),0,mkC(sh[q],[pick(RE782)]))}}}catch(e){}return r}}
 /* v783: 아마추어 성적 점수(드래프트 평가 등) — 직선+잘림 대신 부드러운 곡선 (±6에 점점 가까워짐) */
 careerPerf=function(lv){const b=blankB(),p=blankP();S.rows.filter(r=>r.lv===lv).forEach(r=>{addTo(b,r.b);addTo(p,r.p)});
-  if(isP())return p.outs<30?0:6*Math.tanh((3.3-eraN(p))*2/6);const base=.85+({C:-.06,SS:-.05,CF:-.03,'2B':-.03,'3B':0,LF:.03,RF:.03,'1B':.05,DH:.06}[ME.pos]||0); /* v796: 포지션별 기준 */return b.PA<40?0:6*Math.tanh((opsN(b)-base)*20/6)};
+  if(isP()){if(p.outs<30)return 0;const ip=p.outs/3,era=eraN(p),whip=(p.H+p.BB)/ip,war=pWAR(p),rp=(p.GS||0)<(p.G||0)*.5,svh=(p.SV||0)+(p.HLD||0); /* v797: 투수는 ERA·WHIP·WAR·이닝(불펜은 세이브·홀드)까지 */
+    const cE=(3.3-era)*2,cW=(1.25-whip)*10,cR=(war-2)*2,cI=rp?(ip-60)/10:(ip-120)/20,cS=(svh-15)/4;
+    const raw=rp?(.3*cE+.25*cW+.2*cR+.1*cI+.15*cS):(.35*cE+.25*cW+.25*cR+.15*cI);return 6*Math.tanh(raw/6)}const base=.85+({C:-.06,SS:-.05,CF:-.03,'2B':-.03,'3B':0,LF:.03,RF:.03,'1B':.05,DH:.06}[ME.pos]||0); /* v796: 포지션별 기준 */return b.PA<40?0:6*Math.tanh((opsN(b)-base)*20/6)};
 /* v786: 발 아주 빠른 타자(주력 표시 85 근처부터 곡선) — 배달 드립 댓글 (돌아가며 골고루) */
 function spdJoke786(){const gn=giv(ME.name);return[`1루 밟았다 싶으면 이미 2루에 배달 완료`,`오늘도 베이스 배달 3건 완료 ㅋㅋ`,`내야 땅볼 쳤는데 안타 됨 ㅋㅋ 딸배 속도 실화냐`,`야구 헬멧 말고 오토바이 헬멧 씌워야 됨 ㅋㅋ`,`${gn} 뛰는 거 보면 콜 잡으러 가는 줄`,`홈까지 퀵 배송 ㄷㄷ`,`도루 사인 필요 없음 그냥 알아서 배달 감`,`포수 송구보다 배달이 빠름 ㅋㅋㅋ`,`1루 주자 ${gn} = 득점권 주자`,`번트 대고 1루 세이프 ㅋㅋ 이게 딸배지`,`딸배 모드 켜졌다 ㅋㅋ`,`3루타가 이 선수한테는 그냥 2루타임`,`상대 투수 ${gn} 견제하다가 하루 다 감 ㅋㅋ`,`오늘도 무사고 배달 완료 ✓`,`저 속도면 배달 앱 이달의 라이더 1등`]}
 {const _cmS786=comments;comments=function(tone,x){let out=_cmS786.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||isP()||(x&&x.intl))return out;if(/^(injury|inj|retire|hof|love|wed|baby|kid|mil|scandal|draft)/i.test(String(tone||'')))return out;
