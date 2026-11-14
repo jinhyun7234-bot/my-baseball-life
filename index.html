@@ -13002,7 +13002,7 @@ function dr695(a){try{const d=S.pro&&S.pro.draft;if(!d||!ME)return;const C=S._dr
 /* v699: 고교 '튀는 반기' — 반기마다 포지션별 확률로 그 반기 동안 능력치가 약 1.4배로 튐 (v702부터 유격수 44% · 포수 34% · 2루수 29% · 3루수 24% · 중견수 19%)
    · 그 반기 고교 경기를 치를 때만 타격·수비 능력치 ×1.4 (능력치 상한까지) → 기록은 시뮬 결과로 자연스럽게 좋아짐
    · 경기가 끝나면 원래 능력치로 돌아감 (훈련 성장·드래프트 평가는 원래 능력치 기준) · 화면 설명 없음 */
-const HOTP696={SS:.2,'2B':.2,CF:.2,C:.2,'3B':.2,'1B':.2,LF:.2,RF:.2,DH:.2}/* v711: 포지션 차이 제거 — 전 포지션 20% *//* v702: 수비형 포지션 확률 +4%p씩 */,HOTK699=['con','pow','eye','spd','rng','fld','arm','vis'];
+const HOTP696={SS:.2,C:.2,'3B':.2}/* v736: 고교 튀는 반기는 유격수·포수·3루수만 20% *//* v711: 포지션 차이 제거 — 전 포지션 20% *//* v702: 수비형 포지션 확률 +4%p씩 */,HOTK699=['con','pow','eye','spd','rng','fld','arm','vis'];
 function hotNow696(){try{const p=HOTP696[ME.pos]||0;if(!p||S.stage!=='hs'||isP())return false;const k=S.y+'-'+S.phase;if(!S._hot696||S._hot696.k!==k)S._hot696={k,on:R()<p};return!!S._hot696.on}catch(e){return false}}
 {const _sbH=simBat;simBat=function(role,tg,L,row,lvk){if(lvk!=='hs'||!hotNow696())return _sbH.apply(this,arguments);const keep={},up={};
   try{HOTK699.forEach(k=>{if(typeof ME.r[k]==='number'&&ME.r[k]>0){keep[k]=ME.r[k];up[k]=Math.max(ME.r[k],Math.min(capOf(k),ME.r[k]*1.4));ME.r[k]=up[k]}})}catch(e){}
