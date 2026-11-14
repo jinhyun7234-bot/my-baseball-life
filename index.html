@@ -13405,7 +13405,7 @@ try{UNIVS.length=0;UNIVS.push('연서대','고리대','성균한대','한앙대'
   else if(isP()&&row.p&&(row.p.outs||0)>=60){const era=(row.p.R||0)*27/row.p.outs;p=.55*s01((era-5.5)/2.5)}
   const k=S.y+'-'+S.m;if(p>0&&S._inMS780&&S._pdK780!==k){S._pdK780=k;if(R()<p){S._pdUntil780=now+2;S._pdY780=S.y;try{news(`성적 부진으로 ${lg==='KBO'?'2군':'마이너'}에 내려간다.`)}catch(e){}return isP()?'fP':'fB'}}}catch(e){}return r}}
 {const _cmF780=comments;comments=function(tone,x){let out=_cmF780.apply(this,arguments);try{if(!Array.isArray(out))return out;
-  const nearFA=S&&S.pro&&(S.pro.service||0)>=(S.pro.faReq||8)-1;if(!nearFA)out=out.filter(c=>!(c&&typeof c.t==='string'&&/FA 앞두고/.test(c.t)));
+  const nearFA=S&&S.pro&&(S.pro.service||0)>=(S.pro.faReq||8)-1;if(!nearFA){const FR=/FA ?(앞두고|앞둔|로이드|대박|직전|자격 얻)|FA로이드|계약 앞두고/;out=out.filter(c=>!(c&&typeof c.t==='string'&&FR.test(c.t)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!(r&&typeof r.t==='string'&&FR.test(r.t)))})}
   const d=S&&S.pro&&S.pro.draft;if(tone==='bad'&&d&&d.rd<=2&&S.pro.league==='KBO'&&typeof proYears==='function'&&proYears()<=5&&R()<.6){const T=TEAMS[S.pro.team],tn=T?T.nick:'이 팀';
     const L=[`역시 ${jo(tn,'은','는')} 유망주들의 무덤이네`,`${d.rd}라운드에 뽑아놓고 이렇게 쓸 거면 왜 뽑았냐`,`${tn} 육성은 진짜 답이 없다`,`유망주 데려와서 망치는 데는 일가견 있는 팀`,`상위 픽이 이 정도면 육성 시스템 문제다`];
     out.splice(Math.min(1,out.length),0,mkC(pick(L),[pick(['ㄹㅇ 우리 팀 유망주 다 어디 감','아직 몇 년 차인데 벌써 판단하냐','코치진부터 바꿔야 됨','이건 선수 탓만은 아님'])]))}}catch(e){}return out}}
