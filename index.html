@@ -13311,10 +13311,10 @@ function focusEv744(){const P=isP(),pro=S.stage==='pro',mlb=pro&&S.pro&&S.pro.le
     if(R()<p&&S._fcK744!==S.y+'-'+S.phase){S._fcK744=S.y+'-'+S.phase;const q=focusEv744();if(q)S.queue.push(q)}}}catch(e){}return r}}
 /* v744: 개인 은퇴 한계 나이 37~43 — 33세 때 멘탈+내구성+워크에식 합(곡선)과 운을 반반 섞어 정함 (설명 노노)
    한계 2년 전부터 노화 가속 → WAR 하락 → 방출 곡선 / 한계 나이에 시즌 끝나면 은퇴 */
-function limT744(){try{if(S._T744==null){if(age()<33)return 43;const u=s01((hidSum744()-130)/150);S._T744=Math.max(37,Math.min(43,Math.round(37+6*(.5*u+.5*R()))))}return S._T744}catch(e){return 43}}
-{const _agL744=agingTick;agingTick=function(){const a=age(),b={...ME.r};_agL744();try{if(a<33)return;const T=limT744(),x=1+2.5*s01((a-(T-2))/2);if(x<=1.001)return;
+function limT744(){try{if(S._T744==null){if(age()<33)return 43;const u=s01((hidSum744()-180)/120),q=Math.pow(R(),Math.pow(2,-1.5*(2*u-1)));S._T744=37+Math.min(6,Math.floor(7*q)) /* v747: 37~43 고르게(운) + 세 능력 합 높으면 위쪽으로 기움 */}return S._T744}catch(e){return 43}}
+{const _agL744=agingTick;agingTick=function(){const a=age(),b={...ME.r};_agL744();try{if(a<33)return;const T=limT744()-1,x=1+2.5*s01((a-(T-2))/2);if(x<=1.001)return;
   for(const k in b){if(typeof b[k]==='number'&&typeof ME.r[k]==='number'&&ME.r[k]<b[k])ME.r[k]=cl(b[k]-(b[k]-ME.r[k])*x,20,99)}}catch(e){}}}
-{const _cdL744=contractDec;contractDec=function(rep){try{if(S&&S.stage==='pro'&&S.pro&&S.me===ME&&age()>=33&&age()>=limT744())return S.queue.push({title:'세월은 이길 수 없다',text:`만 ${age()}세. 아침마다 몸이 먼저 대답한다. 이제는 내려놓을 때가 됐다.`,ch:[{t:'은퇴를 선언한다',act:'retire'}]})}catch(e){}return _cdL744.apply(this,arguments)}}
+{const _cdL744=contractDec;contractDec=function(rep){try{if(S&&S.stage==='pro'&&S.pro&&S.me===ME&&age()>=33&&age()>=limT744()-1)return S.queue.push({title:'세월은 이길 수 없다',text:`만 ${age()}세. 아침마다 몸이 먼저 대답한다. 이제는 내려놓을 때가 됐다.`,ch:[{t:'은퇴를 선언한다',act:'retire'}]})}catch(e){}return _cdL744.apply(this,arguments)}}
 /* v746: 댓글 조사 최종 보정 — 이름 뒤 은/는·이/가 등 하드코딩된 조사를 모든 댓글·답글에 한 번 더 맞춤 */
 {const _mkJ746=mkC;mkC=function(t,re,o){try{if(typeof t==='string')t=josaFix(t);if(Array.isArray(re))re=re.map(r=>typeof r==='string'?josaFix(r):(r&&typeof r.t==='string'?{...r,t:josaFix(r.t)}:r))}catch(e){}return _mkJ746(t,re,o)}}
 {const _cJ746=comments;comments=function(tone,x){const out=_cJ746.apply(this,arguments);try{if(Array.isArray(out))out.forEach(c=>{if(!c)return;if(typeof c.t==='string')c.t=josaFix(c.t);(c.re||[]).forEach(r=>{if(r&&typeof r.t==='string')r.t=josaFix(r.t);(r&&r.re||[]).forEach(z=>{if(z&&typeof z.t==='string')z.t=josaFix(z.t)})})})}catch(e){}return out}}
