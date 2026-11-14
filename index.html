@@ -6777,7 +6777,7 @@ function cvStreak(fn){let s=0;for(let y=S.y;y>=S.y-15;y--){const rs=S.rows.filte
     const hOps690=x&&x.ops!=null?+x.ops:null,hEra690=x&&x.era!=null?+x.era:null,hGood690=P?(hEra690!=null&&hEra690<=3.3):(hOps690!=null&&hOps690>=.8),hBad690=P?(hEra690!=null&&hEra690>=4.5):(hOps690!=null&&hOps690<.68);
     const good=w>=(mlb?3:3.5)&&!hBad690,bad=w<(mlb?.5:1)&&!hGood690,sal=S.pro.salary||0,rich=mlb?sal>=1500000:sal>=80000,cheap=!mlb&&sal<=8000;
     /* 커리어 단계 */
-    if(a<=23){if(good)C(yrs<=2?'rookieGood':'growth',2);else if(bad)C('rookieBad')}else if(a<=26){if(good)C('growth',2);else if(bad&&yrs>=4)C('growthStall')}else if(a<=32){if(good)C('primeGood');else if(bad)C('primeBad',2)}else if(a<=37){if(w>=2)C('vet',2);else if(bad)C('vetBad')}else C('last',2);
+    if(a<=23){if(good)C(yrs<=2?'rookieGood':'growth',2);else if(bad)C('rookieBad')}else if(a<=26){if(good)C('growth',2);else if(bad&&yrs>=4)C('growthStall')}else if(a<=35){if(good)C('primeGood');else if(bad)C('primeBad',2)}else if(a<=37){if(w>=2)C('vet',2);else if(bad)C('vetBad')}else C('last',2);
     if(mlb){if(good)C('mlbGood',2);else if(bad)C('mlbBad',2)}
     /* WAR */
     if(w>=7)C('war7');else if(w>=5)C('war5');if(bad&&(P?p.W>=12:b.HR>=25))C('war0');if(w>=4&&!P&&b.AB&&b.H/b.AB<.27)C('warHiddenGood');
@@ -6846,7 +6846,7 @@ Object.assign(CV,{
       if(!P&&b.G<90&&w>=3)C.push('halfHero');
       const d=S.pro.draft;if((!d||d.rd>=4)&&w>=5)C.push('lateBloom');if(d&&d.rd===1&&d.pick<=3&&yrs>=5&&yrs<=10&&age()<=30&&w<1)C.push('bust');
       const mw=typeof mlbW==='function'?mlbW():0,hadMLB=S.rows.some(r=>r.lv==='MLB');if(lg==='KBO'&&hadMLB&&mw<2&&w>=4)C.push('mlbFailKbo');if(lg==='KBO'&&hadMLB&&mw>=8&&w<1.5)C.push('mlbStarFlop');
-      const maxW=Math.max(0,...[...new Set(S.rows.filter(r=>r.y<S.y&&(r.lv==='KBO'||r.lv==='MLB')).map(r=>r.y))].map(y=>S.rows.filter(r=>r.y===y&&(r.lv==='KBO'||r.lv==='MLB')).reduce((s,r)=>s+rowWAR(r),0)));if(a>=35&&w>maxW&&w>=3)C.push('oldHigh');
+      const maxW=Math.max(0,...[...new Set(S.rows.filter(r=>r.y<S.y&&(r.lv==='KBO'||r.lv==='MLB')).map(r=>r.y))].map(y=>S.rows.filter(r=>r.y===y&&(r.lv==='KBO'||r.lv==='MLB')).reduce((s,r)=>s+rowWAR(r),0)));if(a>=36&&w>maxW&&w>=3)C.push('oldHigh');
       const nT=new Set(S.rows.filter(r=>r.lv==='KBO'||r.lv==='MLB').map(r=>r.team)).size;if(nT>=4)C.push('nkJourney');
       if(a<=24&&w<1)C.push('grower');if(a>=36&&w<1)C.push('retirer');
       if(lg==='KBO'&&S.pro.faReq&&S.pro.faReq-S.pro.service<=1&&w>=4)C.push('faMarket');if(lg==='KBO'&&ovrE()>=62&&w>=5)C.push('mlbSkeptic');if(lg==='MLB'&&w>=3&&!P)C.push('mlbAnalyst');
