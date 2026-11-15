@@ -6343,7 +6343,7 @@ function fillN(s,gn){return String(s).replace(/\{n\}(이|가)(?=[\s,.!?ㅋㅠ]|$
   if(S.m>=9&&age()<=27&&cmX('potboom'+S.y)){const cur=yearTot(S.y,[lg]),prv=yearTot(S.y-1,[lg]);
     if(!P){const hr=cur.b.HR||0,ph=prv.b.HR||0;if(hr>=15&&(proYears()<=4||hr>=ph*1.6+3)){
       const L=[`마 내년엔 3할 30홈런 100타점 함 가보자 ${voc(gn)}!!!!!!! 그동안 기대가 큰 만큼 실망도 많이 했지만 그래도 응원해야지 우야겠노!!!!! 내년에 더 잘하리라 믿는다!!!!!`,
-        `이래서 니를 못 미워한다 내년에는 더 잘하자`,`${yy}년 페이스대로 내년 풀타임 뛰면 ${Math.max(30,Math.round(hr*1.35/5)*5)}홈런 충분히 가능하다 화이팅!`,
+        `이래서 니를 못 미워한다 내년에는 더 잘하자`,`올해 페이스대로 내년 풀타임 뛰면 ${Math.max(30,Math.round(hr*1.35/5)*5)}홈런 충분히 가능하다 화이팅!`,
         `드뎌 터짐 원래 꽃 한 송이를 피우려면 1년을 기다려야 함 아프로도 대성하길!`,`기다린 보람 있다 ${gn} 드디어 포텐 터졌네`,`유망주 딱지 이제 떼도 되겠다 ${gn}`];
       if(hr>=20&&hr<30)L.push(`내년에는 ${nick} 30홈런 타자 가뭄 깨줬으면 좋겠네요`);
       if((H.men||50)<=45)L.push(`${jo(gn,'이','가')} ㄹㅇ 부담감이 장난 아니었지 그거 이겨내고 이만큼 한 거면 대단함`);
@@ -14459,10 +14459,12 @@ const KN840=['','첫','두','세','네','다섯','여섯','일곱','여덟','아
       if(N>=2)put([`V${N} 달성!! ${tm.nick} 통산 ${N}번째 우승`,N>=5?`통산 ${N}번째 우승 이 팀 우승 DNA는 진짜다`:`통산 ${N}번째 우승 이 맛에 이 팀 응원한다`,typeof d==='number'&&d<=2?`${d===1?'2연패':'또 우승'} ㄷㄷ 통산 ${N}번째 왕조 소리 나온다`:`${N}번째 우승 트로피 오늘 밤 술맛 다르다`],pick(['V'+N+' 가즈아','이 팀 팬이라 행복하다','오늘은 다 같이 취하자']))}
     if(k>=3)put([`${gn} 통산 ${k}번째 반지 유관기운 말이 안 된다`,`${gn} 반지만 ${k}개 ㅋㅋ 손가락이 모자라겠다`,`우승할 때마다 ${gn}${jo(gn,'이','가').slice(gn.length)} 있다 이쯤 되면 우승 토템`],pick(['유관의 신','반지 콜렉터 ㅋㅋ','이게 위닝 멘탈리티지']));
     else if(k===2)put([`${gn} 벌써 두 번째 반지`,`${gn} 반지 2개째 이제 유관 선수 확정`],null);
-    if(ru>=2)put([`준우승만 ${ru}번 하던 ${gn} 드디어 콩라인 탈출 ㅠㅠ`,`${ru}번의 준우승 끝에 드디어 정상 이 맛에 버텼다`],pick(['콩라인 졸업 축하한다','2등 설움 다 털었다']))}
+    if(ru>=2&&k===1)put([`준우승만 ${ru}번 하던 ${gn} 드디어 콩라인 탈출 ㅠㅠ`,`${ru}번의 준우승 끝에 드디어 정상 이 맛에 버텼다`],pick(['콩라인 졸업 축하한다','2등 설움 다 털었다']));
+    else if(ru>=2)put([`준우승 ${ru}번의 아픔이 있었기에 오늘 반지가 더 값지다`,`${gn} 준우승 ${ru}번 우승 ${k}번… 가을엔 늘 마지막까지 있었다`],pick(['가을 단골','이게 진짜 가을 DNA']))}
   /* 준우승 (한국시리즈·월드시리즈 마지막 경기 패배) */
   if(x&&(ksG||wsG)&&x.win===false&&x.elim&&S._ruY840!==S.y){S._ruY840=S.y;const ru=myRunnerUps840(kbo?'KBO':'MLB')+1,ser=ksG?'한국시리즈':'월드시리즈';
-    if(ru>=2)put([`${gn} 벌써 준우승만 ${ru}번째… 콩라인 가입이냐 ㅠ`,`준우승 ${ru}번이면 이제 우승할 차례다`,`${ser} ${KN840[ru]||ru}번째 준우승… 반지 하나가 이렇게 어렵다`],pick(['콩라인 탈출은 내년에 하자','2등도 대단한 건데 너무 아프다','내년엔 꼭 마지막에 웃자']));
+    if(ru>=2&&!(S.hist&&S.hist.rings))put([`${gn} 벌써 준우승만 ${ru}번째… 콩라인 가입이냐 ㅠ`,`준우승 ${ru}번이면 이제 우승할 차례다`,`${ser} ${KN840[ru]||ru}번째 준우승… 반지 하나가 이렇게 어렵다`],pick(['콩라인 탈출은 내년에 하자','2등도 대단한 건데 너무 아프다','내년엔 꼭 마지막에 웃자']));
+    else if(ru>=2)put([`${ser} ${KN840[ru]||ru}번째 준우승… 반지 하나 더 끼기가 이렇게 어렵다`,`반지도 있고 준우승도 ${ru}번… ${gn}은 가을이면 늘 마지막까지 있다`],pick(['그래도 내년에 다시 올라오자','2등도 대단한 건데 너무 아프다']));
     else put([`${ser} 준우승도 대단한 거다 내년엔 한 계단만 더`,`여기까지 온 것도 잘한 거다 고개 숙이지 마라`],null);
     if(ksG&&kbo){const d=S.drought;if(typeof d==='number'&&d>=20)put([`${d}년째 기다리는 중… 내년엔 진짜 해 주라`,'우승 한 번 보기 전에 내가 먼저 늙겠다 ㅋㅋ ㅠ',`${d}년 기다렸는데 1년 더 못 기다리겠냐 내년에 보자`],null);else if(d==='never')put(['창단 첫 우승 문턱에서 또 멈췄다… 그래도 내년엔 된다','첫 우승 한 번 보기가 이렇게 어렵다 ㅠ'],null)}}}catch(e){}return out}}
 
@@ -14760,7 +14762,7 @@ mlbAAV825=function(wa,a){const w=Math.max(0,wa);return (2+3.6*w+.12*w*w)*knot(a,
      if(T==='wedding'&&Array.isArray(c.re))c.re=c.re.filter(r=>!/너무 귀엽다|건강하게만 자라/.test(String((r&&r.t)||'')));
      if(T==='injRet'&&x&&x.camp&&[11,12].includes(S.m)&&typeof c.t==='string')c.t=c.t.replace(/캠프 사진/g,'훈련 사진').replace(/캠프 합류/g,'훈련 합류')})}catch(e){}return out}}
 /* · KBO 복귀·대형 FA 기사: 36세 이상이거나 연봉 15억 미만이면 '우승 후보 0순위·MVP 확정·오버페이' 같은 과장 X → 나이에 맞는 반응 */
-{const HYPE=/우승 후보 0순위|MVP는 정해졌|타이틀 경쟁은 벌써|KBO가 감당이|반칙 아님|이제 큰일 났다|계산 다시 해야|KBO는 쉬워 보이겠다|스토브리그 최대 승자|판도 바뀐다|오버페이|거품|이 돈이면|구단 운명|시장 미쳤다|천문학|씹어먹을/;
+{const HYPE=/우승 후보 0순위|MVP는 정해졌|타이틀 경쟁은 벌써|KBO가 감당이|반칙 아님|이제 큰일 났다|계산 다시 해야|KBO는 쉬워 보이겠다|스토브리그 최대 승자|판도 바뀐다|오버페이|거품|이 돈이면|구단 운명|시장 미쳤다|천문학|씹어먹을|먹튀/;
  const _cFB841=comments;comments=function(tone,x){let out=_cFB841.apply(this,arguments);try{if(!Array.isArray(out)||tone!=='faBig'||!S||!S.pro||S.pro.league!=='KBO')return out;const a=age(),sal=S.pro.salary||0;
    if(!(a>=36||sal<150000))return out;const n0=out.length;out=out.filter(c=>!(c&&HYPE.test(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!HYPE.test(String((r&&r.t)||'')))});
    if(a>=36&&out.length<n0){const gn=giv(ME.name),L=[`나이가 있어도 클래스는 어디 안 간다`,`몸 관리만 잘하면 2~3년은 충분히 해 줄 듯`,`마지막 불꽃은 여기서 태우자 ${gn}`,`은퇴는 KBO에서… 이게 낭만이지`,`후배들한테 보고 배울 게 많을 거다`].filter(t=>!seenHas(t));
