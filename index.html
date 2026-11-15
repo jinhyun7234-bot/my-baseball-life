@@ -8992,6 +8992,12 @@ function noKboFilter(arr){if(!Array.isArray(arr))return arr;const o=arr.filter(c
   const G=[`${lvN}에서 이 정도면 ${up} 콜업 얘기 나올 만하다`,`${gn} ${jo(farm,'은','는')} 이제 좁아 보인다`,`${up} 가서도 이렇게만 해라`,`${farm} 성적 좋다고 바로 통하는 건 아니지만 기대는 된다`,ML?`${lvN} 투수들 상대로 이 정도면 확실히 레벨이 다르다`:`퓨처스 폭격 중이라던데 언제 올리냐`,`이러다 ${up} 엔트리 들어가겠다`,P?`${lvN}에서 저 구위면 올라가도 바로 쓸 만하다`:`${lvN}에서 타구 질이 다르다던데 진짜네`,`${gn} 요즘 ${farm} 기록 보는 맛에 산다`,`스카우트 리포트 좋게 나왔다더라`,`${farm}에서 이렇게 꾸준한 거 쉬운 거 아님`,P?`볼넷 적은 거 보니까 제구 확실히 잡혔네`:`삼진 줄어든 거 보면 선구안 확실히 좋아졌다`],
    B=[`${farm}에서 이러면 ${up}${up==='1군'?'은':'는'} 아직 멀었다`,`조급해하지 말자 ${jo(farm,'은','는')} 원래 배우는 곳이다`,`${gn} 슬럼프 길어지네… 그래도 아직 어리다`,ML?`${lvN}도 만만한 리그가 아니다`:`퓨처스라고 쉬운 데 아니다`,`${farm}에서 폼 다시 잡고 올라오면 된다`,P?`${lvN} 타자들한테 맞는 거 보면 제구부터 다시 잡아야 할 듯`:`${lvN} 변화구에 계속 헛도는 거 보면 아직 적응 중`,`${gn}${jo(gn,'아','야').slice(gn.length)} 기죽지 마라 다들 ${farm}에서 한 번씩 헤맨다`,`이 성적이면 ${up}은 당분간 힘들겠다`.replace('트리플A은','트리플A는').replace('빅리그은','빅리그는'),`코치들이 뭘 고치고 있는지 궁금하다`,ML?`말도 안 통하는 데서 혼자 버티는 것도 쉽지 않을 듯`:`2군 버스 타고 다니면서 이 악물어라`,`올해는 그냥 몸 만들고 경험 쌓는 해라고 생각하자`,P?`구속은 나오는데 결과가 안 따라오네`:`타이밍이 계속 늦는 게 보인다`],
    M=[`${farm}에서 경험 쌓는 중이니 지켜보자`,`딱 평균 정도 하는 중 아직 판단하긴 이르다`,`${gn} 몸 관리만 잘하면 된다`,`${farm} 성적만 보고 일희일비할 필요 없음`,P?`이닝 소화는 괜찮은데 결정구가 하나 더 있어야 할 듯`:`출루는 되는데 장타가 좀 아쉽다`,`${gn} ${lvN} 기록 꾸준히 챙겨보는 중`,`무난하다 이대로 차근차근 올라가면 됨`,`${up} 콜업 소식 언제 뜨나 기다리는 중`,ML?`${lvN} 경기 중계도 없어서 기록만 본다 ㅠ`:`퓨처스 경기 직관 가는 사람은 진짜 찐팬`,`${farm} 성적은 참고만 하자 결국 ${up}에서 보여줘야 함`];
+  /* v840r: 나이 맞춤 — 27세부터 '아직 어리다·배우는 곳·스카우트 리포트' 류 빼고, 33세부터는 베테랑용 */
+  const a840=age(),YNG840=/아직 어리다|원래 배우는 곳|한 번씩 헤맨다|경험 쌓는 중|차근차근 올라가|스카우트 리포트|아직 적응 중|기죽지 마라/;
+  if(a840>=27){[G,B,M].forEach(A=>{for(let i=A.length-1;i>=0;i--)if(YNG840.test(A[i]))A.splice(i,1)})}
+  if(a840>=33){G.push(`${farm}에서 이 정도면 아직 죽지 않았다`,`노련미로 ${farm} 평정 중 ㅋㅋ`,`${up}에서 다시 보자 아직 한 방 있다`,`이 나이에 ${farm} 폭격이면 올려야지`);
+    B.push(`${farm}에서도 이러면 정말 끝이 보인다…`,`${farm}에서 이 성적이면 은퇴 얘기 나올 수밖에 없다`,`${farm}에서 후배들한테 밀리는 거 보니까 마음 아프다`,`몸 상태가 예전 같지 않은 듯`,`그래도 경험으로 버티는 중이다 한 번만 더 올라와라`,...(a840>=36?['세월은 못 이기나 보다']:[]));
+    M.push(`${farm}에서 몸 만들고 다시 올라오자`,`${up}에서 한 번 더 보고 싶다`,`${farm} 기록 보면서 마지막 불꽃 기다리는 중`,...(a840>=36?[`베테랑이 ${farm}에서 후배들 챙기는 것도 의미 있다`]:[]))}
   const base=(good?G:bad?B:M).filter(t=>!out.some(c=>c.t===t));let pool=base.filter(t=>!seenHas(t)).sort(()=>R()-.5);if(pool.length<3)pool=pool.concat(base.filter(t=>!pool.includes(t)).sort(()=>R()-.5));const need=Math.max(0,5-out.length)+(R()<.6?1:0);
   pool.slice(0,need).forEach(t=>{seenAdd(t);out.splice(ri(0,Math.min(2,out.length)),0,mkC(t,[]))})}catch(e){}return out}}
 /* "또 ○○ 기사냐" 류 기사 피로 댓글 제거 + 치환 안 된 {태그} 댓글 제거 */
@@ -14268,7 +14274,7 @@ function srCm840(q){const out=[];try{if(!S||!S.pro||!ME||S.stage!=='pro'||S.me!=
 {const _bsr840b=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsr840b.apply(this,arguments);try{if(!q||!Array.isArray(q.cm)||!S||!S.pro||S.me!==ME)return q;const y=q.y||S.y,lg=S.pro.league,TOP=['KBO','MLB'],a=age();
   const wOf=yy=>S.rows.filter(r=>r.y===yy&&TOP.includes(r.lv)).reduce((s,r)=>s+rowWAR(r),0),w=wOf(y),prev=[...new Set(S.rows.filter(r=>r.y<y&&TOP.includes(r.lv)&&((r.b&&r.b.PA>=200)||(r.p&&r.p.outs>=150))).map(r=>r.y))].map(wOf);if(prev.length<3)return q;
   const hi=Math.max(...prev),lo=Math.min(...prev),{b,p}=yearTot(y,[lg]),full=isP()?p.outs>=(ME.pos==='SP'?360:150):b.PA>=400;if(!full)return q;let L=null;
-  if(w>hi+.3&&w>=4)L=[`커리어하이 경신 ${y}년이 ${ME.name} 최고의 시즌이다`,'커리어하이 찍은 시즌 결산은 언제 봐도 배부르다',`WAR ${w.toFixed(1)} 커리어하이 아직도 성장 중이다`];
+  if(w>hi+.3&&w>=4)L=[`커리어하이 경신 ${y}년이 ${ME.name} 최고의 시즌이다`,'커리어하이 찍은 시즌 결산은 언제 봐도 배부르다',age()<=29?`WAR ${w.toFixed(1)} 커리어하이 아직도 성장 중이다`:age()>=34?`WAR ${w.toFixed(1)} 커리어하이를 ${age()}살에 찍는다고? 회춘했다`:`WAR ${w.toFixed(1)} 커리어하이 지금이 전성기다`];
   else if(w<lo-.3&&w<1.5)L=a>=36?['커리어 로우 시즌… 에이징 커브가 진짜 온 건가','올해가 커리어 최악이었다 내년이 진짜 시험대다']:['커리어 최악의 시즌이었다 내년엔 반드시 반등하자','이 선수 커리어에서 제일 안 풀린 1년 내년엔 다를 거다'];
   if(L){const C=L.filter(t=>!seenHas('ch:'+t.replace(/[\d.]+/g,'N')));if(C.length){const t=pick(C);seenAdd('ch:'+t.replace(/[\d.]+/g,'N'));q.cm.splice(Math.min(1,q.cm.length),0,mkC(josaFix(t),[],{up:ri(1500,6000)}));q.cm=q.cm.slice(0,5)}}}catch(e){}return q}}
 
