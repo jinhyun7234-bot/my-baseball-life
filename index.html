@@ -10380,7 +10380,8 @@ function drScoutLines(good){try{const F=S._drFit;if(!F)return[];const pn=F.P?(F.
 {const _cDr=comments;comments=function(tone,x){let out=_cDr(tone,x);try{if(tone!=='draft'||!Array.isArray(out)||!S._drFit)return out;const rd=(x&&x.rd)||5,good=rd<=2,bad=rd>=4;if(!good&&!bad)return out;
   const L=drScoutLines(good).filter(t=>!seenHas(t));if(!L.length)return out;const n=Math.min(L.length,R()<.4?2:1);for(let i=0;i<n;i++){const k=Math.floor(R()*L.length),t=L.splice(k,1)[0];seenAdd(t);out.splice(Math.min(out.length,1+i*2),0,mkC(t,[],{}))}}catch(e){}return out}}
 /* 미지명: 스카우트 평 한 줄 */
-{const _dE=draftEvent;draftEvent=function(){const q=_dE.apply(this,arguments);try{if(q&&q.title==='지명받지 못했다'){const L=drScoutLines(false);if(L.length)q.text+=`\n\n스카우트들 사이에선 "${pick(L).replace(/ ㅋㅋ$/,'')}"라는 말이 돌았다.`}}catch(e){}return q}}
+{const UND840=t=>t.replace(/순번이 밀렸지/,'지명을 못 받았지').replace(/몇 라운드는 더 빨리 뽑혔을 텐데/,'어느 구단이든 뽑았을 텐데').replace(/프로 가서 (.+?)부터 키워야 산다/,'$1부터 키워야 다음 기회가 온다').replace(/이 순번은 좀 억울하겠다/,'지명을 못 받은 건 좀 억울하겠다').replace(/왜 이렇게 밀렸냐/,'왜 아무도 안 뽑았냐').replace(/순번 밀린 건 어쩔 수 없음/,'지명 못 받은 건 어쩔 수 없음').replace(/고평가 안 한 듯/,'눈여겨보지 않은 듯');
+ const _dE=draftEvent;draftEvent=function(){const q=_dE.apply(this,arguments);try{if(q&&q.title==='지명받지 못했다'){const L=drScoutLines(false);if(L.length){const t=UND840(pick(L).replace(/ ㅋㅋ$/,''));q.text+=`\n\n스카우트들 사이에선 "${t}"${jo(t,'이라는','라는').slice(t.length)} 말이 돌았다.`}}}catch(e){}return q}}
 
 /* 연봉 대폭 인상 기사: 애매·아쉬움·무난 댓글 제거, 인상 맥락 댓글로 채움 */
 try{CM.salary=CM.salary.concat(['이 인상률이면 구단이 진짜 인정한 거다','작년에 한 거 생각하면 이 정도는 받아야지','연봉 앞자리 바뀌는 거 보니까 내가 다 뿌듯함','구단 프런트 오랜만에 일 제대로 했네','이 정도면 협상 테이블에서 웃으면서 나왔겠다','몸값 올랐으니 이제 증명만 남았다','올해도 작년처럼만 해주면 FA 때 대박이다','이제 부모님 효도 제대로 하겠네','연봉 기사 볼 때마다 기분 좋은 선수','인상률 보고 커피 뿜음 ㅋㅋ 역대급이네','이건 그냥 구단이 붙잡겠다는 신호임','내년 연봉 기사도 이렇게 나오면 좋겠다','작년 성적 보면 솔직히 당연한 인상','이제 팀의 핵심이라는 거지','이 기세면 다년 계약도 금방이겠다','에이전트 일 잘하네 ㅋㅋ','협상 오래 안 끌고 바로 도장 찍은 게 좋다','이제 연봉값 하는 선수 소리 듣겠네','팬으로서 이런 기사 제일 좋음','구단이 미래를 이 선수한테 건 거지'])}catch(e){}
@@ -14038,10 +14039,10 @@ const UPC840={
   const P=isP(),add=(t,re)=>{if(seenHas(t))return false;seenAdd(t);out.splice(Math.min(out.length,ri(1,3)),0,mkC(josaFix(t),(re||[]).slice(0,R()<.6?1:0).map(z=>({nk:pick(NICKS),t:z,up:ri(20,400)})),{up:ri(300,2400)}));return true};
   const keyB=P?['velo','stf','ctl','sta','pcl']:['con','pow','eye','spd','rng','fld','arm'];
   /* ① 오래 손 놓은 훈련 (해마다 한 번 · 그 능력치가 실제로 내려간 경우만) */
-  if(S._ngCY840!==S.y&&R()<.4){const pk=S._pk840||{};const L=keyB.filter(k=>ngN840(k)>=NGN840+2&&typeof ME.r[k]==='number'&&pk[k]&&ME.r[k]<pk[k]-.8&&!(P&&k==='sta'&&ME.pos!=='SP')&&!(!P&&k==='spd'&&DV(E('spd'))>85));
+  if(['mix','bad'].includes(String(tone||''))&&S._ngCY840!==S.y&&R()<.4){const pk=S._pk840||{};const L=keyB.filter(k=>ngN840(k)>=NGN840+2&&typeof ME.r[k]==='number'&&pk[k]&&ME.r[k]<pk[k]-.8&&!(P&&k==='sta'&&ME.pos!=='SP')&&!(!P&&k==='spd'&&DV(E('spd'))>85));
     if(L.length){const k=pick(L),c=pick(NGC840[k]||[]);if(c&&add(c[0],c[1]))S._ngCY840=S.y}}
   /* ② 최근 2년 새 크게 오른 능력치 */
-  const sn=S._rs840||{},o0=sn[S.y-2]||sn[S.y-3];if(o0&&S._upCY840!==S.y&&R()<.45){const L=keyB.filter(k=>typeof o0[k]==='number'&&DV(E(k))-o0[k]>=(k==='velo'?4:6));
+  const sn=S._rs840||{},o0=sn[S.y-2]||sn[S.y-3];if(o0&&['mix','hype','feat'].includes(String(tone||''))&&S._upCY840!==S.y&&R()<.45){const L=keyB.filter(k=>typeof o0[k]==='number'&&DV(E(k))-o0[k]>=(k==='velo'?4:6));
     if(L.length){const k=L.sort((a,b)=>(DV(E(b))-o0[b])-(DV(E(a))-o0[a]))[0],c=pick(UPC840[k]||[]);if(c&&add(c[0],c[1]))S._upCY840=S.y}}
   /* ③ 구종 다양성 (투수) */
   if(P&&ME.pt&&S._ptCY840!==S.y&&R()<.35){const n=Object.keys(ME.pt).filter(f=>ME.pt[f]>0).length,nw=o0&&typeof o0.pt==='number'&&n>o0.pt;const gn=giv(ME.name);
@@ -14296,13 +14297,13 @@ RCPB840.C.g.push('포수가 이렇게 치면 안방마님이 아니라 안방 �
    · 포지션마다 골든글러브·골드글러브·실버슬러거·MVP 받는 비율이 고르게 (현실 차이 조금은 남김)
    · 명예의 전당: 최대로 잘 키운 타자 95%가 들어가는 선 · 마무리·셋업·선발은 각자 선
    · 좌익수 타격 튀는 반기가 너무 잘 풀려서 oWAR·타이틀이 몰리던 것 조금 내림 */
-try{Object.assign(GGPM825,{C:3.03,'1B':2.42,'2B':4.27,'3B':3.69,SS:4.13,LF:3.45,CF:4.75,RF:3.12});
-  Object.assign(MVPOS836.KBO,{C:.94,'1B':1.58,'2B':.2,'3B':-.34,SS:-.17,LF:-.2,CF:-.31,RF:.49});
-  Object.assign(MVPOS836.MLB,{C:1.66,'1B':.76,'2B':.54,'3B':.19,SS:.47,LF:-.37,CF:.42,RF:.24});
-  Object.assign(SSLO714,{C:.761,'1B':.859,'2B':.793,'3B':.836,SS:.775,LF:.879,CF:.801,RF:.864});
-  Object.assign(GGLO714,{C:.878,'1B':.871,'2B':.731,'3B':.344,SS:.807,LF:.6,CF:.561,RF:.67});
+try{Object.assign(GGPM825,{C:2.99,'1B':2.24,'2B':4.69,'3B':3.98,SS:4.29,LF:3.36,CF:4.16,RF:3.21}); /* v840k: 2차 보정 (W9 640명) */
+  Object.assign(MVPOS836.KBO,{C:.825,'1B':1.48,'2B':.15,'3B':-.44,SS:-.12,LF:-.09,CF:-.225,RF:.58});
+  Object.assign(MVPOS836.MLB,{C:1.78,'1B':.9,'2B':.19,'3B':-.04,SS:.29,LF:.135,CF:.42,RF:.605});
+  Object.assign(SSLO714,{C:.768,'1B':.872,'2B':.8,'3B':.844,SS:.778,LF:.845,CF:.808,RF:.844});
+  Object.assign(GGLO714,{C:.778,'1B':.895,'2B':.743,'3B':.397,SS:.803,LF:.541,CF:.612,RF:.635});
   GGP836=1.2;
-  if(globalThis.HOFT720)Object.assign(HOFT720,{B:40,SP:62,CL:40,RP:40}); /* v840b: 최대 육성 타자 320명 기준 95% (점수 p5≈38~40) · 마무리·셋업 ~90% · 선발은 거의 다 */
+  if(globalThis.HOFT720)Object.assign(HOFT720,{B:45,SP:62,CL:40,RP:40}); /* v840k: 최대 육성 타자 640명(W9) 기준 정확히 95% (점수 p5=45) · 마무리·셋업 ~90% · 선발 ~90% */
   Object.assign(PHOT714.LF,{p:.3,a:-2.0});Object.assign(PHOT714.RF,{p:.27,a:-1.6});Object.assign(PHOT714.C,{p:.45,a:6.0});Object.assign(PHOT714['3B'],{p:.32,a:2.9}) /* v840c: 좌익수·3루수·포수가 통산 WAR 최하위권이라 조금 올림 */}catch(e){}
 
 /* ===================== v840: 경기 상황 댓글 · 대댓글/가을 문구 상황 맞추기 =====================
