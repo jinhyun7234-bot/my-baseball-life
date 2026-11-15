@@ -13344,7 +13344,7 @@ function focusEv744(){const P=isP(),pro=S.stage==='pro',mlb=pro&&S.pro&&S.pro.le
     {t:'출연한다',s:`+${money(pay)} · 멘탈↑ (기분 전환) · 워크에식↓`,fx:{money:pay,men:2.5,we:-2.5,fame:3},r:'방송 반응이 좋았다. 훈련 시간은 꽤 빠졌다.'},
     {t:'정중히 거절하고 쉰다',s:'내구성↑ · 멘탈 조금↓',fx:{dur:2.5,men:-1},r:'몸은 푹 쉬었다. 조금 아쉬운 마음이 남는다.'},
     {t:'거절하고 그 시간에 훈련',s:'워크에식↑ · 피로↑',fx:{we:2.5,fat:6},r:'휴식일도 반납했다.'}]}}
-  if(k==='junior')return{title:'🏃 후배의 부탁',text:`팀 막내가 다가온다. "${giv(ME.name)} 선배님, 저 개인 훈련 좀 봐주시면 안 될까요?"`,ch:[
+  if(k==='junior')return{title:'🏃 후배의 부탁',text:mlb?`팀의 루키가 쭈뼛거리며 다가온다. "Hey, 개인 훈련 좀 같이 봐줄 수 있어?" 통역 없이도 무슨 말인지 알겠다.`:`팀 막내가 다가온다. "${giv(ME.name)} 선배님, 저 개인 훈련 좀 봐주시면 안 될까요?"`,ch:[
     {t:'매일 같이 훈련한다',s:'워크에식 크게↑ · 팀 분위기↑ · 내구성↓',fx:{we:3,chem:4,dur:-1.5},r:'후배와 매일 땀을 흘렸다. 내 몸 관리는 뒷전이 됐다.'},
     {t:'고민 상담만 해준다',s:'멘탈↑ · 팀 분위기 조금↑ · 워크에식 조금↓',fx:{men:2.5,chem:2,we:-1},r:'얘기를 들어주다 보니 내 마음도 편해졌다.'},
     {t:'"미안, 지금은 내 몸이 먼저야"',s:'내구성↑ · 팀 분위기↓',fx:{dur:2.5,chem:-3},r:'후배는 서운한 눈치였다.'}]};
@@ -14605,6 +14605,11 @@ const PSCLAIM840=/가을야구도 못 갔|덕분에 가을야구|가을야구 (�
  const _cMT840=comments;comments=function(tone,x){let out=_cMT840.apply(this,arguments);try{if(!Array.isArray(out))return out;
   const hasTroll=out.some(c=>c&&TROLL840.test(String(c.t||''))&&!META840.test(String(c.t||'')));if(!hasTroll)out=out.filter(c=>!(c&&META840.test(String(c.t||''))));
   if(S&&(S.stage==='hs'||S.stage==='univ'||(x&&(x.ps||x.intl))||/^ps|^walkoff$|^ring$|^ws$|^intl$|^gold$/.test(String(tone||''))))out=out.filter(c=>!(c&&(SAB840.test(String(c.t||''))||/WAR이 음수면|언론 플레이/.test(String(c.t||'')))))}catch(e){}return out}}
+/* 메이저 팀 이벤트에 한국식 위계 말투('선배님', '형님', '레전드 선배')가 나오던 것 */
+function mlbTxt840(s){if(typeof s!=='string'||!S||!S.pro||S.pro.league!=='MLB'||S.stage!=='pro')return s;
+  return s.replace(/팀 레전드 선배의 은퇴식/g,'팀 레전드의 은퇴식').replace(/^선배 은퇴 행사 준비$/,'레전드 은퇴 행사 준비').replace(/"형님, /g,'"').replace(/"선배님 그 공 그립 어떻게 잡으세요\?"/g,'"그 공 그립 어떻게 잡는 거예요?"').replace(/불펜 형들과/g,'불펜 동료들과').replace(/선배님, /g,'').replace(/선배님/g,'')}
+{const _pfM840=pickFev;pickFev=function(){const e=_pfM840.apply(this,arguments);try{if(!e||!S||!S.pro||S.pro.league!=='MLB')return e;const f=a=>Array.isArray(a)?a.map(v=>typeof v==='string'?mlbTxt840(v):v):a;return Object.assign({},e,{t:mlbTxt840(e.t),x:mlbTxt840(e.x),ok:f(e.ok),no:f(e.no)})}catch(err){return e}}}
+{const _reM840=randEvent;randEvent=function(){const e=_reM840.apply(this,arguments);try{if(e&&S&&S.pro&&S.pro.league==='MLB'){e.title=mlbTxt840(e.title);e.text=mlbTxt840(e.text)}}catch(err){}return e}}
 
 /* ===================== v840k KBO FA 몸값 현실화 =====================
    최근 3시즌 WAR(가중 5:4:3)와 나이로 연평균을 정하고, 능력치(오버롤)는 조금만 반영.
