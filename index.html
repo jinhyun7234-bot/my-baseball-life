@@ -2185,9 +2185,9 @@ function phaseArticle(g,ps){const m=g.m,t=shortTeam(),pn=PHASE[S.phase],nm=ME.na
     else if(ps<=-1.2)article(pick([`${nm}, 깊어지는 부진… 반등 카드는?`,`'타율 ${avg(m)}' ${nm}, ${t}의 고민`,`침묵하는 ${nm}의 방망이`]),`${jo(nm,'은','는')} ${pn} ${lineTxt(g)}에 그쳤다.`,'bad',{avg:avg(m),hr:m.HR,ops:ops(m)});
     else article(`${nm}, ${pn} 결산: 타율 ${avg(m)} ${m.HR}홈런`,`무난한 ${jo(pn,"을","를")} 보냈다. ${lineTxt(g)}.`,'mix',{avg:avg(m),hr:m.HR,ops:ops(m)})}
   else{const x={era:era(m),k:m.K,w:m.W};
-    if(ps>=1.2)article(pick([`${nm}, ${pn} 평균자책점 ${era(m)}… 마운드의 지배자`,`'${m.K}탈삼진' ${nm}, ${t} 마운드의 핵`,`${nm} ${m.W}승 ${m.SV?m.SV+'세이브 ':''}— 믿고 보는 투수`]),`${jo(nm,'은','는')} ${pn} ${lineTxt(g)}를 기록했다.`,'hype',x);
+    if(ps>=1.2)article(pick([`${nm}, ${pn} 평균자책점 ${era(m)}… 마운드의 지배자`,`'${m.K}탈삼진' ${nm}, ${t} 마운드의 핵`,...((m.W||0)+(m.SV||0)>=3?[`${nm} ${m.W?m.W+'승 ':''}${m.SV?m.SV+'세이브 ':''}— 믿고 보는 투수`]:[])]),`${jo(nm,'은','는')} ${pn} ${lineTxt(g)}를 기록했다.`,'hype',x);
     else if(ps<=-1.2)article(pick([`${nm}, 흔들리는 마운드… ERA ${era(m)}`,`${nm}의 부진, ${t} 마운드에 먹구름`]),`${jo(nm,'은','는')} ${pn} ${lineTxt(g)}로 고전했다.`,'bad',x);
-    else article(`${nm}, ${pn} 결산: ${m.W}승 ERA ${era(m)}`,`${lineTxt(g)}.`,'mix',x)}}
+    else article(`${nm}, ${pn} 결산: ${(m.SV||0)+(m.HLD||0)>(m.W||0)?`${m.SV?m.SV+'세이브 ':''}${m.HLD?m.HLD+'홀드 ':''}`:`${m.W}승 `}ERA ${era(m)}`,`${lineTxt(g)}.`,'mix',x)}}
 
 /* ===================== EVENTS (rare) ===================== */
 const EV=[
@@ -14596,6 +14596,12 @@ const PSCLAIM840=/가을야구도 못 갔|덕분에 가을야구|가을야구 (�
 {const _drT840=decideRole;decideRole=function(){const r=_drT840.apply(this,arguments);try{if(S&&S.stage==='pro'&&S.pro&&S.pro.league==='KBO'&&S._tourY===S.y&&S.phase===2&&!(ME&&ME.inj)){if(r==='fB')return'bench';if(r==='fP')return'MR'}}catch(e){}return r}}
 /* 메이저 경력 있는 선수 FA 기사에 '우물 안 개구리' 금지 */
 {const _cFB840=comments;comments=function(tone,x){let out=_cFB840.apply(this,arguments);try{if(!Array.isArray(out)||!S||!S.rows||!S.rows.some(r=>r.lv==='MLB'))return out;out=out.filter(c=>!(c&&/우물 안 개구리|KBO에서만 통하는/.test(String(c.t||''))))}catch(e){}return out}}
+/* 혼자 덩그러니 달린 '반박은 못 하고 말투만 지적하네'·'분탕 왔네' 같은 반응 댓글은, 그 기사에 시비 댓글이 있을 때만 · 고교·대학 기사엔 세이버 논쟁 X */
+{const META840=/분탕 왔네|어그로한테|먹이를 주니|먹이 금지|댓글 수집하러|갈드컵|팬덤끼리 싸우는|기록 가져오니까 갑자기|반박은 못 하고|관심이 필요한 사람|일부러 욕먹으려고/,TROLL840=/고평가 아니냐|왜 얘만 띄워|빨아줄 성적|거품 같음|풀경기 보면 평가|과대평가|거품|어그로|분탕|까던 놈|실드 치는/,
+  SAB840=/야알못|야잘알|출루율이랑 장타율|세이버|클래식 스탯|WAR만|WPA|체감도르|표본이 작아|타율 \.\d+이어도|만능 타자|숫자 하나로|숫자 없이|실책이 적다고 수비를|실책 개수만으로/;
+ const _cMT840=comments;comments=function(tone,x){let out=_cMT840.apply(this,arguments);try{if(!Array.isArray(out))return out;
+  const hasTroll=out.some(c=>c&&TROLL840.test(String(c.t||''))&&!META840.test(String(c.t||'')));if(!hasTroll)out=out.filter(c=>!(c&&META840.test(String(c.t||''))));
+  if(S&&(S.stage==='hs'||S.stage==='univ'))out=out.filter(c=>!(c&&SAB840.test(String(c.t||''))))}catch(e){}return out}}
 
 /* ===================== v840k KBO FA 몸값 현실화 =====================
    최근 3시즌 WAR(가중 5:4:3)와 나이로 연평균을 정하고, 능력치(오버롤)는 조금만 반영.
