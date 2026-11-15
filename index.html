@@ -8897,7 +8897,7 @@ ACT.rchg=function(a){if(a.k==='SP'){S.rel.fame=(S.rel.fame||0)+2;return'"선발 
 {const _my=mlbYears;mlbYears=function(usd,proven){let y=_my(usd,proven);try{const a=age();if(a>=34&&a<=37&&(proven||usd>=4))y=Math.max(y,usd>=20?ri(2,4):usd>=8?ri(2,3):2);else if(a>=38&&a<=40&&(proven||usd>=4))y=Math.max(y,2)}catch(e){}return y}}
 /* MLB 재계약: 전용 기사·기자회견 문구·댓글 (해외 진출 문구 안 쓰기) */
 function resignComments(tn,yrs,good){const gn=giv(ME.name),C=[[`${yrs}년 더 ${tn}에서 볼 수 있다니 다행이다`,['이건 무조건 잡아야 했음']],[`구단이 ${gn} 가치를 제대로 인정했네`,['그동안 보여준 게 있으니까']],[`이제 마음 편하게 야구만 하면 된다`,[]],[`이 정도 대우면 메이저에서 완전히 자리 잡았다는 거지`,['한국 선수가 이런 재계약 받는 거 자체가 대단함']],
-  [`${tn} 팬들도 ${gn} 남는다고 좋아하더라 ㅋㅋ`,['현지 반응 보니까 다들 환영하던데']],[good?`계약 기간 동안 지금처럼만 해줘`:`이번 계약 기간에 다시 반등하자`,[]],[`${yrs>=3?'장기 계약':'재계약'} 축하한다 ${gn}`,['축하해요!!']]];
+  [`${tn} 팬들도 ${gn} 남는다고 좋아하더라 ㅋㅋ`,['현지 반응 보니까 다들 환영하던데']],[good?`계약 기간 동안 지금처럼만 해줘`:`이번 계약 기간에 다시 반등하자`,[]],[`${yrs>=3?'장기 계약':'재계약'} 축하한다 ${gn}`,['축하해요!!']],[`${tn}에서 커리어 끝까지 가자`,[]],[`몇 년 더 ${gn} 유니폼 입은 거 볼 수 있다 행복하다`,[]],['현지 팬들이 제일 좋아할 소식',['구단 SNS 댓글 난리 남']],['재계약은 결국 실력 인정이다',[]],['에이전트 일 잘했다 ㅋㅋ',['협상왕 인정']],[good?'지금 폼이면 계약 끝날 때 또 대박 각':'계약 첫해부터 다시 증명하자',[]]];
   return C.filter(([t])=>!seenHas('dd:'+josaFix(t))).sort(()=>R()-.5).slice(0,ri(4,6)).map(([t,re])=>{seenAdd('dd:'+josaFix(t));return[t,re]}).map(([t,re])=>mkC(josaFix(t),re.map(r=>({nk:pick(NICKS),t:josaFix(r),up:ri(30,500)})),{up:ri(300,3500)}))}
 {const _ab=ACT.abroad;ACT.abroad=function(a){const r=_ab(a);try{if(a&&a.stay&&a.lg==='MLB'){const tn=String(S.pro.tname||'').replace(/\s*\(.*\)$/,''),lw=lastWAR();
   article(`${ME.name}, ${jo(tn,"과","와")} ${a.yrs}년 ${typeof usd2==='function'?usd2(a.per*a.yrs/USDM):usd(a.per*a.yrs)} 재계약`,`구단은 그동안의 활약을 인정해 ${a.yrs}년 계약을 안겼다.`,'mix',{});const ar=S.arts[0];if(ar)ar.cm=resignComments(tn,a.yrs,lw>=2,a.per);
@@ -14084,7 +14084,7 @@ lpBench=function(){return`<div class="lp-art"><img class="lp-dk" src="${TITLE_IM
    그 반기·그 시즌 실제 성적을 포지션 기대치·나이·연봉·계약 해·팀 순위와 같이 보고 맞는 댓글만 붙인다.
    결산과 상관없는 경기 당일 잡담(날씨·치킨·직관·중계·'이 경기')은 걸러내고, 같은 말 반복은 줄인다.
    말투는 팀 갤러리·야구 커뮤니티 성적 글 댓글 유형을 참고해 새로 씀 (실명·센 욕 없음) */
-{const _paR840=phaseArticle;phaseArticle=function(g,ps){const pv=S._rc840,id0=S.artId;S._rc840={g,ps};try{return _paR840.apply(this,arguments)}finally{S._rc840=pv||null;try{const a=S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)){const CH=(S.stage==='hs'||S.stage==='univ')?/중계|직관|라디오|화질|치킨|맥주|시청자|월요일|퇴근|지하철|몰래 (봄|보는)|야구장 (맥주|치킨)|날씨|우천|응원단장|치어리더|응원가|명전|명예의 전당|영구결번|골든글러브|MVP 확정/:/중계|직관|라디오|화질|치킨|맥주|시청자|월요일|퇴근|지하철|몰래 (봄|보는)|야구장 (맥주|치킨)|날씨|우천/;a.cm=a.cm.filter(c=>c&&(c.must||!(RCF840.test(String(c.t||''))||CH.test(String(c.t||'')))));a.cm.forEach(c=>{if(Array.isArray(c.re))c.re=c.re.filter(r=>r&&!CH.test(String(r.t||'')))})}}catch(e){}}}}
+{const _paR840=phaseArticle;phaseArticle=function(g,ps){const pv=S._rc840,id0=S.artId;S._rc840={g,ps};try{return _paR840.apply(this,arguments)}finally{S._rc840=pv||null;try{const a=S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)){const CH=(S.stage==='hs'||S.stage==='univ')?/중계|직관|라디오|화질|치킨|맥주|시청자|월요일|퇴근|지하철|몰래 (봄|보는)|야구장 (맥주|치킨)|날씨|우천|응원단장|치어리더|응원가|명전|명예의 전당|영구결번|골든글러브|MVP 확정/:/중계|직관|라디오|화질|치킨|맥주|시청자|월요일|퇴근|지하철|몰래 (봄|보는)|야구장 (맥주|치킨)|날씨|우천|주루사|배송하|아웃됐습니다|방금|이번 타석|그 타석|저 타구|먹이를 주니까|야알못|야잘알|지표로 설명|타율이 왜 중요|타율 \.\d+이어도|타율보다 출루율|현대야구|클래식 스탯/;a.cm=a.cm.filter(c=>c&&(c.must||!(RCF840.test(String(c.t||''))||CH.test(String(c.t||'')))));a.cm.forEach(c=>{if(Array.isArray(c.re))c.re=c.re.filter(r=>r&&!CH.test(String(r.t||'')))})}}catch(e){}}}}
 const RCF840=/우천 ?취소|날씨|치킨|퇴근길|지하철|과제 못|야구 없는 월요일|굿즈 언제|배우가 왜|기사 쓰는 사람|직원임|김칫국|체감도르|중립기어|평화로운 야구 댓글|기사 제목 어그로|현장 계셨던|원정 직관|문자중계|시즌 티켓|직관 (간다|가서|간 사람|한 사람|승률)|이 경기|이번 경기|오늘 경기|역사의 현장|중계 (보다가|화면)|캐스터|해설진|하이라이트 각|소리 질러서|벽 침|애국가|대한민국 만세|서버 터졌|기록실 바|등장곡|유니폼 오늘 샀다|보러 야구장 간다|다음 경기 선발|햇빛|선크림|BTS|봉준호/;
 const RCREP840=/자신감|클래스가 다르|스윙 (소름|클래스|레전드)|타석 집중력|눈빛|표정/;
 function rcFill840(s,o){const nm=ME.name;return String(s).replace(/\{n\}(이|가|은|는|을|를|과|와|도|의)?/g,(m,j)=>{if(!j)return nm;if(j==='도'||j==='의')return nm+j;return jo(nm,{이:'이',가:'이',은:'은',는:'은',을:'을',를:'을',과:'과',와:'과'}[j],{이:'가',가:'가',은:'는',는:'는',을:'를',를:'를',과:'와',와:'와'}[j])}).replace(/\{(\w+)\}/g,(m,k)=>o[k]!=null?o[k]:m)}
@@ -14282,6 +14282,16 @@ function srCm840b(q){const out=[];try{if(!S||!S.pro||!ME||S.me!==ME)return out;c
     else if(SPp&&a>=36&&era>=4.3)add(['{age}살에 로테이션 지킨 것만으로 박수 성적은 조금 아쉬웠다'])}}catch(e){}return out.slice(0,1)}
 {const _bsr840c=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsr840c.apply(this,arguments);try{if(q&&Array.isArray(q.cm)){const L=srCm840b(q);if(L.length){q.cm=q.cm.filter(c=>!(c&&SRGEN840.test(String(c.t||''))));q.cm.splice(Math.min(1,q.cm.length),0,...L.map(t=>mkC(josaFix(t),[],{up:ri(1200,5000)})));q.cm=q.cm.slice(0,5)}}}catch(e){}return q}}
 
+/* ---------- v840: 결산 댓글 풀 더 (커뮤 말투 · 웃긴 것 위주) ---------- */
+RCB840[5].push('{n} 지금 타석에서 공이 수박만 하게 보이는 듯 ㅋㅋ','투수들 사이에서 {n} 피하는 게 국룰 됐다','상대 감독 인터뷰에서 {n} 얘기만 나온다 ㅋㅋ','이 정도면 그냥 고의4구가 답이다 ㅋㅋ');
+RCB840[4].push('타석 들어서면 일단 출루는 하겠지 싶은 선수','{n} 나올 때는 화장실도 안 간다 ㅋㅋ','득점권에서 {n} 나오면 마음이 편안하다');
+RCB840[1].push('{n} 타석 때 화장실 다녀오면 딱 맞음 ㅋㅋ ㅠ','요즘 {n} 보면 볼넷 하나도 감사하다','방망이가 왜 이렇게 헛도냐 ㅠ');
+RCB840[0].push('{n} 요즘 출근은 하는데 업무를 안 함 ㅋㅋ','감독님 {n} 좀 쉬게 해 주세요 머리 식히고 오게','이 정도면 타석에서 서 있는 것도 용하다 ㅠ');
+RCP840[5].push('{n} 등판일 상대 타자들 단체로 아픈 거 아니냐 ㅋㅋ','투수가 야구를 너무 쉽게 한다');
+RCP840[1].push('{n} 등판하면 불펜 형들이 바빠진다 ㅠ','1회부터 투구 수 30개 넘는 거 그만 보고 싶다');
+RCP840[0].push('{n} 마운드 올라오면 상대 팀 축제 ㅋㅋ ㅠ','선발 등판 = 불펜 데이 공식 성립');
+RCPB840.C.g.push('포수가 이렇게 치면 안방마님이 아니라 안방 대감이다 ㅋㅋ');RCPB840.SS.g.push('유격수 거포라니 귀하다 귀해');RCPB840.CF.g.push('중견수가 이 정도면 외야 사령관 인정');RCPB840['2B'].g.push('2루수가 클린업 쳐도 되겠다 ㅋㅋ');RCPB840['3B'].g.push('핫코너가 아니라 핫배트 ㅋㅋ');
+
 /* ===================== v840 밸런스 보정 (최대 육성 시뮬 800명 기준) =====================
    · 포지션마다 골든글러브·골드글러브·실버슬러거·MVP 받는 비율이 고르게 (현실 차이 조금은 남김)
    · 명예의 전당: 최대로 잘 키운 타자 95%가 들어가는 선 · 마무리·셋업·선발은 각자 선
@@ -14351,7 +14361,7 @@ function gsLines840(x){const s=gsit840(x);if(!s)return[];const P=isP(),o={myR:s.
 
 /* ---------- ②③④ 마지막 정리 (모든 댓글) ---------- */
 const CALM840=/선생님 그건 좀|진정하세요|진정해|워워|선 넘었|흥분 좀/,OVER840=/그건 좀 오바고/;
-const EXT840=/(은퇴(해|시켜|하자|각|해라)|방출|트레이드 ?(해|시켜|각|보내)|팔아(라|버려)|2군 (보내|가라|가서)|꺼져|나가라|짐 싸|역대 (최고|최강|1위|급)|GOAT|고트|신이다|신 그 자체|사람이냐|사람 아니|인간이 아니|명전 확정|명예의 전당 (확정|직행)|영구결번 (확정|각)|MVP (확정|각|예약)|무조건 (MVP|명전|우승)|평생|절대|ㅅㅂ|개(못|잘|같|빡|웃)|폐급|먹튀|노답|답이 없|최악|빼라|쓰지 ?마|경질|야구 (접|그만)|환불|해체|미친놈|미친 놈|돌았|정신 나|다 팔|싹 다|메이저 (씹어|박살|정복)|천재|1황|원탑|리빙 레전드|레전드 확정|4할|50홈런|60홈런|사랑한다|결혼|업고 다녀|내 새끼|우리 아들|군대 대신|!!|ㅋㅋㅋㅋㅋㅋ|ㅠㅠㅠㅠ|역적|국대 (빼|박탈)|다 죽|죽어|최고다 진짜|씹어먹)/;
+const EXT840=/(은퇴(해|시켜|하자|해라)|방출|트레이드 ?(해|시켜|보내)|팔아(라|버려)|2군 (보내|가라)|꺼져|나가라|짐 싸|역대 (최고|최강|1위)|GOAT|고트|신이다|신 그 자체|사람이냐|사람 아니|인간이 아니|명전 확정|명예의 전당 (확정|직행)|영구결번 (확정|각)|MVP (확정|예약)|무조건 (MVP|명전|우승)|ㅅㅂ|개(못|같|빡)|폐급|먹튀|노답|답이 없|최악|빼라|쓰지 ?마|경질|야구 (접|그만)|환불|해체|미친놈|미친 놈|돌았|정신 나|다 팔|메이저 (씹어|박살|정복)|1황|원탑|리빙 레전드|레전드 확정|4할|60홈런|사랑한다|결혼해|업고 다녀|내 새끼|우리 아들|군대 대신|역적|국대 (빼|박탈)|씹어먹)/,EXCI840=/!{4,}|ㅋ{8,}|ㅠ{5,}|만세!!|소리 질렀/;
 const HYPE840=/미쳤|MVP|역대|최고|레전드|메이저|명전|우승|무조건|확정|미친|괴물|사기|원탑|천재|!|ㅋㅋㅋ|대박|ㄷㄷ|지배|씹어/;
 const PSW840=/가을만 되면 (작아|사라지|쫄|실종|맛이 가|손이 떨)|가을 DNA(가|는|이)? ?없|정규시즌용|큰 경기 (약한|울렁증|쫄보)|큰 경기에 약|가을에 약|가을 울렁증|새가슴|가을만 되면 무관|가을만 되면 작/;
 const PSS840=/가을 (사나이|남자)|가을의 남자|가을만 되면 (눈|타격폼|눈빛|방망이가 달라|온몸|뒷문|불이|다른 사람)|가을 DNA (확실|인정|는 국적)|큰 경기 체질|포스트시즌 전용/;
@@ -14365,8 +14375,8 @@ function inPS840(x){try{if(x&&x.ps)return true;const T=S._psYT;return!!(T&&T.y==
   const killT=t=>{t=String(t||'');if(PSW840.test(t)&&!car.weak)return true;if(PSS840.test(t)&&!car.strong&&!(todayGood&&!/가을만 되면/.test(t)))return true;if(PSNOW840.test(t)&&!now&&!(x&&x.intl))return true;return false};
   out=out.filter(c=>!(c&&killT(c.t)));
   const SAFE=['이 사람 매일 출근하네 ㅋㅋ','댓글이 더 재밌음','닉값 하네','님 닉 웃기네','ㅋㅋㅋㅋ','이 댓글 왜 웃기냐'],SOFT=['음 글쎄','반반이다','그건 좀 더 봐야지','ㅋㅋ 그럴 수도'];
-  out.forEach(c=>{if(!c||!Array.isArray(c.re))return;const par=String(c.t||''),ext=EXT840.test(par),hy=ext||HYPE840.test(par);c.re=c.re.filter(r=>r&&!killT(r.t));
-    c.re.forEach(r=>{const t=String(r.t||'');if(CALM840.test(t)&&!ext)r.t=pick(SAFE);else if(OVER840.test(t)&&!hy)r.t=pick(SOFT)})})}catch(e){}return out}}
+  out.forEach(c=>{if(!c||!Array.isArray(c.re))return;const par=String(c.t||''),ext=EXT840.test(par),exc=EXCI840.test(par),hy=ext||exc||HYPE840.test(par);c.re=c.re.filter(r=>r&&!killT(r.t));
+    c.re.forEach(r=>{const t=String(r.t||'');if(/진정하세요|진정해|워워|흥분 좀/.test(t)){if(!(ext||exc))r.t=pick(SAFE)}else if(CALM840.test(t)&&!ext)r.t=pick(SAFE);else if(OVER840.test(t)&&!hy)r.t=pick(SOFT)})})}catch(e){}return out}}
 
 /* ---------- ⑤ 계약 기사: 최근 잘한 선수한텐 '거품·오버페이·먹튀' 소리 안 함 (반박하는 말투는 둠) ---------- */
 const BUB840=/거품|오버페이|과대평가|고평가|먹튀|돈값 (할지|하겠|못)|비싸게|뻥튀기|이 돈이면|연봉 아깝|돈 낭비|혈세|과하다|과했다|돈 쓸 데가|미친 계약|호구/,BUBOK840=/아님|아니다|아니지|아니었|조용|쏙 들어|틀렸|소리 (못|안)|하던 사람|던 놈|던 사람/;
