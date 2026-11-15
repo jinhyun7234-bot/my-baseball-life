@@ -5282,14 +5282,14 @@ function g1Lines(x){const nm=ME.name,gn=giv(nm),gI=jo(gn,'이','가'),win=x.win!
   const add=[];for(let i=0;i<2&&L.length;i++){const t=L.splice(ri(0,L.length-1),1)[0];seenAdd(t);add.push(t)}
   add.forEach((t,i)=>out.splice(Math.min(out.length,i*2+1),0,{nk:pick(NICKS),fl:null,t,up:Math.round(ri(100,900)*(1+S.rel.fame/30)),dn:ri(0,6),nar:1,ago:pick(AGO),re:/인생 고점투/.test(t)&&R()<.6?[{nk:pick(NICKS),t:meSP?`${jo(ace,'은','는')} 짧게 쉬고 던졌는데도 저렇게 던지네 레전드`:'둘 다 오늘 공 미쳤다',up:ri(10,120)}]:[]}))}catch(e){}return out}}
 /* 홈런 공방전 (양 팀 합계 4홈런 이상, 둘 다 1개 이상) */
-{const _c36=comments;comments=function(tone,x){let out=_c36(tone,x);try{if(!x||!(x.ps||x.intl)||!(x.hrMy>=1&&x.hrOp>=1&&x.hrMy+x.hrOp>=4)||!S||!ME)return out;const gn=giv(ME.name),gI=jo(gn,'의','의'),kbo=S.pro&&S.pro.league==='KBO',nick=kbo?TEAMS[S.pro.team].nick:(typeof myMLBNick==='function'?myMLBNick():'우리'),opp=x.opp||'상대',myHR=(x.pl||[]).filter(p=>p.t==='HR'),tot=x.hrMy+x.hrOp;
+{const _c36=comments;comments=function(tone,x){let out=_c36(tone,x);try{if(!x||!(x.ps||x.intl)||!(x.hrMy>=1&&x.hrOp>=1&&x.hrMy+x.hrOp>=4)||!S||!ME)return out;const gn=giv(ME.name),gI=jo(gn,'의','의'),kbo=S.pro&&S.pro.league==='KBO',nick=x.intl?'대한민국':kbo?TEAMS[S.pro.team].nick:(typeof myMLBNick==='function'?myMLBNick():'우리'),opp=x.opp||'상대',myHR=(x.pl||[]).filter(p=>p.t==='HR'),tot=x.hrMy+x.hrOp;
   const hl=(x.hrLog||[]).map((h,k)=>{const aft=h.me?h.my-h.op:h.op-h.my,bef=aft-h.r,tot0=h.my+h.op-h.r;let lb,adj;
       if(bef<0&&aft<0){lb='추격포';adj=pick(['끈질긴','따라붙는','희망 살리는'])}else if(bef<0&&aft===0){lb='동점포';adj=pick(['극적인','소름 돋는','원점으로 돌리는'])}
       else if(bef<0&&aft>0){lb='역전포';adj=pick(['간지 빠던','경기 뒤집는','미친'])}else if(bef===0&&tot0===0){lb='선제포';adj=pick(['기선 제압','첫 판을 여는'])}
       else if(bef===0){lb=h.r>=2?h.r+'점 홈런':'솔로포';adj=pick(['균형 깨는','다시 앞서가는'])}else if(h.i>=7&&aft>=3){lb='쐐기포';adj=pick(['쐐기를 박는','확인 사살'])}else{lb=h.r>=2?h.r+'점 홈런':'솔로포';adj=pick(['달아나는','숨통 트는'])}
       const who=h.mine?gn:h.me?nick:opp,pr=(bef<0&&aft>=0?3:bef===0&&aft>0&&tot0>0?2:0)+(h.mine?2:0);return{k,pr,t:`${jo(who,'의','의')} ${h.i}회 ${adj} ${lb}`}});
   const items=hl.slice().sort((a,b)=>b.pr-a.pr||a.k-b.k).slice(0,3).sort((a,b)=>a.k-b.k).map(h=>h.t);if(x.gErr&&items.length<3)items.push(`${gn}의 개호구 실책`);
-  const L=[...(items.length>=2?[`${items.map((t,i)=>`${i+1}. ${t}`).join(' / ')} — 이 ${items.length}개가 진심 경기 너무 재밌게 만들었다`]:[]),`홈런 ${tot}방 오가는 가을야구 실화냐 ㅋㅋㅋ`,'공이 다 담장 밖으로 날아가네 양 팀 투수들 멘탈 나갔겠다','양 팀 다 홈런으로 치고받는 거 미쳤다 이게 가을이지'];
+  const L=[...(items.length>=2?[`${items.map((t,i)=>`${i+1}. ${t}`).join(' / ')} — 이 ${items.length}개가 진심 경기 너무 재밌게 만들었다`]:[]),`홈런 ${tot}방 오가는 ${x.intl?'국제대회':'가을야구'} 실화냐 ㅋㅋㅋ`,'공이 다 담장 밖으로 날아가네 양 팀 투수들 멘탈 나갔겠다',`양 팀 다 홈런으로 치고받는 거 미쳤다 ${x.intl?'국대 경기는 이 맛이지':'이게 가을이지'}`];
   if(myHR.length)L.push(`${myHR[0].i}회 ${gn} 홈런 빠던 내 생에 최고의 빠던`);
   const P=L.filter(t=>!seenHas(t)),add=[];if(P[0]&&/이 \d개가/.test(P[0]))add.push(P.shift());while(add.length<2&&P.length)add.push(P.splice(ri(0,P.length-1),1)[0]);
   add.forEach((t,i)=>{seenAdd(t);out.splice(Math.min(out.length,i*2),0,{nk:pick(NICKS),fl:null,t,up:Math.round(ri(400,2300)*(1+S.rel.fame/30)),dn:ri(0,10),nar:1,ago:pick(AGO),re:R()<.4?[{nk:pick(NICKS),t:pick(['ㄹㅇ 홈런 나올 때마다 소리 질렀다','타자들 오늘 다 미쳤다','이 경기 하이라이트 필수 시청']),up:ri(10,200)}]:[]})})}catch(e){}return out}}
