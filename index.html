@@ -2704,7 +2704,7 @@ Object.assign(ACT,{
   lifeok(){return''},
   lv(a){const g=S.gf;if(a.c){if(S.money<a.c)return'돈이 부족해서 못 했다…';S.money-=a.c}if(g)g.aff=cl(g.aff+(a.d||0),0,100);if(a.f)ME.fat=cl(ME.fat+a.f,0,100);if(a.m)ME.hid.men=cl(ME.hid.men+a.m,20,80);if(a.fm)ME.form=cl(ME.form+a.fm,-6,6);
     return(a.d||0)>=10?`${g?jo(g.n,'이','가'):''} 정말 행복해했다.`:(a.d||0)>0?'좋은 시간을 보냈다.':(a.d||0)<0?'분위기가 싸늘해졌다…':'푹 쉬었다.'},
-  budget(a){S.budget=a.b;return`올해는 '${BUD[a.b].n}' 살기로 했다. 매달 생활비 ${money(livingCost())}가 나간다.`},
+  budget(a){S.budget=a.b;return`올해는 '${BUD[a.b].n}' 살기로 했다. 매달 생활비 ${jo(money(livingCost()),'이','가')} 나간다.`},
   gfstart(a){S.gf={n:a.n,aff:62,since:S.y};if(S.stage==='pro'&&S.rel.fame>=25&&R()<.6)article(`[단독] ${ME.name}, ${a.n} 씨와 열애 중`,`${shortTeam()} ${jo(ME.name,'이','가')} 일반인 여성과 교제 중인 것으로 확인됐다. 소속팀은 "사생활이라 조심스럽다"고 밝혔다.`,'love');return`${jo(a.n,'과','와')} 사귀기 시작했다. 요즘 표정이 밝아졌다는 소리를 듣는다.`},
   gfno(){S.rel.coach=cl(S.rel.coach+2,0,100);S.gfCool=3;return'아쉽지만 지금은 야구가 먼저다.'},
   gift(a){if(S.money<a.c){S.gf.aff=cl(S.gf.aff-5,0,100);return'돈이 모자라서 준비를 못 했다… 서운해하는 눈치다.'}S.money-=a.c;S.gf.aff=cl(S.gf.aff+a.d,0,100);return a.d>15?`${jo(S.gf.n,'이','가')} 감동해서 울먹였다. 관계가 더 단단해졌다.`:`${jo(S.gf.n,'이','가')} 손편지를 보고 활짝 웃었다.`},
@@ -3051,7 +3051,7 @@ function mlbPen(k){if(!S||S.stage!=='pro'||!S.pro||S.pro.league!=='MLB'||S.me!==
   if(!isP()){if(!['con','pow','eye'].includes(k))return 0;const T=['con','pow','spd','rng','fld','arm'].map(x=>raw(x)),df=(raw('rng')+raw('fld')+raw('arm'))/3;return Math.max(0,54-df)*.3+Math.max(0,Math.max(...T)-Math.min(...T)-22)*.12}
   if(!['stf','ctl','velo'].includes(k))return 0;const n=PITCHES.filter(x=>raw(x)>=45).length;return Math.max(0,3-n)*2.5+Math.max(0,50-(raw('pcl')||45))*.15}
 /* 콜업/강등 문구 MLB용 */
-{const _ms=monthStep;monthStep=function(rep){const n0=rep.lines.length;_ms(rep);if(S.pro&&S.pro.league==='MLB')for(let i=n0;i<rep.lines.length;i++)rep.lines[i]=rep.lines[i].replace('1군 콜업!','메이저리그 콜업!').replace('1군 엔트리 말소…',`${LVN.AAA}로 강등…`).replace('2군에서','마이너에서')}}
+{const _ms=monthStep;monthStep=function(rep){const n0=rep.lines.length;_ms(rep);if(S.pro&&S.pro.league==='MLB')for(let i=n0;i<rep.lines.length;i++)rep.lines[i]=rep.lines[i].replace('1군 콜업!','메이저리그 콜업!').replace('1군 엔트리 말소…',`${LVN.AAA}로 강등…`).replace('2군에서','마이너에서').replace('감독은 "열흘 뒤에 보자"고 했다.','감독은 "내려가서 감 잡고 다시 올라와라"고 했다.')}} /* v840: 메이저엔 열흘 재등록 규정이 없어서 문구 바꿈 */
 /* 계약 현황 카드 */
 function vContractCard(){const p=S.pro;if(S.stage!=='pro'||!p)return'';const lg=p.league,team=lg==='KBO'?`${TEAMS[p.team].city} ${TEAMS[p.team].nick}`:`${p.tname} (${lg})`;
   const rows=[['소속',team],['남은 기간',p.years>0?`${p.years}시즌`:'보류 (매년 연봉 협상)'],['연봉',moneyL(p.salary,lg)],...((p.opt||p.optK)?[['옵션',typeof optCardTxt804==='function'?optCardTxt804(lg):`연 ${moneyL(p.opt,lg)} · WAR 1.5 이상 시 지급`]]:[]),...(lg==='MLB'?[['마이너 거부권',p.noMinor?'있음 ✓':'없음']]:[]),...(lg==='KBO'&&!p.years?[['FA까지',`${Math.max(0,(p.lastFA?p.lastFA+4:p.faReq)-p.service)}시즌`]]:[])];
@@ -5648,7 +5648,7 @@ function toolHintLines(){const gn=giv(ME.name),w=weakTools().filter(k=>k!=='pitc
 /* 6) 선발은 완성도 높은 구종 3개, 불펜은 투피치로도 OK — 댓글 힌트 */
 {const _c71=comments;comments=function(tone,x){let out=_c71(tone,x);try{if(!S||!ME||!isP()||S.stage!=='pro'||!S.pro||(x&&x.intl))return out;
   const I=pitchInfo(),g=k=>eff(k),hasSlow=true,hasFast=true,gn=giv(ME.name),sp=ME.pos==='SP'||S.role==='SP';let z=null;
-  if(sp&&I.nGood===2){z=[`${gn} 선발로 오래 버티려면 구종 하나만 더 있으면 됨 ㅋㅋ`,['서드피치가 선발의 기본','투피치 선발은 5회가 한계']]}
+  if(sp&&I.nGood===2){const nAll=ME.pt?Object.keys(ME.pt).filter(k=>ME.pt[k]>0).length:0;/* v840: 구종이 많은데 '하나만 더'라고 하던 것 → 확실한 세 번째 무기 얘기로 */z=nAll>=4?[`${gn} 구종은 많은데 확실하게 믿을 공이 하나만 더 있으면 된다`,['다 어설프게 던지는 것보다 확실한 서드피치 하나','구종 수보다 완성도가 중요하다']]:[`${gn} 선발로 오래 버티려면 구종 하나만 더 있으면 됨 ㅋㅋ`,['서드피치가 선발의 기본','투피치 선발은 5회가 한계']]}
   else if(!sp&&I.nGood===2&&(tone==='hype'||(x&&(x.sv||((x.ipO||0)>=3&&(x.ra||0)===0)))))z=[`불펜은 ${gn}처럼 투피치면 충분하지 1이닝 전력투구`,['짧게 던지면 구종 두 개로도 안 읽힘','선발 욕심만 안 내면 딱 좋은 불펜']];
   if(!z||seenHas(z[0])||R()>.5||!cmX('pitchmix'))return out;seenAdd(z[0]);out.splice(Math.min(out.length,2),0,mkC(z[0],z[1],{up:ri(200,1200)}))}catch(e){}return out}}
 
@@ -11459,7 +11459,7 @@ for(let i=n0;i<rep.lines.length;i++){const l=rep.lines[i];
   out.push({t:`${tn} (MLB) 마이너 계약`,s:`스플릿 계약 · 스프링캠프 초청 · 1년`,d:`메이저 진입 시 연봉 ${usd2(maj)} (약 ${money(Math.round(maj*USDM))}) · 마이너에선 연 ${usd2(mn)} · 마이너 거부권 없음 · 6월 옵트아웃`,act:'mlbSplit',arg:{lg:'MLB',yrs:1,per:Math.round(mn*USDM),maj,mn,tn}})}catch(e){}return out}}
 ACT.mlbSplit=function(a){const a0=S.arts&&S.arts[0];
   /* v702: 스플릿(마이너) 계약인데 '메이저 계약! 꿈의 무대로' 기사·소식·40인 보장 계약서가 다른 팀 이름으로 먼저 뜨던 것 → 기사 한 건을 처음부터 마이너 계약 기사로 낸다 */
-  const tn0=a.tn||'MLB 구단',head=`${ME.name}, ${jo(tn0,"과","와")} 마이너 계약… "밑바닥부터 증명하겠다"`,body=`스프링캠프 초청 선수 신분. 메이저 로스터에 들면 연봉 ${usd2(a.maj)}, 마이너에 머물면 연 ${usd2(a.mn)}을 받는 스플릿 계약이다. 보장된 자리는 없다.`;
+  const tn0=a.tn||'MLB 구단',head=`${ME.name}, ${jo(tn0,"과","와")} 마이너 계약… "밑바닥부터 증명하겠다"`,body=`스프링캠프 초청 선수 신분. 메이저 로스터에 들면 연봉 ${usd2(a.maj)}, 마이너에 머물면 연봉이 ${usd2(a.mn)} 수준으로 내려가는 스플릿 계약이다. 보장된 자리는 없다.`;
   S._splArt702={head,body};let r;try{r=ACT.abroad({lg:'MLB',yrs:1,per:a.per,noMinor:false,opt:0,tname:a.tn,act:'mlbSplit'})}finally{S._splArt702=null}
   try{const p=S.pro;if(a.tn)p.tname=a.tn;p.split={maj:a.maj,mn:a.mn};p.splitUp=0;p.noMinor=false;S.mcu=null;
   let ab=null;try{const A=S.arts||[];for(let i=0;i<A.length&&i<3;i++){if(A[i]===a0)break;if(A[i]&&A[i].tone==='abroad'){ab=A[i];break}}
@@ -14488,6 +14488,21 @@ function speech840(home){try{const P=isP(),rings=(S.hist&&S.hist.rings)||0,yrs=p
 /* ---------- v840: 고교·대학 기사에 프로 레전드급 오버 (명전 예약·영구결번·MVP 확정) 거르기 ---------- */
 {const _cHs840=comments;comments=function(tone,x){let out=_cHs840.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME||!(S.stage==='hs'||S.stage==='univ'))return out;const RX=/명전|명예의 전당|영구결번|MVP 확정|골든글러브 (확정|예약)|응원단장|치어리더/;
   out=out.filter(c=>!(c&&!c.must&&RX.test(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!(r&&RX.test(String(r.t||''))))})}catch(e){}return out}}
+
+/* ---------- v840: 기사 종류별 상황 한 줄 더 (신인왕·2년차 징크스·연봉 인상·데뷔·콜업·부상 복귀·이적) — 한 커리어에 같은 말 한 번씩 ---------- */
+{const _cX840=comments;comments=function(tone,x){let out=_cX840.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME||S.stage!=='pro')return out;const T=String(tone||''),gn=ME.name,yrs=proYears(),a0=S.arts&&S.arts[0];
+  const put=(L,re)=>{const C=L.filter(t=>t&&!seenHas('xx:'+t));if(!C.length)return;const t=pick(C);seenAdd('xx:'+t);out.splice(Math.min(2,out.length),0,mkC(josaFix(t),re?[{nk:pick(NICKS),t:pick(re),up:ri(20,600)}]:[],{up:ri(900,5000)}))};
+  const roy=(S.awards||[]).some(z=>z&&/신인왕/.test(z.n||'')&&z.y===S.y),royPrev=(S.awards||[]).some(z=>z&&/신인왕/.test(z.n||'')&&z.y===S.y-1);
+  if(T==='award'&&roy&&S._royC840!==S.y){S._royC840=S.y;put([`${gn} 신인왕 축하한다 이제 2년차 징크스만 조심하자`,'데뷔 시즌에 신인왕이면 떡잎부터 달랐던 거다','신인왕 연봉 앞자리 바뀌겠네 ㅋㅋ 협상 기대된다'],['ㄹㅇ 축하축하','2년차에 더 잘하면 진짜다'])}
+  else if(S._rc840&&T==='bad'&&royPrev&&yrs<=3&&S._sopC840!==S.y){S._sopC840=S.y;put(['신인왕 받은 지 1년 만에 2년차 징크스 오나…','2년차 징크스 진짜 있나 보다 작년이랑 딴사람이다','작년 신인왕 맞냐 상대 팀들이 분석 다 끝냈네'],['한 번은 겪는 성장통이다','반등하면 진짜 레벨 업'])}
+  else if(T==='debut')put(['데뷔 축하한다 오늘이 진짜 시작이다',`${gn} 데뷔전 긴장한 게 보였다 첫 경기는 원래 그런 거다`,'첫 경기 기록지 평생 간직해라 ㅋㅋ'],['앞으로가 기대된다','첫 단추 잘 끼웠다'])
+  else if(T==='callup')put(['이번엔 기회 꽉 잡아라 다시는 안 내려가게','1군 공기 다르지? 오늘부터 증명해라','올라온 김에 자리 하나 꿰차자'],['응원한다','이번엔 정착하자'])
+  else if(T==='injRet')put(['재활 고생 많았다 이제 아프지만 말자','다치기 전보다 더 단단해져서 돌아온 것 같다','돌아오자마자 팀 분위기가 다르다 역시 있어야 할 선수'],['ㄹㅇ 기다렸다','건강이 최고다'])
+  else if(T==='move')put(['새 유니폼도 생각보다 잘 어울린다','이적 첫해에 보여 줘야 한다 첫 시즌이 제일 중요','트레이드 승자는 결국 성적이 정한다'],['잘해라 진심으로','새 팀 팬들한테 사랑받자'])}catch(e){}return out}}
+
+{const _arSal840=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arSal840.apply(this,arguments);try{if(tone==='salary'&&S.me===ME){const a=S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)){const m=String(head||'').match(/(\d+)% 인상/),pc=m?+m[1]:0;
+  const L=pc>=100?[`인상률 ${pc}% 실화냐 구단이 이번엔 화끈하게 쐈다`,'연봉 협상 역대급이다 이게 성적으로 받아 낸 돈이지','작년 연봉 생각하면 진짜 인생역전이다 ㅋㅋ']:pc>=40?['연봉 대폭 인상 축하한다 성적이 다 말해 줬다','이 정도 인상이면 구단도 인정한 거다']:[];
+  const C=L.filter(t=>!seenHas('xs:'+t.replace(/\d+/g,'N')));if(C.length){const t=pick(C);seenAdd('xs:'+t.replace(/\d+/g,'N'));a.cm.splice(Math.min(1,a.cm.length),0,mkC(t,R()<.5?[{nk:pick(NICKS),t:pick(['받을 자격 있다','이 정도면 협상왕 ㅋㅋ','ㄹㅇ 축하']),up:ri(20,500)}]:[],{up:ri(900,5000)}))}}}}catch(e){}return r}}
 
 </script>
 
