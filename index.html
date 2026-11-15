@@ -13684,7 +13684,7 @@ const POFF810={C:-.06,SS:-.05,CF:-.03,'2B':-.03,'3B':0,LF:.03,RF:.03,'1B':.05,DH
   try{const a=S.arts&&S.arts[0];if(rel!=null&&a&&Array.isArray(a.cm)&&rel>=.06&&ps<1.2){const NEG=/아쉽|아쉬|불안|부진|돌아와|돌아오|살아나|살아났|반등|찾아야|찾았으면|기복|글쎄|평범|별로|그저|모르겠|이르다|더 봐야|분기점|시험대|영양가|약점|평타|아직/;
     a.cm=a.cm.filter(c=>!(c&&typeof c.t==='string'&&NEG.test(c.t)));const pn=POS[ME.pos]||'',o=ops(g.m);
     const GOOD=[`${pn}가 OPS ${o}면 충분히 잘하는 거임`,`${pn} 중에선 방망이 상위권이다`,`이 정도면 ${pn}로선 공격력 차고 넘침`,`수비 부담 큰 자리에서 이만큼 치면 된 거지`,`요즘 방망이 꾸준하네`,`꾸준함이 제일 무서운 거다`];
-    if(['C','SS','2B','CF'].includes(ME.pos))a.cm.splice(Math.min(1,a.cm.length),0,mkC(josaFix(pick(GOOD)),[pick(['ㄹㅇ 포지션 생각하면 대박','인정','이 정도면 효자'])]));
+    if(['C','SS','2B','CF'].includes(ME.pos)&&!a.cm.some(c=>c&&String(c.t||'').includes(pn))){const G=GOOD.filter(t=>!seenHas('pg:'+t.replace(/[\d.]+/g,'N')));if(G.length){const t=pick(G);seenAdd('pg:'+t.replace(/[\d.]+/g,'N'));a.cm.splice(Math.min(1,a.cm.length),0,mkC(josaFix(t),[pick(['ㄹㅇ 포지션 생각하면 대박','인정','이 정도면 효자'])]))}} /* v840: 같은 말 한 커리어에 한 번씩만 · 이미 포지션 얘기 있으면 생략 */
     while(a.cm.length<3)a.cm.push(mkC(pick(['무난하게 잘하고 있다','이대로만 가자','꾸준하게 해주는 게 최고']),[]))}}catch(e){}return r}}
 
 /* v811: 포수 전용 튀는 반기 제거 */
@@ -13987,8 +13987,8 @@ var PB840={hs:{ops:.156,war:2.0,era:1.39,whip:.28,pwar:3.5},univ:{ops:.094,war:1
 var NG840=.25,NGN840=17;
 const NGK840=['con','pow','eye','spd','rng','fld','arm','vis','velo','stf','ctl','pcl','sta'];
 function phI840(){return S.y*3+S.phase}
-{const _tm840=trainMonth;trainMonth=function(rep){const r=_tm840.apply(this,arguments);try{if(S&&S.stage==='pro'&&S.plan&&S.plan.alloc){const al=S.plan.alloc,t=S._trl840=S._trl840||{},i=phI840();for(const k in al){if(k!=='rest'&&al[k]>0)t[k]=i}
-  if(al.brk>0&&S.plan.pitch)t['pt:'+S.plan.pitch]=i}}catch(e){}return r}}
+{const _tm840=trainMonth;trainMonth=function(rep){const r=_tm840.apply(this,arguments);try{if(S&&S.stage==='pro'&&S.plan){const t=S._trl840=S._trl840||{},i=phI840(),M=menus();/* v840b: 메인·서브로 고른 훈련 메뉴가 주로 올리는 능력치만 '훈련함'으로 친다 (기본 배분은 모든 능력치에 조금씩 들어가서 이걸로 세면 방치가 절대 안 걸림) */
+  [S.plan.main,S.plan.sub].forEach(id=>{const m=id&&id!=='rest'&&M[id];if(!m||!m.w)return;for(const k in m.w)if(m.w[k]>=.2)t[k]=i;if(id==='brk'&&S.plan.pitch)t['pt:'+S.plan.pitch]=i})}}catch(e){}return r}}
 {const _adv840=advance;advance=function(){const r=_adv840.apply(this,arguments);try{if(S&&S.stage==='pro'&&ME&&S.me===ME){const i=phI840();if(S._ngI840!==i){S._ngI840=i;if(S._ng0840==null)S._ng0840=i;
    const t=S._trl840=S._trl840||{},pk=S._pk840=S._pk840||{};
    for(const k of NGK840){if(typeof ME.r[k]!=='number')continue;pk[k]=Math.max(pk[k]||0,ME.r[k]);const n=i-(t[k]!=null?t[k]:S._ng0840);if(n<NGN840||ME.inj)continue;
@@ -14161,7 +14161,7 @@ const RCT840={topGood:['이 페이스면 우승 가자 팀도 1등이다','팀 �
 function rcTier840(v,th){let t=0;for(const x of th)if(v>=x)t++;return t}
 function rcFA840(){try{const p=S.pro;if(!p)return false;return(p.league!=='KBO'||p.lastFA)?(p.years||0)<=1&&!S._justSigned793:(p.service||0)>=(p.faReq||8)-1}catch(e){return false}}
 function rcAgeG840(a){return a<=22?'young':a<=26?'mid':a<=31?'prime':a<=35?'late':'vet'}
-function rcTake840(L,o,out,pre){const C=(L||[]).map(t=>rcFill840(t,o)).filter(s=>!seenHas((pre||'rc:')+s)&&!out.includes(s));if(!C.length)return false;const s=pick(C);seenAdd((pre||'rc:')+s);out.push(s);return true}
+function rcTake840(L,o,out,pre){const K=t=>(pre||'rc:')+String(t).replace(/[\d.,]+/g,'N');const C=(L||[]).map(t=>rcFill840(t,o)).filter(s=>!seenHas(K(s))&&!out.includes(s));if(!C.length)return false;const s=pick(C);seenAdd(K(s));out.push(s);return true}
 function recapLines840(rc){const out=[],g=rc.g,P=g.kind==='P',m=g.m,lv=g.lvk,half=PHASE[S.phase]||'이번 반기',a=age(),pos=(S.dhNow&&!P)?'DH':ME.pos,sn=String(ME.name||'').slice(0,1),tone=rc.tone||'mix';
   const o={half,age:a,pos:POS[ME.pos]||'지명타자',sn};const take=L=>rcTake840(L,o,out);let up=0;
   if(!P){if(!m||m.PA<90)return out;const ab=m.AB||1,avg=m.H/ab,ops=opsN(m),base=.72+((typeof POFF810!=='undefined'&&POFF810[pos])||0)-(lv==='MLB'?.02:0),rel=ops-base;
@@ -14187,7 +14187,7 @@ function recapLines840(rc){const out=[],g=rc.g,P=g.kind==='P',m=g.m,lv=g.lvk,hal
   return out.slice(0,4)}
 {const _cmR840=comments;comments=function(tone,x){let out=_cmR840.apply(this,arguments);try{const rc=S&&S._rc840;if(!rc||!rc.g||!Array.isArray(out)||!['mix','hype','bad'].includes(String(tone||''))||S._cmMinor||!PRO.includes(rc.g.lvk)||!ME||S.me!==ME||S._rcDone840===rc)return out;S._rcDone840=rc;rc.tone=tone;
   /* 1) 결산과 상관없는 잡담·경기 당일 말투 거르기 */
-  let chat=0,rep=0;out=out.filter(c=>{if(!c||!c.t)return false;if(c.must)return true;if(RCF840.test(c.t)){chat++;return chat<=1&&R()<.3}if(RCREP840.test(c.t)){rep++;return rep<=1}return true});
+  let rep=0;out=out.filter(c=>{if(!c||!c.t)return false;if(c.must)return true;if(RCF840.test(c.t)||/중계|직관|라디오|화질/.test(c.t))return false;if(RCREP840.test(c.t)){rep++;return rep<=1}return true});
   out=out.filter(c=>c.must||!/^(진짜 |솔직히 |와 )?오늘(은|도)? /.test(c.t)||String(c.t).replace(/^(진짜 |솔직히 |와 )?오늘(은|도)? /,'').length>=10);out.forEach(c=>{if(!c.must)c.t=String(c.t).replace(/^(진짜 |솔직히 |와 )?오늘(은|도)? /,(m0,a1)=>(a1||'')+'요즘 ');if(Array.isArray(c.re))c.re=c.re.filter(r=>r&&!RCF840.test(r.t||''))});S._rcPosHave840=out.some(c=>new RegExp(POS[ME.pos]||'@@').test(String(c.t)));
   /* 2) 그 반기 성적·상황에 맞는 댓글 */
   const L=recapLines840(rc);S._rcPosHave840=0;if(L.length){const RE={good:['ㄹㅇ 인정','이대로만 가자','이 맛에 야구 본다','반박 불가','다음 반기도 부탁한다','ㅇㅈ 요즘 폼 미쳤음'],bad:['반등하자 제발','기다려 보자','이러다 살아나겠지','ㅠㅠ 맞말','칼 갈고 돌아와라','그래도 응원한다'],mid:['무난했다','다음 반기에 더 올라오자','ㅇㅈ','딱 그 정도였지']};
@@ -14333,6 +14333,21 @@ function inPS840(x){try{if(x&&x.ps)return true;const T=S._psYT;return!!(T&&T.y==
   const SAFE=['이 사람 매일 출근하네 ㅋㅋ','댓글이 더 재밌음','닉값 하네','님 닉 웃기네','ㅋㅋㅋㅋ','이 댓글 왜 웃기냐'],SOFT=['음 글쎄','반반이다','그건 좀 더 봐야지','ㅋㅋ 그럴 수도'];
   out.forEach(c=>{if(!c||!Array.isArray(c.re))return;const par=String(c.t||''),ext=EXT840.test(par),hy=ext||HYPE840.test(par);c.re=c.re.filter(r=>r&&!killT(r.t));
     c.re.forEach(r=>{const t=String(r.t||'');if(CALM840.test(t)&&!ext)r.t=pick(SAFE);else if(OVER840.test(t)&&!hy)r.t=pick(SOFT)})})}catch(e){}return out}}
+
+/* ---------- ⑤ 계약 기사: 최근 잘한 선수한텐 '거품·오버페이·먹튀' 소리 안 함 (반박하는 말투는 둠) ---------- */
+const BUB840=/거품|오버페이|과대평가|고평가|먹튀|돈값 (할지|하겠|못)|비싸게|뻥튀기|이 돈이면|연봉 아깝|돈 낭비|혈세|과하다|과했다|돈 쓸 데가|미친 계약|호구/,BUBOK840=/아님|아니다|아니지|아니었|조용|쏙 들어|틀렸|소리 (못|안)|하던 사람|던 놈|던 사람/;
+const CPOS840=['돈값 하는 선수다 그동안 보여 준 게 있잖아','이 성적이면 이 돈 받을 만하다 인정','몸값이 곧 실력 인정이다','구단 잘 잡았다 이 선수 놓쳤으면 큰일 날 뻔','그동안 덜 받은 거 이제 다 받는 거다','계약 축하한다 이제 우승만 가져오면 된다','이 선수한테 이 돈 아깝다는 사람은 야구 안 본 사람임','최근 몇 년 성적 보면 오히려 싸게 잡은 거다','FA 대박 축하한다 성적으로 증명한 결과다'];
+function recentWAR840(){try{const ys=[S.y,S.y-1,S.y-2],wt=[3,2,1];let s=0,t=0,last=null;ys.forEach((y,i)=>{const rs=S.rows.filter(r=>r.y===y&&(r.lv==='KBO'||r.lv==='MLB'));if(!rs.length)return;let w=0;rs.forEach(r=>{try{w+=rowWAR(r)}catch(e){}});if(last==null)last=w;s+=w*wt[i];t+=wt[i]});return{avg:t?s/t:0,last:last||0}}catch(e){return{avg:0,last:0}}}
+{const _cB840=comments;comments=function(tone,x){let out=_cB840.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.stage!=='pro'||S.me!==ME||!['faBig','faFair','move','abroad','mlbBig','contract','sign','salary','homeBack','kmove','franMove'].includes(String(tone||'')))return out;
+  const r=recentWAR840(),mlb=S.pro&&S.pro.league==='MLB',good=r.avg>=(mlb?2.6:3)||r.last>=(mlb?4:4.5);if(!good)return out;let cut=0;
+  out=out.filter(c=>{const t=String(c&&c.t||'');if(BUB840.test(t)&&!BUBOK840.test(t)){cut++;return false}return true});
+  out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(q=>{const t=String(q&&q.t||'');return!(BUB840.test(t)&&!BUBOK840.test(t))})});
+  if(cut){const C=CPOS840.filter(t=>!seenHas('cp:'+t)&&!out.some(c=>c.t===t));C.sort(()=>R()-.5).slice(0,Math.min(2,cut)).forEach((t,i)=>{seenAdd('cp:'+t);out.splice(Math.min(1+i,out.length),0,mkC(t,R()<.4?[{nk:pick(NICKS),t:pick(['ㅇㅈ','반박 불가','ㄹㅇ 그동안 한 게 있지']),up:ri(20,500)}]:[],{up:ri(800,4000)}))})}}catch(e){}return out}}
+
+/* ---------- ⑥ 라커룸 이벤트 나이·연차 맞추기 ---------- */
+/* 선배 심부름·라커룸 군기는 막내급(24세 이하·프로 3년 이하)만, 후배 상담·그립 질문은 프로 3년차 이상, 선배 은퇴식 준비는 35세 이하만 */
+try{FEV.forEach(e=>{if(!e||!e.t)return;if(e.t==='선배의 심부름'||e.t==='라커룸 군기')e.jr0=1;if(e.t==='후배의 타격 상담'||e.t==='후배의 그립 질문')e.mid=1;if(e.t==='선배 은퇴 행사 준비')e.nv=1})}catch(e){}
+{const _pfA840=pickFev;pickFev=function(){const a=age(),py=(typeof proYears==='function'?proYears():0),keep=FEV.slice();try{const L=FEV.filter(e=>!(e&&e.jr0&&!(a<=24&&py<=3))&&!(e&&e.mid&&!(py>=3||a>=25))&&!(e&&e.nv&&a>=36));FEV.length=0;L.forEach(e=>FEV.push(e));return _pfA840()}finally{FEV.length=0;keep.forEach(e=>FEV.push(e))}}}
 
 /* ===================== v840: 우승 역사 댓글 (팀 통산 우승 횟수 · 내 반지 수 · 준우승 콩라인) =====================
    KBO 팀 우승 횟수는 2026 시즌까지 실제 기록(타이거즈 12 · 라이온스 9 · 베어스 6 · 랜더스 5 · 트윈스 4 · 자이언츠 2 · 이글스·다이노스·위즈 1 · 히어로즈 0)에서 시작해
