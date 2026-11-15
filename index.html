@@ -1398,7 +1398,7 @@ function batPA(L,m,gl){const dvc=x=>x>L?softUpC(x-L,BATC):(x-L),dv=x=>x>L?softUp
   let bb=cl(.082+dv(eff('eye'))*.0018+dvc(con)*.0004+(sk('eyem')?.015:0),.02,.2);
   /* v840: 고교·대학은 상위 유망주가 확실히 압도하게 (실제 고3 상위 지명자 타율 .330~.450) */const hsA840=(typeof hsAdv840==='function')?hsAdv840(L,0):0;if(hsA840>0){k*=1-.45*hsA840;bb*=1+.25*hsA840}
   const r=R(),sp=eff('spd');m.PA++;if(risp&&S.rsp)S.rsp.pa++;
-  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<.9*Math.min(.42,(S.stage==='hs'?.35*s01((DV(E('spd'))-45)/35):S.stage==='univ'?.2*s01((DV(E('spd'))-50)/35):0)/* v840: 고교·대학은 주력만큼 도루 시도 더 (고교 주력형 한 해 10~20도루) */+((E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)+Math.max(0,DV(E('spd'))-78)*.004)*(sk('thief')?1.36:1)*(1+.6*s01((DV(E('spd'))-80)/10))/* v840: 표시 주력 80부터 곡선으로 도루 시도↑ (90+면 1.6배) — 대도형도 도루왕 경쟁 */*cl(1+(DV(E('eye'))-65)*.006,.88,1.18)*s01((cl(.55+(E('spd')-L)*.013+(sk('thief')?.054:0),.3,.95)-.6)/.15))){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.054:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
+  const reach=b=>{if(b===1&&!on[1]&&E('spd')>=42&&R()<.9*(typeof sbAge840==='function'?sbAge840():1)*Math.min(.42,(S.stage==='hs'?.35*s01((DV(E('spd'))-45)/35):S.stage==='univ'?.2*s01((DV(E('spd'))-50)/35):0)/* v840: 고교·대학은 주력만큼 도루 시도 더 (고교 주력형 한 해 10~20도루) */+((E('spd')>=50?(E('spd')-45)*.006:(E('spd')-40)*.0035)+Math.max(0,DV(E('spd'))-78)*.004)*(sk('thief')?1.36:1)*(1+.6*s01((DV(E('spd'))-80)/10))/* v840: 표시 주력 80부터 곡선으로 도루 시도↑ (90+면 1.6배) — 대도형도 도루왕 경쟁 */*cl(1+(DV(E('eye'))-65)*.006,.88,1.18)*s01((cl(.55+(E('spd')-L)*.013+(sk('thief')?.054:0),.3,.95)-.6)/.15))){if(R()<cl(.55+(E('spd')-L)*.013+(sk('thief')?.054:0),.3,.95)){m.SB++;b=2}else{m.CS++;return}}
     if(R()<cl(([0,.18,.31,.48][b]+Math.min(5,dv(sp))*.004)*(S._tmF||1),.05,.6))m.R++};
   if(r<k){m.AB++;m.K++;return}
   if(r<k+bb+.01){m.BB++;gl.ob++;reach(1);if(on[0]&&on[1]&&on[2])m.RBI++;return}
@@ -1881,7 +1881,7 @@ function followGame(o){
           else{const bb=(t==='1B'||t==='BB')?0:t==='2B'?1:t==='3B'?2:-1,occ=[2,1,0].filter(i=>b[i]&&i!==bb),ni=occ[ahead-r.runs];prOn=ni==null?-1:ni}}
         if(me&&isB){(G.seq=G.seq||[]).push(seqLbl(t,dOuts,r.runs));(G.pl=G.pl||[]).push({i:inn,t,r:r.runs,dp:t==='GO'&&dOuts===2,my:G.R[my],op:G.R[1-my],o:outs});mb.PA++;if(t!=='BB')mb.AB++;if(['1B','2B','3B','HR'].includes(t))mb.H++;if(t==='2B')mb.D++;if(t==='3B')mb.T++;if(t==='HR'){mb.HR++;mb.R++}if(t==='BB')mb.BB++;if(t==='K')mb.K++;mb.RBI+=r.runs;
           snap(`${it} ${name}: ${r.bunt?'기습 번트 안타!':r.inf?'내야안타!':pick(HTXT[t])}${t==='GO'&&dOuts===2?' (병살)':''}${r.d&&r.d.length&&t!=='HR'?' · '+r.d.join(', '):''}${sc}${r.runs?` [${G.ab[0]} ${G.R[0]} : ${G.R[1]} ${G.ab[1]}]`:''}`,r.runs||t==='HR'?'me sc':'me');meIn=true;
-          if(['1B','BB'].includes(t)&&b[0]&&!b[1]&&outs<2){const sp=DV(E('spd')),pa=cl((sp-62)*.006,0,.28)*(sk('thief')?1.36:1)*((o.intl||bigPS)?1.1:1)*(1+.6*s01((sp-80)/10));if(R()<pa){if(R()<cl(.55+(sp-60)*.012,.45,.93)){b=[0,1,b[2]];st.b=b.slice();mb.SB=(mb.SB||0)+1;snap(`${it} ${name}, ${pick(['2루 도루 성공!','과감한 스타트, 여유 있게 2루 세이프! 도루 성공','투수 견제를 뚫고 2루 도루!'])}`,'me')}else{b=[0,b[1],b[2]];outs++;st.b=b.slice();st.outs=Math.min(3,outs);mb.CS=(mb.CS||0)+1;snap(`${it} ${name}, 2루 도루 시도… 포수 송구에 걸려 아웃`,'me bad')}}}}
+          if(['1B','BB'].includes(t)&&b[0]&&!b[1]&&outs<2){const sp=DV(E('spd')),pa=cl((sp-62)*.006,0,.28)*(sk('thief')?1.36:1)*((o.intl||bigPS)?1.1:1)*(1+.6*s01((sp-80)/10))*(typeof sbAge840==='function'?sbAge840():1);if(R()<pa){if(R()<cl(.55+(sp-60)*.012,.45,.93)){b=[0,1,b[2]];st.b=b.slice();mb.SB=(mb.SB||0)+1;snap(`${it} ${name}, ${pick(['2루 도루 성공!','과감한 스타트, 여유 있게 2루 세이프! 도루 성공','투수 견제를 뚫고 2루 도루!'])}`,'me')}else{b=[0,b[1],b[2]];outs++;st.b=b.slice();st.outs=Math.min(3,outs);mb.CS=(mb.CS||0)+1;snap(`${it} ${name}, 2루 도루 시도… 포수 송구에 걸려 아웃`,'me bad')}}}}
         else if(me){(G.pp=G.pp||[]).push({i:inn,t,r:r.runs,my:G.R[my],op:G.R[1-my]});const irS=Math.min(r.runs,irLeft);irLeft-=irS;const myR=r.runs-irS;G._myR=myR;const ueS=Math.min(myR,ueLeft);ueLeft-=ueS;if(G.ent&&irS){G.ent.irs+=irS;if(['1B','2B','3B','HR','BB'].includes(t)||errPA)G.ent.irsH+=irS;else G.ent.irsSF+=irS}{const onB=b[0]+b[1]+b[2];irLeft=Math.min(irLeft,onB);ueLeft=Math.min(ueLeft,Math.max(0,onB-irLeft))}
           mp.outs+=dOuts;mp.R+=myR-ueS;mp.UR=(mp.UR||0)+ueS;ra+=myR;if(t==='K')mp.K++;if(t==='BB')mp.BB++;if(['1B','2B','3B','HR'].includes(t)&&!errPA)mp.H++;if(t==='HR')mp.HR++;
           {const ot=['GO','FO','LO'].includes(t);snap(`${it} ${name}, ${t==='K'?pick(['헛스윙 삼진!','루킹 삼진!','삼진을 잡아낸다!','결정구에 헛스윙 삼진!']):t==='BB'?'볼넷 허용':errPA?'수비 실책으로 타자 출루':ot?`${pick(HTXT[t])} 처리${dOuts===2?' (병살!)':''}${t==='FO'&&r.runs?' (희생플라이)':''}`:`${pick(HTXT[t])} 허용`}${sc}${irS?(myR?` (그중 ${irS}점은 앞 투수 책임주자)`:' (앞 투수 책임주자 득점)'):''}${ueS?' · 비자책':''}${r.runs?` [${G.ab[0]} ${G.R[0]} : ${G.R[1]} ${G.ab[1]}]`:''}`,myR?'me bad':t==='K'?'me kk':'me')}meIn=true}
@@ -14267,6 +14267,21 @@ function srCm840(q){const out=[];try{if(!S||!S.pro||!ME||S.stage!=='pro'||S.me!=
   else if(w<lo-.3&&w<1.5)L=a>=36?['커리어 로우 시즌… 에이징 커브가 진짜 온 건가','올해가 커리어 최악이었다 내년이 진짜 시험대다']:['커리어 최악의 시즌이었다 내년엔 반드시 반등하자','이 선수 커리어에서 제일 안 풀린 1년 내년엔 다를 거다'];
   if(L){const C=L.filter(t=>!seenHas('ch:'+t.replace(/[\d.]+/g,'N')));if(C.length){const t=pick(C);seenAdd('ch:'+t.replace(/[\d.]+/g,'N'));q.cm.splice(Math.min(1,q.cm.length),0,mkC(josaFix(t),[],{up:ri(1500,6000)}));q.cm=q.cm.slice(0,5)}}}catch(e){}return q}}
 
+/* ---------- v840: 시즌 결산 애매한 일반론 줄이기 — 출전 적은 해·노장 풀타임·불펜 중간·수비형 가치 등 구체적으로 ---------- */
+const SRGEN840=/^(딱 기대한 만큼은 해 줬다|크게 튄 것도 크게 망한 것도 없는 시즌|아쉬운 구간도 있었지만 시즌 전체로 보면 나쁘지 않았다|이 정도면 밥값은 했다|기복만 줄이면 더 잘할 수 있는 선수다)/;
+function srCm840b(q){const out=[];try{if(!S||!S.pro||!ME||S.me!==ME)return out;const y=q.y||S.y,lg=S.pro.league,mlb=lg==='MLB',P=isP(),SPp=ME.pos==='SP',a=age(),{b,p}=yearTot(y,[lg]),w=S.rows.filter(r=>r.y===y&&r.lv===lg).reduce((s,r)=>s+rowWAR(r),0);
+  const o={y,age:a,w:w.toFixed(1),pos:POS[ME.pos]};const add=L=>rcTake840(L,o,out,'sb:');
+  if(!P){const pa=b.PA||0;if(pa<60)return out;const ops=opsN(b),base=.72+((typeof POFF810!=='undefined'&&POFF810[ME.pos])||0)-(mlb?.02:0),rel=ops-base;Object.assign(o,{ops:f3_840(ops)});
+    if(pa<300){if(rel>=.05)add(['출전 기회는 적었지만 나올 때마다 확실했다 내년엔 주전 경쟁 해 볼 만하다','짧게 뛰어도 OPS {ops} 기회만 더 주면 터질 선수다']);else if(rel<=-.08)add(a<=23?['어린 나이에 1군 맛본 걸로 만족하자 내년엔 출전 시간 늘려 보자','기회가 많지 않았는데 그마저도 아쉬웠다 그래도 아직 어리다']:['기회 자체가 많지 않았는데 그마저도 못 살렸다 내년이 중요하다','백업으로 뛴 1년인데 방망이가 너무 조용했다']);else add(['백업으로 1년 잘 버텼다 내년엔 출전 시간 더 늘려 보자','자주 나오진 못했어도 제 몫은 했다'])}
+    else{if(a>=36&&w<1.5)add(['{age}살에 풀타임 소화한 것만으로 대단하다 성적은 조금 아쉽다','이 나이에 시즌 완주했으면 몸 관리는 인정 내년엔 역할 조절도 필요하다']);
+      else if(w>=(mlb?3:3.5)&&rel<0&&['C','SS','2B','CF','3B'].includes(ME.pos))add(['방망이는 평범해도 {pos} 수비로 WAR {w} 이게 진짜 가치다','타격 성적만 보면 모르는데 수비까지 보면 팀 최고 수준이다']);
+      else if(w<(mlb?.5:.8)&&rel>-.05)add(['방망이는 나쁘지 않았는데 수비·주루에서 다 까먹었다','타격은 평균인데 나머지에서 손해를 너무 봤다'])}}
+  else{const ip=p.outs/3;if(ip<20)return out;const era=eraN(p);Object.assign(o,{era:era.toFixed(2)});
+    if(!SPp&&ip<80){if(era>=4.3&&era<5.5)add(['불펜에서 ERA {era}면 필승조는 아직이다 내년엔 한 단계 올라가자','추격조에선 쓸 만한데 접전에 올리기엔 불안했다']);else if(era<3&&ip<45)add(['나온 경기는 적어도 확실히 막았다 내년엔 더 중요한 상황에 보자'])}
+    else if(SPp&&ip<100)add(era<=3.8?['로테이션을 다 돌진 못했어도 나올 때마다 제 몫 했다','짧게 던졌어도 내용은 좋았다 내년엔 풀타임 선발 가자']:['선발 기회 받았는데 자리 잡기엔 아쉬웠다 내년이 시험대다','선발 경쟁에서 확실히 이기려면 한 단계 더 올라와야 한다']);
+    else if(SPp&&a>=36&&era>=4.3)add(['{age}살에 로테이션 지킨 것만으로 박수 성적은 조금 아쉬웠다'])}}catch(e){}return out.slice(0,1)}
+{const _bsr840c=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsr840c.apply(this,arguments);try{if(q&&Array.isArray(q.cm)){const L=srCm840b(q);if(L.length){q.cm=q.cm.filter(c=>!(c&&SRGEN840.test(String(c.t||''))));q.cm.splice(Math.min(1,q.cm.length),0,...L.map(t=>mkC(josaFix(t),[],{up:ri(1200,5000)})));q.cm=q.cm.slice(0,5)}}}catch(e){}return q}}
+
 /* ===================== v840 밸런스 보정 (최대 육성 시뮬 800명 기준) =====================
    · 포지션마다 골든글러브·골드글러브·실버슬러거·MVP 받는 비율이 고르게 (현실 차이 조금은 남김)
    · 명예의 전당: 최대로 잘 키운 타자 95%가 들어가는 선 · 마무리·셋업·선발은 각자 선
@@ -14405,8 +14420,8 @@ const KN840=['','첫','두','세','네','다섯','여섯','일곱','여덟','아
 /* ---------- v840: 우승·준우승·무관 댓글 더 (커뮤 말투: 업셋·설레발·9개 구단·3연벙·종신) ---------- */
 {const _cT840b=comments;comments=function(tone,x){let out=_cT840b.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.stage!=='pro'||S.me!==ME||!S.pro)return out;const gn=ME.name,kbo=S.pro.league==='KBO',ttl=String((x&&x.title)||''),yrs=proYears(),rings=S.hist.rings||0;
   const put=(L,re)=>{const C=L.filter(t=>t&&!seenHas('tt2:'+t));if(!C.length)return false;const t=pick(C);seenAdd('tt2:'+t);out.splice(Math.min(3,out.length),0,mkC(josaFix(t),re?[{nk:pick(NICKS),t:re,up:ri(30,800)}]:[],{up:ri(1500,7000),must:1}));return true};
-  if(tone==='ring'&&kbo&&x&&x.clinch&&S._rg2Y840!==S.y){S._rg2Y840=S.y;const seed=S._psSeed||0,gno=+((ttl.match(/(\d)차전/)||[])[1]||0);const L=['불행한 9개 구단 팬들은 개추 ㅋㅋ','올해 끝까지 설레발 안 친 보람이 있다 ㅠㅠ','우승콜 샤우팅 듣고 소름 돋았다 평생 돌려 본다','오늘은 그냥 다 같이 우승 짤 저장하는 날'];
-    if(seed>=3)L.push(`정규시즌 ${seed}위 팀의 업셋 우승 ㄷㄷ 이게 가을이다`,'아무도 우승 후보로 안 봤는데 결국 해냈다 업셋 우승');if(gno>=6)L.push(`${gno}차전까지 피 말렸다 심장 몇 개 갈아 끼운 거냐`);
+  if(tone==='ring'&&kbo&&x&&x.clinch&&S._rg2Y840!==S.y){S._rg2Y840=S.y;const seed=S._psSeed||0,gno=+((ttl.match(/(\d)차전/)||[])[1]||0);const L=['불행한 9개 구단 팬들은 개추 ㅋㅋ','올해 끝까지 설레발 안 친 보람이 있다 ㅠㅠ','우승콜 샤우팅 듣고 소름 돋았다 평생 돌려 본다','오늘은 그냥 다 같이 우승 짤 저장하는 날','우 승 ㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅ',`${TEAMS[S.pro.team].nick} 우승 ㅅㅅㅅㅅㅅㅅ 올해는 다 용서한다`];
+    if(seed>=3)L.push(`정규시즌 ${seed}위 팀의 업셋 우승 ㄷㄷ 이게 가을이다`,'아무도 우승 후보로 안 봤는데 결국 해냈다 업셋 우승','업 셋 우 승 ㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅ');if(gno>=6)L.push(`${gno}차전까지 피 말렸다 심장 몇 개 갈아 끼운 거냐`);
     put(L,pick(['ㄹㅇ 개추 박고 감','오늘은 기분 좋으니 다 용서한다 ㅋㅋ','이 맛에 1년 버틴다']))}
   if(x&&/한국시리즈|월드시리즈/.test(ttl)&&x.win===false&&x.elim&&S._ru2Y840!==S.y){S._ru2Y840=S.y;const ru=(typeof myRunnerUps840==='function'?myRunnerUps840(kbo?'KBO':'MLB'):0)+1;
     if(ru>=3)put([`준우승 ${ru}번째… 이쯤 되면 콩라인 공식 가입이다 ㅠ`,`또 준우승이면 ${ru}연벙이냐 마지막 계단이 왜 이렇게 높냐`],pick(['그래도 여기까지 온 게 어디냐','내년엔 꼭 마지막에 웃자']));
@@ -14503,6 +14518,9 @@ function speech840(home){try{const P=isP(),rings=(S.hist&&S.hist.rings)||0,yrs=p
 {const _arSal840=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arSal840.apply(this,arguments);try{if(tone==='salary'&&S.me===ME){const a=S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)){const m=String(head||'').match(/(\d+)% 인상/),pc=m?+m[1]:0;
   const L=pc>=100?[`인상률 ${pc}% 실화냐 구단이 이번엔 화끈하게 쐈다`,'연봉 협상 역대급이다 이게 성적으로 받아 낸 돈이지','작년 연봉 생각하면 진짜 인생역전이다 ㅋㅋ']:pc>=40?['연봉 대폭 인상 축하한다 성적이 다 말해 줬다','이 정도 인상이면 구단도 인정한 거다']:[];
   const C=L.filter(t=>!seenHas('xs:'+t.replace(/\d+/g,'N')));if(C.length){const t=pick(C);seenAdd('xs:'+t.replace(/\d+/g,'N'));a.cm.splice(Math.min(1,a.cm.length),0,mkC(t,R()<.5?[{nk:pick(NICKS),t:pick(['받을 자격 있다','이 정도면 협상왕 ㅋㅋ','ㄹㅇ 축하']),up:ri(20,500)}]:[],{up:ri(900,5000)}))}}}}catch(e){}return r}}
+
+/* ---------- v840: 나이 들수록 도루 시도 줄이기 (30대 중후반에 40~60도루 나오던 것) — 주력 능력치는 그대로, 뛰는 횟수만 ---------- */
+function sbAge840(){try{if(!S||S.me!==ME||S.stage!=='pro')return 1;const a=age();return knot(a,[29,32,34,36,38,40],[1,.88,.72,.55,.4,.3])}catch(e){return 1}}
 
 </script>
 
