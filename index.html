@@ -14787,6 +14787,16 @@ function hofLikely841(){try{const w=careerTot(PRO).w,sc=hofScore(w),role=isP()?(
      t=>/우리 팀 MVP는 확정|우리 팀 MVP 확정/.test(t)&&!(S.stage==='pro'&&S.pro&&typeof lastWAR==='function'&&lastWAR()>=4)];
    const bad=t=>rules.some(f=>{try{return f(t)}catch(e){return false}});
    out=out.filter(c=>!(c&&bad(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!bad(String((r&&r.t)||'')))})}catch(e){}return out}}
+/* · 트레이드 기사 댓글: 여러 번 트레이드되면 같은 말 반복되던 것 → 이미 나온 말 빼고, 두 번째부터 '저니맨' 반응 */
+{const _tcJ841=tradeComments;tradeComments=function(from,to,star,rich,big){let out=_tcJ841.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME)return out;S._trN841=(S._trN841||0)+1;const n=S._trN841,gn=giv(ME.name);
+   const fresh=out.filter(c=>c&&!seenHas(c.t)),keep=fresh.length>=4?fresh:out.slice(0,Math.max(4,fresh.length));
+   if(n>=2){const J=[[`벌써 ${n}번째 트레이드… ${gn} 짐 싸는 게 일상이네`,['이삿짐 센터 VIP 각 ㅋㅋ']],[`${gn} 이제 저니맨 소리 듣겠다`,['그래도 불러 주는 팀이 있다는 게 실력']],[`어디 가든 적응 빠른 게 ${gn} 장점이지`,['ㄹㅇ 어디서든 제 몫은 함']],[`이번엔 진짜 오래 머물 팀 만났으면 좋겠다`,['정착하자 제발']],[`트레이드 시장 단골손님 ${gn} ㅋㅋ 그래도 응원한다`,[]]].filter(z=>!seenHas(z[0]));
+     J.sort(()=>R()-.5).slice(0,2).forEach(z=>keep.splice(Math.min(keep.length,1),0,mkC(josaFix(z[0]),z[1].map(r=>({nk:pick(NICKS),t:r,up:ri(30,500)})),{up:ri(500,4000)})))}
+   keep.forEach(c=>{if(c&&c.t)seenAdd(c.t)});return keep}catch(e){return out}}}
+/* · 경기 기사에 그 경기 도루가 없는데 '도루 성공, 배달 완료' 류 X (시즌 기사에선 그대로) */
+{const SBX=/도루 성공|배달 완료|배송지: 2루|베이스를 훔쳤|도루 하나로|발로 만든 점수/;
+ const _cSB841=comments;comments=function(tone,x){let out=_cSB841.apply(this,arguments);try{if(!Array.isArray(out)||!x||x.gPA==null||isP()||(x.gSB||0)>0)return out;
+   out=out.filter(c=>!(c&&SBX.test(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!SBX.test(String((r&&r.t)||'')))})}catch(e){}return out}}
 
 </script>
 
