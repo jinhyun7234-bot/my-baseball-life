@@ -2022,7 +2022,7 @@ const ACT={
   draftSign(a){S.stage='pro';S.pro={league:'KBO',team:a.team,salary:3300,years:0,service:0,faReq:S.univ?7:8,dev:false,debut:(S.phase===0?S.y:S.y+1),draft:{y:S.y,rd:a.rd,pick:a.pick},m1y:0};
     S.money+=a.bonus;S.coach=mkName()+' 감독';S.rel.coach=50;S.rel.chem=50;if(a.rd===1)S.ach.draft1=S.y;
     news(`${TEAMS[a.team].city} ${TEAMS[a.team].nick} 입단! 계약금 ${money(a.bonus)}.`);
-    article(`${TEAMS[a.team].nick}, ${a.rd}라운드에서 ${ME.name} 지명`,`구단 관계자는 "${isP()?'공 끝이 살아 있는 투수':'타격 재능이 돋보이는 선수'}"라고 평가했다. 계약금은 ${money(a.bonus)}.`,'draft',{rd:a.rd,bonus:money(a.bonus)});
+    article(`${TEAMS[a.team].nick}, ${a.rd}라운드에서 ${ME.name} 지명`,`구단 관계자는 "${(()=>{try{if(isP()){const v=DV(E('velo')),st=DV(E('stf')),ct=DV(E('ctl')),sa=DV(E('sta')),m=Math.max(v,st,ct,sa);return m===v?(v>=78?'빠른 공 하나는 이미 프로급인 투수':'구속이 꾸준히 오르는 투수'):m===st?'공 끝이 살아 있는 투수':m===ct?'제구가 안정적인 투수':'긴 이닝을 버틸 체력이 좋은 투수'}const T=[['pow','장타력이 돋보이는 선수'],['con','정교한 타격이 강점인 선수'],['eye','선구안이 뛰어난 선수'],['spd','빠른 발이 강점인 선수'],['arm','강한 어깨가 돋보이는 선수'],['fld','수비가 안정적인 선수'],['rng','수비 범위가 넓은 선수']].map(([k,t])=>[DV(E(k)),t]).sort((x,y)=>y[0]-x[0]);return T[0][1]}catch(e){return isP()?'공 끝이 살아 있는 투수':'타격 재능이 돋보이는 선수'}})()}"라고 평가했다. 계약금은 ${money(a.bonus)}.`,'draft',{rd:a.rd,bonus:money(a.bonus)});
     contractQ({kind:'draft',title:'신인 선수 입단 계약서',team:a.team,bonus:a.bonus,salary:3300,note:`${S.phase===0?S.y:S.y+1} KBO 신인 드래프트 ${a.rd}라운드 전체 ${a.pick}순위`});
     return`${TEAMS[a.team].city} ${TEAMS[a.team].nick}의 유니폼을 입었다. 내년 3월이 기다려진다.`},
   univ(){S.stage='univ';S.univ=pick(UNIVS);S.grade=0;S.coach=mkName()+' 감독';news(`${S.univ}에 진학한다.`);return`${S.univ} 야구부에 합류한다. 4년 뒤를 노린다.`},
