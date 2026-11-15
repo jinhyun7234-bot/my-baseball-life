@@ -14627,6 +14627,27 @@ function rpMLBcap840(ch){try{if(!relief840()||!Array.isArray(ch))return ch;const
 /* 해외 개인 캠프 비용: 연봉 비례라 메이저 고연봉이면 3주에 16억이 나오던 것 → 현실 수준(최대 1억 안팎) */
 campCost=function(){const sal=S.pro?S.pro.salary:0;return Math.round(Math.min(11000,Math.max(5000,5000+sal*.004))/100)*100};
 
+/* ===================== v840l 은퇴·명예의 전당 기사 본문 다양화 =====================
+   "프로 통산 WAR 80.6. 첫 투표에서 압도적 지지를 받았다." 한 줄만 나오던 것 →
+   통산 기록 · 주요 수상 · 뛴 팀(원클럽·KBO↔MLB) · 은퇴 사정(방출·투어·선언)에 맞는 마무리 문장을 붙임 */
+function retCareer840(){try{const t=careerTot(PRO),b=t.b,p=t.p,P=isP(),aw=S.awards||[],c=rx=>aw.filter(a=>rx.test(String(a.n||''))).length;
+  const mvp=c(/^(정규시즌|내셔널리그|아메리칸리그) MVP$/),gg=c(/^골든글러브/),gd=c(/골드글러브/),cy=c(/사이영/),ks=c(/^한국시리즈 우승$/),ws=c(/^월드시리즈 우승$/),ttl=c(/^(MLB )?[가-힣]+(왕|최다안타)$/);
+  const T=[...new Set(S.rows.filter(r=>r.lv==='KBO'||r.lv==='MLB').map(r=>String(r.team||'').replace(/ \(MLB\)$/,'')))].filter(Boolean);
+  const mlb=S.rows.some(r=>r.lv==='MLB'),kbo=S.rows.some(r=>r.lv==='KBO'),yrs=new Set(S.rows.filter(r=>r.lv==='KBO'||r.lv==='MLB').map(r=>r.y)).size;
+  let st;if(P){const ip=p.outs/3,era=p.outs?p.R*27/p.outs:0,sv=p.SV||0,hd=p.HLD||0;st=`통산 ${p.W}승 ${p.L}패${sv>=30?` ${sv}세이브`:''}${hd>=50?` ${hd}홀드`:''} 평균자책 ${era.toFixed(2)}, ${Math.round(ip)}이닝 ${p.K}탈삼진`}
+  else{const avg=b.AB?(b.H/b.AB).toFixed(3).replace(/^0/,''):'.000';st=`통산 ${b.G}경기 타율 ${avg} ${b.H}안타 ${b.HR}홈런 ${b.RBI}타점${b.SB>=150?` ${b.SB}도루`:''}`}
+  const acc=[];if(mvp)acc.push(`MVP ${mvp}회`);if(cy)acc.push(`사이영상 ${cy}회`);if(gg)acc.push(`골든글러브 ${gg}회`);if(gd)acc.push(`골드글러브 ${gd}회`);if(ttl)acc.push(`개인 타이틀 ${ttl}개`);if(ks)acc.push(`한국시리즈 우승 ${ks}회`);if(ws)acc.push(`월드시리즈 우승 ${ws}회`);
+  return{P,st,acc,T,mlb,kbo,yrs}}catch(e){return null}}
+{const _arR840=article;article=function(head,body,tone){try{if(tone==='retire'&&S&&S.ended&&S._retArt840!==S.ended.y&&typeof body==='string'&&/^프로 통산 WAR/.test(body)){S._retArt840=S.ended.y;const C=retCareer840();
+  if(C&&C.yrs>0){const hof=!!S.ended.hof,why=String(S.ended.why||'');
+   const tm=C.T.length===1?`${C.yrs}시즌 동안 ${C.T[0]} 유니폼만 입었다.`:C.mlb&&C.kbo?`KBO와 메이저리그를 오가며 ${C.yrs}시즌을 뛰었다.`:C.mlb?`메이저리그에서 ${C.yrs}시즌을 뛰었다.`:`${C.yrs}시즌 동안 ${C.T.slice(0,3).join('·')}${C.T.length>3?' 등':''}에서 뛰었다.`;
+   const a2=C.acc.length?` ${C.acc.slice(0,4).join(', ')}.`:'';
+   const end=hof?pick(['헌액식은 내년 시즌 개막에 맞춰 열린다.','구단은 헌액을 기념하는 특별 유니폼을 내놓기로 했다.','소식이 전해지자 옛 동료들의 축하 메시지가 쏟아졌다.','그는 "함께 뛴 동료들과 팬들 덕분"이라며 몸을 낮췄다.'])
+     :/테스트 탈락|찾는 구단|연락해 오는 구단|불러 주는/.test(why)?pick(['마지막엔 새 팀을 찾지 못했지만, 그라운드를 떠나는 표정은 담담했다.','더 뛰고 싶은 마음은 컸지만 불러 주는 팀이 없었다.'])
+     :/투어/.test(why)?pick(['원정 구장마다 이어진 기립 박수가 그의 커리어를 말해 준다.','은퇴 투어 내내 상대 팀 팬들도 박수를 보냈다.'])
+     :pick(['은퇴 후 계획은 아직 정하지 않았다고 밝혔다.','지도자 연수를 준비 중이라는 후문이다.','당분간 가족과 시간을 보내며 다음 길을 고민하겠다고 했다.','팬들에게 손편지로 마지막 인사를 남겼다.',C.P?'"원 없이 던졌다"며 웃었다.':'"원 없이 치고 달렸다"며 웃었다.']);
+   body=`${body} ${C.st}.${a2} ${tm} ${end}`.replace(/\s+/g,' ').trim()}}}catch(e){}return _arR840.apply(this,[head,body].concat(Array.prototype.slice.call(arguments,2)))}}
+
 </script>
 
 <script>
