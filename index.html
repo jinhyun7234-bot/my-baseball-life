@@ -8997,16 +8997,16 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
 {const _ly=lpYear;lpYear=function(){_ly();try{const P=S.lp.filter(p=>p.k!=='B'),B=S.lp.filter(p=>p.k==='B');const mean=(a,k)=>a.reduce((s,p)=>s+p[k],0)/Math.max(1,a.length);
   const mp=mean(P,'r');P.forEach(p=>{p.r=cl(p.r-(mp-56.6)*.85,40,70)});
   [['con',54.4],['pow',51.4],['eye',52.2]].forEach(([k,t])=>{const m=mean(B,k);B.forEach(p=>{p[k]=cl(p[k]-(m-t)*.85,28,79)})})}catch(e){}}}
-/* MLB 개인 타이틀 (리그 1위 기준선과 비교) */
+/* MLB 개인 타이틀 (리그 1위 기준선과 비교) — v835: 기준선 살짝↑ (홈런 +1.5 · 타점 +2 · 도루 +1.5 · 안타 +1.5 · 득점 +1.5 · 타율·출루율 +.002 · 장타율 +.005 / 투수 승 +0.5 · ERA −0.05 · 탈삼진 +3 · 세이브·홀드 +1) */
 {const _aw=awards;awards=function(rep){_aw(rep);try{if(!(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'))return;const rows=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB');if(!rows.length)return;
   if(S.awards.some(a=>a.y===S.y&&/^MLB (다승|평균자책|탈삼진|세이브|홀드|홈런|타격|타점|도루|최다안타|득점|출루율|장타율)/.test(a.n)))return;const P=isP(),got=[];
   const give=n=>{got.push(n);S.awards.push({y:S.y,n:'MLB '+n});S.rel.fame=cl(S.rel.fame+3,0,100);feat(`${S.y} MLB ${n} 타이틀 획득`,1)};
   if(P){const p=rows.reduce((a,r)=>(addTo(a,r.p),a),blankP()),ip=p.outs/3,era=p.outs?p.R*27/p.outs:99;
-    const eP=typeof lgEnv==='function'?lgEnv('MLB'):0;if(p.W>=Math.round(rn(17.5,1.6)))give('다승왕');if(ip>=162&&era<=rn(2.45,.28)+eP*.18)give('평균자책점왕');if(p.K>=Math.round(rn(255,18)*(1-eP*.03)))give('탈삼진왕');const ML=(S.mlbLead=S.mlbLead||{})[S.y]||(S.mlbLead[S.y]={sv:Math.round(rn(41,3)),hd:Math.round(rn(35,3))});if((p.SV||0)>=ML.sv)give('세이브왕');if((p.HLD||0)>=ML.hd)give('홀드왕')}
+    const eP=typeof lgEnv==='function'?lgEnv('MLB'):0;if(p.W>=Math.round(rn(18,1.6)))give('다승왕');if(ip>=162&&era<=rn(2.4,.28)+eP*.18)give('평균자책점왕');if(p.K>=Math.round(rn(258,18)*(1-eP*.03)))give('탈삼진왕');const ML=(S.mlbLead=S.mlbLead||{})[S.y]||(S.mlbLead[S.y]={sv:Math.round(rn(42,3)),hd:Math.round(rn(36,3))});if((p.SV||0)>=ML.sv)give('세이브왕');if((p.HLD||0)>=ML.hd)give('홀드왕')}
   else{const b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB()),avg=b.AB?b.H/b.AB:0;
     const obp=b.PA?(b.H+b.BB)/b.PA:0,slg=b.AB?(b.H+(b.D||0)+2*(b.T||0)+3*b.HR)/b.AB:0,q=b.PA>=502;
-    const eV=typeof lgEnv==='function'?lgEnv('MLB'):0;if(q&&avg>=rn(.33,.012)+eV*.008)give('타격왕');if(b.HR>=Math.round(rn(46,4)*(1+eV*.09)))give('홈런왕');if(b.RBI>=Math.round(rn(125,8)*(1+eV*.04)))give('타점왕');if(b.SB>=Math.round(rn(50,7)))give('도루왕');
-    if(b.H>=Math.round(rn(200,8)*(1+eV*.02)))give('최다안타');if(b.R>=Math.round(rn(122,7)*(1+eV*.04)))give('득점왕');if(q&&obp>=rn(.425,.015)+eV*.008)give('출루율왕');if(q&&slg>=rn(.615,.025)+eV*.02)give('장타율왕')}
+    const eV=typeof lgEnv==='function'?lgEnv('MLB'):0;if(q&&avg>=rn(.332,.012)+eV*.008)give('타격왕');if(b.HR>=Math.round(rn(47.5,4)*(1+eV*.09)))give('홈런왕');if(b.RBI>=Math.round(rn(127,8)*(1+eV*.04)))give('타점왕');if(b.SB>=Math.round(rn(51.5,7)))give('도루왕');
+    if(b.H>=Math.round(rn(201.5,8)*(1+eV*.02)))give('최다안타');if(b.R>=Math.round(rn(123.5,7)*(1+eV*.04)))give('득점왕');if(q&&obp>=rn(.427,.015)+eV*.008)give('출루율왕');if(q&&slg>=rn(.62,.025)+eV*.02)give('장타율왕')}
   if(!got.length)return;rep.lines.push(`MLB ${got.join('·')} 타이틀 획득!`);{const ex=got.length>1?got.map(n=>'MLB '+n):[];ex._gx=4*got.length;celebrate('crown',got.length>1?`MLB ${got.length}관왕`:`MLB ${got[0]}`,`${S.y} 메이저리그 개인 타이틀${got.length>1?' · '+got.join('·'):''}`,ex)}news(`${ME.name}, ${S.y} 메이저리그 ${got.join('·')} 차지`);
   /* v673: 트리플 크라운 별도 축하 X — n관왕 화면으로 통일 */
   article(`${ME.name}, 메이저리그 ${got.join('·')} 등극`,`${jo(ME.name,'이','가')} 올 시즌 메이저리그 ${got.join(', ')} 타이틀을 거머쥐었다.`,'award')}catch(e){}}}
@@ -13858,6 +13858,15 @@ function hrK833(){try{return S&&S.stage==='pro'&&S.pro&&S.pro.league==='KBO'&&!i
 {const _sb833=simBat;simBat=function(role,tg,L,row,lvk){const lv=(row&&row.lv)||lvk,o=RBK825;try{if(lv in RBKL833)RBK825=RBKL833[lv];return _sb833.apply(this,arguments)}finally{RBK825=o}}}
 /* v834: '추강대엽' 댓글은 다시 허용. 단 '추 넘었다'·'(내 성)추강대엽'(추보다 앞)은 MLB에서 300타석 이상 시즌을 3번 이상 뛰고 MLB 통산 WAR이 쌓였을 때만
    — 통산 WAR 12에서 0 → 24에서 확실 (곡선, 기사마다 한 번 판정). 아니면 '아직 추는 못 넘음' 쪽 댓글로, '(내 성)추강대엽'은 '추(내 성)강대엽'으로 */
+/* v835: KBO 개인 타이틀 기준 살짝↑ — 타이틀은 NPC 리그 1위와 비교하니, 리그 순위표가 어긋나지 않게 NPC 쪽을 아주 조금 올림
+   타자: 컨택 +0.3·파워 +1.1·선구안 +0.2 (시뮬 중에만) + 도루 ×1.035 → 1위 기준(900시즌 평균) 타율 +.002 · 홈런 +1.2 · 타점 +2.7 · 안타 +0.8 · 득점 +1.5 · 도루 +1.9
+   투수: 구위 +0.3 + 탈삼진 ×1.006 · 승 ×1.02 · 세이브 ×1.035 · 홀드 ×1.03 → 1위 기준 ERA −0.02 · 탈삼진 +2.3 · 승 +0.4 · 세이브 +1.3 · 홀드 +1.2 */
+var TB835={con:.3,pow:1.1,eye:.2,sb:1.035},TP835={r:.3,k:1.006,w:1.02,sv:1.035,hld:1.03};
+function addP835(m,k,d,f){try{if(!(d>0)||!(f>1))return;const t=d*(f-1);m[k]=(m[k]||0)+Math.floor(t)+(R()<t%1?1:0)}catch(e){}}
+{const _lsb835=lpSimB;lpSimB=function(p,n){if(!p||!p.s)return _lsb835.apply(this,arguments);const m=p.s,sb0=m.SB||0;p.con+=TB835.con;p.pow+=TB835.pow;p.eye+=TB835.eye;
+  try{return _lsb835.apply(this,arguments)}finally{p.con-=TB835.con;p.pow-=TB835.pow;p.eye-=TB835.eye;addP835(m,'SB',(m.SB||0)-sb0,TB835.sb)}}}
+{const _lsp835=lpSimP;lpSimP=function(p,n){if(!p||!p.s)return _lsp835.apply(this,arguments);const m=p.s,k0=m.K||0,w0=m.W||0,s0=m.SV||0,h0=m.HLD||0;p.r+=TP835.r;
+  try{return _lsp835.apply(this,arguments)}finally{p.r-=TP835.r;addP835(m,'K',(m.K||0)-k0,TP835.k);addP835(m,'W',(m.W||0)-w0,TP835.w);addP835(m,'SV',(m.SV||0)-s0,TP835.sv);addP835(m,'HLD',(m.HLD||0)-h0,TP835.hld)}}}
 function chuPass834(){try{if(isP())return 0;const ys={};let mw=0;S.rows.forEach(r=>{if(r.lv!=='MLB')return;try{mw+=rowWAR(r)}catch(e){}ys[r.y]=(ys[r.y]||0)+((r.b&&r.b.PA)||0)});
   if(Object.values(ys).filter(v=>v>=300).length<3)return 0;return s01((mw-12)/12)}catch(e){return 0}}
 var CHUNO834=['아직 추는 못 넘었다 그래도 강은 넘음','추 넘으려면 몇 년 더 해야 됨','아직 추는 못 넘음 인정할 건 인정하자','추까진 아직이다 근데 페이스는 무섭다'],CHUOK834=['이제 추도 넘었다 ㅇㅈ','추는 넘었고 이제 강이랑 비교 불가','추 넘은 건 이제 반박 불가'];
