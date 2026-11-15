@@ -2159,7 +2159,7 @@ function cmCtx(x){const r=S.rows.filter(r=>r.y===S.y&&PRO.includes(r.lv)),b=blan
 const proYears=()=>S.stage==='pro'&&S.pro&&S.pro.debut<=S.y?S.y-S.pro.debut+1:0;
 function comments(tone,x){const c=cmCtx(x),pit=isP(),out=[],used=new Set(),n=ri(5,9);S.cmRecent=S.cmRecent||[];
   let base=CM[tone]||CM.mix;if(tone==='hype'&&pit)base=CM.hypeP.concat(CM.hype.slice(-8));if(tone==='bad'&&pit)base=CM.badP.concat(CM.bad.slice(-6));
-  const antiP={hype:.3,feat:.2,record:.15,sign:.35,salary:.1,faFair:.15,faBig:.25,move:.3,draft:.3,abroad:.3,award:.3,mix:.3,bad:.35,psWin:.3,psHero:.2,psLose:.3,psGoat:.25,debut:.25}[tone]??.15;
+  const antiP={hype:.3,feat:.2,record:.15,sign:.35,salary:.1,faFair:.15,faBig:.25,move:.3,draft:.3,abroad:.3,award:.3,mix:.3,bad:.35,psWin:.12,psHero:.08,psLose:.15,psGoat:.18,debut:.25}[tone]??.15;/* v840u: 가을야구 경기 기사엔 경기와 상관없는 시비·잡담을 덜 */const psT840=/^ps|^walkoff$|^ring$|^ws$/.test(String(tone||''));
   const good=['hype','feat','record','award','psHero','psWin','gold'].includes(tone),badT=['bad','psGoat','psLose','injury'].includes(tone);
   const gw=proYears()>=8&&S.pro.league==='KBO'?(good?GWAN.up:badT&&tone!=='injury'?GWAN.down:null):null;
   const flairT=()=>R()<.55&&S.pro&&S.pro.league==='KBO'?TEAMS[S.pro.team].nick:R()<.7?pick(TEAMS).nick:null;
@@ -2167,7 +2167,7 @@ function comments(tone,x){const c=cmCtx(x),pit=isP(),out=[],used=new Set(),n=ri(
   const prof=profilePools(),negT=['bad','psGoat','psLose','faBig','injury'].includes(tone),posT=['hype','psHero','feat','award','faFair','salary'].includes(tone);
   const fresh=pool=>{let f=pool.filter(t=>ok(t)&&!used.has(t)&&!S.cmRecent.includes(t));if(!f.length)f=pool.filter(t=>ok(t)&&!used.has(t));if(!f.length)f=CM.mix.filter(t=>!used.has(t));return pick(f.length?f:CM.mix)};
   let gwDone=false,cpDone=false;const cp=compPool(tone);
-  for(let i=0;i<n;i++){const r=R();let pool=r<antiP?CM.anti:r<antiP+.15?CM.mix:base;if((negT||pool===CM.anti)&&prof.neg.length&&R()<.45)pool=prof.neg;else if(posT&&prof.pos.length&&R()<.25)pool=prof.pos;
+  for(let i=0;i<n;i++){const r=R();let pool=r<antiP?CM.anti:r<antiP+(psT840?.06:.15)?CM.mix:base;if((negT||pool===CM.anti)&&prof.neg.length&&R()<.45)pool=prof.neg;else if(posT&&prof.pos.length&&R()<.25)pool=prof.pos;
     if(gw&&!gwDone&&R()<.45){pool=gw;gwDone=true}else if(cp&&!cpDone&&R()<.4){pool=cp;cpDone=true}
     let t=fresh(pool);used.add(t);S.cmRecent.push(t);if(S.cmRecent.length>90)S.cmRecent.shift();
     const neg=pool===CM.anti||pool===GWAN.down||pool===prof.neg||/오버|먹튀|무너|한계|못하면|뭐 하냐|아니냐|역적|거품|작아짐|약한|끄고|머신|쫄보/.test(t);
@@ -14601,7 +14601,7 @@ const PSCLAIM840=/가을야구도 못 갔|덕분에 가을야구|가을야구 (�
   SAB840=/야알못|야잘알|출루율이랑 장타율|세이버|클래식 스탯|WAR만|WPA|체감도르|표본이 작아|타율 \.\d+이어도|만능 타자|숫자 하나로|숫자 없이|실책이 적다고 수비를|실책 개수만으로/;
  const _cMT840=comments;comments=function(tone,x){let out=_cMT840.apply(this,arguments);try{if(!Array.isArray(out))return out;
   const hasTroll=out.some(c=>c&&TROLL840.test(String(c.t||''))&&!META840.test(String(c.t||'')));if(!hasTroll)out=out.filter(c=>!(c&&META840.test(String(c.t||''))));
-  if(S&&(S.stage==='hs'||S.stage==='univ'))out=out.filter(c=>!(c&&SAB840.test(String(c.t||''))))}catch(e){}return out}}
+  if(S&&(S.stage==='hs'||S.stage==='univ'||(x&&(x.ps||x.intl))||/^ps|^walkoff$|^ring$|^ws$|^intl$|^gold$/.test(String(tone||''))))out=out.filter(c=>!(c&&(SAB840.test(String(c.t||''))||/WAR이 음수면|언론 플레이/.test(String(c.t||'')))))}catch(e){}return out}}
 
 /* ===================== v840k KBO FA 몸값 현실화 =====================
    최근 3시즌 WAR(가중 5:4:3)와 나이로 연평균을 정하고, 능력치(오버롤)는 조금만 반영.
