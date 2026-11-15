@@ -8452,7 +8452,7 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
 {const NEG=/무안타|돈값|부진|고생했다|여기까지|전력 차이|아쉽|못하네|실망|못 쳤|침묵|반성|비판|욕/;
  const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||!x||!x.win)return out;const t=String(x.title||'');const ring=tone==='ring'||tone==='ws'||(x.clinch&&/한국시리즈|월드시리즈/.test(t));if(!ring)return out;
   const P=isP(),M=S.psMe&&S.psMe.y===S.y?S.psMe:null,b=M&&M.b||{},pp=M&&M.p||{},avg=b.AB?b.H/b.AB:0,era=pp.outs?pp.R*27/pp.outs:9;
-  const strong=P?(pp.outs>=27&&era<=2.5):((b.AB>=15&&avg>=.3)||(b.HR||0)>=3||(b.RBI||0)>=8),poor=P?(pp.outs>=9&&era>=6):(b.AB>=15&&avg<.2);
+  const strong=P?(pp.outs>=27&&era<=2.5):((b.AB>=15&&avg>=.32&&((b.HR||0)>=2||(b.RBI||0)>=6))||(b.HR||0)>=4||((b.RBI||0)>=10&&avg>=.28)),good840=!strong&&(P?(pp.outs>=18&&era<=3.5):((b.AB>=12&&avg>=.28)||(b.HR||0)>=2||((b.RBI||0)>=6&&avg>=.24))),poor=P?(pp.outs>=9&&era>=6):(b.AB>=15&&avg<.2);
   out=out.filter(c=>!(c&&NEG.test(c.t)&&!(poor&&/버스/.test(c.t))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!NEG.test(typeof r==='string'?r:r&&r.t))});
   if(!poor)out=out.filter(c=>!(c&&/버스|조용했지만|못 쳐도|감사해라|업혀|묻어|무임승차/.test(c.t)));
   const gn=giv(ME.name),mlb=S.pro&&S.pro.league==='MLB',ser=t.replace(/\s*\d+차전.*$/,''),add=[];const put=(tt,re,up)=>{tt=josaFix(tt);if(seenHas(tt))return;seenAdd(tt);add.push(mkC(tt,re.map(r=>({nk:pick(NICKS),t:r,up:ri(100,1500)})),{up:up||ri(6000,16000),must:1}))};
@@ -8460,6 +8460,8 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
     const L=[`이번 가을 MVP는 무조건 ${gn}`,`${line}… 이 우승은 ${gn}가 하드캐리했다`,`${gn} 없었으면 이 반지 없다`,`${ser} 우승의 주인공은 ${gn}`];
     if(mlb)L.push(`한국인 선수가 월드시리즈에서 이 정도로 하드캐리하다니`,`월드시리즈 우승 반지 낀 한국인 ${P?'투수':'타자'} ${gn} 국뽕 MAX`,`메이저 우승팀 핵심이 한국인이라니 꿈인가 싶다`);
     L.sort(()=>R()-.5).slice(0,3).forEach(tt=>put(tt,[pick(['반박 불가','ㄹㅇ 우승 청부사','이건 역사다','개추 박고 간다','눈물 난다 진짜'])]))}
+  else if(good840){const line=P?`가을 평균자책 ${era.toFixed(2)}`:`가을 타율 ${avg.toFixed(3).replace(/^0/,'')}${b.HR?` ${b.HR}홈런`:''}${b.RBI?` ${b.RBI}타점`:''}`;
+    [`${line}… 이번 가을 ${gn} 제 몫 했다`,`${gn} 가을에 해 줄 건 해 줬다`,`우승 반지 낄 자격 충분하다 ${gn}`].sort(()=>R()-.5).slice(0,R()<.5?2:1).forEach(tt=>put(tt,[pick(['ㅇㅈ','우승하면 다 좋은 거지','고생했다 진짜'])]))}
   out.splice(0,0,...add)}catch(e){}return out}}
 /* 나이에 맞는 댓글: 35세 미만이면 노장·베테랑 취급 금지 · 25세 이상이면 '어린 선수' 취급 금지 */
 {const OLD=/이 나이에|저 나이에|노장|베테랑|나이를 잊|회춘|불혹|녹슬지|경험은 무시 못|자기 관리가 얼마나|자기관리가 베테랑|에이징 커브|노익장|은퇴 전에|마지막 불꽃|아직 죽지 않|살에 이게/,YOUNG=/어린 선수|어린 나이|고졸 신인|애기|막내가|신인이 벌써|신인이 이|이제 막 데뷔|아기/;
