@@ -2119,7 +2119,7 @@ const CM={
   psLose:['아쉽다 ㅠ 그래도 잘 싸웠다','{n_e} 할 만큼 했음','타선 집단 침묵','불펜 방화가 문제였지','내년엔 꼭 우승하자','심판 판정 좀 이상했음','결국 또 여기까지네','{line}… 이걸로는 못 이김','올해도 가을은 짧았다','이 패배 오래 남을 듯']};
 CM.salary=['연봉 인상 축하해요','받을 만했다 인정','구단이 대우 제대로 해주네','이제 FA까지 몇 년 남았지?','내년에도 이렇게만 하자','협상 깔끔하게 끝나서 다행','이 정도 인상률이면 구단도 인정한 거지'];
 CM.faFair=['이 가격이면 혜자 계약','합리적인 계약 프런트 칭찬함','가성비 FA 인정','이 정도면 무조건 잡아야지','다른 팀이 더 질렀으면 뺏겼다 ㄷㄷ','적당한 금액에 잘 잡았네','팀 케미 생각하면 남는 게 맞지'];
-CM.faBig=['{yrs}년 {tot}? 거품이다 진짜','KBO에서만 통하는 우물 안 개구리한테 {tot}','오버페이 확정 4년 뒤에 보자','이 돈이면 외국인 선수 셋 산다','FA로이드 끝나면 먹튀각','계약 끝날 때 {endAge}살인데 괜찮냐','구단이 돈 쓸 데가 없나 ㅋㅋ','{tot} 받을 그릇인지는 모르겠다','시장가 다 망가뜨렸네','그래도 잡을 선수는 잡아야지','우승하면 아무도 오버페이 소리 안 함','이 정도면 레전드 대우 맞음'];
+CM.faBig=['{yrs}년 {tot}? 거품이다 진짜','KBO에서만 통하는 우물 안 개구리한테 {tot}','오버페이 확정 {yrs}년 뒤에 보자','이 돈이면 외국인 선수 데려오는 게 낫겠다','FA로이드 끝나면 먹튀각','계약 끝날 때 {endAge}살인데 괜찮냐','구단이 돈 쓸 데가 없나 ㅋㅋ','{tot} 받을 그릇인지는 모르겠다','시장가 다 망가뜨렸네','그래도 잡을 선수는 잡아야지','우승하면 아무도 오버페이 소리 안 함','이 정도면 레전드 대우 맞음'];
 function profilePools(){const neg=[],pos=[],{b,p}=yearTot(S.y),tb=careerTot(PRO).b,f=x=>Math.round(DV(x));
   if(!isP()){const gdp=b.GDP||0,kr=b.PA?b.K/b.PA:0;
     if(E('spd')<45){neg.push('발이 느려서 내야안타는 기대도 안 함');if(b.PA>=150&&gdp>=8)neg.push(`주력 ${f(E('spd'))}에 병살 ${gdp}개… 발 때문에 다 잡아먹음`,`병살타 ${gdp}개면 찬스 때 무서움`)}
@@ -6024,7 +6024,7 @@ function clutchMoments(x){const out=[];(x.pl||[]).forEach(p=>{if(!p.r&&p.t!=='HR
   /* 7) 레퍼런스 드립 골고루: 상황 맞는 것 중 가장 덜 나온 것 하나 */
   if(!/^(baby|wedding|love|scandal|injury|contract|salary|move|kmove|draft|milback|abroad|hs|legend)$/.test(tone||'')){const perf=(()=>{try{return perfGrade()}catch(e){return'mid'}})(),mlb=S.pro&&S.pro.league==='MLB',G=[];
     if(mlb&&!P&&(perf==='elite'||perf==='good'))G.push(['gat',pick([`눈치 보지 말고 게토레이 마셔라 ${gn} ㅋㅋ`,`${gn} 오늘은 게토레이 두 병 마셔도 됨`,`이렇게 치는데 게토레이 눈치 볼 필요 없다 ${gn} 벌컥벌컥 마셔라`,`덕아웃 게토레이 ${gn} 전용으로 박스째 갖다 놔라`]),['ㅋㅋㅋㅋ 게토레이 마실 자격 충분','오늘은 한 박스 마셔도 인정','게토레이 광고 들어오겠네']]);
-    if(mlb&&(perf==='elite'||tone==='award'||tone==='psHero'||tone==='mlbBig')&&S.stage==='pro')G.push(['drunk',`이렇게 잘하는데 음주운전만 하지 마라 ${gn}`,['ㄹㅇ 이게 제일 중요함','사고만 안 치면 레전드 확정']]);
+    if(mlb&&(perf==='elite'||tone==='award'||tone==='psHero'||tone==='mlbBig')&&S.stage==='pro')G.push(['drunk',`이렇게 잘하는데 부상만 조심하자 ${gn}`,['ㄹㅇ 건강이 최고','몸 관리만 하면 레전드 확정']]);
     if(typeof loveNews==='function'&&loveNews()&&perf==='bad')G.push(['love',`연애 기사 뜨면 맛탱이 간다더니 ${gn}도…`,['연애 버프가 아니라 연애 디버프 ㅋㅋ','여친 생기고 타율 실종']]);
     if(typeof loveNews==='function'&&loveNews()&&(perf==='elite'||perf==='good'))G.push(['love2',`연애하고 더 잘하는 거 보니 사랑의 힘인가 ${gn}`,['결혼까지 가자 ㅋㅋ',S.married?'형수님 감사합니다':'여자친구분 감사합니다 ㅋㅋ']]);
     if(x&&x.intl&&x.win)G.push(['kpop',pick(['국뽕 한 사발 들이켰다','태극마크 단 '+gn+' 멋있어 죽겠다','이 맛에 국대 경기 본다 국뽕 MAX']),['애국가 나올 때부터 울컥함','대한민국 화이팅']]);
@@ -6864,7 +6864,9 @@ Object.assign(CV,{
   /* MLB 결정적 활약 (홈런) */
   if(S.pro&&S.pro.league==='MLB'&&x&&!x.ps&&(x.gHR||0)>=1&&cmX('mlbHR'+S.y+S.m))put([["이게 코리안 파워지",[]],["미국 한복판에서 한국 야구 홍보 중",[]],["상대 투수 표정 보소 ㅋㅋㅋ",[]],["홈런 하나로 아침을 행복하게 만드네",[]],["한국에서 보던 그 선수가 맞냐",[]],["오늘은 국뽕 인정한다",[]],["한국 야구 팬들 단체로 잠 못 자겠네",[]],["이래서 메이저리그 가는구나",[]]],1);
   /* MLB 대기록·수상 */
-  if(tone==='award'&&S.pro&&S.pro.league==='MLB')put([["한국 야구 역사에 남을 순간이다",[]],["이건 진짜 국보급 선수다",["나중에 다큐멘터리로 만들어야 한다"]],["앞으로 이런 선수가 또 나올까",[]],["한국 야구의 새 역사를 썼다",[]],["은퇴 후 명예의 전당까지 노려보자",[]],["후배 선수들에게 길을 열어줬네",[]]],3);
+  if(tone==='award'&&S.pro&&S.pro.league==='MLB'){/* v840p: 처음 몇 번만 '역사·국보', 단골 수상자면 '또 받았네' 쪽 */const nA840=(S.awards||[]).filter(a=>a.y<S.y&&/실버슬러거|골드글러브|MVP|사이영|^MLB /.test(String(a.n))&&!/시리즈|올스타|월간|주간/.test(String(a.n))).length;
+    if(nA840<=1)put([["한국 야구 역사에 남을 순간이다",[]],["이건 진짜 국보급 선수다",["나중에 다큐멘터리로 만들어야 한다"]],["앞으로 이런 선수가 또 나올까",[]],["한국 야구의 새 역사를 썼다",[]],["은퇴 후 명예의 전당까지 노려보자",[]],["후배 선수들에게 길을 열어줬네",[]]],3);
+    else put([["또 수상이네 이제 놀랍지도 않다",[]],["상 받는 게 일상이 됐다 ㄷㄷ",[]],["트로피 진열장 하나 더 사야겠다 ㅋㅋ",["진열장 리모델링 각"]],["꾸준함이 진짜 무섭다",[]],["이 정도면 메이저 단골 수상자",[]],["은퇴 후 명예의 전당까지 노려보자",[]]],2)}
   /* 정규시즌 조합형 상황 */
   if(S.stage==='hs'&&!(x&&(x.ps||x.intl))&&ovrE()>=46&&cmX('hsWish'+S.y)&&R()<.5)put(CV.hsWish,1);
   if(S.stage==='pro'&&S.pro&&!S.pro.dev&&!(x&&(x.ps||x.intl))&&!['draft','abroad','award','faBig','franMove','homeBack','kmove','legend','love'].includes(tone)){const P=isP(),lg=S.pro.league,{b,p}=yearTot(S.y,[lg]),w=cvYearW(),a=age(),yrs=proYears(),ok=P?p.outs>=150:b.PA>=200;
@@ -14544,7 +14546,7 @@ function cmH840(t){let h=0;const s=String(t||'').replace(/\d+(\.\d+)?/g,'N').rep
 
 /* ---------- v840: 이벤트성 기사(대기록·끝내기·부상·이적·금메달·결혼 등)엔 '야알못·지표' 논쟁 같은 엉뚱한 끼어들기 댓글 빼기 ---------- */
 {const _cF2840=comments;comments=function(tone,x){let out=_cF2840.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME)return out;const T=String(tone||'');
-  if(['mix','hype','bad','psWin','psLose','psGoat','psHero'].includes(T))return out;const RX=/야알못|야잘알|지표로 설명|스탯 보고 오세요|타율이 왜 중요|WAR만 보는|클래식 스탯|WPA는|WAR충|세이버도 좀|타점은 장식|스탯충/;const RXI=/초구|선구안|타이밍이|스윙이|헛스윙|볼넷/;
+  if(['mix','hype','bad','psWin','psLose','psGoat','psHero'].includes(T))return out;const RX=/야알못|야잘알|지표로 설명|스탯 보고 오세요|타율이 왜 중요|WAR만 보는|클래식 스탯|WPA는|WAR충|세이버도 좀|타점은 장식|스탯충|타율 \.?\d+이면 무조건|생각부터 버려라/;const RXI=/초구|선구안|타이밍이|스윙이|헛스윙|볼넷/;
   out=out.filter(c=>{const t=String(c&&c.t||'');if(c&&c.must)return true;if(RX.test(t))return false;if(T==='injury'&&RXI.test(t))return false;return true});
   out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!(r&&RX.test(String(r.t||''))))})}catch(e){}return out}}
 
@@ -14584,6 +14586,8 @@ const PSCLAIM840=/가을야구도 못 갔|덕분에 가을야구|가을야구 (�
   out.forEach(c=>{if(!c)return;if(typeof c.t==='string')c.t=fix(c.t);if(Array.isArray(c.re))c.re.forEach(r=>{if(r&&typeof r.t==='string'){r.t=fix(r.t);if(Array.isArray(r.re))r.re.forEach(w=>{if(w&&typeof w.t==='string')w.t=fix(w.t)})}})})}catch(e){}return out}}
 /* 은퇴 투어 시즌 후반기엔 1군 엔트리에 둔다 (투어 하는 레전드가 퓨처스에 있던 것) */
 {const _drT840=decideRole;decideRole=function(){const r=_drT840.apply(this,arguments);try{if(S&&S.stage==='pro'&&S.pro&&S.pro.league==='KBO'&&S._tourY===S.y&&S.phase===2&&!(ME&&ME.inj)){if(r==='fB')return'bench';if(r==='fP')return'MR'}}catch(e){}return r}}
+/* 메이저 경력 있는 선수 FA 기사에 '우물 안 개구리' 금지 */
+{const _cFB840=comments;comments=function(tone,x){let out=_cFB840.apply(this,arguments);try{if(!Array.isArray(out)||!S||!S.rows||!S.rows.some(r=>r.lv==='MLB'))return out;out=out.filter(c=>!(c&&/우물 안 개구리|KBO에서만 통하는/.test(String(c.t||''))))}catch(e){}return out}}
 
 /* ===================== v840k KBO FA 몸값 현실화 =====================
    최근 3시즌 WAR(가중 5:4:3)와 나이로 연평균을 정하고, 능력치(오버롤)는 조금만 반영.
