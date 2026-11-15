@@ -9257,6 +9257,8 @@ if(typeof CRIT!=='undefined')CRIT.add('famXp');
     const recent=S.rows.filter(r=>r.lv==='MLB'&&r.y>=S.y-4),maj=recent.some(r=>(r.b&&r.b.PA>=250)||(r.p&&r.p.outs>=240)),keepP=maj?.85:m.mlb.dev?.3:.55;
     if(R()<keepP){S.pro.dev=m.mlb.dev;article(`${ME.name}, 전역 후 ${S.pro.tname} 복귀… "실전 감각부터 되찾겠다"`,`군 복무를 마친 ${jo(ME.name,'이','가')} 소속팀 ${S.pro.tname}에 돌아갔다. 구단은 마이너에서 실전 감각을 끌어올린 뒤 콜업할 계획이다.`,'return');
       S.queue.push({title:'✈️ 미국 복귀',text:`${S.pro.tname} 구단이 계약을 유지하기로 했다.\n1년 반의 공백. 다시 경쟁이 시작된다.`,ch:[{t:'"다시 메이저로 올라가겠습니다"',s:'멘탈↑',act:'famXp',arg:{men:2,r:'짐을 싸서 다시 미국행 비행기에 올랐다.'}}]})}
+    else if(S.rows.some(r=>r.lv==='KBO')){/* v840w: KBO에서 뛰다 포스팅·FA로 간 선수는 2년 유예 없이 바로 KBO 복귀 가능 */const kr=S.rows.filter(r=>r.lv==='KBO'),lt=TEAMS.findIndex(t=>String(kr[kr.length-1].team||'').indexOf(t.nick)>=0),o=Math.round(DV(ovrE())),per=Math.max(5000,Math.round((typeof faValue==='function'?faValue(o,0):30000)*.8/1000)*1000),yy=age()<=31?2:1,tt=[lt>=0?lt:ri(0,9)].concat(shuffle(TEAMS.map((t,i)=>i).filter(i=>i!==lt)).slice(0,1));
+      S.queue.push({title:'📄 방출 통보',text:`전역하자마자 ${S.pro.tname} 구단에서 연락이 왔다.\n"공백이 너무 길었다. 미안하지만 함께하기 어렵겠다."\n\nKBO 원소속팀과 다른 구단들이 관심을 보이고 있다.`,ch:[{t:'다른 MLB 구단과 마이너 계약',s:'미국에 남는다 · 마이너부터 다시',act:'mlbReMinor'}].concat(tt.map((t,k)=>({t:`KBO 복귀: ${TEAMS[t].city} ${TEAMS[t].nick}${k===0&&lt>=0?' · 🏠 친정팀':''}`,s:`${yy}년 총액 ${money(per*yy)}`,act:'fa',arg:{team:t,yrs:yy,tot:per*yy}})))})}
     else{S.queue.push({title:'📄 방출 통보',text:`전역하자마자 ${S.pro.tname} 구단에서 연락이 왔다.\n"공백이 너무 길었다. 미안하지만 함께하기 어렵겠다."\n\n해외 구단과 계약했던 선수는 KBO에 바로 돌아갈 수 없다(2년 유예).`,ch:[
       {t:'다른 MLB 구단과 마이너 계약',s:'미국에 남는다 · 마이너부터 다시',act:'mlbReMinor'},
       {t:'독립리그에서 2년 버티고 KBO 복귀',s:'2년간 독립리그 · 이후 KBO 입단 도전',act:'mlbIndy'}]})}
