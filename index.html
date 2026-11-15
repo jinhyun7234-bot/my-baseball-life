@@ -1734,7 +1734,7 @@ function awards(rep){
   /* 개인 타이틀 1개당 MVP·골든글러브 확률 아주 살짝↑ (MVP: WAR +0.12 효과, 골글: WAR +0.08 효과 · 최소 WAR 조건은 그대로) */
   const _top=(c,pt)=>{try{if(S.pro.league!=='KBO')return false;const r=ranking(c,pt).list;return!!(r.length&&(r[0].me||r.some(x=>x.me&&x.v===r[0].v)))}catch(e){return false}};
   const tcnt=isP()?[_top('w',1)&&p.W>0,_top('era',1),_top('k',1)&&p.K>0,_top('sv',1)&&p.SV>0,_top('hld',1)&&p.HLD>0].filter(Boolean).length:[_top('avg',0),_top('hr',0)&&b.HR>0,_top('rbi',0)&&b.RBI>0,_top('sb',0)&&b.SB>0,_top('h',0)&&b.H>0,_top('r',0)&&b.R>0,_top('obp',0),_top('slg',0)].filter(Boolean).length;
-  const mvN=S.awards.filter(a=>a.n==='정규시즌 MVP').length,mvL=S.awards.some(a=>a.n==='정규시즌 MVP'&&a.y===S.y-1);if((isP()?(w>=5.4&&w+tcnt*.12>rn(6.3+(mvL?.45:0)+1.6*(1-Math.exp(-mvN/5)),.7)):(b.PA>=400&&mvpM(w,b,'KBO')+tcnt*.12>rn(8.23+(mvL?.45:0)+1.6*(1-Math.exp(-mvN/5)),.7)))){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
+  const mvN=S.awards.filter(a=>a.n==='정규시즌 MVP').length,mvL=S.awards.some(a=>a.n==='정규시즌 MVP'&&a.y===S.y-1);if((isP()?(w>=5.7&&w+tcnt*.12>rn(6.6+(mvL?.45:0)+1.6*(1-Math.exp(-mvN/5)),.7)):(b.PA>=400&&mvpM(w,b,'KBO')+tcnt*.12>rn(8.23+(mvL?.45:0)+1.6*(1-Math.exp(-mvN/5)),.7)))){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
   const prior=S.rows.filter(r=>r.lv==='KBO'&&r.y<S.y),priorPA=prior.reduce((s,r)=>s+r.b.PA,0),priorO=prior.reduce((s,r)=>s+r.p.outs,0);
   if(!S.ach.roy&&S.y-S.pro.debut<5&&priorPA<60&&priorO<90&&(b.PA>=150||p.outs>=120)&&w>rn(2.4,.8)){give('신인왕');S.ach.roy=S.y}
   if(isP()){if(w+.75>3.7&&R()<ggProb(w+.75+tcnt*.08,'P'))give('골든글러브 (투수)')}else if(b.G>=100&&w>(typeof ggLo825==='function'?ggLo825(ME.pos):3.7)&&R()<ggProb(w+tcnt*.08,ME.pos))give(`골든글러브 (${POS[ME.pos]})`);
@@ -13816,6 +13816,14 @@ MVK825.KBO=.25;MVK825.MLB=.6;
 ggLo825=function(pos){return 3.5+ggOff825(pos)};
 {const _gg826=ggProb;ggProb=function(w,pos){if(pos==='P'||!(pos in GGPM825))return _gg826.apply(this,arguments);try{const lo=ggLo825(pos),m=3.7+ggOff825(pos);if(!(w>lo))return 0;
   const t=Math.min(1,(w-lo)/1.0),ramp=t*t*(3-2*t),p=ramp/(1+Math.exp(-(w-m)/.5)),s=S&&S._aw809;let k=(s&&s.gg!=null)?s.gg:1;k=k+(1-k)*s01((w-m-1.2)/1.0);return p*k}catch(e){return _gg826.apply(this,arguments)}}}
+try{for(const k in SSLO714)SSLO714[k]=+(SSLO714[k]+.015).toFixed(3);for(const k in GGLO714)GGLO714[k]=+(GGLO714[k]+.03).toFixed(3)}catch(e){}
+/* v827: 수상 기준 한 번 더 살짝 — 모든 포지션 같은 폭 (WAR로 +0.3 안팎)
+   KBO·MLB MVP +0.3 · KBO 골든글러브 타자 8포지션·투수 +0.3 · 실버슬러거 OPS +.015 · 골드글러브 수비 +.03 · 투수 KBO MVP는 v2_sim에서 5.4/6.3 → 5.7/6.6 */
+MVK825.KBO=-.05;MVK825.MLB=.3;
+var GGU827=.3;
+ggLo825=function(pos){return 3.5+GGU827+ggOff825(pos)};
+{const _gg827=ggProb;ggProb=function(w,pos){if(pos==='P')return _gg827.call(this,w-GGU827,pos);if(!(pos in GGPM825))return _gg827.apply(this,arguments);try{const lo=ggLo825(pos),m=3.7+GGU827+ggOff825(pos);if(!(w>lo))return 0;
+  const t=Math.min(1,(w-lo)/1.0),ramp=t*t*(3-2*t),p=ramp/(1+Math.exp(-(w-m)/.5)),s=S&&S._aw809;let k=(s&&s.gg!=null)?s.gg:1;k=k+(1-k)*s01((w-m-1.2)/1.0);return p*k}catch(e){return _gg827.apply(this,arguments)}}}
 try{for(const k in SSLO714)SSLO714[k]=+(SSLO714[k]+.015).toFixed(3);for(const k in GGLO714)GGLO714[k]=+(GGLO714[k]+.03).toFixed(3)}catch(e){}
 
 /* ===================== 첫 화면 일러스트 (사용자 제공 이미지) ===================== */
