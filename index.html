@@ -1792,7 +1792,7 @@ function intl(rep,cy){
   if(res==='금메달'||res==='은메달'||res==='동메달')celebrate('medal',`${ev.n} ${res}`,`대한민국 국가대표 · 등번호 ${ME.num||'-'}`,exemptLabel(ev,res));
   if(res==='은메달'||res==='동메달'){S.awards.push({y:S.y,n:`${ev.n} ${res}`});S.rel.fame+=res==='은메달'?5:3}
   if(res==='금메달'){S.ach.gold=S.ach.gold||cy;S.awards.push({y:S.y,n:`${ev.n} 금메달`});S.rel.fame+=8;article(`대한민국, ${ev.n} 금메달! ${ME.name} ${g.mvp?'결승 히어로':'맹활약'}`,`${on}를 꺾고 정상에 올랐다.`,'gold')}
-  const exempt=(ev.n.includes('아시안게임')&&res==='금메달')||(ev.n.includes('올림픽')&&res!=='메달 획득 실패');
+  const exempt=(ev.n.includes('아시안게임')&&res==='금메달')||(ev.n.includes('올림픽')&&['금메달','은메달','동메달'].includes(res));/* v840o: 올림픽 4강 탈락(메달 없음)에도 특례가 나오던 것 */
   if(exempt&&S.mil.status==='none'){S.mil.status='exempt';S.mil.exY=S.y;S.mil.exEv=`${ev.n} ${res}`;rep.lines.push('🎖️ 병역 특례 확정!');news(`${ev.n} ${res}로 병역 특례 확정.`);ME.hid.men=cl(ME.hid.men+3,20,80);
     article(`${ME.name}, ${ev.n} ${res}로 병역 특례 확정`,`${jo(ME.name,'은','는')} 4주 기초군사훈련만 받으면 군 복무를 마친 것으로 인정된다. 이제 군 걱정 없이 커리어를 이어간다.`,'gold',{medal:res});
     S.queue.push({title:'🎖️ 병역 특례 확정',text:`${ev.n} ${res}!\n병역법에 따라 체육요원으로 편입된다. 4주 기초군사훈련만 받으면 군 복무를 마친 것으로 인정된다.\n\n이제 군대 걱정 없이 야구에만 집중할 수 있다.`,ch:[{t:'야구에만 집중한다!',s:'멘탈 +3 (적용됨)',act:'lifeok'}]})}}
@@ -8854,7 +8854,7 @@ function phaseTopHtml(){try{const r=S.report;if(!r||!(r.ph===1||r.ph===2))return
   add('HLD',sr(rel*P.h*good)-m.HLD);if(P.s)add('SV',sr(rel*P.s*good)-(k==='CL'?99:0)-(k!=='CL'?m.SV:0));
   add('W',sr(rel*P.w*cl(1.2-era/12,.5,1.2))-m.W);add('L',sr(rel*P.l*bad)-m.L)}catch(e){}return r}}
 /* 2군·마이너에서 뛰는 동안의 내 경기·활약 기사엔 머리말: [퓨처스] / [마이너] (리그 용어 그대로) */
-{const LIFE=/wedding|love|baby|famDay|gfbreak|marry|scandal|salary|move|franMove|homeBack|trade|injury|injRet|draft|retire|legend|hof|award/;
+{const LIFE=/wedding|love|baby|famDay|gfbreak|marry|scandal|salary|move|franMove|homeBack|trade|injury|injRet|draft|retire|legend|hof|award|tourAnn|tourStop|tourCer/;
  const _ar=article;article=function(head,body,tone,x){const prev=S&&S._cmMinor;try{S._cmMinor=null;const mi=(typeof head==='string'&&/선언|계약|입단|지명|직행|사인|도전/.test(head))?null:artMinor();if(mi&&!LIFE.test(String(tone||''))&&!(x&&(x.ps||x.intl))){S._cmMinor=mi;if(mi.mlb&&typeof head==='string')head=head.replace(/ ?\(MLB\)/g,'');if(typeof head==='string'&&head.indexOf(ME.name)>=0&&!/\[(마이너|퓨처스)/.test(head)&&!/^\[(?!\d{4} )/.test(head)){const m=head.match(/^\[(\d{4} [^\]]*)\] /);if(m)head=`[${m[1]} · ${mi.mlb?mi.ln:'퓨처스'}] `+head.slice(m[0].length);else head=`[${mi.lab}] `+head.replace(/^\[(퓨처스|마이너)\] /,'')}if(mi.mlb&&typeof body==='string')body=body.replace(/ ?\(MLB\)/g,` 산하 ${mi.ln}`)}
   else if(!mi&&S.stage==='pro'&&S.phase!==0&&S.pro&&!S.pro.dev&&typeof head==='string'&&head.indexOf(ME.name)>=0&&!LIFE.test(String(tone||''))&&!/award|contract|trade|retire|ring|ws|intl/.test(String(tone||''))&&!(x&&(x.ps||x.intl))&&!/^\[(?!\d{4} )/.test(head)&&!/\[(메이저|KBO 1군|1군)/.test(head)&&!/대한민국|국가대표|아시안게임|WBC|올림픽|프리미어|대표팀|전역|입대|은퇴/.test(head)){
     const lv=S._artLv||S.pro.league;const lab=lv==='MLB'?'메이저리그':lv==='KBO'?'KBO 1군':null;if(lab){const m=head.match(/^\[(\d{4} [^\]]*)\] /);head=m?`[${m[1]} · ${lab}] `+head.slice(m[0].length):`[${lab}] `+head}}}catch(e){}try{return _ar(head,body,tone,x)}finally{S._cmMinor=prev||null}}}
@@ -14582,6 +14582,8 @@ const PSCLAIM840=/가을야구도 못 갔|덕분에 가을야구|가을야구 (�
  const _cLT840=comments;comments=function(tone,x){let out=_cLT840.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!S.pro||(x&&x.intl))return out;const mlb=S.pro.league==='MLB';
   const fix=t=>{let s=String(t==null?'':t);if(mlb){if(/KBO|크보|한국|예전|시절|돌아|복귀|친정/.test(s))return s;MLBT840.forEach(([a,b])=>{s=s.replace(a,b)});return s}if(/메이저|MLB|미국|해외|포스팅|빅리그|현지|마이너리그|마이너 계약/.test(s))return s;KBOT840.forEach(([a,b])=>{s=s.replace(a,b)});return s};
   out.forEach(c=>{if(!c)return;if(typeof c.t==='string')c.t=fix(c.t);if(Array.isArray(c.re))c.re.forEach(r=>{if(r&&typeof r.t==='string'){r.t=fix(r.t);if(Array.isArray(r.re))r.re.forEach(w=>{if(w&&typeof w.t==='string')w.t=fix(w.t)})}})})}catch(e){}return out}}
+/* 은퇴 투어 시즌 후반기엔 1군 엔트리에 둔다 (투어 하는 레전드가 퓨처스에 있던 것) */
+{const _drT840=decideRole;decideRole=function(){const r=_drT840.apply(this,arguments);try{if(S&&S.stage==='pro'&&S.pro&&S.pro.league==='KBO'&&S._tourY===S.y&&S.phase===2&&!(ME&&ME.inj)){if(r==='fB')return'bench';if(r==='fP')return'MR'}}catch(e){}return r}}
 
 /* ===================== v840k KBO FA 몸값 현실화 =====================
    최근 3시즌 WAR(가중 5:4:3)와 나이로 연평균을 정하고, 능력치(오버롤)는 조금만 반영.
