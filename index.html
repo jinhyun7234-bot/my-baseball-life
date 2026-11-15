@@ -4475,7 +4475,7 @@ const PSTYLE=[['적극 육아','아이와 시간을 많이 보낸다 · 피로�
   const bi=out.findIndex(q=>q.title==='👶 아빠가 됐다');if(bi>=0){out.splice(bi,1);ME.hid.men=cl(ME.hid.men-3,20,80);S.kids=(S.children||[]).length}
   if(out.length)return out;if(S.stage==='ret')return out;const g=S.gf;
   /* 프러포즈: 호감 유지가 관건 */
-  if(g&&!S.married&&g.aff>=65&&S.y-g.since>=2&&age()>=24&&(S.propY||0)<S.y&&R()<.45){S.propY=S.y;const cost=Math.max(2000,Math.round((S.pro?S.pro.salary:5000)*.1/100)*100),p=cl((g.aff-45)/40,.15,.95);
+  if(g&&!S.married&&g.aff>=65&&S.y-g.since>=2&&age()>=24&&(S.propY||0)<S.y&&R()<.45){S.propY=S.y;const cost=Math.min(150000,Math.max(2000,Math.round((S.pro?S.pro.salary:5000)*.1/100)*100)),p=cl((g.aff-45)/40,.15,.95);
     out.push({title:'💍 프러포즈',text:`${jo(g.n,'과','와')} 만난 지 ${S.y-g.since}년. 반지를 준비할까?\n(결혼식·신혼집 비용 약 ${money(cost)})`,ch:[{t:'프러포즈한다',s:`−${money(cost)} · 성공하면 결혼 (호감이 높을수록 성공 확률↑)`,act:'prop',arg:{cost,p}},{t:'조금 더 만나보자',s:'변화 없음',act:'lifeok'}]});return out}
   /* 2세 계획 */
   famMigrate();const ks=S.children=S.children||[];
@@ -5782,7 +5782,7 @@ const isVet=()=>isPro()&&proYears()>=8&&age()>=36;
 const isOld=()=>isPro()&&age()>=36;
 const isMLB=()=>isPro()&&S.pro.league==='MLB';
 const isKBO=()=>isPro()&&S.pro.league==='KBO';
-const salP=r=>Math.max(100,Math.round(((S.pro&&S.pro.salary)||3000)*r/10)*10);
+const salP=r=>Math.min(r<=.005?500:r<.02?3000:5000,Math.max(100,Math.round(((S.pro&&S.pro.salary)||3000)*r/10)*10));/* v840v: 연봉 비례 비용 상한 (메이저 고연봉이면 후배 밥값 1.7억·필라테스 5.5억 나오던 것) */
 const E2=(c,f)=>({c,f});
 EV.push(
 /* ---------- 신인 ---------- */
@@ -5918,7 +5918,7 @@ const TRAIN_EV=/특타|새 구종|새 타격 이론|데이터 분석|특별 훈�
   for(let i=0;i<4&&ev&&(S.evLog.slice(-26,-1).includes(ev.title)||(TRAIN_EV.test(ev.title)&&R()<.1));i++){S.evLog=keep.slice();ev=_re()}return ev}}
 /* ---------- 연애 레퍼토리 확장 ---------- */
 ACT.lv2=function(a){const r=ACT.lv(a);return(typeof r==='string'&&/부족/.test(r))?r:(a.r||r||'')};
-function gfExtra(){const g=S.gf,nm=jo(g.n,'이','가'),wa=jo(g.n,'과','와'),big=Math.max(100,Math.round(((S.pro&&S.pro.salary)||3000)*.015/10)*10),L=[];
+function gfExtra(){const g=S.gf,nm=jo(g.n,'이','가'),wa=jo(g.n,'과','와'),big=Math.min(3000,Math.max(100,Math.round(((S.pro&&S.pro.salary)||3000)*.015/10)*10)),L=[];
   L.push({title:'📸 커플 사진 공개?',text:`${nm} 묻는다. "우리 사진 SNS에 올려도 돼?"`,ch:[{t:'"당연하지!" 공개 연애',s:'호감↑↑ · 인기↑ · 열애설 기사',act:'lv2',arg:{d:12,r:'댓글창이 축하 반 질투 반으로 불탔다.'}},{t:'"시즌 끝나고 하자"',s:'호감 조금↓ · 구설 없이 야구에 집중 (컨디션↑)',act:'lv2',arg:{d:-4,fm:1,r:'살짝 서운한 눈치였다.'}}]});
   L.push({title:'👭 여자친구 친구들 모임',text:`${nm} 친구들한테 소개해주고 싶다고 한다. 다들 야구를 1도 모른다.`,ch:[{t:'야구 규칙 강의까지 해준다',s:'호감↑ · 피로↑',act:'lv2',arg:{d:9,f:2,r:'"그래서 파울이 뭐라고요?" 세 번째 설명 중이다.'}},{t:'맛있는 거 사고 조용히 웃기',s:`−${money(Math.min(200,Math.max(20,Math.round(big/10))))} · 호감↑`,act:'lv2',arg:{d:7,c:Math.min(200,Math.max(20,Math.round(big/10))),r:'"남자친구 진짜 착하다" 소리를 들었다.'}}]});
   L.push({title:'🍱 깜짝 도시락',text:`훈련장 앞에 ${nm} 도시락을 들고 서 있다. 동료들이 휘파람을 분다.`,ch:[{t:'동료들 앞에서 당당히 먹는다',s:'호감↑ · 팀 분위기↑',act:'lv2',arg:{d:8,r:'"부럽다…" 노총각 선배가 한숨을 쉬었다.'}},{t:'부끄러워서 차에서 몰래',s:'호감 조금↑',act:'lv2',arg:{d:3,r:'그래도 맛은 최고였다.'}}]});
@@ -9056,7 +9056,7 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
 {const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(S.gf&&!S.married&&S.gf.late)S.gf.aff=cl(S.gf.aff+1.1,0,100)}catch(e){}}}
 {const _le=lifeEvents;lifeEvents=function(){let out=_le();try{const g=S.gf;if(!g||S.married||S.stage==='ret'||out.some(q=>/프러포즈|이별/.test(q.title||'')))return out;
   /* 늦은 연애는 1년만 만나도 프러포즈 기회 */
-  if(g.late&&g.aff>=62&&S.y-g.since>=1&&(S.propY||0)<S.y&&R()<.55&&!out.length){S.propY=S.y;const cost=Math.max(2000,Math.round((S.pro?S.pro.salary:5000)*.1/100)*100),p=cl((g.aff-40)/38,.25,.97);
+  if(g.late&&g.aff>=62&&S.y-g.since>=1&&(S.propY||0)<S.y&&R()<.55&&!out.length){S.propY=S.y;const cost=Math.min(150000,Math.max(2000,Math.round((S.pro?S.pro.salary:5000)*.1/100)*100)),p=cl((g.aff-40)/38,.25,.97);
     out.push({title:'💍 프러포즈',text:`${jo(g.n,'과','와')} 만난 지 ${Math.max(1,S.y-g.since)}년. 서로 나이도 있고, 이 사람이다 싶은 확신이 든다.\n(결혼식·신혼집 비용 약 ${money(cost)})`,ch:[{t:'프러포즈한다',s:`−${money(cost)} · 성공하면 결혼 (호감이 높을수록 성공 확률↑)`,act:'prop',arg:{cost,p}},{t:'조금 더 만나보자',s:'변화 없음',act:'lifeok'}]});return out}
   /* 연애 중 이별 가능성 */
   const p=knot(g.aff,[30,50,70,90],[.14,.05,.015,.004]);if(!out.length&&S.y-g.since>=1&&R()<p){const n=g.n;S.gf=null;S.gfCool=3;ME.hid.men=cl(ME.hid.men-2,20,80);ME.fat=cl(ME.fat-6,0,100);ME.hid.we=cl(ME.hid.we+2,20,80);try{news(`${n} 씨와 결별.`)}catch(e){}
@@ -11442,7 +11442,7 @@ function cuTryUp(s,boost){const c=cuCtx(),a=cuMix(c.upT,c.farm,true,c.ex+(boost|
     else if(s.m!==now){s.m=now;
       if(s.lv===2&&S.m>=4){const u=cuTryUp(s,S.mcuBoost&&S.mcuBoost>now?1.5:0);
         if(u.ok){s.lv=1;s.stuck=0;S.cuWhy=S.cuEase&&now<S.cuEase?'trade':u.a.perfHi?'perf':'tool';if(S.pro.split)S.pro.splitUp=1;
-          if(lg==='MLB')S.queue.push({title:'📞 콜업!',text:`트리플A 감독이 불렀다.\n"짐 싸라. 내일부터 메이저다."\n${S.cuWhy==='trade'?'새 팀은 약속대로 기회를 줬다.':u.a.perfHi?'마이너에서 쌓아 올린 성적이 결국 통했다.':'구단은 툴만큼은 메이저급이라고 판단했다.'}`,ch:[{t:'메이저 무대로!',s:'',act:'lifeok'}]}),news(`${S.y}년 ${S.m}월 메이저리그 콜업.`)}
+          if(lg==='MLB')S.queue.push({title:'📞 콜업!',text:`트리플A 감독이 불렀다.\n"짐 싸라. 내일부터 메이저다."\n${S.cuWhy==='trade'?'새 팀은 약속대로 기회를 줬다.':u.a.perfHi?'마이너에서 쌓아 올린 성적이 결국 통했다.':age()>=33?'구단은 경험 많은 베테랑이 필요하다고 판단했다.':'구단은 툴만큼은 메이저급이라고 판단했다.'}`,ch:[{t:'메이저 무대로!',s:'',act:'lifeok'}]}),news(`${S.y}년 ${S.m}월 메이저리그 콜업.`)}
         else s.stuck=(s.stuck||0)+1}
       else if(s.lv===1&&S.m>=(age()<=23?4:5)){const yg=Math.max(s01((24-age())/3),isP()?0:s01((3-(S.y-(S.pro.debut||S.y)+1))/2)),dT=c.dnT+1.6*yg,b=cuMix(dT,[lg],false,c.ex);if(b.wp>.2-.08*yg){let pd=((lg==='KBO'?.45:.4)+.15*yg)*sg((dT-b.cs)/1.2);if(!isP())pd=bDownMix(pd,lg,yg);if(R()<pd){s.lv=2;s.stuck=0;S.cuWhy='down'}}}}
     if(s.lv===2&&!/^f/.test(r))r=isP()?'fP':'fB';else if(s.lv===1&&/^f/.test(r))r=cuUpRole()}catch(e){}return r}}
@@ -13324,7 +13324,7 @@ function ageM744(){const s=hidSum744();return .55+.95*(1-s01((s-120)/160))} /* �
     for(const k in b){if(typeof b[k]==='number'&&typeof ME.r[k]==='number'&&ME.r[k]<b[k]){const d=b[k]-ME.r[k];ME.r[k]=cl(b[k]-d*M/fOld,20,99)}}
     if(a<32){const t=s01((a-29)/3),d1=.016*t*M,d2=.008*t*M;(isP()?['velo','sta','stf']:['spd','arm','pow','rng']).forEach(k=>{if(k in ME.r)ME.r[k]=cl(ME.r[k]-d1,20,99)});(isP()?['ctl']:['con','fld','eye']).forEach(k=>{if(k in ME.r)ME.r[k]=cl(ME.r[k]-d2*(k==='eye'?.6:k==='fld'?.3:1),20,99)})}}catch(e){}}}
 /* 선택과 집중 이벤트 — 하나를 키우면 다른 하나가 깎인다 */
-function focusEv744(){const P=isP(),pro=S.stage==='pro',mlb=pro&&S.pro&&S.pro.league==='MLB',sal=pro?S.pro.salary:3000,c1=pro?Math.max(100,Math.round(sal*.02/10)*10):30,c2=pro?Math.max(50,Math.round(sal*.012/10)*10):20;
+function focusEv744(){const P=isP(),pro=S.stage==='pro',mlb=pro&&S.pro&&S.pro.league==='MLB',sal=pro?S.pro.salary:3000,c1=pro?Math.min(8000,Math.max(100,Math.round(sal*.02/10)*10)):30,c2=pro?Math.min(4000,Math.max(50,Math.round(sal*.012/10)*10)):20;
   const off=S.phase===0,bk=off?'_fcOff744':'_fcIn744';if(!S[bk]||!S[bk].length)S[bk]=shuffle(off?['camp','routine']:['pain','media','junior','night']);const k=S[bk].shift(); /* 골고루: 다 한 번씩 나온 뒤 다시 섞음 */
   if(k==='camp')return{title:'🗓️ 비시즌 개인 프로그램',text:`겨울 두 달. 다 하고 싶지만 몸은 하나다.\n이번 비시즌엔 어디에 힘을 쏟을까?`,ch:[
     {t:'재활·체력 전문 센터 입소',s:`−${money(c1)} · 내구성 크게↑ · 멘탈↓ (혼자 버티는 시간)`,fx:{money:-c1,dur:4,men:-1.5},r:'몸이 한결 단단해졌다. 다만 낯선 곳에서 혼자 보낸 시간이 길었다.'},
@@ -13338,7 +13338,7 @@ function focusEv744(){const P=isP(),pro=S.stage==='pro',mlb=pro&&S.pro&&S.pro.le
     {t:'참고 뛴다',s:'멘탈 크게↑ · 내구성↓',fx:{men:3,dur:-2.5},r:'이를 악물고 버텼다. 대신 몸에 무리가 쌓였다.'},
     {t:'트레이너에게 말하고 관리받는다',s:'내구성↑ · 감독 신뢰 −2',fx:{dur:2.5,coach:-2},r:'몸은 지켰다. 감독은 살짝 아쉬운 눈치다.'},
     {t:'경기 끝나고 혼자 보강 운동',s:'워크에식↑ · 피로↑ · 내구성 조금↓',fx:{we:2.5,fat:6,dur:-1},r:'남들 다 퇴근한 뒤에도 운동했다. 몸은 더 무겁다.'}]};
-  if(k==='media'){const pay=Math.max(200,Math.round(sal*.03/10)*10);return{title:'📺 예능 섭외',text:`인기 예능에서 ${mlb?'귀국 특집':'고정 게스트'} 섭외가 왔다. 촬영은 휴식일마다 잡힌다.`,ch:[
+  if(k==='media'){const pay=Math.min(5000,Math.max(200,Math.round(sal*.03/10)*10));return{title:'📺 예능 섭외',text:`인기 예능에서 ${mlb?'귀국 특집':'고정 게스트'} 섭외가 왔다. 촬영은 휴식일마다 잡힌다.`,ch:[
     {t:'출연한다',s:`+${money(pay)} · 멘탈↑ (기분 전환) · 워크에식↓`,fx:{money:pay,men:2.5,we:-2.5,fame:3},r:'방송 반응이 좋았다. 훈련 시간은 꽤 빠졌다.'},
     {t:'정중히 거절하고 쉰다',s:'내구성↑ · 멘탈 조금↓',fx:{dur:2.5,men:-1},r:'몸은 푹 쉬었다. 조금 아쉬운 마음이 남는다.'},
     {t:'거절하고 그 시간에 훈련',s:'워크에식↑ · 피로↑',fx:{we:2.5,fat:6},r:'휴식일도 반납했다.'}]}}
@@ -14578,6 +14578,7 @@ function evBadTime840(e){try{if(!e||!S)return false;const t=String(e.title||''),
   if(/홈런 더비 초대/.test(t))return ph!==1||minor;
   if(/루키 코스튬 데이/.test(t))return ph!==2||minor;
   if(/비시즌 해외 개인 훈련/.test(t))return true;
+  if(/연말 자선/.test(x))return ph!==2;
   if(ph===0&&/원정 경기|원정만|홈경기|직관|경기를 보러|시구|더그아웃|우천 취소|경기가 취소/.test(x))return true;
   if(S.stage==='mil'&&S.mil&&S.mil.type==='현역'&&(/경기가 취소|우천 취소|원정 경기|더그아웃/.test(x)||(/코치|구단|스카우트|팬 사인회|예능|광고|스폰서|원정|라커|1군|2군|퓨처스/.test(x)&&!/부대|중대|간부|사이버지식정보방|연등|휴가|면회|훈련소|전역|입대|군대|군 생활|군복|군인/.test(x))))return true;
   return false}catch(err){return false}}
@@ -14651,6 +14652,8 @@ function rpMLBcap840(ch){try{if(!relief840()||!Array.isArray(ch))return ch;const
   if(wa>=.8)return u;const rp=typeof rpPayB==='function'?(rpPayB(['MLB'])||0):0,mn=(typeof MLB_MIN==='number'?MLB_MIN:.78);return Math.max(mn,u*knot(wa+rp*.4,[-1,0,.8],[.25,.45,1]))}catch(e){return u}}}
 /* 해외 개인 캠프 비용: 연봉 비례라 메이저 고연봉이면 3주에 16억이 나오던 것 → 현실 수준(최대 1억 안팎) */
 campCost=function(){const sal=S.pro?S.pro.salary:0;return Math.round(Math.min(11000,Math.max(5000,5000+sal*.004))/100)*100};
+/* 방출 뒤 '1년 · 최저 수준 연봉' 제의가 실제로는 전 연봉의 절반(10억 받던 선수면 5억)이던 것 → 최근 성적 기준 시장가의 70% 안쪽 */
+{const _reF840=releaseEvent;releaseEvent=function(o){const q=_reF840.apply(this,arguments);try{if(q&&Array.isArray(q.ch)&&S.pro){const T=faAAV840();q.ch.forEach(c=>{const A=c&&c.arg;if(!A||c.act!=='fa'||!A.cheap||!A.tot)return;A.tot=Math.max(3300,Math.min(A.tot,Math.round(T*.7/100)*100))})}}catch(e){}return q}}
 
 /* ===================== v840l 은퇴·명예의 전당 기사 본문 다양화 =====================
    "프로 통산 WAR 80.6. 첫 투표에서 압도적 지지를 받았다." 한 줄만 나오던 것 →
