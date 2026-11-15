@@ -13784,7 +13784,7 @@ function ggLo825(pos){return 3.3+ggOff825(pos)}
 function mlbAAV825(wa,a){const w=Math.max(0,wa);return (2+3.4*w+.25*w*w)*knot(a,[26,29,32,34,36,38],[1.15,1.05,1,.88,.72,.55])}
 {const _mu825=mlbUSD;mlbUSD=function(o,w,proven){try{const a=age(),mn=(typeof MLB_MIN==='number'?MLB_MIN:.78);
   if(proven){const rp=typeof rpPayB==='function'?(rpPayB(['MLB'])||0):0,wa=Math.max(wAvg('MLB')+rp,Math.max(0,+w||0)*.7);return Math.max(mn,Math.min(60,mlbAAV825(wa,a)))}
-  const u=_mu825.apply(this,arguments),wk=wAvg('KBO');return Math.max(mn,u*knot(wk,[2,4,6,8],[.5,.65,.85,1])*knot(a,[27,30,33],[1,.85,.7]))}catch(e){return _mu825.apply(this,arguments)}}}
+  const u=_mu825.apply(this,arguments),wk=wAvg('KBO');return Math.max(mn,u*knot(wk,[2,4,5.5,7,8.5,10],[.3,.35,.43,.62,.85,1]) /* v829: 최근 실제 KBO→MLB 첫 계약 수준 (3년 가중 WAR 4~5 연 $4M · 5~6 $5~6M · 6~7 $7~8M · 7~8 $12M · 8.5+ $17M+) */*knot(a,[27,30,33],[1,.85,.7]))}catch(e){return _mu825.apply(this,arguments)}}}
 {const _my825=mlbYears;mlbYears=function(usd,proven){if(!proven){const y0=_my825.apply(this,arguments);try{const a=age(),u=+usd||0;if(a<=29&&u>=3&&y0<3)return ri(3,4);if(a>=36)return 1;if(a>=33)return Math.min(y0,2)}catch(e){}return y0}try{const a=age(),u=+usd||0;
   if(a<=27)return u>=25?ri(9,12):u>=15?ri(6,8):u>=8?ri(3,5):ri(1,2);
   if(a<=29)return u>=25?ri(7,9):u>=15?ri(5,6):u>=8?ri(2,4):1;
