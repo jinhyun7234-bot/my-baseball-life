@@ -4001,7 +4001,7 @@ function cmCats(tone,x){const pg=cmPGood(x),c=[],pos=['hype','psHero','feat','aw
 {const _c8=comments;comments=function(tone,x){let out=_c8(tone,x);try{if(!S||!ME)return out;const cats=cmCats(tone,x),recent=S.cmRecent||[],use=[];
   for(const id of cats){if(use.length>=2)break;if(recent.includes(id)&&!(id===2||id===7||id===14))continue;use.push(id)}
   const neg=['bad','psGoat','psLose','injury','faBig'].includes(tone),add=[];
-  use.forEach(id=>{let pool=(CMLIB[id]||[]).filter(l=>{const t=l[0];if(isP()&&BATW.test(t))return false;if(!isP()&&PITW.test(t))return false;if(id===12&&((neg&&cmPGood(x))||(neg!==NICK_NEG.test(t))))return false;if(/유격수 수비는/.test(t)&&ME.pos!=='SS')return false;if(id===19){const me=x||{},rg=/^(ring|ws)$/.test(String(tone)),N19=/어디 두고|덜 됐|대신해주진|집에 있나|침묵|실수를|차갑다|재단하진/,gd=rg||(isP()?cmPGood(x):((me.gH||0)>=2||(me.gHR||0)>=1||((me.gH||0)>=1&&(me.gRBI||0)>=1))),bd=!rg&&(isP()?((me.ra||0)>=3||(me.ipO!=null&&me.ipO<9&&(me.ra||0)>=2)):((me.gPA||0)>=3&&(me.gH||0)===0));if(/무관기운|출루 한 번도/.test(t))return false;if(/베테랑/.test(t)&&age()<30)return false;if(gd&&N19.test(t))return false;if(bd&&!N19.test(t))return false;if(!gd&&!bd)return false}if(/지명타자로만 쓰기/.test(t)&&ME.pos!=='DH')return false;if(/도르 수상/.test(t)&&!(tone==='award'||(S.awards||[]).some(a=>a.y===S.y&&!/월간|주간/.test(a.n))))return false;return!seenHas(cmFillLib(t))});
+  use.forEach(id=>{let pool=(CMLIB[id]||[]).filter(l=>{const t=l[0];if(isP()&&BATW.test(t))return false;if(!isP()&&PITW.test(t))return false;if(id===12&&((neg&&cmPGood(x))||(neg!==NICK_NEG.test(t))))return false;if(/유격수 수비는/.test(t)&&ME.pos!=='SS')return false;if(id===19){const me=x||{},rg=/^(ring|ws)$/.test(String(tone)),N19=/어디 두고|덜 됐|대신해주진|집에 있나|침묵|실수를|차갑다|재단하진/,gd=rg||(isP()?cmPGood(x):((me.gH||0)>=2||(me.gHR||0)>=1||((me.gH||0)>=1&&(me.gRBI||0)>=1))),bd=!rg&&(isP()?((me.ra||0)>=3||(me.ipO!=null&&me.ipO<9&&(me.ra||0)>=2)):((me.gPA||0)>=3&&(me.gH||0)===0));if(/무관기운|출루 한 번도/.test(t))return false;if(/베테랑/.test(t)&&age()<30)return false;if(gd&&N19.test(t))return false;if(bd&&!N19.test(t))return false;if(!gd&&!bd)return false}if(/지명타자로만 쓰기/.test(t)&&ME.pos!=='DH')return false;if(id===18&&/주루사|오배송|사고 났|아웃됐|주루 판단/.test(t)&&!(x&&(x.gCS||0)>0))return false;if(/도르 수상/.test(t)&&!(tone==='award'||(S.awards||[]).some(a=>a.y===S.y&&!/월간|주간/.test(a.n))))return false;return!seenHas(cmFillLib(t))});
     const n=id===2||id===1?3:2;for(let i=0;i<n&&pool.length;i++){const l=pool.splice(ri(0,pool.length-1),1)[0],t=cmFillLib(l[0]);seenAdd(t);
       add.push({lib:1,nk:pick(NICKS),fl:S.pro&&S.pro.team!=null&&R()<.5?TEAMS[S.pro.team].nick:null,t,up:Math.round(ri(60,600)*(1+S.rel.fame/25)),dn:ri(1,40),ago:pick(AGO),re:l.slice(1).map(r=>({nk:pick(NICKS),t:cmFillLib(r),up:ri(20,300)}))})}});
   if(add.length){S.cmRecent=use.concat(recent).slice(0,3);add.forEach(c=>out.splice(Math.min(out.length,ri(1,5)),0,c))}}catch(e){}return out}}
@@ -6587,7 +6587,7 @@ CM.franMove=['오피셜 떴다 ㄷㄷ','스토브리그 최대 이슈 터졌다'
 
 /* ===================== MLB → KBO 복귀 댓글 (MLB WAR 높을수록 화려하게) ===================== */
 {const _c103=comments;comments=function(tone,x){let out=_c103(tone,x);try{const mb=S&&S._mvBack;if(tone!=='faBig'||!mb||mb.y!==S.y||(mb.done||0)>=2)return out;mb.done=(mb.done||0)+1;const gn=giv(ME.name),w=mb.w,ws=w.toFixed(1),tn=TEAMS[mb.team]?TEAMS[mb.team].nick:'',add=[];
-  const T=w>=25?[`메이저 통산 WAR ${ws} 찍고 온 레전드다 KBO가 감당이 되냐`,`레전드의 귀환 ㄷㄷㄷ 이 선수를 다시 KBO에서 본다고?`,`메이저에서 ${ws} 쌓은 선수가 돌아왔다 이건 역사다`,`솔직히 KBO 수준에선 반칙 아님? ㅋㅋ`,`직관 예매 전쟁 시작이다`,`${tn} 우승 후보 0순위 됐다`,`${gn} 복귀 소식에 야구 커뮤 서버 터짐`,`메이저에서 증명 다 하고 온 선수 리스펙 박고 보자`,`KBO 투수들 벌써 긴장하는 중 ㅋㅋ`,`명예의 전당급 커리어가 KBO로 온다`,`이 선수 KBO 복귀는 리그 전체 경사다`]
+  const T=w>=25?[`메이저 통산 WAR ${ws} 찍고 온 레전드다 KBO가 감당이 되냐`,`레전드의 귀환 ㄷㄷㄷ 이 선수를 다시 KBO에서 본다고?`,`메이저에서 WAR ${ws} 쌓은 선수가 돌아왔다 이건 역사다`,`솔직히 KBO 수준에선 반칙 아님? ㅋㅋ`,`직관 예매 전쟁 시작이다`,`${tn} 우승 후보 0순위 됐다`,`${gn} 복귀 소식에 야구 커뮤 서버 터짐`,`메이저에서 증명 다 하고 온 선수 리스펙 박고 보자`,`KBO 투수들 벌써 긴장하는 중 ㅋㅋ`,`명예의 전당급 커리어가 KBO로 온다`,`이 선수 KBO 복귀는 리그 전체 경사다`]
    :w>=10?[`왕의 귀환!!! ${gn} 돌아왔다`,`메이저 WAR ${ws}면 진짜 성공하고 온 거다`,`미국에서 증명하고 온 선수 클래스가 다르다`,`${tn} 이번 스토브리그 최대 승자`,`${gn} 복귀 경기 무조건 직관 간다`,`메이저 물 먹고 온 선수는 여유가 다르지`,`${gn} 돌아왔으니 올해 MVP는 정해졌다`,`메이저 ${ws} WAR 레벨이 KBO 오면 어떻게 되는지 보자`,`이 계약은 무조건 남는 장사다`,`미국에서 쌓은 커리어 존중한다 웰컴백`]
    :w>=3?[`메이저에서 ${ws} WAR면 충분히 할 만큼 하고 왔다`,`돌아온 메이저리거 ${gn} 환영한다`,`미국 경험이 KBO에선 확실히 무기가 될 듯`,`${tn} 좋은 영입했다`,`해외에서 고생 많았다 이제 집에서 편하게 하자`]
    :[`미국에선 아쉬웠지만 KBO에선 다르다`,`돌아온 것도 용기다 ${gn} 환영`,`메이저 경험은 어디 안 간다 KBO에서 보여줘라`,`해외 도전 고생했다 이제 다시 시작이다`];
@@ -10007,7 +10007,7 @@ function intlBench(){try{if(!S._iT||S._iT.k.indexOf(String(S.y))!==0)return 0;co
   const gn=giv(ME.name),act=P?'투구':'타석';let L=[],re=[];
   if(bad){const st=prevStreak+1;
     if(st===1&&prevG>=1){L=[`${gn} 오늘은 안 풀렸네 앞에서 해준 게 있으니까 넘어간다`,`한 경기 못 했다고 너무 까지 말자 ${gn} 이번 대회 지분 크다`,`${gn}도 사람이다 오늘은 그냥 그런 날`,`그래도 오늘 ${gn} ${jo(act,'은','는')} 좀 아쉬웠다`];re=['ㅇㅇ 다음 경기 믿는다','앞 경기 생각하면 쉴드 가능'];}
-    else if(st===1){L=[`${gn} 국대 첫 경기라 긴장했나`,`기대 많이 했는데 ${gn} 오늘은 아니었다`,`${gn} 오늘 ${act} 보고 한숨 나왔다`,`${gn} 이 정도 선수 아닌데 오늘은 실망이다`];re=['다음 경기에서 보여주면 된다','국대 압박감이 다르긴 하다'];}
+    else if(st===1){L=[(S.hist&&S.hist.nat>=2)?`${gn} 대회 첫 경기라 몸이 덜 풀렸나`:`${gn} 국대 첫 경기라 긴장했나`,`기대 많이 했는데 ${gn} 오늘은 아니었다`,`${gn} 오늘 ${act} 보고 한숨 나왔다`,`${gn} 이 정도 선수 아닌데 오늘은 실망이다`];re=['다음 경기에서 보여주면 된다','국대 압박감이 다르긴 하다'];}
     else if(st===2){L=[`${gn} 두 경기 연속 이러면 곤란하다`,`${gn} 컨디션 안 좋으면 다른 선수 써라`,`${gn} 이번 대회 영 안 맞는 듯`,`${gn} 소속팀에서 하던 거 반만 해도 되는데`,`${gn} 나올 때마다 불안하다 진짜`];re=['ㄹㅇ 바꿔야 함','감독은 뭐 하냐','이건 쉴드 불가'];}
     else{L=[`${gn} 이제 진짜 빼라 볼 만큼 봤다`,`${gn} 대표팀 자리 아깝다 이름값으로 뽑힌 거냐`,`${gn} 이번 대회 최대 구멍`,`감독은 ${gn} 언제까지 쓸 거냐`,`${gn} 국대 다시 안 뽑혀도 할 말 없다`,`${gn} 나오는 순간 채널 돌렸다`];re=['ㄹㅇ 할 말 없음','혈압 오른다','이건 감독 책임도 크다'];}}
   else if(good&&prevStreak>=2){L=[`${gn} 드디어 살아났다`,`욕 먹던 ${gn} 오늘은 인정`,`${gn} 이제야 원래 모습 나온다`];re=['진작 이렇게 하지 ㅋㅋ','미안하다 내가 깠다'];}
@@ -12052,7 +12052,7 @@ function formInfo(){try{if(!S||S.stage!=='pro'||!S.pro||!ME)return null;const PL
   const gn=giv(ME.name),old=f.a>=36,L=old?[`작년이 마지막 불꽃이었나…`,`에이징 커브 시작인가 ㅠ`,`작년 생각하면 아쉽다 나이는 못 속이나`,`작년 같은 ${gn} 다시 볼 수 있을까`]
     :[`작년은 플루크였나…`,`작년 성적 보고 기대했는데 올해 왜 이럼`,`이렇게 하다 반짝 사라지는 애들 많다`,`상대 팀들이 ${gn} 분석 끝낸 듯`,`작년이 커리어하이로 남을 각인데`,`한 시즌 반짝은 누구나 한다 두 시즌은 해야 진짜지`].concat(f.yr===2?['2년차 징크스 제대로 왔네']:[]);
   let t=josaFix(pick(L));if(seenHas(t))t=josaFix(pick(L));if(seenHas(t))return out;seenAdd(t);
-  const pro=['아직 판단은 이르다','한 시즌만 더 보자','작년도 운은 아니었다','폼 찾으면 돌아온다'],con=['ㄹㅇ 반짝 느낌','이게 진짜 실력일 수도','작년엔 운이 좋았지','이러다 2군 간다'];
+  const pro=['아직 판단은 이르다','한 시즌만 더 보자','작년도 운은 아니었다','폼 찾으면 돌아온다'],con=['ㄹㅇ 반짝 느낌','이게 진짜 실력일 수도','작년엔 운이 좋았지',S.pro&&S.pro.league==='MLB'?'이러다 마이너 간다':'이러다 2군 간다'];
   out.splice(Math.min(out.length,ri(0,2)),0,mkC(t,[{nk:pick(NICKS),t:pick(pro),up:ri(60,900)}].concat(R()<.6?[{nk:pick(NICKS),t:pick(con),up:ri(40,700)}]:[]),{up:ri(900,5000)}))}catch(e){}return out}}
 
 try{CRIT.add('tourYes');CRIT.add('tourNo')}catch(e){}/* v665: 은퇴 투어 제안은 이벤트 빈도 조절에서 빠지지 않게 */
@@ -14544,7 +14544,7 @@ function cmH840(t){let h=0;const s=String(t||'').replace(/\d+(\.\d+)?/g,'N').rep
 
 /* ---------- v840: 이벤트성 기사(대기록·끝내기·부상·이적·금메달·결혼 등)엔 '야알못·지표' 논쟁 같은 엉뚱한 끼어들기 댓글 빼기 ---------- */
 {const _cF2840=comments;comments=function(tone,x){let out=_cF2840.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME)return out;const T=String(tone||'');
-  if(['mix','hype','bad','psWin','psLose','psGoat','psHero'].includes(T))return out;const RX=/야알못|야잘알|지표로 설명|스탯 보고 오세요|타율이 왜 중요|WAR만 보는|클래식 스탯/;const RXI=/초구|선구안|타이밍이|스윙이|헛스윙|볼넷/;
+  if(['mix','hype','bad','psWin','psLose','psGoat','psHero'].includes(T))return out;const RX=/야알못|야잘알|지표로 설명|스탯 보고 오세요|타율이 왜 중요|WAR만 보는|클래식 스탯|WPA는|WAR충|세이버도 좀|타점은 장식|스탯충/;const RXI=/초구|선구안|타이밍이|스윙이|헛스윙|볼넷/;
   out=out.filter(c=>{const t=String(c&&c.t||'');if(c&&c.must)return true;if(RX.test(t))return false;if(T==='injury'&&RXI.test(t))return false;return true});
   out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!(r&&RX.test(String(r.t||''))))})}catch(e){}return out}}
 
@@ -14577,6 +14577,11 @@ function teamInPSspot840(){try{if(S.stage!=='pro'||!S.pro)return false;const T=S
 const PSCLAIM840=/가을야구도 못 갔|덕분에 가을야구|가을야구 (데려|이끌|이끈)/;
 {const _cPS840=comments;comments=function(tone,x){let out=_cPS840.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||(x&&x.ps)||teamInPSspot840())return out;
   out=out.filter(c=>!(c&&PSCLAIM840.test(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!PSCLAIM840.test(String(r&&r.t||'')))})}catch(e){}return out}}
+/* 리그 용어 최종 정리: 메이저 소속인데 댓글·대댓글에 '2군·1군·퓨처스', KBO 소속인데 '트리플A·마이너'가 나오던 것 (과거·해외 얘기는 그대로) */
+{const MLBT840=[[/1군 엔트리/g,'빅리그 로스터'],[/1군 콜업/g,'메이저 콜업'],[/(^|[^0-9])2군/g,'$1마이너'],[/(^|[^0-9])1군/g,'$1메이저'],[/퓨처스/g,'트리플A']],KBOT840=[[/트리플A/g,'2군'],[/마이너(?!스)/g,'2군']];
+ const _cLT840=comments;comments=function(tone,x){let out=_cLT840.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!S.pro||(x&&x.intl))return out;const mlb=S.pro.league==='MLB';
+  const fix=t=>{let s=String(t==null?'':t);if(mlb){if(/KBO|크보|한국|예전|시절|돌아|복귀|친정/.test(s))return s;MLBT840.forEach(([a,b])=>{s=s.replace(a,b)});return s}if(/메이저|MLB|미국|해외|포스팅|빅리그|현지|마이너리그|마이너 계약/.test(s))return s;KBOT840.forEach(([a,b])=>{s=s.replace(a,b)});return s};
+  out.forEach(c=>{if(!c)return;if(typeof c.t==='string')c.t=fix(c.t);if(Array.isArray(c.re))c.re.forEach(r=>{if(r&&typeof r.t==='string'){r.t=fix(r.t);if(Array.isArray(r.re))r.re.forEach(w=>{if(w&&typeof w.t==='string')w.t=fix(w.t)})}})})}catch(e){}return out}}
 
 /* ===================== v840k KBO FA 몸값 현실화 =====================
    최근 3시즌 WAR(가중 5:4:3)와 나이로 연평균을 정하고, 능력치(오버롤)는 조금만 반영.
