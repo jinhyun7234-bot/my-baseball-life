@@ -14610,6 +14610,11 @@ function mlbTxt840(s){if(typeof s!=='string'||!S||!S.pro||S.pro.league!=='MLB'||
   return s.replace(/팀 레전드 선배의 은퇴식/g,'팀 레전드의 은퇴식').replace(/^선배 은퇴 행사 준비$/,'레전드 은퇴 행사 준비').replace(/"형님, /g,'"').replace(/"선배님 그 공 그립 어떻게 잡으세요\?"/g,'"그 공 그립 어떻게 잡는 거예요?"').replace(/불펜 형들과/g,'불펜 동료들과').replace(/선배님, /g,'').replace(/선배님/g,'')}
 {const _pfM840=pickFev;pickFev=function(){const e=_pfM840.apply(this,arguments);try{if(!e||!S||!S.pro||S.pro.league!=='MLB')return e;const f=a=>Array.isArray(a)?a.map(v=>typeof v==='string'?mlbTxt840(v):v):a;return Object.assign({},e,{t:mlbTxt840(e.t),x:mlbTxt840(e.x),ok:f(e.ok),no:f(e.no)})}catch(err){return e}}}
 {const _reM840=randEvent;randEvent=function(){const e=_reM840.apply(this,arguments);try{if(e&&S&&S.pro&&S.pro.league==='MLB'){e.title=mlbTxt840(e.title);e.text=mlbTxt840(e.text)}}catch(err){}return e}}
+/* 반기 결산·수상·계약처럼 '경기 하나'가 아닌 기사에 경기 당일 댓글('심판 판정 오늘', '오늘 시구 누구', '오늘 승리 요정', '게토레이 두 병')이 붙던 것 */
+{const NG840=/^(mix|hype|bad|award|salary|faBig|faFair|srecap|draft|move|contract|abroad|mlbBig|injury|injRet|wedding|baby|love|callup|scandal|franMove|kmove|tourAnn|retire|legend|famDay)$/,
+  DAY840=/심판 판정 오늘|오늘 승리 요정|오늘 시구|오늘 응원단장|오늘은 공이 다 보이나|오늘은 그냥 안 맞는 날|오늘은 야구보다 세리머니|오늘 진짜 대부님|게토레이 두 병|하이라이트 언제 다 자름|오늘 경기|오늘 타석|오늘 투구|오늘 홈런|오늘 안타|방금 (그|저|이)|지금 (중계|경기)/;
+ const _cDY840=comments;comments=function(tone,x){let out=_cDY840.apply(this,arguments);try{if(!Array.isArray(out)||!NG840.test(String(tone||''))||(x&&(x.ps||x.intl||x.pl||x.lsc)))return out;
+  out=out.filter(c=>!(c&&DAY840.test(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!DAY840.test(String(r&&r.t||'')))})}catch(e){}return out}}
 
 /* ===================== v840k KBO FA 몸값 현실화 =====================
    최근 3시즌 WAR(가중 5:4:3)와 나이로 연평균을 정하고, 능력치(오버롤)는 조금만 반영.
