@@ -6292,7 +6292,7 @@ function interp(T,x){if(x<=T[0][0])return T[0][1];for(let i=1;i<T.length;i++)if(
   const C=L.filter(t=>!seenHas(t)&&!(S.cmY&&S.cmY['ph:'+t]===S.y));const n=Math.min(C.length,R()<.5?2:3);
   for(let i=0;i<n;i++){const t=C.splice(ri(0,C.length-1),1)[0];seenAdd(t);S.cmY=S.cmY||{};S.cmY['ph:'+t]=S.y;add.push(mkC(t,[],{up:ri(150,1500),nk:pick(['삼갤러','ㅇㅇ','갤러','야갤러'])+(R()<.6?ri(1,30):'')}))}
   /* 대·이·름 한 글자씩 릴레이 (1년에 한 번) */
-  if(gn.length>=2&&gn.length<=3&&gn[0]!=='대'&&(S.y-(S._relayY||-99))>=3&&R()<.6&&cmX('relay'+S.y)){S._relayY=S.y;const nk=pick(['데카유방','야구도사','직관러','가을전사']);const base=ri(400,1200);const rl=[`대`,...gn.split('')].map((ch,i)=>{const c=mkC(ch,[],{nk,up:base-i,ago:'방금'});c.rl=1;return c});S._relayAdd=rl}
+  if(gn.length>=2&&gn.length<=3&&gn[0]!=='대'&&(S.y-(S._relayY||-99))>=6&&R()<.3&&cmX('relay'+S.y)){S._relayY=S.y;const nk=pick(['데카유방','야구도사','직관러','가을전사']);const base=ri(400,1200);const rl=[`대`,...gn.split('')].map((ch,i)=>{const c=mkC(ch,[],{nk,up:base-i,ago:'방금'});c.rl=1;return c});S._relayAdd=rl}
   const pos=Math.min(out.length,1);out.splice(pos,0,...add);let seenPk=0;out=out.filter(c=>{if(pk&&c.t.includes(pk)){seenPk++;return seenPk<=1}return true})}catch(e){}return out}}
 /* 센 욕·팀 비하 걸러내기 (ㅅも 수준은 허용) */
 const HARSH=/씨발|시발|씨바|좆|병신|ㅄ|개새끼|느금|니애미|애미|애비|꼴데|꼴쥐|칰|기레기|쓰레기 ?(팀|구단)|(팀|구단|팬) ?쓰레기|망해라|뒤져라|뒤지십시오|나가 뒤|팬들 ?(수준|병)/;
@@ -14293,7 +14293,7 @@ try{Object.assign(GGPM825,{C:3.03,'1B':2.42,'2B':4.27,'3B':3.69,SS:4.13,LF:3.45,
   Object.assign(GGLO714,{C:.878,'1B':.871,'2B':.731,'3B':.344,SS:.807,LF:.6,CF:.561,RF:.67});
   GGP836=1.2;
   if(globalThis.HOFT720)Object.assign(HOFT720,{B:40,SP:62,CL:40,RP:40}); /* v840b: 최대 육성 타자 320명 기준 95% (점수 p5≈38~40) · 마무리·셋업 ~90% · 선발은 거의 다 */
-  Object.assign(PHOT714.LF,{p:.3,a:-2.6});Object.assign(PHOT714.RF,{p:.27,a:-1.6});Object.assign(PHOT714.C,{p:.45,a:5.5})}catch(e){}
+  Object.assign(PHOT714.LF,{p:.3,a:-2.0});Object.assign(PHOT714.RF,{p:.27,a:-1.6});Object.assign(PHOT714.C,{p:.45,a:6.0});Object.assign(PHOT714['3B'],{p:.32,a:2.9}) /* v840c: 좌익수·3루수·포수가 통산 WAR 최하위권이라 조금 올림 */}catch(e){}
 
 /* ===================== v840: 경기 상황 댓글 · 대댓글/가을 문구 상황 맞추기 =====================
    ① 가을야구·국제대회 경기: 스코어 흐름(타격전·투수전·대승·대패·영봉·한 점 차·역전·연장·끝내기·막판 추격·하드캐리·불펜 방화)에 맞는 댓글
@@ -14521,6 +14521,15 @@ function speech840(home){try{const P=isP(),rings=(S.hist&&S.hist.rings)||0,yrs=p
 
 /* ---------- v840: 나이 들수록 도루 시도 줄이기 (30대 중후반에 40~60도루 나오던 것) — 주력 능력치는 그대로, 뛰는 횟수만 ---------- */
 function sbAge840(){try{if(!S||S.me!==ME||S.stage!=='pro')return 1;const a=age();return knot(a,[29,32,34,36,38,40],[1,.88,.72,.55,.4,.3])}catch(e){return 1}}
+
+/* ---------- v840: 같은 댓글 돌려막기 막기 — 한 커리어에서 같은 문장(숫자만 다른 것 포함)은 최대 2번까지 ---------- */
+function cmH840(t){let h=0;const s=String(t||'').replace(/\d+(\.\d+)?/g,'N').replace(/\s+/g,'');for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0}return(h>>>0).toString(36)}
+{const _cU840=comments;comments=function(tone,x){let out=_cU840.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME)return out;const U=S._cmU840=S._cmU840||{};
+  out=out.filter(c=>{if(!c||!c.t)return false;if(c.rl)return true;const k=cmH840(c.t),n=U[k]||0;if(n>=2&&!c.must)return false;U[k]=n+1;return true});
+  out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>{if(!r||!r.t)return false;const k='r'+cmH840(r.t),n=U[k]||0;if(n>=3)return false;U[k]=n+1;return true})});
+  const ks=Object.keys(U);if(ks.length>5000)ks.slice(0,1500).forEach(k=>delete U[k])}catch(e){}return out}}
+{const _bsrU840=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsrU840.apply(this,arguments);try{if(q&&Array.isArray(q.cm)&&S&&S.me===ME){const U=S._cmU840=S._cmU840||{};const keep=q.cm.filter(c=>{if(!c||!c.t)return false;const k=cmH840(c.t),n=U[k]||0;if(n>=2)return false;U[k]=n+1;return true});
+  if(keep.length)q.cm=keep;else q.cm=[mkC(pick(['1년 동안 고생 많았다 내년에 또 보자','올해도 수고했다 겨울 잘 보내라','시즌 끝나니까 벌써 야구 보고 싶다','고생했다 푹 쉬고 내년에 또 달리자','올 시즌도 끝났다 내년엔 더 높이 가자']),[],{up:ri(300,1500)})]}}catch(e){}return q}}
 
 </script>
 
