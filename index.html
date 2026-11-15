@@ -3109,7 +3109,14 @@ CM.mlbBig=['메이저에서 이 금액이면 진짜 인정받은 거다','한국
 CM.legend=['레전드 대우 제대로 해줬네','프랜차이즈 스타 대접 ㄷㄷ','구단이 의리 지켰다','이 팀에서 은퇴까지 가자','영구결번 예약','원클럽맨의 품격','이 금액이면 평생 이 팀 사람이다','팬들이 원하던 그림','돈보다 의리 감동이다','종신 계약 가즈아'];
 /* 영구결번: KBO 한 팀에서만 뛰고 그 팀 WAR 90 이상 */
 function retireNo(){const kr=S.rows.filter(r=>r.lv==='KBO'),teams=new Set(kr.map(r=>r.team));if(teams.size!==1)return null;const w=kr.reduce((a,r)=>a+rowWAR(r),0);if(w<90)return null;return{team:[...teams][0],w}}
-{const _rt=retire;retire=function(why){const rn=S.stage==='pro'?retireNo():null;_rt(why);if(rn){S.retNo={team:rn.team,num:ME.num||'-',w:rn.w};news(`${rn.team}, ${ME.name}의 등번호 ${ME.num||''}번 영구결번.`);celebrate('hof','영구결번',`${rn.team} · 등번호 ${ME.num||'-'} · 팀 통산 WAR ${rn.w.toFixed(1)}`);article(`${rn.team}, ${ME.name} 등번호 ${ME.num||''}번 영구결번`,(rn.traded?`트레이드로 이적해 온 뒤 팀의 상징이 된 그의 이름이 구장 외야에 영원히 걸린다.`:`원클럽맨으로 커리어를 마친 그의 이름이 구장 외야에 영원히 걸린다.`),'retire')}}}
+{const _rt=retire;retire=function(why){const rn=S.stage==='pro'?retireNo():null;_rt(why);if(rn){S.retNo={team:rn.team,num:ME.num||'-',w:rn.w};news(`${rn.team}, ${ME.name}의 등번호 ${ME.num||''}번 영구결번.`);celebrate('hof','영구결번',`${rn.team} · 등번호 ${ME.num||'-'} · 팀 통산 WAR ${rn.w.toFixed(1)}`);/* v840: 커리어를 다른 팀에서 마쳤는데 '원클럽맨으로 커리어를 마친'이라고 쓰던 것 → 실제 커리어 흐름대로 */
+  let body,away=false;try{const PR=S.rows.filter(r=>PRO.includes(r.lv)&&((r.b&&r.b.G)||(r.p&&r.p.G))),last=PR[PR.length-1],endHere=!!last&&last.team===rn.team,all=new Set(PR.map(r=>r.team)),lgN=rn.lv==='MLB'?'메이저리그':'KBO',sea=new Set(PR.filter(r=>r.team===rn.team).map(r=>r.y)).size;
+    if(rn.traded)body='트레이드로 이적해 온 뒤 팀의 상징이 된 그의 이름이 구장 외야에 영원히 걸린다.';
+    else if(endHere&&all.size===1)body='원클럽맨으로 커리어를 마친 그의 이름이 구장 외야에 영원히 걸린다.';
+    else if(endHere&&rn.lv==='KBO'&&PR.some(r=>r.lv==='MLB'))body=`메이저리그를 거쳐 돌아와 이 팀에서 커리어를 마친 그의 이름이 구장 외야에 영원히 걸린다. KBO에서는 이 팀 유니폼만 입었다.`;
+    else if(endHere)body=`${lgN}에서는 이 팀 유니폼만 입었던 그의 이름이 구장 외야에 영원히 걸린다.`;
+    else{away=true;body=`${lgN}에서 이 팀 유니폼만 입고 ${sea}시즌을 뛴 그의 등번호가 영구결번으로 남는다. 커리어는 다른 팀에서 마쳤지만 구단은 그를 잊지 않았다.`}}catch(e){body='그의 이름이 구장 외야에 영원히 걸린다.'}
+  article(`${rn.team}, ${ME.name} 등번호 ${ME.num||''}번 영구결번`,body,'retire');try{if(away&&S.arts&&S.arts[0])S.arts[0].noTour840=1}catch(e){}}}}
 {const _rs=recapSlides;recapSlides=function(){const sl=_rs();if(S.retNo){sl.splice(sl.length-1,0,{bg:'linear-gradient(160deg,#c9a227,#2b1d00)',ey:'영구결번',big:`No. ${S.retNo.num}`,sub:`${S.retNo.team}의 영원한 번호.\n원클럽맨, 팀 통산 WAR ${S.retNo.w.toFixed(1)}.`})}return sl}}
 
 /* ===================== 상점 물가 인상 · 초호화 소비 · 댓글 주제 분산 ===================== */
@@ -8791,10 +8798,11 @@ function tradeComments(from,to,star,rich,big){const gn=giv(ME.name),cln=v=>Strin
    - 수락: 이후 지명타자 출전(수비·실책 없음, 대신 dWAR는 지명타자 보정) · 팀 로스터 부담으로 대타 출전 비율 조금↑
      (지명타자로 OPS가 좋으면 대타 비율은 다시 내려감 — 유저 설명 없음)
    - 거절: 원래 포지션 유지 · 감독 신뢰 −3 */
-{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(isP()||S.stage!=='pro'||!S.pro||S.pro.dev||S.dhConv||ME.pos==='DH'||S.m!==12||age()<36||S.queue.length>=3)return;if(S.dhAskY&&S.y-S.dhAskY<2)return;
+{const _ms=monthStep;monthStep=function(rep){_ms(rep);try{if(isP()||S.stage!=='pro'||!S.pro||S.pro.dev||S.dhConv||ME.pos==='DH'||S.m!==12||age()<29||S.queue.length>=3)return;if(S.dhAskY&&S.y-S.dhAskY<2)return;
   const dw=S.rows.filter(r=>r.y===S.y&&PRO.includes(r.lv)&&r.b&&r.b.PA>=150).reduce((a,r)=>a+bWARsplit(r.b,r.lv).d,0),fit=(()=>{try{return posFit()-ovrE()}catch(e){return 0}})();
-  if(!(dw<=-.8||fit<=-8))return;S.dhAskY=S.y;const pn=POS[ME.pos]||'수비';
-  S.queue.push({title:'🧢 감독 면담 — 지명타자',text:`시즌이 끝나고 감독이 불렀다.\n"솔직히 말하마. 요즘 ${pn} 수비가 많이 힘들어 보인다. 방망이는 아직 쓸 만하니까, 내년부터 지명타자로 뛰어보는 건 어떠냐?"\n\n지명타자 자리는 하나뿐이라 팀 운용에 부담이 생긴다. 컨디션이나 상대 투수에 따라 대타로 나가는 날이 조금 늘어날 수 있다.`,
+  /* v840: 36세 전이라도 수비가 아주 심하게 무너진 주전(수비 WAR −1.5 이하 또는 수비 적합도 −13 이하)이면 29세부터 제안 */
+  if(age()<36?!(dw<=-1.5||fit<=-13):!(dw<=-.8||fit<=-8))return;S.dhAskY=S.y;const pn=POS[ME.pos]||'수비';
+  S.queue.push({title:'🧢 감독 면담 — 지명타자',text:`시즌이 끝나고 감독이 불렀다.\n"솔직히 말하마. 요즘 ${pn} 수비가 많이 힘들어 보인다. ${age()<36?'방망이는 확실하니까':'방망이는 아직 쓸 만하니까'}, 내년부터 지명타자로 뛰어보는 건 어떠냐?"\n\n지명타자 자리는 하나뿐이라 팀 운용에 부담이 생긴다. 컨디션이나 상대 투수에 따라 대타로 나가는 날이 조금 늘어날 수 있다.`,
     ch:[{t:'지명타자로 전향한다',s:'수비 부담·실책 없음 · 체력 관리↑ · 대타 출전 비율 조금↑ · 팀 부담',act:'dhyes',arg:{}},{t:`${pn} 자리를 지키겠다`,s:'포지션 유지 · 매일 선발 출전 · 수비 부담은 그대로',act:'dhno',arg:{}}]})}catch(e){}}}
 ACT.dhyes=function(){S.dhConv=S.y+1;news(`${S.y+1}시즌부터 지명타자 전향.`);try{article(`${ME.name}, 내년부터 지명타자 전향`,`${jo(ME.name,'은','는')} 수비 부담을 덜고 타격에 집중한다.`,'mix',{})}catch(e){}return'글러브를 내려놓기로 했다. 이제 방망이로만 말한다.'};
 ACT.dhno=function(){return'"아직 수비 자신 있습니다." 감독은 "지켜보겠다"고만 했다.'};
@@ -12433,7 +12441,7 @@ function tgBuild(){try{const my=S.pro.team,st=(S._tourStops||[]).filter(t=>TEAMS
   if(kids)home.push({city:T.city,nick:T.nick,lb:'가족',gift:'아이들이 건넨 꽃다발',mean:'은퇴식 날 아이들이 그라운드로 달려 나와 직접 건넸다'});
   return{list,home}}catch(e){return null}}
 function fwPush(why,tour){const d=fwBuild(tour),tg=tour?tgBuild():null;const q=[{type:'fwell',why,tour:!!tour,d,sy:d.sy}];if(tg)q.push({type:'tgift',why,tour:true,sy:d.sy,list:tg.list,home:tg.home});S.queue.unshift(...q)}
-function fwRetire(why,tour){S._fwGo=1;try{retire(why)}finally{S._fwGo=0}try{const a=S.arts&&S.arts[0];if(a&&a.tone!=='x'){if(tour&&!/은퇴 투어/.test(a.body||''))a.body+=' 후반기 은퇴 투어에서 원정 구장마다 상대 팀 선수단과 팬들의 배웅을 받았고, 마지막 홈 경기 은퇴식에서는 팬들에게 큰절로 작별 인사를 했다.';if(Array.isArray(a.cm))a.cm=a.cm.filter(c=>!(c&&/은퇴식 (직관|언제|하면|때)|은퇴 투어 (해|가자|하면)/.test(String(c.t||''))));S.queue.unshift({type:'retart',aid:a.id})}}catch(e){}}
+function fwRetire(why,tour){S._fwGo=1;try{retire(why)}finally{S._fwGo=0}try{let a=S.arts&&S.arts[0];if(a&&a.noTour840){const b=(S.arts||[]).slice(1,5).find(z=>z&&!z.noTour840&&z.y===S.y);if(b)a=b}if(a&&a.tone!=='x'){if(tour&&!/은퇴 투어/.test(a.body||''))a.body+=' 후반기 은퇴 투어에서 원정 구장마다 상대 팀 선수단과 팬들의 배웅을 받았고, 마지막 홈 경기 은퇴식에서는 팬들에게 큰절로 작별 인사를 했다.';if(Array.isArray(a.cm))a.cm=a.cm.filter(c=>!(c&&/은퇴식 (직관|언제|하면|때)|은퇴 투어 (해|가자|하면)/.test(String(c.t||''))));S.queue.unshift({type:'retart',aid:a.id})}}catch(e){}}
 {const _arT=ACT.retire;ACT.retire=function(a){try{if(S&&S.stage==='pro'&&S.pro&&!S._fwGo){fwPush('은퇴를 선언했다',false);return'유니폼을 벗기로 했다. 마지막으로 인사를 나눌 시간이다.'}}catch(e){}return _arT.apply(this,arguments)}}
 function vFwell(q){const d=q.d||{};let av='';try{av=pxAvatar(ME,96,{...myPxOpt()})}catch(e){}
   return`<div class="srec fw"><div class="srec-ey">FAREWELL · ${q.sy}</div><h1 class="srec-tt">수고하셨습니다</h1><div class="srec-team">${esc(d.team||'')} · ${esc(ME.name)}</div>${/* v767: 작별 화면 캐릭터 제거 */''}
@@ -14073,7 +14081,7 @@ lpBench=function(){return`<div class="lp-art"><img class="lp-dk" src="${TITLE_IM
    그 반기·그 시즌 실제 성적을 포지션 기대치·나이·연봉·계약 해·팀 순위와 같이 보고 맞는 댓글만 붙인다.
    결산과 상관없는 경기 당일 잡담(날씨·치킨·직관·중계·'이 경기')은 걸러내고, 같은 말 반복은 줄인다.
    말투는 팀 갤러리·야구 커뮤니티 성적 글 댓글 유형을 참고해 새로 씀 (실명·센 욕 없음) */
-{const _paR840=phaseArticle;phaseArticle=function(g,ps){const pv=S._rc840;S._rc840={g,ps};try{return _paR840.apply(this,arguments)}finally{S._rc840=pv||null}}}
+{const _paR840=phaseArticle;phaseArticle=function(g,ps){const pv=S._rc840,id0=S.artId;S._rc840={g,ps};try{return _paR840.apply(this,arguments)}finally{S._rc840=pv||null;try{const a=S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)){const CH=/중계|직관|라디오|화질|치킨|맥주|시청자|월요일|퇴근|지하철|몰래 (봄|보는)|야구장 (맥주|치킨)|날씨|우천/;a.cm=a.cm.filter(c=>c&&(c.must||!(RCF840.test(String(c.t||''))||CH.test(String(c.t||'')))));a.cm.forEach(c=>{if(Array.isArray(c.re))c.re=c.re.filter(r=>r&&!CH.test(String(r.t||'')))})}}catch(e){}}}}
 const RCF840=/우천 ?취소|날씨|치킨|퇴근길|지하철|과제 못|야구 없는 월요일|굿즈 언제|배우가 왜|기사 쓰는 사람|직원임|김칫국|체감도르|중립기어|평화로운 야구 댓글|기사 제목 어그로|현장 계셨던|원정 직관|문자중계|시즌 티켓|직관 (간다|가서|간 사람|한 사람|승률)|이 경기|이번 경기|오늘 경기|역사의 현장|중계 (보다가|화면)|캐스터|해설진|하이라이트 각|소리 질러서|벽 침|애국가|대한민국 만세|서버 터졌|기록실 바|등장곡|유니폼 오늘 샀다|보러 야구장 간다|다음 경기 선발|햇빛|선크림|BTS|봉준호/;
 const RCREP840=/자신감|클래스가 다르|스윙 (소름|클래스|레전드)|타석 집중력|눈빛|표정/;
 function rcFill840(s,o){const nm=ME.name;return String(s).replace(/\{n\}(이|가|은|는|을|를|과|와|도|의)?/g,(m,j)=>{if(!j)return nm;if(j==='도'||j==='의')return nm+j;return jo(nm,{이:'이',가:'이',은:'은',는:'은',을:'을',를:'을',과:'과',와:'과'}[j],{이:'가',가:'가',은:'는',는:'는',을:'를',를:'를',과:'와',와:'와'}[j])}).replace(/\{(\w+)\}/g,(m,k)=>o[k]!=null?o[k]:m)}
@@ -14248,6 +14256,14 @@ function srCm840(q){const out=[];try{if(!S||!S.pro||!ME||S.stage!=='pro'||S.me!=
 {const _bsr840=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsr840.apply(this,arguments);try{if(q&&Array.isArray(q.cm)){const L=srCm840(q);if(L.length){const have=new Set(q.cm.map(c=>c&&c.t));const add=L.filter(t=>!have.has(t)).map(t=>mkC(josaFix(t),R()<.5?[{nk:pick(NICKS),t:pick(['ㄹㅇ 인정','이건 박제해야 됨','숫자가 다 말해 준다','내년에도 부탁한다','ㅇㅈ']),up:ri(10,500)}]:[],{up:ri(1500,7000)}));
     q.cm=q.cm.slice(0,1).concat(add,q.cm.slice(1)).slice(0,5)}}}catch(e){}return q}}
 
+/* ---------- v840: 시즌 결산에 커리어하이·커리어로우 ---------- */
+{const _bsr840b=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsr840b.apply(this,arguments);try{if(!q||!Array.isArray(q.cm)||!S||!S.pro||S.me!==ME)return q;const y=q.y||S.y,lg=S.pro.league,TOP=['KBO','MLB'],a=age();
+  const wOf=yy=>S.rows.filter(r=>r.y===yy&&TOP.includes(r.lv)).reduce((s,r)=>s+rowWAR(r),0),w=wOf(y),prev=[...new Set(S.rows.filter(r=>r.y<y&&TOP.includes(r.lv)&&((r.b&&r.b.PA>=200)||(r.p&&r.p.outs>=150))).map(r=>r.y))].map(wOf);if(prev.length<3)return q;
+  const hi=Math.max(...prev),lo=Math.min(...prev),{b,p}=yearTot(y,[lg]),full=isP()?p.outs>=(ME.pos==='SP'?360:150):b.PA>=400;if(!full)return q;let L=null;
+  if(w>hi+.3&&w>=4)L=[`커리어하이 경신 ${y}년이 ${ME.name} 최고의 시즌이다`,'커리어하이 찍은 시즌 결산은 언제 봐도 배부르다',`WAR ${w.toFixed(1)} 커리어하이 아직도 성장 중이다`];
+  else if(w<lo-.3&&w<1.5)L=a>=36?['커리어 로우 시즌… 에이징 커브가 진짜 온 건가','올해가 커리어 최악이었다 내년이 진짜 시험대다']:['커리어 최악의 시즌이었다 내년엔 반드시 반등하자','이 선수 커리어에서 제일 안 풀린 1년 내년엔 다를 거다'];
+  if(L){const C=L.filter(t=>!seenHas('ch:'+t.replace(/[\d.]+/g,'N')));if(C.length){const t=pick(C);seenAdd('ch:'+t.replace(/[\d.]+/g,'N'));q.cm.splice(Math.min(1,q.cm.length),0,mkC(josaFix(t),[],{up:ri(1500,6000)}));q.cm=q.cm.slice(0,5)}}}catch(e){}return q}}
+
 /* ===================== v840 밸런스 보정 (최대 육성 시뮬 800명 기준) =====================
    · 포지션마다 골든글러브·골드글러브·실버슬러거·MVP 받는 비율이 고르게 (현실 차이 조금은 남김)
    · 명예의 전당: 최대로 잘 키운 타자 95%가 들어가는 선 · 마무리·셋업·선발은 각자 선
@@ -14349,6 +14365,16 @@ function recentWAR840(){try{const ys=[S.y,S.y-1,S.y-2],wt=[3,2,1];let s=0,t=0,la
 try{FEV.forEach(e=>{if(!e||!e.t)return;if(e.t==='선배의 심부름'||e.t==='라커룸 군기')e.jr0=1;if(e.t==='후배의 타격 상담'||e.t==='후배의 그립 질문')e.mid=1;if(e.t==='선배 은퇴 행사 준비')e.nv=1})}catch(e){}
 {const _pfA840=pickFev;pickFev=function(){const a=age(),py=(typeof proYears==='function'?proYears():0),keep=FEV.slice();try{const L=FEV.filter(e=>!(e&&e.jr0&&!(a<=24&&py<=3))&&!(e&&e.mid&&!(py>=3||a>=25))&&!(e&&e.nv&&a>=36));FEV.length=0;L.forEach(e=>FEV.push(e));return _pfA840()}finally{FEV.length=0;keep.forEach(e=>FEV.push(e))}}}
 
+/* ---------- ⑦ FA 잔류·이적 댓글: 원클럽 성골 프차 · 하위 라운드 인생역전 ---------- */
+{const _cF840=comments;comments=function(tone,x){let out=_cF840.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.stage!=='pro'||S.me!==ME||!S.pro||S.pro.league!=='KBO'||!['faBig','faFair','move'].includes(String(tone||''))||S._faY840===S.y)return out;S._faY840=S.y;
+  const kr=S.rows.filter(r=>r.lv==='KBO'),teams=new Set(kr.map(r=>r.team)),one=teams.size===1&&!S.rows.some(r=>r.lv==='MLB'),gn=ME.name,dr=S.pro.draft,r=recentWAR840(),good=r.avg>=2.5,mv=tone==='move'||!!S._faMv840;const L=[];
+  if(!mv&&one&&proYears()>=7)L.push('원클럽맨 성골 프차 종신 가자 ㅠㅠ',`${gn} 사랑해 종신해 줘`,'다른 팀 유니폼 입은 모습은 상상도 하기 싫었다 남아 줘서 고맙다');
+  if(mv&&one&&proYears()>=7)L.push('원클럽맨이 떠난다니 믿기지가 않는다… 그동안 고마웠다','친정 팀 상대로 나오면 박수는 쳐 주자');
+  if(good&&((dr&&dr.rd>=5)||!dr))L.push(dr?`${dr.rd}라운드 지명에서 FA 대박까지 인생역전 그 자체`:'지명도 못 받고 들어와서 FA 대박 이게 드라마다','하위 라운드 출신이 이 계약을 따냈다 노력의 결과다');
+  if(!L.length)return out;const C=L.filter(t=>!seenHas('fa:'+t));if(!C.length)return out;const t=pick(C);seenAdd('fa:'+t);out.splice(Math.min(1,out.length),0,mkC(josaFix(t),R()<.5?[{nk:pick(NICKS),t:pick(['ㄹㅇ 감동','이게 낭만이지','눈물 난다 진짜']),up:ri(30,700)}]:[],{up:ri(1500,6000)}))}catch(e){}return out}}
+
+{const _faMv=ACT.fa;if(_faMv)ACT.fa=function(a){const pv=S._faMv840;try{S._faMv840=!!(a&&S.pro&&a.team!=null&&a.team!==S.pro.team)}catch(e){}try{return _faMv.apply(this,arguments)}finally{S._faMv840=pv||false}}}
+
 /* ===================== v840: 우승 역사 댓글 (팀 통산 우승 횟수 · 내 반지 수 · 준우승 콩라인) =====================
    KBO 팀 우승 횟수는 2026 시즌까지 실제 기록(타이거즈 12 · 라이온스 9 · 베어스 6 · 랜더스 5 · 트윈스 4 · 자이언츠 2 · 이글스·다이노스·위즈 1 · 히어로즈 0)에서 시작해
    게임 속 우승을 더해 간다. 마지막 우승 연도도 2026 기준(트윈스 2025 · 라이온스 2026)으로 맞춤 */
@@ -14372,6 +14398,31 @@ const KN840=['','첫','두','세','네','다섯','여섯','일곱','여덟','아
     if(ru>=2)put([`${gn} 벌써 준우승만 ${ru}번째… 콩라인 가입이냐 ㅠ`,`준우승 ${ru}번이면 이제 우승할 차례다`,`${ser} ${KN840[ru]||ru}번째 준우승… 반지 하나가 이렇게 어렵다`],pick(['콩라인 탈출은 내년에 하자','2등도 대단한 건데 너무 아프다','내년엔 꼭 마지막에 웃자']));
     else put([`${ser} 준우승도 대단한 거다 내년엔 한 계단만 더`,`여기까지 온 것도 잘한 거다 고개 숙이지 마라`],null);
     if(ksG&&kbo){const d=S.drought;if(typeof d==='number'&&d>=20)put([`${d}년째 기다리는 중… 내년엔 진짜 해 주라`,'우승 한 번 보기 전에 내가 먼저 늙겠다 ㅋㅋ ㅠ',`${d}년 기다렸는데 1년 더 못 기다리겠냐 내년에 보자`],null);else if(d==='never')put(['창단 첫 우승 문턱에서 또 멈췄다… 그래도 내년엔 된다','첫 우승 한 번 보기가 이렇게 어렵다 ㅠ'],null)}}}catch(e){}return out}}
+
+/* ---------- v840: 우승·준우승·무관 댓글 더 (커뮤 말투: 업셋·설레발·9개 구단·3연벙·종신) ---------- */
+{const _cT840b=comments;comments=function(tone,x){let out=_cT840b.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.stage!=='pro'||S.me!==ME||!S.pro)return out;const gn=ME.name,kbo=S.pro.league==='KBO',ttl=String((x&&x.title)||''),yrs=proYears(),rings=S.hist.rings||0;
+  const put=(L,re)=>{const C=L.filter(t=>t&&!seenHas('tt2:'+t));if(!C.length)return false;const t=pick(C);seenAdd('tt2:'+t);out.splice(Math.min(3,out.length),0,mkC(josaFix(t),re?[{nk:pick(NICKS),t:re,up:ri(30,800)}]:[],{up:ri(1500,7000),must:1}));return true};
+  if(tone==='ring'&&kbo&&x&&x.clinch&&S._rg2Y840!==S.y){S._rg2Y840=S.y;const seed=S._psSeed||0,gno=+((ttl.match(/(\d)차전/)||[])[1]||0);const L=['불행한 9개 구단 팬들은 개추 ㅋㅋ','올해 끝까지 설레발 안 친 보람이 있다 ㅠㅠ','우승콜 샤우팅 듣고 소름 돋았다 평생 돌려 본다','오늘은 그냥 다 같이 우승 짤 저장하는 날'];
+    if(seed>=3)L.push(`정규시즌 ${seed}위 팀의 업셋 우승 ㄷㄷ 이게 가을이다`,'아무도 우승 후보로 안 봤는데 결국 해냈다 업셋 우승');if(gno>=6)L.push(`${gno}차전까지 피 말렸다 심장 몇 개 갈아 끼운 거냐`);
+    put(L,pick(['ㄹㅇ 개추 박고 감','오늘은 기분 좋으니 다 용서한다 ㅋㅋ','이 맛에 1년 버틴다']))}
+  if(x&&/한국시리즈|월드시리즈/.test(ttl)&&x.win===false&&x.elim&&S._ru2Y840!==S.y){S._ru2Y840=S.y;const ru=(typeof myRunnerUps840==='function'?myRunnerUps840(kbo?'KBO':'MLB'):0)+1;
+    if(ru>=3)put([`준우승 ${ru}번째… 이쯤 되면 콩라인 공식 가입이다 ㅠ`,`또 준우승이면 ${ru}연벙이냐 마지막 계단이 왜 이렇게 높냐`],pick(['그래도 여기까지 온 게 어디냐','내년엔 꼭 마지막에 웃자']));
+    else put(['마지막 한 걸음이 제일 멀다 내년엔 꼭 우승하자','준우승 메달 걸고 웃는 사람은 없다 이 아픔 잊지 말자'],null)}
+  if(x&&x.ps&&x.win===false&&x.elim&&!/한국시리즈|월드시리즈/.test(ttl)&&yrs>=12&&rings===0&&S._mg2Y840!==S.y&&R()<.6){S._mg2Y840=S.y;
+    put(['올해도 반지는 남의 얘기… 무관 탈출이 이렇게 어렵다',`${gn} 반지 하나만 끼고 은퇴했으면 좋겠다 진심`,'이쯤 되면 무관 기운이 팀 전체로 퍼진다 ㅠ'],pick(['말이 너무 심하다 그래도 응원한다','내년엔 진짜 끼자','무관 탈출은 내년에']))}}catch(e){}return out}}
+
+/* ---------- v840: 나이 안 맞는 '에이징 커브·노장·베테랑' 소리 거르기 (베테랑 대우는 36세부터) ---------- */
+{const _cAg840=comments;comments=function(tone,x){let out=_cAg840.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME||!['pro','mil'].includes(S.stage))return out;const a=age();if(a>=36)return out;
+  const bad=t=>{t=String(t||'');if(/에이징 ?커브|노쇠|에이징이/.test(t)&&(a<34||!/벌써/.test(t)))return true;if(/(베테랑|노장)(이|의|다운| 소리| 대접| 티|답게|이라|이니)/.test(t)&&!/베테랑들|선배|형들|베테랑 (투수|타자|포수)(들|한테|이랑)/.test(t))return true;return false};
+  out=out.filter(c=>!(c&&!c.must&&bad(c.t)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!(r&&bad(r.t)))})}catch(e){}return out}}
+
+/* ---------- v840: MLB 마이너(트리플A·더블A)에만 머무는 30세 이상 선수도 시즌 끝에 방출 판정 ---------- */
+/* 원래는 메이저 로스터에 있을 때만 방출 판정이 돌아서, 성적이 안 나는 선수가 40대까지 마이너에 남는 일이 있었음 */
+{const _cdM840=contractDec;contractDec=function(rep){try{const p=S&&S.pro;if(p&&S.stage==='pro'&&p.league==='MLB'&&S.me===ME&&!p.dev){const a=age();
+  const mj=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB'),mn=S.rows.filter(r=>r.y===S.y&&['AAA','AA','A'].includes(r.lv)),P=isP();
+  const pa=x=>x.reduce((s,r)=>s+(P?((r.p&&r.p.outs)||0)/3:((r.b&&r.b.PA)||0)),0),inMin=pa(mn)>pa(mj)*1.5&&pa(mn)>=(P?30:120);
+  if(a>=30&&inMin){const t=yearTot(S.y,['AAA','AA','A']),perf=P?(t.p.outs>=60?(t.p.R*27/t.p.outs<=3.6?-1:t.p.R*27/t.p.outs>=5.2?1:0):0):(t.b.PA>=150?(opsN(t.b)>=.85?-1:opsN(t.b)<=.68?1:0):0);
+    const pr=knot(a,[30,32,34,37,40],[.08,.2,.4,.7,.95])*(perf>0?1.5:perf<0?.45:1);if(R()<Math.min(.97,pr)){S.queue.push(mlbRelease743(ovrE()));return}}}}catch(e){}return _cdM840.apply(this,arguments)}}
 
 </script>
 
