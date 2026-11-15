@@ -14797,6 +14797,12 @@ function hofLikely841(){try{const w=careerTot(PRO).w,sc=hofScore(w),role=isP()?(
 {const SBX=/도루 성공|배달 완료|배송지: 2루|베이스를 훔쳤|도루 하나로|발로 만든 점수/;
  const _cSB841=comments;comments=function(tone,x){let out=_cSB841.apply(this,arguments);try{if(!Array.isArray(out)||!x||x.gPA==null||isP()||(x.gSB||0)>0)return out;
    out=out.filter(c=>!(c&&SBX.test(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!SBX.test(String((r&&r.t)||'')))})}catch(e){}return out}}
+/* · KBO 정상급(최근 3년 가중 WAR 5.5 이상)이 해외 진출을 노렸는데 메이저 계약 없이 스플릿(마이너) 제의만 오던 것(약 1/6) → 최소 한 구단은 메이저 계약 제시 */
+{const _aoK841=abroadOffers;abroadOffers=function(o){let out=_aoK841.apply(this,arguments);try{if(!Array.isArray(out)||!S||!S.pro||S.pro.league!=='KBO'||S.rows.some(r=>r.lv==='MLB'))return out;
+   const wa=typeof wAvg==='function'?wAvg('KBO'):0;if(wa<5.5||age()>=34)return out;const maj=out.some(c=>c&&c.act==='abroad'&&c.arg&&c.arg.lg==='MLB'&&!c.arg.split&&c.arg.act!=='mlbSplit'&&!/마이너 계약|스플릿/.test(String(c.t||'')+String(c.s||'')));if(maj)return out;
+   const usd=+Math.max(1.5,Math.min(34,mlbUSD(o,lastWAR(),false)*rn(1,.07))).toFixed(1),yrs=mlbYears(usd,false),per=Math.round(usd*USDM/1000)*1000,nm=usd>=8,used=new Set(out.map(c=>String((c&&c.t)||'').split(' (')[0]));
+   const tn=pick(ABROAD.MLB.filter(t=>!used.has(t)).concat([]).length?ABROAD.MLB.filter(t=>!used.has(t)):ABROAD.MLB);
+   out.unshift({t:`${tn} (MLB)`,s:`${yrs}년 총액 ${usd2(usd*yrs)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.12)} · 마이너 거부권 ${nm?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs,per,noMinor:nm,opt:optOf(per*yrs,yrs)}})}catch(e){}return out}}
 
 </script>
 
