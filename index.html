@@ -7757,7 +7757,7 @@ function pitLine(p){const rel=(p.GS||0)<(p.G||0)/2;return`${p.G}경기 ${p.W}승
   if(t===2)strip(/리그 (최고|원탑|최정상)|특급 (불펜|마무리|셋업)|치트키/);
   /* 시즌 평가 댓글: 7월 이후, 가을야구·국제대회 제외, 1년 1번 */
   if(S.m>=7&&!(x&&(x.intl||x.ps))&&cmX('pitev'+S.y)){const p=ev.p,ln=pitLine(p),e=ev.e.toFixed(2),rel=ev.rel,L=[];
-    if(t===5)L.push(`올해 ${ln}… 이건 그냥 리그 최정상급이다`,`ERA ${e} 실화냐 ${gn} 올해 ${rel?'불펜':'선발'} 원탑임`,`${gn} 올해 ${rel?'뒷문':'마운드'}은 진짜 반칙 수준`);
+    if(t===5)L.push(`올해 ${ln}… 이건 그냥 리그 최정상급이다`,`ERA ${e} 실화냐 ${gn} 올해 ${rel?'불펜':'선발'} 원탑임`,`${gn} 올해 ${rel?'뒷문은':'마운드는'} 진짜 반칙 수준`);
     else if(t===4)L.push(`ERA ${e}면 ${rel?'불펜':'선발'} 기준 에이스급이지`,`올해 ${ln} 이 정도면 에이스 대우 해줘야 함`,`${gn} 올해 ${rel?'제일 믿을 수 있는 불펜':'확실한 에이스'}이다`);
     else if(t===3)L.push(`올해 ERA ${e} 잘하고 있다`,`${gn} ${ln} 이 정도면 ${rel?'필승조 자격 충분':'선발 한 자리 확실'}`,...(+e>=3&&+e<4?[`ERA 3점대면 ${rel?'불펜':'선발'}으로 잘하는 거임`]:[]));
     else if(t===2)L.push(`ERA ${e}… 그냥 평범한 수준`,`${gn} 올해는 딱 쓸만한 정도? 확 믿음이 가진 않음`,...(+e>=4&&+e<5?[`4점대면 못하는 건 아닌데 잘한다고 하기도 애매함`]:[]),`${ln} 무난하긴 한데 더 올라와야 한다`);
@@ -12294,7 +12294,7 @@ function wbcLines(x){const st=wbcStage(x),win=x.win===true,loss=x.win===false,P=
   const RE={w:['ㄹㅇ 이 맛에 본다','대한민국 화이팅','소리 질렀다 진짜'],l:['다음엔 갚자','할 말이 없다','그래도 응원한다']};
   const RP={g:['국대 체질 인정','이 선수 국대 오래 봐야 한다','든든하다 진짜'],b:['다음 경기에서 갚으면 된다','국대 압박감이 다르긴 하다','그래도 응원한다'],n:['다음 경기엔 나오겠지','벤치도 팀이다']};
   wbcLines(x).forEach((L,k)=>{const pool=L.map(t=>josaFix(t)).filter(t=>!seenHas('wb:'+t));if(!pool.length)return;const t=pick(pool);seenAdd('wb:'+t);
-    const rp=k===0?(x.win?RE.w:RE.l):(/대기만|벤치에서/.test(t)?RP.n:x.good?RP.g:RP.b);out.splice(Math.min(out.length,ri(0,3)),0,mkC(t,R()<.5?[{nk:pick(NICKS),t:pick(rp),up:ri(40,900)}]:[],{up:ri(1500,7000)}))})}catch(e){}return out}}
+    const rp=k===0?(x.win?(/더 냈어야|아쉽|불안|답답|위태/.test(t)?['그래도 이긴 게 어디냐','다음 경기는 시원하게 가자','ㄹㅇ 불안했다']:RE.w):RE.l):(/대기만|벤치에서/.test(t)?RP.n:x.good?RP.g:RP.b);out.splice(Math.min(out.length,ri(0,3)),0,mkC(t,R()<.5?[{nk:pick(NICKS),t:pick(rp),up:ri(40,900)}]:[],{up:ri(1500,7000)}))})}catch(e){}return out}}
 
 /* ===================== v681 ===================== */
 (function(){try{const s=document.createElement('style');s.textContent=`.cmb .reply.sub{margin-top:6px;padding:3px 0 3px 8px;font-size:.82rem}
@@ -15050,6 +15050,13 @@ try{if(typeof resignComments==='function')resignComments=(function(_rc){return f
      → 옵트아웃·해외 실패 후 국내 재협상 화면에 '올해 WAR 0.0', 제안 금액도 WAR 0 기준, MLB 재계약 댓글은 늘 '다시 반등하자'
      비시즌이고 새 시즌 기록이 아직 없으면 방금 끝난 시즌 기록을 읽는다 */
 try{const _lw841q=lastWAR;lastWAR=function(){try{if(S&&S.phase===0&&S.pro&&Array.isArray(S.rows)&&!S.rows.some(x=>x.y===S.y&&x.lv===S.pro.league)){const y0=S.y;S.y=y0-1;try{return _lw841q.apply(this,arguments)}finally{S.y=y0}}}catch(e){}return _lw841q.apply(this,arguments)}}catch(e){}
+/* · 대학 선수 기사에 '고교 레벨' → '대학 레벨' */
+{const _arQF841=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arQF841.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(!a||a.id===id0||!Array.isArray(a.cm)||!S||S.stage!=='univ')return r;
+   const fx=t=>typeof t==='string'?t.replace(/고교 레벨/g,'대학 레벨'):t;a.cm.forEach(c=>{if(!c)return;c.t=fx(c.t);if(Array.isArray(c.re))c.re.forEach(w=>{if(w)w.t=fx(w.t)})})}catch(e){}return r}}
+/* · 명예의 전당 기준선을 최신 빌드(v841o 이후 W15~W17) 최대 육성 표본으로 다시 맞춤
+     v841o 수상 4차 보정 뒤 수상·타이틀이 살짝 줄어 점수가 전체적으로 낮아짐(타자 하위 5% 점수 52 → 46)
+     타자 52 → 46 (768명 중 95.3%) · 선발 64 → 59 · 마무리 38 → 33 · 셋업 42 → 38 (게임 방식대로 섞어 각 약 90%) */
+try{if(globalThis.HOFT720)Object.assign(HOFT720,{B:46,SP:59,CL:33,RP:38})}catch(e){}
 
 </script>
 
