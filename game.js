@@ -15554,3 +15554,26 @@ function seaCtxBad855(t,tone,C){try{t=String(t||'');const T=String(tone||'');if(
 function seaCut855(cm,tone){if(!Array.isArray(cm))return cm;const C=seaCtx855();if(!C)return cm;const T=c=>String((c&&c.t)||'');const out=cm.filter(c=>!seaCtxBad855(T(c),tone,C));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!seaCtxBad855(typeof r==='string'?r:T(r),tone,C))});return out}
 {const _arS2855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arS2855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)){const n0=a.cm.length;a.cm=seaCut855(a.cm,tone);if(a.cm.length<n0)cmRefill855(a,tone,x)}}catch(e){}return r}}
 try{if(typeof buildSeasonRecap==='function'){const _bsS855=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsS855.apply(this,arguments);try{if(q&&Array.isArray(q.cm)&&q.cm.length>1){const k=seaCut855(q.cm,'srecap');if(k.length)q.cm=k}}catch(e){}return q}}}catch(e){}
+
+/* 8) 한 기사 안에 거의 같은 말 두 번 X (점검: '결혼 버프 받아서 내년 커리어하이 가자'·'결혼 버프 받고 커리어하이 가자', '까던 사람들 다 어디 갔냐'·'욕하던 사람들 다 어디 갔냐',
+      '오늘은 타선이 살렸다'·'오늘은 ○○ 타선이 살렸다' 처럼 예전·최근 모듈이 같은 뜻을 따로 붙이던 것) → 글자 짝 겹침 55%↑면 뒤엣것 뺌 (답글 달린·꼭 넣을 댓글 우선) */
+function nearDup855(cm){try{if(!Array.isArray(cm)||cm.length<2)return cm;const nm=ME&&ME.name||'',gn=(typeof giv==='function'&&ME)?giv(ME.name):'';
+  const key=t=>{let s=String(t||'');if(nm)s=s.split(nm).join('');if(gn)s=s.split(gn).join('');return bg855(s)};
+  const keep=[],ks=[];const order=cm.map((c,i)=>[c,i]);
+  cm.forEach(c=>{if(!c||typeof c.t!=='string'||c.rl){keep.push(c);return}const k=key(c.t);const j=ks.findIndex(z=>jac855(z.k,k)>=.55);
+    if(j<0){ks.push({k,c});keep.push(c);return}const o=ks[j].c;if((c.must&&!o.must)||((c.re||[]).length>(o.re||[]).length&&!o.must)){const p=keep.indexOf(o);if(p>=0)keep[p]=c;ks[j]={k,c}}});
+  return keep}catch(e){return cm}}
+{const _arD855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arD855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)){const n0=a.cm.length;a.cm=nearDup855(a.cm);if(a.cm.length<n0)cmRefill855(a,tone,x)}}catch(e){}return r}}
+try{if(typeof buildSeasonRecap==='function'){const _bsD855=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsD855.apply(this,arguments);try{if(q&&Array.isArray(q.cm)&&q.cm.length>1)q.cm=nearDup855(q.cm)}catch(e){}return q}}}catch(e){}
+
+/* 9) 답글이 댓글이랑 엇갈리던 것 (점검: '오늘 기록만 보면 팀에서 제일 잘했다'에 '나도 울었다', '한 경기로 커리어 부정하진 말자'에 '그건 좀 심하다',
+      '○○는 못했는데 이겼으니 됐다'에 '미쳤다 진짜') → 감정 표시 없는 댓글엔 '나도 울었다' 대신 맞장구 · 쉴드 댓글엔 반박 대신 맞장구 · 못했다는 댓글엔 칭찬 맞장구 X */
+function repFix855(cm,tone){try{if(!Array.isArray(cm))return cm;const EMOP=/ㅠ|울|눈물|감동|마지막|은퇴|고생|여기까지|평생|소름|첫 반지|꿈|기다렸|떼창/,PLEA=/말자|몰지 말|너무 까지|한 경기로|무작정|책임 (다 )?돌리|부정하진|탓은 아니|책임질 경기는 아니/,
+  CRIT=/했어야지|못했|못 했|안 됐|부족했|답답|아쉬웠/,BIGDAY=/^(ring|ws|retire|tour|hof|legend|gold)/.test(String(tone||''));
+  cm.forEach(c=>{if(!c||typeof c.t!=='string'||!Array.isArray(c.re))return;const p=c.t;c.re.forEach(r=>{if(!r||typeof r.t!=='string')return;const t=r.t;
+    if(/^나도 울었다/.test(t)&&!EMOP.test(p)&&!BIGDAY)r.t=pick(['ㄹㅇ','ㅇㅈ','맞는 말']);
+    else if(/^(억까 ㄴㄴ|그건 좀 심하다|너무 몰지 말자)/.test(t)&&PLEA.test(p))r.t=pick(['ㄹㅇ','맞는 말','이게 맞지']);
+    else if(/^(ㄹㅇ 쉴드 쳐줘야 함|쉴드)/.test(t)&&CRIT.test(p)&&!PLEA.test(p))r.t=pick(['그건 맞음','ㄹㅇ','인정할 건 인정']);
+    else if(/^(미쳤다 진짜|레전드|ㄹㅇ 가을 남자|가을 남자 인정)/.test(t)&&/못했는데|못 했는데|부진|침묵/.test(p))r.t=/이겼/.test(p)?pick(['ㅋㅋㅋ','이겼으면 됐지 ㅋㅋ']):pick(['ㅋㅋㅋ','다음엔 하겠지'])})});
+  return cm}catch(e){return cm}}
+{const _arR855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arR855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm))repFix855(a.cm,tone)}catch(e){}return r}}
