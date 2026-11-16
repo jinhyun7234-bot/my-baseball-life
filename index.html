@@ -15069,6 +15069,13 @@ try{if(globalThis.HOFT720)Object.assign(HOFT720,{B:46,SP:58,CL:34,RP:36})}catch(
   POSC=/축하|미쳤|대박|최고|레전드|고생|자랑|소름|역시|인정|ㅠㅠ|고마|행복|멋있|대단|클래스|국위선양|잘 어울|알아봤|가치|뿌듯|응원|화이팅|잘해라|성공/,NEGC=/빠는|거품|언플|고평가|운빨|오버|과대|먹튀|별로|아쉽/;
  const _arQH841=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arQH841.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(!a||a.id===id0||!Array.isArray(a.cm)||!T2.test(String(tone||'')))return r;
    a.cm.forEach(c=>{if(c&&Array.isArray(c.re)&&!c.troll&&!(c.dn>c.up)&&POSC.test(String(c.t||''))&&!NEGC.test(String(c.t||'')))c.re=c.re.filter(w=>!(w&&DIS2.test(String(w.t||'').trim())))})}catch(e){}return r}}
+/* · 불펜 투수(마무리·셋업) 기사엔 'MVP 안 주면'·'리그의 얼굴'·'리그를 지배'·'에이스' 같은 선발·MVP급 칭찬 X (불펜 칭찬은 그대로)
+   · 투수에게 '주전 확정' X */
+{const RPX=/MVP|시상식 폭파|리그의 얼굴|리그를 지배|리그 에이스|에이스지|에이스 맞다|에이스가 뭔지|이게 에이스|사이영|팀이 아니라 리그|토종 에이스/,PJ=/주전 확정/;
+ const _arQI841=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arQI841.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(!a||a.id===id0||!Array.isArray(a.cm)||!ME||!isP())return r;
+   const T=String(tone||''),rp=S.role==='CL'||(ME.pos!=='SP'&&S.role!=='SP');if(/^(award|retire|hof|tourCer|tourStop|tourAnn)$/.test(T))return r;
+   const bad=t=>(rp&&RPX.test(t))||PJ.test(t);
+   a.cm=a.cm.filter(c=>{if(!c||typeof c.t!=='string')return true;if(bad(c.t))return false;if(Array.isArray(c.re))c.re=c.re.filter(w=>!(w&&typeof w.t==='string'&&bad(w.t)));return true})}catch(e){}return r}}
 
 </script>
 
