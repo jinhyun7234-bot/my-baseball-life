@@ -15451,6 +15451,15 @@ function seaEvCut855(cm){if(!Array.isArray(cm))return cm;const T=c=>String((c&&c
         모자라면 같은 상황 댓글을 거름망 없이 한 번 더 뽑아서, 커리어에서 덜 쓴 것부터 채움 (예전 댓글/최근 댓글 비율도 맞춰서) */
 function cmFloor855(tone,x){const T=String(tone||'');if(T==='srecap'||T==='phase')return 0;const g=x&&(x.gPA!=null||x.ipO!=null);if(g&&(x.ps||x.intl))return 6;if(g||/^(walkoff|psHero|ring|gold|ws|hof|legend|tour)/.test(T))return 5;return 3}
 const ONCE855=/생수머신|머신이형|퐁당퐁당|영결 커트라인/,WOFF855=/운이 좀 없는 시즌|폼은 좋은데 결과가 안|기복만 잡으면|좋은 날 나쁜 날|장점 단점 확실한|장점은 확실한데 약점도|수비는 좀 더 다듬어야|중립기어|한 시즌 풀로 봐야|아직 평가하기|아직 평가하긴/;
+/* 다시 채울 땐 그날 내 활약에 맞는 말만: 안 나온 날은 팀·경기 얘기만 · 못한 날 칭찬 X · 평범한 날 극찬 X · 잘한 날 비난 X · 비슷한 말 두 번 X */
+const PRZ855=/인정|잘하긴|잘한다|미쳤|클래스|레벨이 다른|무섭|약점이 없|약점 없|사기|GOAT|괴물|해결사|대단하다|믿고 본다|해냈|캐리|든든/,PRZS855=/미쳤|클래스|레벨이 다른|약점이 없|약점 없|사기|GOAT|괴물|캐리/,
+  CRT855=/못하|부진|비호감|곤란|TV 끈|탓|문제|왜 이러|실망|거품|딱 거기까지|밥값|연봉값|돈값|침묵|아무것도 못|비판/,SELF855=/타석|방망이|타격|수비|홈런|안타|출루|삼진|투구|구위|제구|공이|볼배합|이닝|등판|마운드|하위 타선|클린업|평타|약점|장점/;
+function perf855(x){try{if(!x||(x.gPA==null&&x.ipO==null))return null;if(typeof dnpGame704==='function'&&dnpGame704(x))return'dnp';const P=isP();
+  if(P){const o=x.ipO||0,ra=x.ra||0;if(!(o>0))return'bad';const rp=o<=9;return(rp?(o>=3&&!ra):(o>=15&&ra<=2))?'good':(ra>=4||(!rp&&o<12&&ra>=3)||(rp&&ra>=2))?'bad':'avg'}
+  if(!(x.gPA>0))return'dnp';const h=x.gH||0,hr=x.gHR||0,rbi=x.gRBI||0;if(hr>=1||h>=2||rbi>=2)return'good';if(x.gPA>=3&&!h&&!rbi&&(x.gBB||0)<2)return'bad';return'avg'}catch(e){return null}}
+const FAM855=[/타팀|타팬|다른 팀 팬/,/개추/,/TV 끈|채널 돌/,/벼랑 끝|한 판만 더 지면|지면 끝/,/여기까지구나|여기서 끝/,/투수 교체|교체 타이밍/,/연봉|몸값/];
+function bg855(t){const s=cmNorm855(t),o=new Set();for(let i=0;i<s.length-1;i++)o.add(s.slice(i,i+2));return o}
+function jac855(a,b){if(!a.size||!b.size)return 0;let n=0;a.forEach(z=>{if(b.has(z))n++});return n/(a.size+b.size-n)}
 function cmNorm855(t){return String(t||'').replace(/[\d.,]+/g,'#').replace(/\s+/g,'')}
 function cmRefill855(a,tone,x){try{if(!a||!Array.isArray(a.cm)||!S||!ME||S._inPh854)return;const F=cmFloor855(tone,x),real=a.cm.filter(c=>c&&!c.rl);if(!F||real.length>=F)return;
   const FRESH={cmSeen:{},cmHist:[],_cmU840:{},_cap854:{},pmY:null},KEEP=['_once853','_once841','_mach854','_pong854','_rk849','_pc853','_ntc853','tf853','_U686','_srU','_srK','cmSeenN'];
@@ -15460,7 +15469,12 @@ function cmRefill855(a,tone,x){try{if(!a||!Array.isArray(a.cm)||!S||!ME||S._inPh
   const have=new Set(a.cm.map(c=>cmNorm855(c&&c.t))),U=S._cmU840||{},H=new Set((S.cmHist||[]).map(String)),wo=String(tone)==='walkoff'||/끝내기/.test(String(a.head||''));
   let pool=[];cand.forEach(c=>{if(!c||typeof c!=='object'||c.rl||typeof c.t!=='string')return;const k=cmNorm855(c.t);if(!k||have.has(k)||ONCE855.test(c.t)||(wo&&WOFF855.test(c.t)))return;have.add(k);pool.push(c)});
   if(x&&(x.ps||x.intl)){pool=seaEvCut855(pool);try{pool=pool.filter(c=>!ctxBad854(String(c.t||''),x))}catch(e){}}
+  try{pool=ctxCut855(pool,x)}catch(e){}
+  try{pool=seaCut855(pool,tone)}catch(e){}
   try{if(x&&x.gPA!=null&&typeof gameCmFix==='function')pool=gameCmFix(pool,x)}catch(e){}try{if(typeof spdPraiseFix==='function')pool=spdPraiseFix(pool,x)}catch(e){}try{if(typeof cmClean810==='function')pool=cmClean810(pool)}catch(e){}try{if(typeof mugCut854==='function')pool=mugCut854(pool)}catch(e){}
+  {const pf=perf855(x),gn=(typeof giv==='function'?giv(ME.name):ME.name)||'@@';pool=pool.filter(c=>{const t=String(c.t);if(pf==='dnp')return!(PRZ855.test(t)||CRT855.test(t)||SELF855.test(t)||(typeof DNPX704!=='undefined'&&DNPX704.test(t))||t.includes(gn));
+    if(pf==='bad')return!PRZ855.test(t);if(pf==='avg')return!PRZS855.test(t);if(pf==='good')return!CRT855.test(t);return true})}
+  {const ex=a.cm.filter(c=>c&&typeof c.t==='string').map(c=>c.t),fam=t=>FAM855.findIndex(r=>r.test(t));pool=pool.filter(c=>{const b=bg855(c.t),f=fam(c.t);if(ex.some(e=>jac855(bg855(e),b)>=.3||(f>=0&&fam(e)===f)))return false;ex.push(c.t);return true})}
   const use=c=>(U[cmH840(c.t)]||0)+(H.has(cmNorm855(c.t))?.5:0)+R()*.3;pool.sort((p,q)=>use(p)-use(q));
   const isN=c=>c&&c._n&&!c._o||(c&&!c._o&&!c._n);let nO=real.filter(c=>c._o).length,nN=real.length-nO;const add=[];
   while(add.length<F-real.length&&pool.length){const wantO=nN>nO;let i=pool.findIndex(c=>wantO?!isN(c):isN(c));if(i<0)i=0;const c=pool.splice(i,1)[0];if(isN(c))nN++;else nO++;add.push(c)}
@@ -15491,3 +15505,48 @@ function mugBoost855(a,tone,x){try{if(!a||!Array.isArray(a.cm)||!S||!ME||S.stage
   const side=L.filter(z=>(no<=nn)===!!z[1]);const Q=(side.length?side:L).slice().sort((p,q)=>(M[p[0]]||0)-(M[q[0]]||0)+(R()-.5)*.5);const [t,old]=Q[0];M[t]=(M[t]||0)+1;
   const c=mkC(t,R()<.5?[pick(MUGR855[k])]:[],{up:ri(400,2500)});if(old)c._o=1;else c._n=1;a.cm.splice(Math.min(a.cm.length,1+Math.floor(R()*3)),0,c)}catch(e){}}
 {const _arF855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arF855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)){mugBoost855(a,tone,x);cmRefill855(a,tone,x)}}catch(e){}return r}}
+
+/* 6) 경기 기사 상황 점검 (유저 요청 00:47 "이상한 댓글 제대로 찾아서 적재적소에") — 시뮬 1만 6천 경기 기사를 그날 기록과 맞춰 본 결과로 뺄 것
+      · 탈락한 날: '내일은 이기자 제발'·'아직 안 끝났다'·'다음 경기 기대한다'·'내일 한 판만 이기면 된다'·'내일 끝내자' 같은 다음 경기 얘기 X (국제대회 동메달전 있는 준결승은 그대로)
+      · 도루 0개인 날: '딸배 모드 켜졌다'·'딸배 출근 완료'·'도루 사인 필요 없음 알아서 배달 감'·'N루 도루는 자동문' X · '내야 땅볼 안타'·'번트 세이프'는 빠른 선수(주력 72↑)가 단타 친 날만
+      · 홈런 0개인 날: '홈런 치고 배트 던지는 거 개간지'·'이번 시리즈에서만 N홈런'·'포스트시즌 통산 N홈런 가을 사나이' X (올가을 잘하다 부진한 날 '오늘은 왜 그러냐'는 그대로)
+      · 무안타인 날: '가을 N경기 N안타 꾸준히 해주네' X · 호수비 없는 날: '이런 수비는 홈런만큼 값지다'·'담장 앞에서 점프해서 걷어내는' X
+      · 메이저 경기에 'KBO는 ○○한테 감사해라 흥행몰이' X · 국제대회 기사에 '한국시리즈 투구 레전드'·'한국시리즈 MVP 확정' X */
+function ctxBad855(t,x){try{if(!x||(x.gPA==null&&x.ipO==null))return false;t=String(t||'');
+  if(x.elim&&!x.intl&&/내일|다음 경기|아직 안 끝|아직 끝나지|원점이다|다음 판|만회하자|반격하자|한 판만 (더 )?이기면|역스윕|연승 하면|연승이면 된다|끝내자/.test(t))return true;
+  if(!isP()&&(x.gPA||0)>0){const pl=Array.isArray(x.pl)?x.pl:[];
+    if(!(x.gSB>0)&&/딸배 (모드|출근)|도루 사인 필요 없|알아서 배달|도루는 그냥 자동문|오늘도 딸배/.test(t))return true;
+    if(/내야 땅볼 쳤는데 안타|번트 대고 \d루 세이프/.test(t)&&(!pl.some(p=>p&&p.t==='1B')||DV(E('spd'))<72))return true;
+    if(!(x.gHR>0)&&(/홈런 치고 (배트 던지|빠던)/.test(t)||(/(이번 시리즈|시리즈에서만|가을에만|포스트시즌 통산|가을 통산)[^.?!]{0,12}(\d+ ?홈런|홈런 ?\d+)/.test(t)&&!/오늘은 (왜|쉬)/.test(t))))return true;
+    if(!(x.gH>0)&&/(가을|시리즈)[^.?!]{0,12}\d+ ?안타[^.?!]{0,12}(꾸준|해주|미쳤|ㄷㄷ|인정)/.test(t))return true;
+    if(!(x.gGreat>0)&&/이런 수비는 홈런만큼|담장 앞에서 점프해서/.test(t))return true}
+  if(!isP()&&(x.gPA||0)>0){const gd=(x.gHR||0)>=1||(x.gH||0)>=2||(x.gRBI||0)>=2,bd=(x.gPA||0)>=3&&!(x.gH||0)&&!(x.gRBI||0);
+    if(gd&&/부진해도 .{0,6}빼는 건 아니지|타순 조정이 맞다/.test(t))return true;
+    if(bd&&!(x.gGreat>0)&&!/아쉬운데|아쉬워도/.test(t)&&/들어가 있으면 그냥 든든|든든한 (중견수|유격수|포수|[1-3]루수|좌익수|우익수)|그저 작품/.test(t))return true}
+  if(!isP()&&x.gPA!=null&&!(x.gPA>0)&&/들어가 있으면 그냥 든든|자리에 있는 것만으로|수비로 막는 점수|땅볼 유도하면 그냥 아웃|투수 승리는 .{0,8}지분|호수비 없었으면/.test(t))return true;
+  const lg=S&&S.pro&&S.pro.league;if(lg==='MLB'&&!x.intl&&/KBO(는|가) .{0,8}감사|흥행몰이 핵폭탄/.test(t))return true;
+  if(x.intl&&/한국시리즈/.test(t))return true;return false}catch(e){return false}}
+function ctxCut855(cm,x){if(!Array.isArray(cm))return cm;const T=c=>String((c&&c.t)||'');const out=cm.filter(c=>!ctxBad855(T(c),x));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!ctxBad855(typeof r==='string'?r:T(r),x))});return out}
+{const _cmC855=comments;comments=function(tone,x){const out=_cmC855.apply(this,arguments);try{if(x&&(x.gPA!=null||x.ipO!=null)&&Array.isArray(out))return ctxCut855(out,x)}catch(e){}return out}}
+{const _arC855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arC855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)&&x&&(x.gPA!=null||x.ipO!=null)){a.cm=ctxCut855(a.cm,x);cmRefill855(a,tone,x)}}catch(e){}return r}}
+
+/* 7) 시즌·서사 기사 상황 점검 (그해 실제 성적과 맞춰 본 결과)
+      · 컨택 칭찬('컨택 미쳤다 이제 헛스윙을 안 한다'·'배트에 자석'·'방망이에 공이 붙네')은 그해 타율 .285↑만 · 장타 칭찬('요즘 장타 보니까'·'넘어가는 타구가 확 늘었다')은 홈런 비율 3%↑만
+        · 선구안 칭찬('볼넷 머신')은 볼넷 비율 9%↑만 · '도루 사인 막 나온다'·'도루 머신'은 주력 72↑만 · 부진 기사·ERA 4.6↑ 시즌엔 '이게 진짜 에이스지'·'에이스의 품격' X
+      · '바람의 손자' 비유 X (실제 선수 별명)
+      · '마 내년엔 3할 30홈런 100타점 함 가보자… 실망도 많이 했지만'은 시즌 결산·부진·연봉·잡담 기사에서만 (금메달·부상 복귀 기사 X)
+      · 고졸 메이저 직행 댓글('마이너부터 차근차근'·'루키리그 버스 생활'·'3~4년 뒤 빅리그 데뷔')은 22살 이하만 */
+function seaCtx855(){try{if(!S||!ME||S.stage!=='pro')return null;const lg=S.pro&&S.pro.league,yt=yearTot(S.y,lg?[lg]:['KBO','MLB']);return{b:yt.b,p:yt.p,era:yt.p.outs?yt.p.R*27/yt.p.outs*.92:0,spd:DV(E('spd')),a:age(),P:isP()}}catch(e){return null}}
+function seaCtxBad855(t,tone,C){try{t=String(t||'');const T=String(tone||'');if(!C)return false;if(/바람의 손자/.test(t))return true;
+  if(/^마 내년엔/.test(t)&&!/^(mix|bad|srecap|salary)$/.test(T))return true;
+  if(T==='abroad'&&C.a>=23&&/고졸 메이저 직행|고등학교 때부터 스카우트|마이너부터 차근차근|루키리그 버스|한국 프로 안 거치고|팜에서 잘 키워|3~4년 뒤에 빅리그 데뷔/.test(t))return true;
+  const b=C.b,p=C.p;
+  if(!C.P){if(b.AB>=100&&b.H/b.AB<.285&&/컨택 미쳤|배트에 자석|방망이에 공이 붙|안타 기계|타격 기계|헛스윙을 안 한다/.test(t))return true;
+    if(b.PA>=100&&b.HR/b.PA<.03&&/요즘 장타 보니까|넘어가는 타구가 확|홈런 머신|장타력 미쳤/.test(t))return true;
+    if(b.PA>=100&&(b.BB||0)/b.PA<.09&&/볼넷 머신|볼에는 배트가 안 나간다/.test(t))return true;
+    if(C.spd<72&&/도루 사인 막 나온다|도루 머신/.test(t))return true}
+  else if((T==='bad'||(p.outs>=90&&C.era>=4.6))&&/이게 진짜 에이스지|에이스의 품격|언터처블|난공불락/.test(t))return true;
+  return false}catch(e){return false}}
+function seaCut855(cm,tone){if(!Array.isArray(cm))return cm;const C=seaCtx855();if(!C)return cm;const T=c=>String((c&&c.t)||'');const out=cm.filter(c=>!seaCtxBad855(T(c),tone,C));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!seaCtxBad855(typeof r==='string'?r:T(r),tone,C))});return out}
+{const _arS2855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arS2855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)){const n0=a.cm.length;a.cm=seaCut855(a.cm,tone);if(a.cm.length<n0)cmRefill855(a,tone,x)}}catch(e){}return r}}
+try{if(typeof buildSeasonRecap==='function'){const _bsS855=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsS855.apply(this,arguments);try{if(q&&Array.isArray(q.cm)&&q.cm.length>1){const k=seaCut855(q.cm,'srecap');if(k.length)q.cm=k}}catch(e){}return q}}}catch(e){}
