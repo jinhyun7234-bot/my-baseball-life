@@ -11867,7 +11867,7 @@ function retFanBest(skip){try{const ey=(S.ended&&S.ended.y)||S.y,seen=new Set(sk
    수락 → 후반기 은퇴투어 → 시즌 끝나고 은퇴 */
 /* 은퇴투어 자격: KBO에서 5시즌 이상 + (KBO WAR + 메이저 WAR×1.3) 70 이상 · 메이저리그엔 은퇴투어 없음 */
 function tourElig(){try{if(!S||!S.pro||S.pro.league!=='KBO')return null;let k=0,m=0;const ky=new Set();S.rows.forEach(r=>{if(r.lv==='KBO'){k+=rowWAR(r);if((r.b&&r.b.PA)||(r.p&&r.p.outs))ky.add(r.y)}else if(r.lv==='MLB')m+=rowWAR(r)});
-  const tot=k+1.3*m;return ky.size>=5&&tot>=70*WARF842?{kbo:k,mlb:m,tot,yrs:ky.size}:null}catch(e){return null}}
+  const tot=k+1.3*m;return ky.size>=5&&tot>=70?/* v842j: 은퇴투어 자격(KBO WAR+메이저×1.3)은 노화 뒤에도 자격자 비율이 그대로라(33.8%→32.9%) 70 유지 */{kbo:k,mlb:m,tot,yrs:ky.size}:null}catch(e){return null}}
 function tourChance(){try{if(!S||S.stage!=='pro'||!S.pro||!ME||S.ended)return 0;const v=vetInfo();if(!v||v.a<37)return 0;
   const el=tourElig();if(!el)return 0;
   const mlbW=el.mlb,mlbBack=mlbW>=12;
@@ -15550,6 +15550,14 @@ try{if(typeof tradeComments==='function'){const _tc849=tradeComments;tradeCommen
 {const _cmSL849=comments;comments=function(tone,x){let out=_cmSL849.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!ME||S.me!==ME||String(tone||'')!=='salary'||S._sl849===S.y||R()>=.7)return out;S._sl849=S.y;const gn=g849(),w=typeof lastWAR==='function'?lastWAR():0;
   const L=w>=3?['연봉 앞자리 바뀐 거 축하한다 ㄷㄷ 받을 만했다','구단이 제대로 인정해 줬다 이제 몸값 하자','연봉 협상 압승 ㅋㅋ 이번 겨울은 따뜻하겠다']:['인상은 축하하는데 이제 이 연봉 값 해야 한다','기대치가 올라간 만큼 부담도 같이 올라간다 화이팅'];
   put849(out,L,['ㅊㅊ','부럽다 ㅋㅋ','내 연봉은 그대로인데 ㅠ'],{pos:2,rp:.5})}catch(e){}return out}}
+
+/* ---------- ㉗ 영구결번 기사: 자격 논쟁 (롯갤 '영결' 토론 구조 — 반지·MVP·리그 지배 시즌 vs 누적·의리) ---------- */
+{const _cmRN849=comments;comments=function(tone,x){let out=_cmRN849.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME||String(tone||'')!=='retire'||!S.retNo||S._rn849)return out;S._rn849=1;
+  const gn=g849(),rg=(S.hist&&S.hist.rings)||0,mvp=(S.awards||[]).filter(a=>/MVP/.test(String(a.n||''))&&!/시리즈|올스타|월간|주간/.test(String(a.n||''))).length;
+  const by={};(S.rows||[]).forEach(r=>{if(r.lv==='KBO'||r.lv==='MLB'){try{by[r.y]=(by[r.y]||0)+rowWAR(r)}catch(e){}}});const peak=Math.max(0,...Object.values(by)),num=S.retNo.num||'';
+  if(rg>=1&&(mvp>=1||peak>=6))put849(out,[`반지에 ${mvp?'MVP까지':'리그 지배한 시즌까지'} 이건 이견 없는 영결이다`,`${num}번 영결 반대하는 사람 아무도 없다 ㅋㅋ`],['ㅇㅈ 당연한 거','레전드 대접 제대로 해 줬다'],{pos:1,rp:.6});
+  else put849(out,[rg===0?'반지 하나 없는데 영결은 좀 이르지 않냐':'리그를 지배한 시즌 하나 없이 누적만으로 영결은 좀…',`${num}번 영결이면 무게감 떨어진다는 사람들 나오겠다 ㅋㅋ`],
+    ['우승 못 하는 팀에 끝까지 남아 준 게 얼마나 고마운 건데','꾸준함도 재능이다 누적도 실력이고','우승이나 하고 싸워라 ㅋㅋ','애매하면 투표로 정하든가 ㅋㅋ'],{pos:2,rp:.95})}catch(e){}return out}}
 
 </script>
 
