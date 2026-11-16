@@ -15532,6 +15532,25 @@ try{if(typeof buildSeasonRecap==='function'){const _bsF849=buildSeasonRecap;buil
     :['올해는 잊자 내년엔 다를 거다','반등의 계기가 필요하다 겨울에 칼 갈자','이번 겨울이 진짜 중요하다 몸 잘 만들고 오자'];
   const C=L.filter(s=>!seenHas('srf849:'+s)&&!q.cm.some(c=>c&&c.t===s)).sort(()=>R()-.5).slice(0,2-q.cm.length);C.forEach(s=>{seenAdd('srf849:'+s);q.cm.push(mkC(josaFix(s),[],{up:ri(400,2400)}))})}}catch(e){}return q}}}catch(e){}
 
+/* ---------- ㉔ 방출 후 새 팀 (최저 연봉 1년 계약) — 기사 + 재취업 댓글 (펨코 방출생 반응: 재취업 ㅊㅊ·줍줍·가서 잘되길) ---------- */
+try{if(typeof ACT==='object'&&typeof ACT.fa==='function'){const _fa849=ACT.fa;ACT.fa=function(a){const before=S&&S.pro?S.pro.team:null,lg0=S&&S.pro?S.pro.league:null;const r=_fa849.apply(this,arguments);
+  try{if(a&&a.cheap&&S&&S.stage==='pro'&&S.pro&&S.pro.league==='KBO'&&lg0==='KBO'&&before!=null&&S.pro.team!==before){const tm=TEAMS[S.pro.team];S._reb849=S.y;
+    article(`${ME.name}, 방출 아픔 딛고 ${jo(tm.nick,'과','와')} 1년 계약`,`재계약 불가 통보를 받았던 ${jo(ME.name,'이','가')} ${tm.city} ${jo(tm.nick,'에서','에서')} 새 출발한다.`,'move',{reb:1,yrs:1,tot:money(a.tot||S.pro.salary||3300)})}}catch(e){}return r}}}catch(e){}
+{const _cmRB849=comments;comments=function(tone,x){let out=_cmRB849.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME||!x||!x.reb)return out;const gn=g849(),a=age();
+  out=out.filter(c=>c&&!/거품|오버페이|FA로이드|대박 계약|몸값|배신|가지 ?마|떠나면 우리 팀|프런트 뭐 했|뺏겼|안 갈 수가 없지|잔류|이적료/.test(String(c.t||'')));
+  put849(out,[`${gn} 재취업 ㅊㅊ 가서 꼭 잘되길`,'방출생 신화 케이스 많다 일단 줍고 보는 거다','새 팀 팬분들 우리 애 잘 부탁드립니다 ㅠ','여기서 부활하면 방출한 팀 배 아프겠다 ㅋㅋ'],['그동안 고마웠다 진심','가서 꼭 부활해라'],{pos:0,must:1,up:ri(3000,9000),rp:.7});
+  put849(out,a>=34?['나이 많은 베테랑 줍줍해서 성공한 사례 많다 기대해 본다','경험은 돈 주고도 못 산다 불펜이든 대타든 쓸 데 많다']:['아직 젊다 여기서 기회 잡으면 된다','새 팀에서 출전 기회만 받으면 다르다'],['ㅇㅈ','화이팅'],{pos:2,rp:.4})}catch(e){}return out}}
+
+/* ---------- ㉕ 트레이드 반응 추가 (정가 트레이드·덕지덕지·결과는 3년 뒤) ---------- */
+try{if(typeof tradeComments==='function'){const _tc849=tradeComments;tradeComments=function(from,to,star,rich,big){const L=_tc849.apply(this,arguments);try{if(Array.isArray(L)&&S&&ME){const gn=g849();
+  const C=big?['역대급 트레이드 ㄷㄷ 오늘 커뮤 서버 터지겠다','이건 무조건 결과로 말해야 하는 트레이드다']:star?[`${gn} 주고 뭘 받든 손해 같다 ㅠ`,`???: ${gn} 데려가려면 유망주 몇 명 더 얹어 주세요 << 양심 어디 감 ㅋㅋ`,'이 선수 주고 받은 게 이거라고? 단장 설명 좀']:['정가 트레이드 같은데 결과는 3년 뒤에 보자','서로 필요한 거 맞바꾼 거라 윈윈 기대한다','새 팀에서 기회 받으면 터질 수도 있다'];
+  const t=C.filter(s=>!seenHas('tr849:'+s));if(t.length){const s=pick(t);seenAdd('tr849:'+s);L.splice(Math.min(2,L.length),0,mkC(josaFix(s),R()<.5?[{nk:pick(NICKS),t:pick(['ㄹㅇ','결과로 보여 주면 된다','가서 잘해라'])}]:[],{up:ri(1500,7000)}))}}}catch(e){}return L}}}catch(e){}
+
+/* ---------- ㉖ 연봉 대폭 인상 (기사는 1.5배·1억 이상 인상 때만 나옴) ---------- */
+{const _cmSL849=comments;comments=function(tone,x){let out=_cmSL849.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!ME||S.me!==ME||String(tone||'')!=='salary'||S._sl849===S.y||R()>=.7)return out;S._sl849=S.y;const gn=g849(),w=typeof lastWAR==='function'?lastWAR():0;
+  const L=w>=3?['연봉 앞자리 바뀐 거 축하한다 ㄷㄷ 받을 만했다','구단이 제대로 인정해 줬다 이제 몸값 하자','연봉 협상 압승 ㅋㅋ 이번 겨울은 따뜻하겠다']:['인상은 축하하는데 이제 이 연봉 값 해야 한다','기대치가 올라간 만큼 부담도 같이 올라간다 화이팅'];
+  put849(out,L,['ㅊㅊ','부럽다 ㅋㅋ','내 연봉은 그대로인데 ㅠ'],{pos:2,rp:.5})}catch(e){}return out}}
+
 </script>
 
 <script>
