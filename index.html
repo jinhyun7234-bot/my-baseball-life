@@ -10435,7 +10435,7 @@ try{CM.salary=CM.salary.concat(['이 인상률이면 구단이 진짜 인정한 
   const n0=out.length;out=out.filter(c=>{const t=String(c&&c.t||'');if(BAD.test(t))return false;return SAL.some(l=>t.includes(l))||KEEP.test(t)});
   out.forEach(c=>{if(c&&Array.isArray(c.re)){const k=c.re.length;c.re=c.re.filter(r=>{const t=String(r&&r.t||'');return !BAD.test(t)&&(RE.includes(t)||KEEP.test(t)||/^(ㅇㅈ|ㄹㅇ|인정|공감)/.test(t))});if(c.re.length<k&&!c.re.length&&R()<.5)c.re=[{nk:pick(NICKS),t:pick(RE),up:ri(15,320)}]}});
   const sal=S.pro&&S.pro.salary||0,ms=money(sal),gn=giv(ME.name);const AMT=[`${ms}이면 이제 진짜 스타 대우`,`${gn} ${ms} 받을 자격 충분함`,`${ms}… 작년 활약 생각하면 납득된다`,`${ms} 찍었으면 이제 팀 간판이지`,`${ms}이면 구단도 큰맘 먹은 거다`,`${gn} 몸값 ${ms} 축하한다 진짜`];
-  const pool=SAL.concat(sal>=10000?AMT:[]).filter(t=>!seenHas(t)&&!out.some(c=>String(c.t).includes(t)));const need=Math.max(3,Math.min(n0,5));while(out.length<need&&pool.length){const t=pool.splice(Math.floor(R()*pool.length),1)[0];seenAdd(t);out.push(mkC(t,R()<.4?[pick(RE)]:[],{}))}}catch(e){}return out}}
+  const big841=S.pro&&S.pro.league==='MLB'?sal>=1380000:sal>=50000,pool=SAL.concat(sal>=10000?AMT.filter(t=>big841||!/스타 대우|팀 간판|큰맘 먹은/.test(t)):[]).filter(t=>!seenHas(t)&&!out.some(c=>String(c.t).includes(t)));const need=Math.max(3,Math.min(n0,5));while(out.length<need&&pool.length){const t=pool.splice(Math.floor(R()*pool.length),1)[0];seenAdd(t);out.push(mkC(t,R()<.4?[pick(RE)]:[],{}))}}catch(e){}return out}}
 
 /* ===== 계약 기간 다양화: 같은 구단이 기간 다른 안을 함께 제시 (나이·몸값 반영) ===== */
 function ctMaxY(lg){const a=age();if(lg==='MLB')return a<=26?12:a<=28?10:a<=30?8:a<=32?6:a<=34?4:a<=36?3:a<=39?2:1;return a<=27?8:a<=29?6:a<=31?5:a<=33?4:a<=35?3:a<=37?2:1}
@@ -15076,6 +15076,13 @@ try{if(globalThis.HOFT720)Object.assign(HOFT720,{B:46,SP:58,CL:34,RP:36})}catch(
    const T=String(tone||''),rp=S.role==='CL'||(ME.pos!=='SP'&&S.role!=='SP');if(/^(award|retire|hof|tourCer|tourStop|tourAnn)$/.test(T))return r;
    const bad=t=>(rp&&RPX.test(t))||PJ.test(t);
    a.cm=a.cm.filter(c=>{if(!c||typeof c.t!=='string')return true;if(bad(c.t))return false;if(Array.isArray(c.re))c.re=c.re.filter(w=>!(w&&typeof w.t==='string'&&bad(w.t)));return true})}catch(e){}return r}}
+/* · 경기 기사가 아닌 곳(연봉·계약·결산 등)엔 '오늘도 베이스 배달 3건'·'내야 땅볼 쳤는데 안타 됨' 같은 그날 경기 주루 농담 X
+   · MLB 재계약에 '계약 첫해부터 다시 증명하자'와 '이번 계약 기간에 다시 반등하자'가 같이 나오면 하나만 */
+{const DAYSPD=/^오늘도 베이스 배달|내야 땅볼 쳤는데 안타 됨|번트 대고 1루 세이프|딸배 모드 켜졌다/;
+ const _arQJ841=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arQJ841.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(!a||a.id===id0||!Array.isArray(a.cm))return r;
+   const X=x||{},game=('gPA' in X)||('ipO' in X)||!!X.ps||!!X.intl||/^(walkoff|feat|psWin|psLose|psHero|psGoat|ring|ws|debutG|g1)$/.test(String(tone||''));
+   if(!game)a.cm=a.cm.filter(c=>!(c&&typeof c.t==='string'&&DAYSPD.test(c.t)));
+   if(a.cm.some(c=>c&&c.t==='이번 계약 기간에 다시 반등하자'))a.cm=a.cm.filter(c=>!(c&&c.t==='계약 첫해부터 다시 증명하자'))}catch(e){}return r}}
 
 </script>
 
