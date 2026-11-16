@@ -15046,6 +15046,10 @@ try{if(typeof resignComments==='function')resignComments=(function(_rc){return f
    const T=String(tone||''),awd=/^(award|gold)$/.test(T),old=age()>=30;let reg=false;try{const lv=S.pro&&S.pro.league;reg=!!lv&&(S.rows||[]).some(z=>z.lv===lv&&z.y===S.y-1&&((z.b&&z.b.PA>=200)||(z.p&&z.p.outs>=150)))}catch(e){}
    const bad=t=>(!awd&&DOR.test(t))||(old&&FUT.test(t))||(reg&&LY.test(t));
    a.cm=a.cm.filter(c=>{if(!c||typeof c.t!=='string')return true;if(bad(c.t))return false;if(Array.isArray(c.re))c.re=c.re.filter(w=>!(w&&typeof w.t==='string'&&bad(w.t)));return true})}catch(e){}return r}}
+/* · 버그: 비시즌(11~2월)엔 해가 이미 바뀌어 있어서 lastWAR()가 '아직 경기 없는 새 시즌' 기록(0)을 읽었다
+     → 옵트아웃·해외 실패 후 국내 재협상 화면에 '올해 WAR 0.0', 제안 금액도 WAR 0 기준, MLB 재계약 댓글은 늘 '다시 반등하자'
+     비시즌이고 새 시즌 기록이 아직 없으면 방금 끝난 시즌 기록을 읽는다 */
+try{const _lw841q=lastWAR;lastWAR=function(){try{if(S&&S.phase===0&&S.pro&&Array.isArray(S.rows)&&!S.rows.some(x=>x.y===S.y&&x.lv===S.pro.league)){const y0=S.y;S.y=y0-1;try{return _lw841q.apply(this,arguments)}finally{S.y=y0}}}catch(e){}return _lw841q.apply(this,arguments)}}catch(e){}
 
 </script>
 
