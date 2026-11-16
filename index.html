@@ -2703,9 +2703,9 @@ function lifeEvents(){const out=[];if(S.stage==='ret')return out;S.gfCool=Math.m
   else if(!S.married&&!S.gfCool&&age()>=19&&(S.stage==='pro'||S.stage==='univ')&&R()<.16){const n=pick(GFN),how=pick(S.stage==='univ'?GFM_U:GFM);
     out.push({title:'💘 새로운 인연',text:`${how} ${n}. 몇 번 만나다 보니 자꾸 생각이 난다.\n${n}도 싫지 않은 눈치다.`,ch:[{t:'사귀자고 한다',s:'연애 시작 · 호감 관리 필요 (선물·여유)',act:'gfstart',arg:{n}},{t:'지금은 야구에 집중한다',s:'감독 신뢰 +2',act:'gfno'}]})}
   return out}
-function budgetEvent(){const L=S.led&&S.led.y===S.y-1?S.led:S.led&&S.led.prev?S.led.prev:null,at=autoTotal(),sal=S.pro?S.pro.salary:0;
+function budgetEvent(){const L=S.led&&S.led.y===S.y-1?S.led:S.led&&S.led.prev?S.led.prev:null,at=autoTotal(),mil841=S.stage==='mil'&&S.mil,sal=mil841?(S.mil.type==='현역'?150:180)*12:S.pro?S.pro.salary:0;
   const auto=ITEMS.filter(it=>it.yr&&S.auto&&S.auto[it.id]&&S.me.items[it.id]).map(it=>it.n.replace(/ \(1년\)/,'')).join(', ');
-  return{title:'💰 올해 살림 계획',text:`${S.y} 시즌 연봉 ${money(sal)} (월 ${money(sal/12)})${L?`\n작년 수입 ${money(L.inc)} · 지출 ${money(L.exp)}`:''}\n자동 갱신 중인 관리 서비스: ${auto||'없음'}${at?` (연 ${money(at)})`:''}\n\n올해는 어떻게 살까? (월 생활비 기준)`,
+  return{title:'💰 올해 살림 계획',text:`${mil841?`${S.y} 군 복무 중 봉급 연 ${money(sal)} (월 ${money(sal/12)})`:`${S.y} 시즌 연봉 ${money(sal)} (월 ${money(sal/12)})`}${L?`\n작년 수입 ${money(L.inc)} · 지출 ${money(L.exp)}`:''}\n자동 갱신 중인 관리 서비스: ${auto||'없음'}${at?` (연 ${money(at)})`:''}\n\n올해는 어떻게 살까? (월 생활비 기준)`,
     ch:Object.entries(BUD).map(([k,b])=>({t:`${b.n} · 월 ${money(livingCost(k))}`,s:b.d+(S.budget===k?' · 작년과 같음':''),act:'budget',arg:{b:k}}))}}
 {const _nc=newCard;newCard=function(){const q0=S.queue.length;if(S.phase===0&&S.stage==='pro'&&S.budgetSal!==S.pro.salary){S.budgetSal=S.pro.salary;S.queue.push({...budgetEvent(),opt:4})}_nc();if(S.phase!==0||R()<.5)S.queue.push(...lifeEvents().map(e=>({...e,opt:3})));
   const pr=q=>q.opt||(/수상한 제안/.test(q.title)?1:/캠프 개인 훈련/.test(q.title)?2:/특별 훈련 제안/.test(q.title)?5:0);
@@ -2916,10 +2916,10 @@ EV.push(
  {c:()=>S.stage==='mil'&&S.mil.type==='현역',f:()=>({title:'부대 체육대회',text:'부대 체육대회에서 야구 경기가 열린다. 다들 프로 선수인 걸 안다.',ch:[
    {t:'살살 한다',s:'멘탈↑',fx:{men:2},r:'적당히 쳤는데도 홈런이 나왔다. 부대가 뒤집어졌다.'},
    {t:'전력으로 한다',s:'감각 유지 · 피로↑',fx:{form:1,fat:5},r:'감각이 살아있다는 걸 확인했다.'}]})},
- {c:()=>S.stage==='univ',f:()=>({title:'시험 기간',text:'중간고사 기간. 전공 과제가 밀렸고, 리그 경기도 코앞이다.',ch:[
+ {c:()=>S.stage==='univ',f:()=>({title:'시험 기간',text:S.m>=10||S.m<=2?'기말고사 기간. 전공 과제가 밀렸고, 동계 훈련 일정도 빡빡하다.':'중간고사 기간. 전공 과제가 밀렸고, 리그 경기도 코앞이다.',ch:[
    {t:'밤새 공부한다',s:'멘탈↑ · 피로↑',fx:{men:2,fat:6},r:'학점은 지켰다. 눈이 퀭하다.'},
    {t:'훈련 우선',s:'성장 포인트',fx:{xp:3},r:'교수님께 메일을 썼다.'}]})},
- {c:()=>S.stage==='hs',f:()=>({title:'대회 전날 밤',text:'내일 전국대회 첫 경기. 잠이 안 온다.',ch:[
+ {c:()=>S.stage==='hs'&&S.m>=3&&S.m<=9,f:()=>({title:'대회 전날 밤',text:'내일 전국대회 첫 경기. 잠이 안 온다.',ch:[
    {t:'일찍 눕는다',s:'컨디션↑',fx:{form:1},r:'뒤척이다 어느새 잠들었다.'},
    {t:'상대 투수 영상을 본다',s:'성장 포인트 · 피로↑',fx:{xp:2,fat:2},r:'상대 결정구가 머릿속에 그려졌다.'}]})},
  {c:()=>S.stage==='hs'&&S.grade>=2,f:()=>({title:'라이벌 학교의 도발',text:'라이벌 고교 에이스가 SNS에 "이번엔 우리가 이긴다"는 글을 올렸다.',ch:[
@@ -3011,7 +3011,7 @@ EV.push(
  {c:()=>S.stage==='pro'&&S.rel.fame>=30&&inSeason(),f:()=>({title:'쏟아지는 인터뷰 요청',text:'방송, 유튜브, 신문… 하루에 인터뷰 요청만 다섯 건이다.',ch:[
    {t:'다 응한다',s:'인기↑ · 피로↑↑',fx:{fame:4,fat:8},r:'말을 너무 많이 해서 목이 쉬었다.'},
    {t:'구단을 통해 한 건만',s:'인기 조금↑ · 피로 조금↑',fx:{fame:1,fat:2},r:'꼭 필요한 인터뷰만 했다.'}]})},
- {c:()=>S.stage!=='ret',f:()=>({title:'집안의 경조사',text:'친척 결혼식과 할머니 생신이 같은 주말에 겹쳤다. 다음 날 경기가 있다.',ch:[
+ {c:()=>S.stage!=='ret',f:()=>({title:'집안의 경조사',text:`친척 결혼식과 할머니 생신이 같은 주말에 겹쳤다. ${S.stage==='mil'?'휴가는 하루밖에 안 남았다.':(S.m>=10||S.m<=2)?'다음 날 아침 일찍 훈련이 있다.':'다음 날 경기가 있다.'}`,ch:[
    {t:'둘 다 챙긴다',s:'멘탈↑ · 피로↑↑',fx:{men:2,fat:8},r:'가족들이 무척 기뻐했다. 몸은 천근만근이다.'},
    {t:'영상통화로 인사드린다',s:'피로 변화 없음',fx:{},r:'마음이 조금 무겁다.'}]})},
  {c:()=>S.stage==='pro'&&S.gf,f:()=>({title:'😞 연인과의 냉전',text:'며칠째 연락이 뜸하다. 경기 중에도 휴대폰이 신경 쓰인다.',ch:[
@@ -4495,7 +4495,7 @@ const PSTYLE=[['적극 육아','아이와 시간을 많이 보낸다 · 피로�
   if(S.married&&ks.length<2&&!S.babyDue&&!S.kidNever&&S.y-S.married.y>=1&&(S.kidAskY||0)<S.y&&R()<.4){S.kidAskY=S.y;out.push({title:'👶 2세 계획',text:`${S.married.n} 씨가 조심스럽게 묻는다. "우리 ${['','둘째 ','셋째 '][ks.length]||''}아기 가져볼까?"`,ch:[{t:'좋아, 가족을 늘리자',s:'내년 출산 · 생활비↑ · 인기↑',act:'kidPlan',arg:{y:1}},{t:'아직은 둘만의 시간이 좋아',s:'변화 없음',act:'kidPlan',arg:{y:0}}]});return out}
   if(S.babyDue&&S.y>=S.babyDue){S.babyDue=0;out.push({title:'👶 출산',text:`${S.married.n} 씨가 건강한 아기를 낳았다! 작은 손을 잡는 순간 모든 게 달라 보인다.`,ch:[{t:'아들',s:'',act:'kidSex',arg:{s:'아들'}},{t:'딸',s:'',act:'kidSex',arg:{s:'딸'}}]});return out}
   /* 육아 방식 (연 1회) */
-  if(ks.length&&S.phase===0&&S.y-(S.pstyleY||-99)>=3&&R()<.6){S.pstyleY=S.y;out.push({title:'🍼 올해 육아는 어떻게?',text:`${ks.map(k=>`${k.n}(${kidAge(k)}살)`).join(', ')}. 시즌을 앞두고 ${S.married.n} 씨와 육아 분담을 이야기했다.`,ch:PSTYLE.map(([t,s],i)=>({t,s,act:'parent',arg:{i}}))});return out}
+  if(ks.length&&S.phase===0&&S.y-(S.pstyleY||-99)>=3&&R()<.6){S.pstyleY=S.y;out.push({title:'🍼 올해 육아는 어떻게?',text:`${ks.map(k=>`${k.n}(${kidAge(k)}살)`).join(', ')}. ${S.stage==='mil'?'복무 중이라 휴가 때만 집에 간다. 그래도':'시즌을 앞두고'} ${S.married.n} 씨와 육아 분담을 이야기했다.`,ch:PSTYLE.map(([t,s],i)=>({t,s,act:'parent',arg:{i}}))});return out}
   /* 아이 말썽 */
   if(ks.length&&R()<.18){const k=pick(ks),a=kidAge(k),nm=jo(k.n,'이','가');let ev;
     if(a<=3)ev={t:'😭 밤에 잠을 안 자요',x:`${nm} 밤새 울어서 집에 아무도 못 잤다. 내일은 경기가 있다.`,ch:[['내가 밤새 안고 달랜다',{fat:14,bond:8,sp:4},'새벽 4시에 겨우 잠들었다. 몸은 천근만근이지만 아이 얼굴을 보니 괜찮다.'],['배우자와 번갈아 본다',{fat:7,bond:3,sp:2},'둘이 번갈아 버텼다.'],['산후도우미를 부른다',{money:300,bond:-1,fat:-4,form:1},'푹 자고 컨디션 좋게 경기장에 나갔다.']]};
@@ -10121,12 +10121,12 @@ function injLifeEvent(){const P=isP(),gf=S.gf&&S.gf.n,sp=S.married&&S.married.n,
     {t:'하루 종일 아이와 놀아준다',s:'멘탈↑↑ 성장 포인트↑ · 체력 소모로 피로↑',fx:{men:5,xp:5,fat:6},r:'아이가 그린 내 유니폼 그림을 라커에 붙이기로 했다.'},
     {t:'아이 재우고 밤에 재활 루틴',s:'성장 포인트↑ 재활 기간 조금↓ · 잠이 부족해 피로↑',fx:{xp:6,men:2,fat:5},act:'injLife',arg:{wk:-.5},r:'조용한 거실에서 혼자 재활을 했다. 이유가 분명하니 힘들지 않았다.'}]});
   L.push({title:'👨‍👩‍👦 본가에서 보내는 시간',text:`부상 소식을 들은 부모님이 밥 먹으러 오라고 몇 번이고 전화했다.`,ch:[
-    {t:'며칠 본가에 내려간다',s:'멘탈↑↑ 피로↓ 성장 포인트↑ · 구단 재활 일정 빠져 코치 신뢰↓',fx:{men:4,fat:-15,xp:5,coach:-2},r:'어머니 밥을 먹으니 마음이 편해졌다. 야구를 왜 시작했는지 다시 떠올렸다.'},
+    {t:'며칠 본가에 내려간다',s:`멘탈↑↑ 피로↓ 성장 포인트↑ · ${S.stage==='pro'?'구단':'팀'} 재활 일정 빠져 코치 신뢰↓`,fx:{men:4,fat:-15,xp:5,coach:-2},r:'어머니 밥을 먹으니 마음이 편해졌다. 야구를 왜 시작했는지 다시 떠올렸다.'},
     {t:'가족을 재활센터로 초대한다',s:'멘탈↑ 성장 포인트↑ 재활 기간 조금↓ · 비용 −80만원',fx:{men:2,xp:5,money:-80},act:'injLife',arg:{wk:-1},r:'가족이 지켜보니 재활 운동에 더 힘이 들어갔다.'}]});
-  L.push({title:'📺 경기 영상 공부',text:`몸은 못 움직여도 눈은 쓸 수 있다. 전력분석팀이 영상 자료를 한가득 보내왔다.`,ch:[
+  L.push({title:'📺 경기 영상 공부',text:`몸은 못 움직여도 눈은 쓸 수 있다. ${S.stage==='pro'?'전력분석팀이':'코치님이'} 영상 자료를 한가득 보내왔다.`,ch:[
     {t:'하루 종일 영상을 분석한다',s:'성장 포인트↑↑ · 답답해서 멘탈 조금↓',fx:{xp:8,men:-1},r:P?'타자들의 약점이 하나씩 보이기 시작했다.':'상대 투수들의 볼 배합이 머릿속에 그려지기 시작했다.'},
     {t:'적당히 보고 푹 쉰다',s:'성장 포인트↑ 피로↓ · 분석은 얕게',fx:{xp:4,fat:-12,men:1},r:'쉴 때 쉬어야 몸이 빨리 돌아온다.'}]});
-  L.push({title:'🤝 재활 중 봉사활동',text:`구단 사회공헌팀에서 연락이 왔다. ${S.m>=11||S.m<=2?'재활하는 동안':'경기에 못 나가는 동안'} 팬들을 만나보는 게 어떠냐고.`,ch:[
+  if(S.stage==='pro')L.push({title:'🤝 재활 중 봉사활동',text:`구단 사회공헌팀에서 연락이 왔다. ${S.m>=11||S.m<=2?'재활하는 동안':'경기에 못 나가는 동안'} 팬들을 만나보는 게 어떠냐고.`,ch:[
     {t:'소아병동을 찾아간다',s:'인기↑ 멘탈↑ 성장 포인트↑ · 이동이 많아 피로↑',fx:{fame:4,men:3,xp:4,fat:5},r:'병실 아이들이 내 이름을 외쳤다. 꼭 다시 그라운드에 서야 할 이유가 생겼다.'},
     {t:'짧은 사인회만 한다',s:'인기↑ 성장 포인트↑ · 홍보팀이 조금 아쉬워함',fx:{fame:2,xp:3,chem:-1},r:'줄이 끝까지 이어졌다. 기다려 주는 사람이 이렇게 많았다.'}]});
   if(gf&&!sp&&R()<.4)L.push({title:'🍲 연인의 병문안',text:`${gf} 씨가 직접 끓인 죽을 들고 왔다. "다치면 제일 먼저 나한테 말하라고 했지."`,ch:[
@@ -14902,6 +14902,17 @@ try{const D=DRA836;Object.assign(D,{C:D.C+.6,'1B':D['1B']-1.2,'2B':D['2B']+1.0,'
 /* · 고교·대학 선수 기사에 '2군에서 좀 더 키우면' 같은 프로 2군 얘기 X */
 {const _cAM841=comments;comments=function(tone,x){let out=_cAM841.apply(this,arguments);try{if(!Array.isArray(out)||!S||!(S.stage==='hs'||S.stage==='univ'))return out;const B=/2군에서|2군 가서|퓨처스에서|1군 (콜업|엔트리|말소)/;
    out=out.filter(c=>!(c&&B.test(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!B.test(String((r&&r.t)||'')))})}catch(e){}return out}}
+/* · 고교·대학: 비시즌 캠프는 '스프링캠프'가 아니라 '동계 전지훈련', 특별 훈련 이름도 아마추어에 맞게 (전력분석팀 X · 베테랑 선배 → 프로 간 선배)
+   · 고교·대학 선수 '예능 고정 게스트' → 지역 방송·스포츠 채널 '유망주 특집' (출연료 없음) */
+{const AMN={'베테랑 선배와 새벽 특타':'프로 간 선배와 새벽 특타','전력분석팀 맞춤 영상 세션':'코치와 맞춤 영상 세션'},amat=()=>S&&(S.stage==='hs'||S.stage==='univ');
+ const withAm=fn=>function(){if(!amat())return fn.apply(this,arguments);const L=[...(typeof CARDS_B!=='undefined'?CARDS_B:[]),...(typeof CARDS_P!=='undefined'?CARDS_P:[])].filter(c=>c&&AMN[c.n]),keep=L.map(c=>c.n);L.forEach(c=>{c.n=AMN[c.n]});try{return fn.apply(this,arguments)}finally{L.forEach((c,i)=>{c.n=keep[i]})}};
+ const _ncA841=withAm(newCard);newCard=function(){const n0=(S&&S.queue)?S.queue.length:0;const r=_ncA841.apply(this,arguments);try{if(amat()&&Array.isArray(S.queue))S.queue.slice(n0).forEach(q=>{if(q&&q.title==='🏕️ 캠프 개인 훈련'&&typeof q.text==='string')q.text=q.text.replace(/(\d{4}) 스프링캠프\./,'$1 동계 전지훈련.')})}catch(e){}return r};
+ if(typeof ACT!=='undefined'&&typeof ACT.tcard==='function')ACT.tcard=withAm(ACT.tcard);
+ if(typeof focusEv744==='function'){const _fe841=focusEv744;focusEv744=function(){const e=_fe841.apply(this,arguments);try{if(e&&amat()&&e.title==='📺 예능 섭외'&&Array.isArray(e.ch)){const hs=S.stage==='hs';
+   e.text=`${hs?'지역 방송사':'스포츠 채널'}에서 '${hs?'고교야구':'대학야구'} 유망주 특집' 촬영 섭외가 왔다. 훈련 끝나고 며칠 찍으면 된다고 한다.`;
+   const c=e.ch[0];if(c){c.s='인기↑ · 멘탈↑ (기분 전환) · 워크에식↓';if(c.fx)c.fx.money=0;c.r='방송이 나가고 학교 친구들이 알아보기 시작했다. 훈련 시간은 꽤 빠졌다.'}}}catch(err){}return e}}}
+/* · 입대하면 대기 중이던 '해외 개인 캠프'·'MLB 연봉 갱신'·'연봉 협상' 이벤트는 치움 (군 복무 중 미국 캠프·연봉 갱신이 뜨던 것) */
+{const _mlQ841=ACT.mil;ACT.mil=function(a){const r=_mlQ841.apply(this,arguments);try{if(S&&S.stage==='mil'&&Array.isArray(S.queue))S.queue=S.queue.filter(q=>!(q&&/해외 개인 캠프|MLB 연봉 갱신|연봉 협상|연봉조정 합의|올해 살림 계획/.test(String(q.title||''))))}catch(e){}return r}}
 
 </script>
 
