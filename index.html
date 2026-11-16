@@ -15149,7 +15149,8 @@ function g849(){try{return giv(ME.name)}catch(e){return ME&&ME.name||''}}
 function sp849(n){n=String(n||'');return n.length<=3?n.split('').join(' '):n}
 const N849=new WeakSet();/* v842l: 이미 같은 말이 달린 기사엔 또 안 달고(옛 '대 X X' 밈과 겹침), 기사 하나에 새 댓글은 2개까지 */
 function put849(out,L,RE,o){try{o=o||{};if(!o.must&&out.filter(c=>c&&N849.has(c)).length>=2)return false;const have=new Set(out.map(c=>c&&String(c.t||'')));
-  const C=(L||[]).filter(t=>t&&!seenHas('n849:'+t)&&!have.has(t)&&!have.has(josaFix(t)));if(!C.length)return false;const t=pick(C);seenAdd('n849:'+t);
+  const pre=new Set([...have].filter(t=>t&&t.length>=12).map(t=>t.slice(0,9)));/* v842p: 앞부분이 같은 비슷한 말(옛 댓글이랑 겹침)도 X */
+  const C=(L||[]).filter(t=>t&&!seenHas('n849:'+t)&&!have.has(t)&&!have.has(josaFix(t))&&!(t.length>=12&&pre.has(josaFix(t).slice(0,9))));if(!C.length)return false;const t=pick(C);seenAdd('n849:'+t);
   const re=RE&&RE.length&&R()<(o.rp==null?.55:o.rp)?[{nk:pick(NICKS),t:josaFix(pick(RE)),up:ri(20,700)}]:[];
   const c=mkC(josaFix(t),re,{up:o.up||ri(900,6500),must:o.must?1:0});N849.add(c);out.splice(Math.min(o.pos==null?ri(1,3):o.pos,out.length),0,c);return true}catch(e){return false}}
 /* 시리즈 정보: 단계·몇 차전·이 경기 전 승패·이 경기 뒤 승패·필요 승수·내 시드 */
@@ -15636,6 +15637,12 @@ try{if(typeof discharge==='function'){const _dc849=discharge;discharge=function(
 {const _cmAB850=comments;comments=function(tone,x){let out=_cmAB850.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!ME||S.me!==ME||String(tone||'')!=='abroad'||!S.pro||S.pro.league!=='MLB'||(x&&x.mlbBack)||S._ab850||/고교생|직행|마이너 계약|대학/.test(String(S._hd||''))||!(S.rows||[]).some(r=>r.lv==='KBO'))return out;S._ab850=1;/* v842o: KBO에서 뛰다 메이저 계약할 때만 (고교 직행·마이너 계약 X) */
   put849(out,['가서 우리 팀 후배들 홍보 많이 해 줘라 ㅋㅋ 다음 메이저리거 줄 서 있다','올해 꼭 미국 가서 유니폼 사 온다 직관 간다','메이저는 시즌이 길다 체력 관리만 잘하자','처음 몇 경기로 호들갑 떨지 말자 1년은 지켜봐야 한다'],['ㄹㅇ','현지 적응이 먼저다','가서 꼭 잘해라'],{pos:ri(2,3),rp:.5})}catch(e){}return out}}
 
+/* ---------- ㉝ 지명타자 전향 기사 — 반기 결산 말 빼고 전향 반응만 ---------- */
+{const _cmDH850=comments;comments=function(tone,x){let out=_cmDH850.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME||!/지명타자 전향/.test(String(S._hd||'')))return out;
+  out=out.filter(c=>c&&!/전반기|후반기|결산|OPS|타율 [.0-9]|반기|이번 시즌 성적/.test(String(c.t||'')));const gn=g849();
+  put849(out,['수비 부담 덜면 방망이는 더 살아난다 오히려 좋다','나이 들면 지명타자 가는 게 수순이다 오래 뛰려면 맞는 선택',`${gn} 글러브 내려놓는다니까 세월 느껴진다 ㅠ`,'지명타자는 방망이로만 말해야 한다 이제 진짜 쳐야 한다'],['ㅇㅈ','방망이만 살아 있으면 된다','롱런 가자'],{pos:1,must:1,rp:.5});
+  put849(out,ME.pos==='C'?['포수 마스크 그동안 고생 많았다 무릎 이제 좀 쉬어라','포수로 그 세월 버틴 것 자체가 대단하다 이제 방망이만 보자']:['수비할 때 무릎 걱정했는데 이제 좀 마음 놓인다','타석에만 집중하면 커리어 몇 년은 더 간다'],['ㄹㅇ'],{pos:3,rp:.3})}catch(e){}return out}}
+
 /* ===================== v842m: WAR·연차 쌓인 선수는 비아냥·악플이 살짝 덜 달림 (곡선 · 아예 없애진 않음 · 설명 노노) =====================
    · 대상: 비아냥(거품·운빨·JOAT·FA로이드·국내용·작아지네·버스 탔네…)·악플(퇴물·유리몸·혈압·정신 차려라·라인업에서 빼라…)·분탕
    · 커리어 WAR·프로 연차가 쌓일수록 빠질 확률이 부드럽게 올라감 (끝까지 가도 3할 정도만 빠짐)
@@ -15661,11 +15668,13 @@ function soft850(L,tone){try{if(!Array.isArray(L)||L.length<3)return L;const e=e
     if(Array.isArray(c.re)&&c.re.length&&!c.troll)c.re=c.re.filter(r=>!(r&&!r.my&&neg850(r.t,false)&&R()<p));
     out.push(c)}
   return out}catch(e){return L}}
-function softArt850(id0){try{const a=S&&S.arts&&S.arts[0];if(!a||DONE850.has(a)||(id0!=null&&a.id===id0)||!Array.isArray(a.cm))return;DONE850.add(a);a.cm=soft850(a.cm,a.tone)}catch(e){}}
+/* v842p: 한 기사 안에서 앞부분이 똑같은 비슷한 댓글(옛 댓글 풀끼리 겹치는 것)은 하나만 */
+function nodup850(L){try{if(!Array.isArray(L))return L;const seen=new Set();return L.filter(c=>{if(!c||typeof c!=='object'||c.my)return true;const t=String(c.t||'');if(t.length<12)return true;const k=t.slice(0,10);if(seen.has(k))return false;seen.add(k);return true})}catch(e){return L}}
+function softArt850(id0){try{const a=S&&S.arts&&S.arts[0];if(!a||DONE850.has(a)||(id0!=null&&a.id===id0)||!Array.isArray(a.cm))return;DONE850.add(a);a.cm=nodup850(soft850(a.cm,a.tone))}catch(e){}}
 let PH850=0;/* 반기 결산 기사는 결산 쪽 손질이 다 끝난 뒤에 한 번만 */
 try{if(typeof article==='function'){const _ar850=article;article=function(){const id0=S&&S.arts&&S.arts[0]?S.arts[0].id:null;const r=_ar850.apply(this,arguments);if(!PH850)softArt850(id0);return r}}}catch(e){}
 try{if(typeof phaseArticle==='function'){const _pa850=phaseArticle;phaseArticle=function(){const id0=S&&S.arts&&S.arts[0]?S.arts[0].id:null;PH850++;let r;try{r=_pa850.apply(this,arguments)}finally{PH850--}if(!PH850)softArt850(id0);return r}}}catch(e){}
-try{if(typeof buildSeasonRecap==='function'){const _bs850=buildSeasonRecap;buildSeasonRecap=function(){const q=_bs850.apply(this,arguments);try{if(q&&Array.isArray(q.cm))q.cm=soft850(q.cm,'srecap')}catch(e){}return q}}}catch(e){}
+try{if(typeof buildSeasonRecap==='function'){const _bs850=buildSeasonRecap;buildSeasonRecap=function(){const q=_bs850.apply(this,arguments);try{if(q&&Array.isArray(q.cm))q.cm=nodup850(soft850(q.cm,'srecap'))}catch(e){}return q}}}catch(e){}
 
 </script>
 
