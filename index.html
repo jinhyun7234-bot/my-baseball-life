@@ -15159,7 +15159,7 @@ const ST849={WC:'와카',SPO:'준플',PO:'플옵',KS:'코시',DS:'디비전 시�
 /* ---------- ① 가을야구 경기 (우승 확정 경기는 ②에서) ---------- */
 {const _cmPS849=comments;comments=function(tone,x){let out=_cmPS849.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!ME||S.me!==ME||!x||!x.ps||x.intl)return out;
   const T=String(tone||'');if(!/^ps(Win|Hero|Lose|Goat)$/.test(T))return out;const s=ser849(x);if(!s||!s.st)return out;
-  const gn=g849(),P=isP(),nx={WC:'준플',SPO:'플옵',PO:'코시',DS:'챔피언십 시리즈',CS:'월드시리즈'}[s.st]||'',S2=ST849[s.st]||'가을',mlb=!s.kbo;let n=0;
+  const gn=g849(),P=isP(),nx=(s.kbo?{WC:'준플',SPO:'플옵',PO:'코시'}:{WC:'디비전 시리즈',DS:'챔피언십 시리즈',CS:'월드시리즈'})[s.st]||'다음 라운드',S2=ST849[s.st]||'가을',mlb=!s.kbo;let n=0;
   const rg=(S.hist&&S.hist.rings)||0,score=x.lsc&&Array.isArray(x.lsc)?null:null,diff=(()=>{try{const L=x.lsc,me=x.mySide;if(!Array.isArray(L))return null;const sum=r=>(r||[]).reduce((q,v)=>q+(+v||0),0);return sum(L[me])-sum(L[1-me])}catch(e){return null}})();
   const add=(L,RE,o)=>{if(n>=(o&&o.max||1))return;if(put849(out,L,RE,o))n++};
   if(s.win&&x.clinch){/* 시리즈 통과 */
@@ -15370,7 +15370,7 @@ function flow849(x){try{const L=x&&x.lsc,me=x&&x.mySide;if(!Array.isArray(L)||!A
     else if(rd>=7)L.push('하위 라운드에서 터지는 선수가 진짜 대박이다','순번은 순번일 뿐 1군 와서 보여 주면 된다');
     put849(out,L,['ㅇㅈ','기대된다','스카우트 리포트 보니까 툴은 확실함'],{pos:2})}
   else if(T==='debut')put849(out,[`${gn} 첫 타석 긴장한 거 다 보였다 ㅋㅋ 그래도 잘했다`,'데뷔전 직관한 사람 나중에 자랑해라','오늘 경기 기념구 꼭 챙겨라',P?'첫 등판에 공 던지는 거 보니까 배짱은 확실하다':'첫 타석 초구부터 휘두르는 거 보고 반함 ㅋㅋ'],['10타석까지는 쉴드 쳐 준다','첫 단추 잘 끼웠다'],{pos:2})
-  else if(T==='callup')put849(out,['드디어 콜업!! 이번엔 내려가지 말자','퓨처스에서 갈고닦은 거 다 보여 줘라','기회 왔을 때 잡아야 한다 화이팅'],['이번엔 버티자','1군 맛 제대로 봐라'],{pos:2})}catch(e){}return out}}
+  else if(T==='callup')put849(out,['드디어 콜업!! 이번엔 내려가지 말자',(S.pro&&S.pro.league==='MLB')?'트리플A에서 갈고닦은 거 다 보여 줘라':'퓨처스에서 갈고닦은 거 다 보여 줘라','기회 왔을 때 잡아야 한다 화이팅'],['이번엔 버티자','1군 맛 제대로 봐라'],{pos:2})}catch(e){}return out}}
 
 /* ---------- ⑮ 부상·복귀 ---------- */
 {const _cmIJ849=comments;comments=function(tone,x){let out=_cmIJ849.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!ME||S.me!==ME)return out;const T=String(tone||''),gn=g849();
@@ -15380,7 +15380,7 @@ function flow849(x){try{const L=x&&x.lsc,me=x&&x.mySide;if(!Array.isArray(L)||!A
 
 /* ---------- ⑯ 은퇴·영구결번 ---------- */
 {const _cmRT849=comments;comments=function(tone,x){let out=_cmRT849.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME)return out;const T=String(tone||''),gn=g849();
-  if(T==='retire'&&S._rt849!==S.y){S._rt849=S.y;const num=ME.num||'';const L=['은퇴식 날 응원가 떼창하면 진짜 운다 ㅠ','코치로 꼭 돌아와라 기다린다',`${gn} 없는 라인업이 아직 상상이 안 된다`];
+  if(T==='retire'&&S._rt849!==S.y){S._rt849=S.y;const num=ME.num||'';const L=[(S.pro&&S.pro.league==='MLB')?'은퇴식 날 기립박수 받는 거 보면 진짜 운다 ㅠ':'은퇴식 날 응원가 떼창하면 진짜 운다 ㅠ','코치로 꼭 돌아와라 기다린다',`${gn} 없는 라인업이 아직 상상이 안 된다`];
     if(S.retNo)L.push(`${num}번은 이제 영원히 ${gn} 거다`,`앞으로 ${num}번 유니폼 보면 ${gn}만 생각날 듯`);
     if(proYears()>=15)L.push(`${proYears()}년 동안 고생 많았다 그동안 행복했다`);
     put849(out,L,['ㅠㅠ','고생 많았다','레전드 가는 길 꽃길만'],{pos:1,must:1})}}catch(e){}return out}}
@@ -15558,6 +15558,21 @@ try{if(typeof tradeComments==='function'){const _tc849=tradeComments;tradeCommen
   if(rg>=1&&(mvp>=1||peak>=6))put849(out,[`반지에 ${mvp?'MVP까지':'리그 지배한 시즌까지'} 이건 이견 없는 영결이다`,`${num}번 영결 반대하는 사람 아무도 없다 ㅋㅋ`],['ㅇㅈ 당연한 거','레전드 대접 제대로 해 줬다'],{pos:1,rp:.6});
   else put849(out,[rg===0?'반지 하나 없는데 영결은 좀 이르지 않냐':'리그를 지배한 시즌 하나 없이 누적만으로 영결은 좀…',`${num}번 영결이면 무게감 떨어진다는 사람들 나오겠다 ㅋㅋ`],
     ['우승 못 하는 팀에 끝까지 남아 준 게 얼마나 고마운 건데','꾸준함도 재능이다 누적도 실력이고','우승이나 하고 싸워라 ㅋㅋ','애매하면 투표로 정하든가 ㅋㅋ'],{pos:2,rp:.95})}catch(e){}return out}}
+
+/* ---------- ㉘ 메이저 대형 계약 ---------- */
+{const _cmMB849=comments;comments=function(tone,x){let out=_cmMB849.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!ME||S.me!==ME||String(tone||'')!=='mlbBig'||S._mb849===S.y)return out;S._mb849=S.y;const w=typeof lastWAR==='function'?lastWAR():0,a=age();
+  const L=['메이저에서 이 금액이면 한국 야구 역사에 남는 계약이다','계약 총액 보고 0 개수 세다가 포기함 ㅋㅋ','이 계약 기간 동안 아프지만 말자 그게 제일 중요하다'];
+  L.push(w>=3?'현지 팬들도 이 계약은 인정하는 분위기':'계약은 축하하는데 이제 실력으로 증명해야 한다');if(a>=33)L.push('이 나이에 이 계약이면 구단이 진짜 믿는다는 거다');
+  put849(out,L,['국뽕 한 사발','부럽다 진짜','이제 몸값 하자'],{pos:2,rp:.5})}catch(e){}return out}}
+
+/* ---------- ㉙ 전역 (상무·경찰청·현역) ---------- */
+try{if(typeof discharge==='function'){const _dc849=discharge;discharge=function(){try{S._dis849=S.mil&&S.mil.type||''}catch(e){}return _dc849.apply(this,arguments)}}}catch(e){}
+{const _cmMR849=comments;comments=function(tone,x){let out=_cmMR849.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME||S.stage!=='pro'||String(tone||'')!=='return'||S._mr849===S.y)return out;S._mr849=S.y;const ty=S._dis849||'',gn=g849();
+  const L=['전역 축하한다!! 이제 군 문제 끝났다','말년 병장 짤 이제 안녕 ㅋㅋ','전역 버프 받고 커리어하이 가자'];
+  if(S.pro&&S.pro.league==='MLB'){}else if(ty==='상무')L.push('상무에서 퓨처스 씹어먹고 왔다 이제 1군 접수하자','상무 다녀오면 터진다는 공식 이번에도 가자');
+  else if(ty==='경찰청')L.push('경찰 야구단에서 꾸준히 뛰고 왔다 감각은 살아 있을 듯');
+  else if(ty==='현역')L.push('현역 다녀왔으면 감각 찾는 데 시간 좀 걸린다 기다려 주자',`${gn} 군대에서 몸 만들어 왔다 이제 야구만 하면 된다`);
+  put849(out,L,['충성 ㅋㅋ','고생했다 진짜','이제 야구만 하자'],{pos:1,rp:.5})}catch(e){}return out}}
 
 </script>
 
