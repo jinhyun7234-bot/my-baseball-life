@@ -2720,7 +2720,7 @@ Object.assign(ACT,{
   gift(a){if(S.money<a.c){S.gf.aff=cl(S.gf.aff-5,0,100);return'돈이 모자라서 준비를 못 했다… 서운해하는 눈치다.'}S.money-=a.c;S.gf.aff=cl(S.gf.aff+a.d,0,100);return a.d>15?`${jo(S.gf.n,'이','가')} 감동해서 울먹였다. 관계가 더 단단해졌다.`:`${jo(S.gf.n,'이','가')} 손편지를 보고 활짝 웃었다.`},
   gfaff(a){if(S.gf)S.gf.aff=cl(S.gf.aff+a.d,0,100);return a.d<0?'서운한 기색이 역력하다.':''},
   marry(a){if(S.money<a.cost)return'모아둔 돈이 부족하다. 조금 더 준비하자.';S.money-=a.cost;S.married={n:S.gf.n,y:S.y};S.gf=null;ME.hid.men=cl(ME.hid.men+4,20,80);news(`${S.married.n} 씨와 결혼.`);celebrate('trophy','결혼',`${S.y} · ${S.married.n} 씨와 백년가약`);
-    if(S.rel.fame>=20)article(`${ME.name}, ${S.married.n} 씨와 화촉`,pick([`${jo(ME.name,'이','가')} 연인과 결혼식을 올렸다. 동료 선수들이 대거 참석해 축하했다.`,`${jo(ME.name,'이','가')} ${[11,12,1,2].includes(S.m)?'비시즌에 ':'시즌 중 휴식일을 이용해 '}백년가약을 맺었다. 가족과 가까운 지인만 초대한 조용한 식이었다.`,`${jo(ME.name,'이','가')} 결혼식을 올렸다. 팀 동료들이 축가를 불러 하객들의 박수를 받았다.`]),'wedding',{});return'평생의 편이 생겼다. 마음이 한결 든든하다. (멘탈 +4)'}});
+    if(S.rel.fame>=20)article(`${ME.name}, ${S.married.n} 씨와 화촉`,pick([`${jo(ME.name,'이','가')} 연인과 결혼식을 올렸다. 동료 선수들이 대거 참석해 축하했다.`,`${jo(ME.name,'이','가')} ${S.stage==='mil'?'군 복무 중 휴가를 내 ':[11,12,1,2].includes(S.m)?'비시즌에 ':'시즌 중 휴식일을 이용해 '}백년가약을 맺었다. 가족과 가까운 지인만 초대한 조용한 식이었다.`,S.stage==='mil'?`${jo(ME.name,'이','가')} 휴가를 받아 결혼식을 올렸다. 옛 팀 동료들이 축가를 불러 하객들의 박수를 받았다.`:`${jo(ME.name,'이','가')} 결혼식을 올렸다. 팀 동료들이 축가를 불러 하객들의 박수를 받았다.`]),'wedding',{});return'평생의 편이 생겼다. 마음이 한결 든든하다. (멘탈 +4)'}});
 CM.love=['축하합니다 ㅎㅎ','연애하면 성적 떨어지는 거 아님? ㅋㅋ','선남선녀네','야구나 잘해라 ㅋㅋㅋ','결혼까지 가자','부럽다 진짜','이제 홈런 치고 하트 세리머니 각','행복하면 야구도 잘 되더라','형수님 직관 오시면 무조건 홈런','사생활은 존중합시다','이 커플 응원함','아 내 최애가…','오늘부로 탈덕합니다 ㅠ (농담)','안정 찾으면 더 잘할 듯','분유 버프 가즈아','아빠 되면 다들 잘하더라','가장의 무게 ㄷㄷ'];
 {const _c2=comments;comments=function(tone,x){if(tone!=='love')return _c2(tone,x);const out=[];const pool=CM.love.filter(t=>!seenHas(t)),n=Math.min(pool.length,cmCount('award'));
   for(let i=0;i<n;i++){const t=pool.splice(ri(0,pool.length-1),1)[0];seenAdd(t);out.push({nk:pick(NICKS),fl:R()<.5&&S.pro?TEAMS[S.pro.team].nick:null,t,up:ri(5,60),dn:ri(0,8),ago:pick(AGO),re:[]})}return out.sort((a,b)=>b.up-a.up)}}
@@ -5233,7 +5233,7 @@ function famLines(tone,x){const nm=ME.name,gn=giv(nm),kid=(x&&x.kid)||'',kidG=ki
   if(tone==='famDay')return['아이랑 같이 시구 너무 귀엽다 ㅠㅠ',kid?`${kidG} 시구폼 벌써 아빠 닮았네 ㅋㅋ`:'시구폼 벌써 아빠 닮았네 ㅋㅋ',`${dad} 시구 훈훈 그 자체`,'아빠 유니폼 입은 거 봐 심장 아파 🥹',kid&&T?`${kidG} 미래의 ${T} 1라운드 지명 예약`:'미래의 1라운드 지명 예약 ㅋㅋ',`${gn} 표정 봐 완전 아빠 미소`,'이런 기사 너무 좋다 힐링된다',
     '패밀리 데이 레전드 짤 나왔다',kid?`${kidG} 공 던지는 거 보고 관중석 난리남 ㅋㅋ`:'애기 공 던지는 거 보고 관중석 난리남 ㅋㅋ','유전자 어디 안 간다 ㅋㅋ 2세 야구선수 가자',`${gn}도 아빠 다 됐네 ㅠㅠ`,'애기가 마운드에서 손 흔드는 거 보고 울었다','오늘만큼은 성적 얘기 금지 그냥 귀엽다',kid?`${kidG} 사인 미리 받아둬야겠다 ㅋㅋ`:'애기 사인 미리 받아둬야겠다 ㅋㅋ','귀여움이 시구를 이겼다'];
   if(tone==='baby')return[`${(x&&x.sex)==='딸'?'득녀':'득남'} 축하해요!!`,kid?`이름 ${kid} 너무 예쁘다`:'아기 이름 예쁘게 지어주세요','분유 버프 기대한다 ㅋㅋ',`아빠 된 ${gn} 축하해!`,'이제 책임감 생겨서 더 잘할 듯','애기 건강하게 크길 🙏',`${bab} 예약 ㅋㅋㅋ`,'산모랑 아기 모두 건강하길 바랍니다','출산 휴가 충분히 쓰고 와라','아기 백일 사진 기다립니다 ㅋㅋ','홈런 치면 이제 젖병 세리머니 각'];
-  return['결혼 축하합니다!!','행복하게 잘 살아요 💍','동료들 축가 영상 올려주세요 ㅋㅋ','결혼 버프 받고 커리어하이 가자','신혼여행은 비시즌에 제대로 다녀오길',`${gn} 장가갔네 ㅠㅠ 축하해`,T?`${T} 경사다 경사`:'경사다 경사','이제 안정감 생겨서 더 잘할 듯','두 분 오래오래 행복하세요','결혼식 사진 보니까 둘 다 웃음이 너무 예쁨']}
+  return['결혼 축하합니다!!','행복하게 잘 살아요 💍','동료들 축가 영상 올려주세요 ㅋㅋ','결혼 버프 받고 커리어하이 가자',S.stage==='mil'?'신혼여행은 전역하고 제대로 다녀오길':'신혼여행은 비시즌에 제대로 다녀오길',`${gn} 장가갔네 ㅠㅠ 축하해`,T?`${T} 경사다 경사`:'경사다 경사','이제 안정감 생겨서 더 잘할 듯','두 분 오래오래 행복하세요','결혼식 사진 보니까 둘 다 웃음이 너무 예쁨']}
 {const _c27=comments;comments=function(tone,x){if(!['famDay','baby','wedding'].includes(tone))return _c27(tone,x);const out=[];try{const L=famLines(tone,x).filter(t=>!seenHas(t)),n=Math.min(L.length,ri(5,7));
   for(let i=0;i<n;i++){const t=L.splice(ri(0,L.length-1),1)[0];seenAdd(t);out.push({nk:pick(NICKS),fl:S.pro&&S.pro.league==='KBO'&&R()<.5?TEAMS[S.pro.team].nick:null,t,up:Math.round(ri(30,300)*(1+S.rel.fame/20)),dn:ri(0,3),ago:pick(AGO),re:R()<.25?[{nk:pick(NICKS),t:pick(['ㄹㅇ 너무 귀엽다','222','축하축하','훈훈하다 진짜']),up:ri(5,80)}]:[]})}out.sort((a,b)=>b.up-a.up)}catch(e){}return out}}
 
@@ -5362,8 +5362,11 @@ function vRegEnd(q){return`<div class="srec"><div class="srec-ey">${q.y} REGULAR
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act="regok"]');if(!b||!S)return;e.stopPropagation();const q=nextQ();if(q&&q.type==='regend'){S.queue.splice(S.queue.indexOf(q),1);save();afterQueue();ui.anim=true;render();window.scrollTo(0,0)}},true);
 /* 끝내기 홈런 기사 + 전용 댓글 */
 {const _ft=feat;feat=function(t,big){_ft(t,big);try{if(/끝내기 홈런/.test(t)&&S.stage==='pro'&&S.pro&&!isP()&&S.walkArtY!==S.y+':'+S.m){S.walkArtY=S.y+':'+S.m;article(`${ME.name}, 9회말 끝내기 홈런! 경기를 끝냈다`,pick([`${jo(ME.name,'이','가')} 끝내기 아치를 그리며 홈 팬들을 열광시켰다.`,`${ME.name}의 한 방에 경기장이 뒤집혔다. 동료들이 홈 플레이트에서 물세례를 퍼부었다.`,`상대 마무리의 실투를 놓치지 않았다. 타구는 그대로 담장을 넘어갔다.`,`${jo(ME.name,'은','는')} 베이스를 돌며 헬멧을 하늘로 던졌다.`]),'walkoff',{})}}catch(e){}}}
-function walkLines(){const nm=ME.name,gn=giv(nm),mlb=S.pro.league==='MLB',o=['본인도 엄청 짜릿했을 듯 ㅋㅋㅋ',`${nm}..누가 그를 의심했는가`,`그냥 끝내기가 아니라 "9회말 2사 역전 끝내기 투런"이라고 말해줘야 시청자들이 좋아합니다....`,'해설자가 기대하던 그대로 터진 끝내기...몇 번을 봐도 소름',
+function walkLines(){const nm=ME.name,gn=giv(nm),mlb=S.pro.league==='MLB',o=['본인도 엄청 짜릿했을 듯 ㅋㅋㅋ',`${nm}..누가 그를 의심했는가`,`그냥 홈런이 아니라 "9회말 끝내기 홈런"이라고 또박또박 말해줘야 시청자들이 좋아합니다....`,'해설자가 기대하던 그대로 터진 끝내기...몇 번을 봐도 소름',
   `모든 홈런이 ㅈㄴ 중요할 때 해주는 거네ㅋㅋ 팀 첫 점수, 끝내기, 역전포 등등 공갈포가 아니라 클러치 상황에 필요한 점수 내는 홈런ㅋㅋ`,'이 맛에 야구 본다 끝내기는 못 참지','끝내기 직후 더그아웃 뛰쳐나오는 거 보고 소리 질렀다',`${gn} 타석에서 왠지 칠 것 같더라`];
+  o.push('끝내기 홈런은 언제 봐도 도파민 폭발',`${gn} 홈 들어올 때 물세례 각도 완벽했다 ㅋㅋ`,'야구는 9회말부터라는 말이 괜히 있는 게 아니다','상대 마무리 고개 숙이는 거 보고 짠했는데 통쾌하다 ㅋㅋ','이 맛에 9회말까지 TV 못 끈다','끝내기 치고 헬멧 던지는 거 국룰 ㅋㅋ',`오늘 MVP는 그냥 ${gn}`,`${gn} 끝내기 짤 벌써 돌아다닌다 ㅋㅋ`,'중계 캐스터 목 나간 거 들었냐 ㅋㅋ','경기 끝났는데도 관중들이 안 나감','집에 가려고 일어났다가 다시 앉았다 ㅋㅋ','9회까지 채널 안 돌린 사람만 승자다');
+  if(mlb)o.push(`현지 중계에서 "${nm}! Walk-off!" 외치는 거 소름`,`${gn} 끝내기에 현지 팬들 기립박수 ㄷㄷ`,'아침에 끝내기 보고 하루 시작하는 행복','현지 캐스터 발음은 좀 그래도 텐션은 최고 ㅋㅋ','메이저에서 끝내기 홈런이라니 이게 국위선양이지');
+  else o.push('퇴근하고 하이라이트만 열 번 돌려 봤다',`${gn} 응원가 한 번 더 불러 주고 퇴근했다 ㅋㅋ`,'오늘 직관 간 사람들 막차 놓쳐도 웃으면서 갔을 듯','관중석 다 같이 방방 뛰는 거 봤냐 ㅋㅋ');
   if(ME.body==='거구')o.push(`확실히 스타성도 있고 붙임성 좋아가지고 덩치도 좋아서 ${mlb?'양키들한테도 ':''}안 꿇리고 끝내기할 때나 홈런 칠 때 뿌우웅~ 하는 소리 되게 좋다`);return o}
 /* MLB에서 잘한 타자 */
 function mlbBatLines(){const nm=ME.name,gn=giv(nm),{b}=yearTot(S.y,['MLB']),yrs=new Set(S.rows.filter(r=>r.lv==='MLB'&&r.b.PA).map(r=>r.y)).size,o=[];
@@ -6814,7 +6817,7 @@ const CV={
 };
 function cvYearW(){try{return S.rows.filter(r=>r.y===S.y&&S.pro&&r.lv===S.pro.league).reduce((a,r)=>a+rowWAR(r),0)}catch(e){return 0}}
 function cvStreak(fn){let s=0;for(let y=S.y;y>=S.y-15;y--){const rs=S.rows.filter(r=>r.y===y&&(r.lv==='KBO'||r.lv==='MLB'));if(!rs.length)break;if(fn(rs))s++;else break}return s}
-{const _c108=comments;comments=function(tone,x){let out=_c108(tone,x);try{if(!S||!ME||(x&&(x.ps||x.intl)))return out;if(['love','faBig','franMove','homeBack','kmove','legend'].includes(tone))return out;
+{const _c108=comments;comments=function(tone,x){let out=_c108(tone,x);try{if(!S||!ME||(x&&(x.ps||x.intl)))return out;if(['love','faBig','franMove','homeBack','kmove','legend','walkoff'].includes(tone))return out;
   const P=isP(),gn=giv(ME.name),a=age(),yrs=proYears(),cand=[];const C=(k,p)=>{if(CV[k])cand.push([k,p||1])};
   if(S.stage==='hs'){const o=ovrE(),wt=typeof weakTools==='function'?weakTools().length:0,hp=typeof careerPerf==='function'?careerPerf('hs'):0;if(o>=46||hp>=4)C('hsStar',2);if(hp>=5)C('hsDom');if(wt>=1&&o>=42)C('hsMixed');if(hp<=0&&o>=44)C('hsSlump')}
   else if(S.stage==='pro'&&S.pro&&!S.pro.dev){const lg=S.pro.league,{b,p}=yearTot(S.y,[lg]),w=cvYearW(),mlb=lg==='MLB',enough=P?p.outs>=150:b.PA>=200;if(!enough)return out;
@@ -12714,7 +12717,7 @@ function srCm685(){const out=[];try{if(!S||!S.pro||!ME||S.stage!=='pro')return o
       else if(bad)cat('mlb',[bigC?[`${MC.eokT.toLocaleString()}억 계약 첫해가 이러면 먹튀 소리 각오해야 한다`,[rr(`나도 욕 먹고 ${half.toLocaleString()}억만 벌고 싶다`,'욕먹는 거랑 별개로 돈은 꼬박꼬박 찍힘 ㅋㅋ')]]:null,['첫해는 적응기라 치자 2년차가 진짜다',[rr('메이저 공에 눈 익으면 달라진다')]]]);
       else cat('mlb',[['메이저 첫해 버틴 것만으로도 의미 있다 내년엔 한 단계 더',[rr('첫해 무난하면 합격')]]])}
     else if(mY>=2&&bigC){if(good&&mY<=4&&S._ovp686!==MC.tot+':'+S.pro.tname)cat('mlb',[['이제 누가 이 계약 오버페이라고 하냐 혜자 계약 인정',[rr('처음에 오버페이라던 사람들 조용함 ㅋㅋ')]]]);else if(bad)cat('mlb',[['먹튀 소리 그만 들으려면 남은 계약 기간에 증명해야 된다',[rr(`나도 욕 좀 먹고 ${half.toLocaleString()}억만 벌고 싶다`)]]])}}
-  if(mlb){const aq=yearTot(y,['AAA']);if(!P&&aq.b.PA>=100&&opsN(aq.b)>=.85&&b.PA>=60&&oN<.65)cat('aaaa',[['트리플A는 폭격하고 메이저에선 침묵 AAAA 딱지 떼려면 내년이 진짜다',[rr('콜업 타령은 메이저에서 보여 주고 하자')]]]);
+  if(mlb){const aq=yearTot(y,['AAA']);if(!P&&aq.b.PA>=100&&opsN(aq.b)>=.85&&b.PA>=60&&oN<.65&&age()<=31&&new Set(S.rows.filter(r=>r.lv==='MLB'&&r.b&&r.b.PA>=200).map(r=>r.y)).size<=2)cat('aaaa',[['트리플A는 폭격하고 메이저에선 침묵 AAAA 딱지 떼려면 내년이 진짜다',[rr('콜업 타령은 메이저에서 보여 주고 하자')]]]);
     else if(P&&aq.p.outs>=60&&eraN(aq.p)<=3&&p.outs>=30&&eN>=5.5)cat('aaaa',[['트리플A는 지배하고 메이저에선 난타 AAAA 소리 안 들으려면 내년이 진짜다',[rr('메이저 타자들은 실투를 안 놓친다')]]])}
   /* 솔리드 · 고점으로 세탁 · 반짝 후 원점회귀 (v686) */
   {const w3=[y-2,y-1].map(wOf).concat([w]),lo=Math.min(...w3),hi=Math.max(...w3);if(enough&&yrs>=4&&lo>=1.5&&hi<=4.5&&hi-lo<=1.6)cat('solid',[['항상 이 정도는 해 주겠지 하면 딱 그만큼 해 준다 진정한 솔리드',[rr('그 이상도 이하도 없는 게 제일 어려운 거임')]]]);
@@ -12731,7 +12734,7 @@ function srCm685(){const out=[];try{if(!S||!S.pro||!ME||S.stage!=='pro')return o
     if(full){if(!P)g1([[b.HR>=8||(b.SB||0)<20?`타율 ${avg(b)} ${b.HR}홈런 ${b.RBI}타점 1년 내내 제 몫 다 했다`:`타율 ${avg(b)} ${b.SB}도루 1년 내내 제 몫 다 했다`,[rr('결산표 보기만 해도 든든하다')]],[b.HR>=12||b.RBI>=70?`결산표 보니까 ${b.HR}홈런 ${b.RBI}타점 올해도 든든했다`:(b.SB||0)>=25?`결산표 보니까 도루 ${b.SB}개에 수비까지 올해도 든든했다`:`결산표 보니까 타율 ${avg(b)}에 출루까지 올해도 든든했다`,[rr('숫자가 다 말해 준다')]],b.RBI>=90?[`${b.RBI}타점이면 중심타선 역할 확실히 했다`,[rr('찬스 때 믿음이 갔다')]]:null,b.HR>=25?[`${b.HR}홈런 쳐 주는 타자가 있으니까 1년이 편했다`,[rr('한 방 있는 타자는 존재만으로 든든함')]]:null]);else if(SPp)gen.push(eN<=3?[`${p.W}승 ERA ${era(p)} 1년 내내 에이스 노릇 제대로 했다`,[rr('선발 걱정 없는 1년이었다')]]:[`${p.W}승 ERA ${era(p)} 1년 동안 로테이션 지켜 준 것만으로 고맙다`,[rr('선발 걱정 없는 1년이었다')]]);else if((p.SV||0)>=20)g1([[`${p.SV}세이브 뒷문 걱정 없는 1년이었다`,[rr('9회가 제일 편했다')]],[`${p.SV}세이브면 마무리 역할은 확실히 했다`,[rr('9회만 되면 마음이 놓였다')]],[`9회에 ${gn} 올라오면 채널 고정이었다 ${p.SV}세이브 고생했다`,[rr('끝판 대장 인정')]]]);else if((p.HLD||0)>=15)g1([[`${p.HLD}홀드 필승조로 1년 내내 고생했다`,[rr('불펜은 티가 안 나서 더 고맙다')]],[`${p.HLD}홀드… 묵묵히 7·8회 지킨 1년이었다`,[rr('홀드는 기록보다 가치가 크다')]],[`필승조 ${p.HLD}홀드면 팀 승리의 절반은 이 선수 몫`,[rr('ㄹㅇ 숨은 MVP')]]])}
     if(mlb)g1([['올해도 아침마다 하이라이트 챙겨 본 보람이 있는 시즌이었다',[rr('새벽 야구 1년 동안 행복했다')]],['현지에서도 이름값 제대로 한 1년이었다',[rr('이제 현지 팬들도 다 안다')]],['새벽마다 알람 맞춰 본 보람이 있다 올해도 고생했다',[rr('덕분에 1년 내내 수면 부족 ㅋㅋ')]],['현지 중계에서 이름 불릴 때마다 뿌듯했던 1년',[rr('발음 점점 정확해지는 것도 웃김 ㅋㅋ')]]])}
   else if(bad&&!K.length)g1([['올해는 그냥 지우자 내년에 반등하면 된다',[rr('겨울에 뭐라도 바꿔 와라')]],['이런 시즌도 있는 거지 내년엔 다를 거다',[rr('믿는다 진짜')]]]);
-  else if(!bad&&!hero&&!enough)g1([['출전 기회가 많지 않았던 1년 내년엔 자리부터 잡자',[rr('기회만 오면 된다')]],['보여 줄 시간이 부족했던 시즌 내년엔 풀타임으로 보고 싶다',[rr('몸 관리부터')]]]);
+  else if(!bad&&!hero&&!enough)g1(age()>=37?[['출전은 줄었어도 더그아웃에서 제 몫 한 1년 마지막까지 멋있게 가자',[rr('베테랑은 존재만으로 힘이 된다')]],[P?'이제 경기 수보다 공 하나하나가 소중한 나이다':'이제 경기 수보다 한 타석 한 타석이 소중한 나이다',[rr('끝까지 응원한다')]]]:[['출전 기회가 많지 않았던 1년 내년엔 자리부터 잡자',[rr('기회만 오면 된다')]],['보여 줄 시간이 부족했던 시즌 내년엔 풀타임으로 보고 싶다',[rr('몸 관리부터')]]]);
   else if(!bad&&!hero){const M=[['딱 기대한 만큼은 해 줬다',[rr('평타는 쳤다')]],['크게 튄 것도 크게 망한 것도 없는 시즌 내년이 중요하다',[rr('내년엔 한 단계만 더')]],['아쉬운 구간도 있었지만 시즌 전체로 보면 나쁘지 않았다',[rr('기복만 줄이자')]],['이 정도면 밥값은 했다 내년엔 더 보여 줘',[rr('ㅇㅇ 내년이 진짜')]],['기복만 줄이면 더 잘할 수 있는 선수다',[rr('좋을 때는 진짜 좋음')]]];g1(M);if(R()<.5)g1(M)}
   if(enough&&R()<.45){const gd=w>=(mlb?5:6)?'S':w>=(mlb?3.5:4)?'A':w>=(mlb?1.8:2)?'B':w>=.5?'C':'F',why={S:'말이 필요 없다',A:'기대치 그 이상',B:'제 몫은 했다',C:'애간장 태운 1년',F:'할 말이 없다 내년에 보자'}[gd],dis={S:['S 아니고 SS 줘야 됨 ㅋㅋ','이건 S 인정'],A:['S 줘도 되지 않냐','A면 짜게 줬다'],B:['B+ 정도는 줘라','딱 B 맞음'],C:['C도 후하게 준 거다','C 맞다 내년엔 B 가자'],F:['F는 너무했다 D는 줘라','F 인정 ㅋㅋ']}[gd];gen.unshift([`${y} 결산 평점 매기면 ${gn}(${gd}) ${why}`,[rr(pick(dis))]])}
   if(!K.length&&!gen.length)gen.push(['1년 동안 고생 많았다 내년에 또 보자',[]]);
@@ -14818,7 +14821,7 @@ function hofLikely841(){try{const w=careerTot(PRO).w,sc=hofScore(w),role=isP()?(
    · 메이저 경기는 한국 시간으로 아침·새벽 → '오늘 치맥' 대신 출근길·아침 반응
    · 국제대회(대표팀)·KBO 시절 얘기·이적/복귀 기사는 그대로
    · 골드글러브는 수비만 보는 상 → 메이저에선 '골글은 타격도 보잖아' 류 X, 방금 받은 상을 '줘야 하는 거 아니냐' X */
-{const KEEP=/KBO|크보|한국에서|예전|시절|돌아|복귀|친정|그리운|그립|생각난다|그때/,
+{const KEEP=/KBO|크보|한국에서|예전|시절|친정|그리운|그립|생각난다|그때|한국 (돌아|복귀)|국내 (복귀|유턴)/,
   TONEKEEP=/^(abroad|mlbBig|move|kmove|faBig|faFair|legend|franMove|retire|return|tour|hof|jersey|retNum)/,
   MAP=[[/오늘 치맥 개맛있었겠네/,()=>pick(['출근길 지하철에서 하이라이트 보다가 소리 지를 뻔','아침밥 먹다가 숟가락 떨어뜨림 ㅋㅋ','회사에서 몰래 보다가 팀장한테 걸릴 뻔 ㅋㅋ','오전 반차 쓴 보람이 있다','아침부터 도파민 풀충전'])],
    [/집에서 혼자 응원가 부름/,()=>pick(['중계 보다가 혼자 소리 질러서 옆집에서 벽 침','아침부터 혼자 박수 치고 난리 남','이불 속에서 소리 죽여 가며 봄 ㅋㅋ'])],
@@ -14886,6 +14889,19 @@ function hofLikely841(){try{const w=careerTot(PRO).w,sc=hofScore(w),role=isP()?(
 /* · 고졸 지명 포지션 균형 3차 (W11~W13 1,960명): 1라운드 지명률 2루수 26%·우익수 27% ↔ 1루수 45%·셋업 49% 차이를 줄임
      지명이 덜 되던 2루수·우익수는 고교 튀는 반기도 조금 더 (10%→15%, 12%→16%) */
 try{const D=DRA836;Object.assign(D,{C:D.C+.6,'1B':D['1B']-1.2,'2B':D['2B']+1.0,'3B':D['3B']+.4,SS:D.SS-.3,CF:D.CF-.3,RF:D.RF+1.1,SP:D.SP-.4,RP:D.RP-.6});Object.assign(HOTP696,{'2B':.15,RF:.16})}catch(e){}
+/* · 끝내기·홈런 기사에 '파워는 높은데 홈런이 안 나오네'·'운이 좀 없는 시즌'·'중립기어' 같은 엇나간 시즌 평가 X */
+{const HRH=/끝내기 홈런|끝내기 아치|홈런!|호 홈런|통산 \d+홈런|그라운드 홈런|만루 홈런|연타석 홈런|사이클링/,NOHR=/홈런이 안 나오|장타가 (해마다 )?줄|장타 툴이 너무 없|웨이트는 (안 하|하는 거)|파워 훈련 손 놓은|펜스 앞에서 잡히|담장 근처도 못|공갈포/,
+  WOFF=/운이 좀 없는 시즌|폼은 좋은데 결과가 안|기복만 잡으면|좋은 날 나쁜 날|장점 단점 확실한|장점은 확실한데 약점도|수비는 좀 더 다듬어야|중립기어|한 시즌 풀로 봐야|아직 평가하기|아직 평가하긴/;
+ const _arHR841=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arHR841.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(!a||a.id===id0||!Array.isArray(a.cm))return r;const hd=String(head||''),T=String(tone||'');
+   const hr=HRH.test(hd)||T==='walkoff',wo=T==='walkoff'||/끝내기/.test(hd);if(!hr&&!wo)return r;
+   const bad=t=>{t=String(t||'');if(hr&&NOHR.test(t)&&!/공갈포가 아니라/.test(t))return true;if(wo&&WOFF.test(t))return true;return false};
+   a.cm=a.cm.filter(c=>!(c&&bad(c.t)));a.cm.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(w=>!bad(w&&w.t))})}catch(e){}return r}}
+/* · 안티 댓글 '국대 얘기는 좀 오버다'는 아직 국대 얘기가 나올 만한 젊은 KBO 선수에게만 (39세 메이저리거 수상 기사 X) */
+{const _cAT841=comments;comments=function(tone,x){let out=_cAT841.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME)return out;let ok=false;try{ok=age()<=29&&S.pro&&S.pro.league==='KBO'}catch(e){}if(ok)return out;
+   out=out.filter(c=>!(c&&/국대 얘기는 좀 오버다/.test(String(c.t||''))))}catch(e){}return out}}
+/* · 고교·대학 선수 기사에 '2군에서 좀 더 키우면' 같은 프로 2군 얘기 X */
+{const _cAM841=comments;comments=function(tone,x){let out=_cAM841.apply(this,arguments);try{if(!Array.isArray(out)||!S||!(S.stage==='hs'||S.stage==='univ'))return out;const B=/2군에서|2군 가서|퓨처스에서|1군 (콜업|엔트리|말소)/;
+   out=out.filter(c=>!(c&&B.test(String(c.t||''))));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!B.test(String((r&&r.t)||'')))})}catch(e){}return out}}
 
 </script>
 
