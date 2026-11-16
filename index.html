@@ -14413,7 +14413,7 @@ function gsLines840(x){const s=gsit840(x);if(!s)return[];const P=isP(),o={myR:s.
 const CALM840=/선생님 그건 좀|진정하세요|진정해|워워|선 넘었|흥분 좀/,OVER840=/그건 좀 오바고/;
 const EXT840=/(은퇴(해|시켜|하자|해라)|방출|트레이드 ?(해|시켜|보내)|팔아(라|버려)|2군 (보내|가라)|꺼져|나가라|짐 싸|역대 (최고|최강|1위)|GOAT|고트|신이다|신 그 자체|사람이냐|사람 아니|인간이 아니|명전 확정|명예의 전당 (확정|직행)|영구결번 (확정|각)|MVP (확정|예약)|무조건 (MVP|명전|우승)|ㅅㅂ|개(못|같|빡)|폐급|먹튀|노답|답이 없|최악|빼라|쓰지 ?마|경질|야구 (접|그만)|환불|해체|미친놈|미친 놈|돌았|정신 나|다 팔|메이저 (씹어|박살|정복)|1황|원탑|리빙 레전드|레전드 확정|4할|60홈런|사랑한다|결혼해|업고 다녀|내 새끼|우리 아들|군대 대신|역적|국대 (빼|박탈)|씹어먹)/,EXCI840=/!{4,}|ㅋ{8,}|ㅠ{5,}|만세!!|소리 질렀/;
 const HYPE840=/미쳤|MVP|역대|최고|레전드|메이저|명전|우승|무조건|확정|미친|괴물|사기|원탑|천재|!|ㅋㅋㅋ|대박|ㄷㄷ|지배|씹어/;
-const PSW840=/가을만 되면 (작아|사라지|쫄|실종|맛이 가|손이 떨)|가을 DNA(가|는|이)? ?없|정규시즌용|큰 경기 (약한|울렁증|쫄보)|큰 경기에 약|가을에 약|가을 울렁증|새가슴|가을만 되면 무관|가을만 되면 작/;
+const PSW840=/가을만 되면 (작아|사라지|쫄|실종|맛이 가|손이 떨)|가을 DNA(가|는|이)? ?없|정규시즌용|큰 경기 (약한|울렁증|쫄보)|큰 경기에 약|가을에 약|가을 울렁증|새가슴|가을만 되면 무관|가을만 되면 작|큰 경기만 (오면|되면) 작아|큰 경기에서 돈값을 못|큰 경기 가면 작아/;/* v842n: '큰 경기만 오면 작아지는 거 또 나왔다'도 가을 통산 약할 때만 */
 const PSS840=/가을 (사나이|남자)|가을의 남자|가을만 되면 (눈|타격폼|눈빛|방망이가 달라|온몸|뒷문|불이|다른 사람)|가을 DNA (확실|인정|는 국적)|큰 경기 체질|포스트시즌 전용/;
 const PSNOW840=/이번 가을|올가을|올 가을|이번 포스트시즌|시리즈 MVP|이번 시리즈|가을야구 (진행|중)/;
 function psCar840(){const r={pa:0,ab:0,h:0,hr:0,bb:0,tb:0,o:0,ra:0,yrs:0};try{const P=S.post||{},b=P.b||{},p=P.p||{};r.pa=b.PA||0;r.ab=b.AB||0;r.h=b.H||0;r.hr=b.HR||0;r.bb=b.BB||0;r.tb=(b.H||0)+(b.D||0)+2*(b.T||0)+3*(b.HR||0);r.o=p.outs||0;r.ra=p.R||0;
@@ -15406,14 +15406,14 @@ function flow849(x){try{const L=x&&x.lsc,me=x&&x.mySide;if(!Array.isArray(L)||!A
   const T=String(tone||'');if(T!=='ring'||S._lw849===S.y)return out;const d=S.drought;if(!(typeof d==='number'&&d>=6))return out;S._lw849=S.y;const y0=S.y-d,nick=TEAMS[S.pro.team].nick;
   const L=[`${Math.min(S.y-1,y0+ri(1,Math.max(1,d-2)))}유입인데 우승은 처음 본다 ㅠㅠ 저점매수 성공`,`${y0}년 우승 때 동네 사거리마다 현수막 걸렸던 거 기억나는데 그게 ${d}년 전이라니`,
     `우승이 이렇게 기쁜 거였네 ${d}년 만이라 까먹고 있었다`,'암흑기 거치면서 우승 다시는 못 볼 줄 알았다 이런 날이 오는구나','입문 연도별로 눈물 버튼 다 다르다 ㅋㅋ 다들 몇 유입이냐','성불합니다 ㅠㅠ 이제 여한이 없다'];
-  if(d>=10)L.push(`중학생 때 ${y0}년 우승 보고 성인 되고 대학도 졸업했다 ${d}년 너무 길었다 ㅠ`);
+  if(d>=10)L.push(d<16?`중학생 때 ${y0}년 우승 보고 성인 되고 대학도 졸업했다 ${d}년 너무 길었다 ㅠ`:d<26?`중학생 때 ${y0}년 우승 보고 결혼하고 애까지 낳았다 ${d}년 너무 길었다 ㅠ`:`${y0}년 우승 때 중학생이던 내가 이제 애가 중학생이다 ${d}년 너무 길었다 ㅠ`);/* v842n: 기다린 햇수에 맞춰 */
   if(put849(out,L,['나도 운다 ㅠㅠ','다들 고생했다 진짜','이 맛에 버텼다'],{pos:2,rp:.6})&&R()<.7)
     put849(out,[`${d}년 만의 우승 짤에 소원 빌면 이루어진다 수능 대박 기원 ㅋㅋ`,`${nick} ${d}년 만의 우승 기념 소원 빌고 간다 취업하게 해 주세요`,'이 글에 소원 빌면 다 이루어진다 가족 모두 건강하게 해 주세요 ㅠ'],['합격하게 해 주세요','여친 생기게 해 주세요 ㅋㅋ','주식 반등하게 해 주세요','가족 다 건강하게 해 주세요'],{pos:4,rp:.9})}catch(e){}return out}}
 
 /* ---------- ⑱ 코시 1차전 지고 우승 · S급 논쟁 · '해 준 게 얼만데' ---------- */
 {const _cmMX849=comments;comments=function(tone,x){let out=_cmMX849.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!ME||S.me!==ME||!S.pro)return out;const T=String(tone||''),gn=g849();
   if(T==='ring'&&x&&x.clinch&&S._ks1849!==S.y){const pl=(S._psLog849||[]).filter(z=>z.y===S.y&&z.st==='KS');if(pl.length&&pl[0].gn===1&&pl[0].win===false){S._ks1849=S.y;put849(out,['1차전 내주고 우승했다 이게 진짜 강팀이다','1차전 지고 베테랑들이 술 한잔하면서 다 잡았다던데 그게 반전 포인트였다','1차전 지고 다들 끝났다 했잖아 ㅋㅋ 결국 우승이다'],['ㄹㅇ 1차전 지고 멘탈 나갔었음','역시 단기전은 모른다'],{pos:3})}}
-  if(/^(award|hype)$/.test(T)&&S._sg849!==S.y&&R()<.25){const w=typeof lastWAR==='function'?lastWAR():0;if(w>=6){S._sg849=S.y;put849(out,[`진지하게 ${gn} S급 맞냐? 난 맞다고 봄`,`${gn} 이 정도면 리그 S급 논쟁 끝난 거 아니냐`],['S급 맞지 이걸 왜 물어봄','국대 붙박이면 S급이다','반박하면 야알못'],{pos:2,rp:.8})}}
+  if(/^(award|hype)$/.test(T)&&S._sg849!==S.y&&R()<.25){const w=typeof lastWAR==='function'?lastWAR():0;if(w>=6){S._sg849=S.y;put849(out,/MVP/.test(String(S._hd||''))?[`${gn} 이 정도면 리그 S급 논쟁 끝난 거 아니냐`]:[`진지하게 ${gn} S급 맞냐? 난 맞다고 봄`,`${gn} 이 정도면 리그 S급 논쟁 끝난 거 아니냐`],['S급 맞지 이걸 왜 물어봄','국대 붙박이면 S급이다','반박하면 야알못'],{pos:2,rp:.8})}}
   if(/^(move|faBig)$/.test(T)&&S._hj849!==S.y){const f=(S.faList||[]).slice(-1)[0],rg=(S.hist&&S.hist.rings)||0,w=typeof lastWAR==='function'?lastWAR():0;
     if(f&&f.y===S.y+1&&rg===0&&w>=3&&proYears()>=6&&R()<.5){S._hj849=S.y;put849(out,[`${gn} 팀에 해 준 게 얼만데 << 누가 보면 우승 4번은 시켜 준 줄 ㅋㅋ`],['그래도 프랜차이즈였는데 너무하네','팩트는 팩트지 ㅋㅋ','떠나는 사람 너무 패지 마라'],{pos:3,rp:.9})}}}catch(e){}return out}}
 /* 가을야구 경기 결과 기록 (시리즈 흐름 댓글용) */
@@ -15432,9 +15432,12 @@ function krPS849(){try{const L=(S._psLog849||[]).filter(z=>z.y===S.y&&z.lg==='ML
   const pa=L.reduce((q,z)=>q+z.pa,0),h=L.reduce((q,z)=>q+z.h,0),hr=L.reduce((q,z)=>q+z.hr,0),rbi=L.reduce((q,z)=>q+z.rbi,0);return pa>=12&&(h/Math.max(1,pa*.88)>=.31||hr>=2&&rbi>=5||hr>=3)}catch(e){return false}}
 {const _cmKR849=comments;comments=function(tone,x){let out=_cmKR849.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!ME||S.me!==ME||!S.pro||S.pro.league!=='MLB')return out;const T=String(tone||''),gn=g849(),young=age()<=25;
   const Q=young?['이 눈부신 재능의 국적은 대한민국입니다!','이 선수의 국적은 대한민국입니다!']:['이 선수의 국적은 대한민국입니다!','보고 계십니까! 이 선수의 국적은 대한민국입니다!'];
-  if(x&&x.ps&&!x.intl&&x.win&&/^(psWin|psHero|ws)$/.test(T)&&S._kr849!==S.y&&krPS849()){S._kr849=S.y;
+  /* v842m: 적재적소 — 가을 꾸준히 잘할 때 커리어 두 번까지(두 번째는 월드시리즈에서만), 수상은 첫 MVP·사이영 한 번만 */
+  const krN=S._krN849||0,wsCtx=T==='ws'||/월드시리즈/.test(String((x&&x.title)||'')),P=isP();
+  const today=!!x&&(T==='ws'||(P?((x.ipO||0)>=15&&(x.ra||0)<=2)||((x.ipO||0)>=3&&(x.ra||0)===0):(x.gH||0)>=2||(x.gHR||0)>=1||(x.gRBI||0)>=2));/* v842n: 그날 경기도 잘했을 때만 · 커리어 합쳐 두 번 */
+  if(x&&x.ps&&!x.intl&&x.win&&/^(psWin|psHero|ws)$/.test(T)&&today&&S._kr849!==S.y&&(krN===0||krN===1&&wsCtx)&&krPS849()){S._kr849=S.y;S._krN849=krN+1;
     put849(out,[`"${pick(Q)}" 이 멘트가 메이저 가을야구에서 나올 줄이야`,`${gn} 가을 내내 미쳤다 "${pick(Q)}" ㅠㅠ`,`현지 중계가 ${gn} 이름 부를 때마다 소름 "${pick(Q)}"`],['국뽕 차오른다 ㅠㅠ','새벽에 보다가 소리 질렀다','이 멘트 나올 만하다 인정'],{pos:1,must:1,up:ri(5000,14000),rp:.8})}
-  else if(/^(award)$/.test(T)&&S._kra849!==S.y){const la=(S.awards||[]).slice(-1)[0],n=la&&la.y===S.y?String(la.n||''):'';if(/MVP|사이영/.test(n)&&!/시리즈|올스타|월간|주간/.test(n)){S._kra849=S.y;
+  else if(/^(award)$/.test(T)&&!S._kra849&&S._kr849!==S.y&&krN<2){const la=(S.awards||[]).slice(-1)[0],n=String(S._hd||'')||(la&&la.y===S.y?String(la.n||''):'');if(/MVP|사이영/.test(n)&&!/시리즈|올스타|월간|주간|이달/.test(n)){S._kra849=S.y;S._krN849=krN+1;
     put849(out,[`메이저리그 ${/사이영/.test(n)?'사이영상':'MVP'} "${pick(Q)}"`,`"${pick(Q)}" 이 말을 메이저 시상식 기사에서 하게 될 줄이야`],['국뽕 한 사발 들이켰다','이건 역사다 진짜'],{pos:1,must:1,up:ri(5000,14000),rp:.8})}}}catch(e){}return out}}
 
 /* ---------- ㉑ 반기 결산 댓글 표 새로 (포지션 기대치·나이·연봉·팀 순위 로직은 그대로, 문장만 새로) ---------- */
