@@ -15412,8 +15412,8 @@ try{if(typeof optHit804==='function'){const _ohW854=optHit804;optHit804=function
   if(x&&x.k==='aw'){const rx=x.rs?new RegExp(x.rs):(x.re instanceof RegExp?x.re:new RegExp(String(x.t||'').replace(/ ?(수상|선정)/g,'').split('·').join('|')||'^$'));return(S.awards||[]).some(a=>a&&a.y===y&&rx.test(String(a.n||'')))}}catch(e){return false}return _ohW854.apply(this,arguments)}}}catch(e){}
 /* ===== WAR 포지션 보정 줄이기 (유저 결정 11/17 00:19: 팬그래프식 포지션 보정을 KBO 0.8배 · MLB 0.9배) =====
    포지션 보정(포수 +9 · 유격 +7 · 2루 +3 · 중견 +2.5 · 3루 +2 · 좌우익 −7 · 1루 −9.5 · 지명 −15, 시즌당 점수)에 리그별 배율 → 1루·코너 dWAR 덜 깎이고 포수·유격 가산 조금 줄어듦 (모든 포지션 같은 배율) */
-/* v855c (유저 결정 11/17 00:57): 포지션 보정을 한 번 더 ×0.95 (KBO 0.8→0.76 · MLB 0.9→0.855) · 수비 점수(타구 처리·범위·송구·포수 리시빙)는 ×1.02 */
-const PADJF854={KBO:.76,MLB:.855},FRF855=1.02;
+/* v855c (유저 결정 11/17 00:57): 포지션 보정을 한 번 더 ×0.95 (KBO 0.8→0.76 · MLB 0.9→0.855) · 수비 점수(타구 처리·범위·송구·포수 리시빙)는 ×1.02 → v855e (01:06) ×1.03 한 번 더 = ×1.0506 (최종) */
+const PADJF854={KBO:.76,MLB:.855},FRF855=1.02*1.03;/* v855e (유저 결정 01:06 '1.03배 한 번 더 그리고 끝'): 수비 점수 최종 ×1.0506 */
 {const _bsP854=bWARsplit;bWARsplit=function(b,lv){const x=_bsP854.apply(this,arguments);try{if(x&&typeof x.pos==='number'){const f=PADJF854[lv==='MLB'?'MLB':'KBO'],dp=x.pos*(f-1);x.d+=dp;x.pos+=dp}if(x&&typeof x.fr==='number'){const df=x.fr*(FRF855-1);x.d+=df;x.fr+=df}}catch(e){}return x}}
 
 /* ===== v855 (11/17 새벽) =====
