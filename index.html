@@ -14463,7 +14463,7 @@ const KN840=['','첫','두','세','네','다섯','여섯','일곱','여덟','아
   const put=(L,re,up)=>{const C=L.filter(t=>t&&!seenHas('tt:'+t));if(!C.length)return false;const t=pick(C);seenAdd('tt:'+t);out.splice(Math.min(2,out.length),0,mkC(josaFix(t),re?[{nk:pick(NICKS),t:re,up:ri(30,900)}]:[],{up:up||ri(2500,9000),must:1}));return true};
   const kbo=S.pro.league==='KBO',ttl=String((x&&x.title)||''),ksG=/한국시리즈/.test(ttl),wsG=/월드시리즈/.test(ttl);
   /* 우승 */
-  if(['ring','ws'].includes(tone)&&S._rgY840!==S.y){S._rgY840=S.y;const k=(S.hist.rings||0)+((S.awards||[]).some(a=>a.y===S.y&&/^(한국시리즈|월드시리즈) 우승$/.test(a.n))?0:1),ru=myRunnerUps840(kbo?'KBO':'MLB');
+  if(['ring','ws'].includes(tone)&&S._rgY840!==S.y){S._rgY840=S.y;const k=(S.hist.rings||0)+((S.awards||[]).some(a=>a.y===S.y&&/^(한국시리즈|월드시리즈) 우승$/.test(a.n))?0:1),ru=myRunnerUps840();
     if(tone==='ring'&&kbo){const tm=TEAMS[S.pro.team],N=teamTitles840(S.pro.team)+1,d=S.drought;
       if(N>=2)put([`V${N} 달성!! ${tm.nick} 통산 ${N}번째 우승`,N>=5?`통산 ${N}번째 우승 이 팀 우승 DNA는 진짜다`:`통산 ${N}번째 우승 이 맛에 이 팀 응원한다`,typeof d==='number'&&d<=2?`${d===1?'2연패':'또 우승'} ㄷㄷ 통산 ${N}번째 왕조 소리 나온다`:`${N}번째 우승 트로피 오늘 밤 술맛 다르다`],pick(['내년엔 V'+(N+1)+' 가즈아','이 팀 팬이라 행복하다','오늘은 다 같이 취하자']))}
     if(k>=3)put([`${gn} 통산 ${k}번째 반지 유관기운 말이 안 된다`,`${gn} 반지만 ${k}개 ㅋㅋ 손가락이 모자라겠다`,`우승할 때마다 ${gn}${jo(gn,'이','가').slice(gn.length)} 있다 이쯤 되면 우승 토템`],pick(['유관의 신','반지 콜렉터 ㅋㅋ','이게 위닝 멘탈리티지']));
@@ -14471,7 +14471,7 @@ const KN840=['','첫','두','세','네','다섯','여섯','일곱','여덟','아
     if(ru>=2&&k===1)put([`준우승만 ${ru}번 하던 ${gn} 드디어 콩라인 탈출 ㅠㅠ`,`${ru}번의 준우승 끝에 드디어 정상 이 맛에 버텼다`],pick(['콩라인 졸업 축하한다','2등 설움 다 털었다']));
     else if(ru>=2)put([`준우승 ${ru}번의 아픔이 있었기에 오늘 반지가 더 값지다`,`${gn} 준우승 ${ru}번 우승 ${k}번… 가을엔 늘 마지막까지 있었다`],pick(['가을 단골','이게 진짜 가을 DNA']))}
   /* 준우승 (한국시리즈·월드시리즈 마지막 경기 패배) */
-  if(x&&(ksG||wsG)&&x.win===false&&x.elim&&S._ruY840!==S.y){S._ruY840=S.y;const ru=myRunnerUps840(kbo?'KBO':'MLB')+1,ser=ksG?'한국시리즈':'월드시리즈';
+  if(x&&(ksG||wsG)&&x.win===false&&x.elim&&S._ruY840!==S.y){S._ruY840=S.y;const ru=myRunnerUps840()+1,ser=ksG?'한국시리즈':'월드시리즈';
     if(ru>=2&&!(S.hist&&S.hist.rings))put([`${gn} 벌써 준우승만 ${ru}번째… 콩라인 가입이냐 ㅠ`,`준우승 ${ru}번이면 이제 우승할 차례다`,`${ser} ${KN840[ru]||ru}번째 준우승… 반지 하나가 이렇게 어렵다`],pick(['콩라인 탈출은 내년에 하자','2등도 대단한 건데 너무 아프다','내년엔 꼭 마지막에 웃자']));
     else if(ru>=2)put([`${ser} ${KN840[ru]||ru}번째 준우승… 반지 하나 더 끼기가 이렇게 어렵다`,`반지도 있고 준우승도 ${ru}번… ${gn}은 가을이면 늘 마지막까지 있다`],pick(['그래도 내년에 다시 올라오자','2등도 대단한 건데 너무 아프다']));
     else put([`${ser} 준우승도 대단한 거다 내년엔 한 계단만 더`,`여기까지 온 것도 잘한 거다 고개 숙이지 마라`],null);
@@ -14483,8 +14483,9 @@ const KN840=['','첫','두','세','네','다섯','여섯','일곱','여덟','아
   if(tone==='ring'&&kbo&&x&&x.clinch&&S._rg2Y840!==S.y){S._rg2Y840=S.y;const seed=S._psSeed||0,gno=+((ttl.match(/(\d)차전/)||[])[1]||0);const L=['불행한 9개 구단 팬들은 개추 ㅋㅋ','올해 끝까지 설레발 안 친 보람이 있다 ㅠㅠ','우승콜 샤우팅 듣고 소름 돋았다 평생 돌려 본다','오늘은 그냥 다 같이 우승 짤 저장하는 날','우 승 ㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅ',`${TEAMS[S.pro.team].nick} 우승 ㅅㅅㅅㅅㅅㅅ 올해는 다 용서한다`];
     if(seed>=3)L.push(`정규시즌 ${seed}위 팀의 업셋 우승 ㄷㄷ 이게 가을이다`,'아무도 우승 후보로 안 봤는데 결국 해냈다 업셋 우승','업 셋 우 승 ㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅㅅ');if(gno>=6)L.push(`${gno}차전까지 피 말렸다 심장 몇 개 갈아 끼운 거냐`);
     put(L,pick(['ㄹㅇ 개추 박고 감','오늘은 기분 좋으니 다 용서한다 ㅋㅋ','이 맛에 1년 버틴다']))}
-  if(x&&/한국시리즈|월드시리즈/.test(ttl)&&x.win===false&&x.elim&&S._ru2Y840!==S.y){S._ru2Y840=S.y;const ru=(typeof myRunnerUps840==='function'?myRunnerUps840(kbo?'KBO':'MLB'):0)+1;
-    if(ru>=3)put([`준우승 ${ru}번째… 이쯤 되면 콩라인 공식 가입이다 ㅠ`,`또 준우승이면 ${ru}연벙이냐 마지막 계단이 왜 이렇게 높냐`],pick(['그래도 여기까지 온 게 어디냐','내년엔 꼭 마지막에 웃자']));
+  if(x&&/한국시리즈|월드시리즈/.test(ttl)&&x.win===false&&x.elim&&S._ru2Y840!==S.y){S._ru2Y840=S.y;const ru=(typeof myRunnerUps840==='function'?myRunnerUps840():0)+1;
+    if(ru>=3&&!rings)put([`준우승 ${ru}번째… 이쯤 되면 콩라인 공식 가입이다 ㅠ`,`또 준우승… ${ru}번째 2등이다 마지막 계단이 왜 이렇게 높냐`],pick(['그래도 여기까지 온 게 어디냐','내년엔 꼭 마지막에 웃자']));
+    else if(ru>=3)put([`준우승 ${ru}번째… 반지가 있어도 이 아픔은 안 익숙하다`,`또 준우승… 마지막 계단이 왜 이렇게 높냐`],pick(['그래도 여기까지 온 게 어디냐','내년엔 꼭 마지막에 웃자']));
     else put(['마지막 한 걸음이 제일 멀다 내년엔 꼭 우승하자','준우승 메달 걸고 웃는 사람은 없다 이 아픔 잊지 말자'],null)}
   if(x&&x.ps&&x.win===false&&x.elim&&!/한국시리즈|월드시리즈/.test(ttl)&&yrs>=12&&rings===0&&S._mg2Y840!==S.y&&R()<.6){S._mg2Y840=S.y;
     put(['올해도 반지는 남의 얘기… 무관 탈출이 이렇게 어렵다',`${gn} 반지 하나만 끼고 은퇴했으면 좋겠다 진심`,'이쯤 되면 무관 기운이 팀 전체로 퍼진다 ㅠ'],pick(['말이 너무 심하다 그래도 응원한다','내년엔 진짜 끼자','무관 탈출은 내년에']))}}catch(e){}return out}}
@@ -15084,6 +15085,36 @@ try{if(globalThis.HOFT720)Object.assign(HOFT720,{B:49,SP:58,CL:37,RP:37})}catch(
    const X=x||{},game=('gPA' in X)||('ipO' in X)||!!X.ps||!!X.intl||/^(walkoff|feat|psWin|psLose|psHero|psGoat|ring|ws|debutG|g1)$/.test(String(tone||''));
    if(!game)a.cm=a.cm.filter(c=>!(c&&typeof c.t==='string'&&DAYSPD.test(c.t)));
    if(a.cm.some(c=>c&&c.t==='이번 계약 기간에 다시 반등하자'))a.cm=a.cm.filter(c=>!(c&&c.t==='계약 첫해부터 다시 증명하자'))}catch(e){}return r}}
+
+/* ===================== v842a: 노화 30세부터 · 유격수·포수 정기 튀는 반기 (설명 노노) =====================
+   · 노화가 32세(능력치)·35세(경기력)부터 시작해서 전성기가 31~33세로 늦었음 → 30세부터 곡선으로 시작
+     경기력: 기존(35세부터 해마다 +0.35) 위에 30세부터 +0 → 34세 이후 +1.0 (부드러운 곡선)
+     훈련 성장: 28세 반부터 더 빨리 줄어듦 (30세 0.52→0.33배 · 32세 0.38→0.18배) — 30대엔 훈련해도 버티는 정도
+     능력치: 기존 노화 위에 30세부터 몸 쓰는 툴·구속·구위·체력 조금씩, 기술 툴(컨택·타구처리·선구안·제구)은 그 절반 — 내구성·멘탈·워크에식 높으면 천천히
+   · 유격수: 프로 4년마다 한 반기는 꼭 능력 ×1.02 / 포수: 프로 5년마다 한 반기 ×1.02
+     (그 기간을 반기 단위로 나눠 남은 반기 수로 뽑음 → 군 복무·부상·마이너로 빠진 반기가 있어도 기간마다 정확히 한 번) */
+function ageEarly842(){try{if(!S||S.stage!=='pro')return 0;const a=age();return a>=30?1.0*s01((a-29)/5):0}catch(e){return 0}}
+{const _b842=batPA;batPA=function(L,m,gl){return _b842(isP()?L:L+ageEarly842(),m,gl)}}
+{const _mb842=meBatPA;meBatPA=function(pR,risp){return _mb842(isP()?pR:pR+ageEarly842(),risp)}}
+{const _p842=pitchGame;pitchGame=function(L,type){return _p842(isP()?L+ageEarly842():L,type)}}
+{const _mp842=mePitPA;mePitPA=function(bR,risp,tired){return _mp842(isP()?bR+ageEarly842():bR,risp,tired)}}
+{const _ag842=agingTick;agingTick=function(){const a=age();const r=_ag842.apply(this,arguments);try{if(a<30||!ME||!ME.r)return r;
+   const t=s01((a-29.5)/3),M=typeof ageM744==='function'?ageM744():1,d1=.05*t*M,d2=.025*t*M,sh=k=>typeof trainShield==='function'?trainShield(k):1;
+   (isP()?['velo','sta','stf']:['spd','arm','pow','rng']).forEach(k=>{if(typeof ME.r[k]==='number')ME.r[k]=cl(ME.r[k]-d1*sh(k),20,99)});
+   (isP()?['ctl']:['con','fld','eye']).forEach(k=>{if(typeof ME.r[k]==='number')ME.r[k]=cl(ME.r[k]-d2*(k==='eye'?.6:k==='fld'?.3:1)*sh(k),20,99)})}catch(e){}return r}}
+const POSHOT842={SS:4,C:5};
+function posHotRoll842(){try{if(!(S&&S.stage==='pro'&&S.pro&&ME&&!isP()&&(S.phase===1||S.phase===2)))return;const N=POSHOT842[ME.pos];if(!N)return;
+  if(S._phA842==null)S._phA842=S.y;const b=Math.floor((S.y-S._phA842)/N),k=S.y+'-'+S.phase;if(S._phK842===k)return;S._phK842=k;if(S._phB842===b)return;
+  const end=S._phA842+(b+1)*N-1,left=(end-S.y)*2+(2-S.phase)+1;
+  if(R()<1/Math.max(1,left)){S._phHot842={y:S.y,ph:S.phase};S._phB842=b;(S._phLog842=S._phLog842||[]).push(S.y+':'+S.phase+':'+age())}}catch(e){}}
+{const _adv842=advance;advance=function(){posHotRoll842();return _adv842.apply(this,arguments)}}
+{const _pm842=primeM;primeM=function(){const v=_pm842();try{const d=S&&S._phHot842;if(d&&d.y===S.y&&d.ph===S.phase&&S.stage==='pro')return v*1.02}catch(e){}return v}}
+
+/* v842b: 훈련 성장 나이 곡선 — 26세 0.9 → 28.5세 0.5 → 31세 0.22 → 34세 0.1 (예전: 29.5세 0.55 → 32.5세 0.35 → 35세 0.2) */
+try{ageTrM=function(a){return knot(a,[19,22,26,28.5,31,34],[1.2,1.1,.9,.5,.22,.1])}}catch(e){}
+
+/* v842c: 노화 넣은 뒤 명예의 전당 기준선 임시 보정 (W21 포수·유격수 + W22 전 포지션 초반 표본) — 표본 더 모이면 다시 맞춤 */
+try{if(globalThis.HOFT720)Object.assign(HOFT720,{B:39,SP:48,CL:31,RP:31})}catch(e){}
 
 </script>
 
