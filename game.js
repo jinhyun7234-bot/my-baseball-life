@@ -5544,7 +5544,7 @@ function pmPick(arr,n){const y=S.y;S.pmY=S.pmY&&S.pmY.y===y?S.pmY:{y,u:{}};const
   if(loveNews()&&R()<.35&&cmX('pslove'+S.y)){if(good)B('joke',['사랑의 힘인가 ㅋㅋ']);else if(badP)B('joke',['사랑보다 야구가 어렵네'])}
   /* 조합: 기본 3~4 + 특수 1~2 */
   if(dnp704&&typeof DNPX704!=='undefined'){for(const Z of [L,S2])for(let i=Z.length-1;i>=0;i--)if(DNPX704.test(String(Z[i][1]||'')))Z.splice(i,1)}
-  const pick1=pmPick(L,champ||elim||fin?4:3),pick2=pmPick(S2,Math.min(2,S2.length));const REP={fan:['ㄹㅇ','인정','미쳤다 진짜'],joke:['ㅋㅋㅋㅋ','아 웃기네 ㅋㅋ'],ana:['기록 보면 맞는 말','분석 굿'],real:['동의','맞는 말'],hate:['억까 ㄴㄴ','그건 좀 심하다','다음 경기 보고 말하자'],emo:['나도 울었다','ㅠㅠ'],def:['ㄹㅇ 쉴드 쳐줘야 함','인정'],ring:['반지 각','ㅋㅋ'],money:['연봉 얘기 그만 ㅋㅋ','ㄹㅇ'],kor:['대한민국!!','국뽕 차오른다'],riv:['인정은 해야지']};
+  const pick1=pmPick(L,champ||elim||fin?4:3),pick2=pmPick(S2,Math.min(2,S2.length));const REP={fan:['ㄹㅇ','인정','미쳤다 진짜'],joke:['ㅋㅋㅋㅋ','아 웃기네 ㅋㅋ'],ana:['기록 보면 맞는 말','분석 굿'],real:['동의','맞는 말'],hate:['억까 ㄴㄴ','그건 좀 심하다','다음 경기 보고 말하자'],emo:['나도 울었다','ㅠㅠ'],def:['ㄹㅇ 쉴드 쳐줘야 함','인정'],ring:['반지 각','ㅋㅋ'],money:['연봉 얘기 그만 ㅋㅋ','ㄹㅇ'],kor:['대한민국!!','국뽕 차오른다'],riv:['인정은 해야지']};/* v855: 답글도 그날 결과에 맞게 (유저 지적: '또 무관으로 끝나네'에 '반지 각') — 우승·탈락 날은 '다음 경기 보고 말하자' X */if(champ)REP.ring=['드디어 ㅠㅠ','축하한다 진짜','이 맛에 야구 본다'];else if(elim)REP.ring=['ㅠㅠ','내년엔 꼭','이번엔 될 줄 알았는데'];else if(badP)REP.ring=['ㅋㅋ','오늘은 반지도 쉬는 날'];if(champ||elim)REP.hate=['억까 ㄴㄴ','그건 좀 심하다','한 명 탓은 아니지'];
   const add=[...pick1,...pick2].map(([k,s])=>mkC(s,R()<.45?[pick(REP[k]||REP.real)]:[],{up:ri(200,4000),must:1}));
   out=add.concat(out);if(out.length>18){const must=out.filter(c=>c.must),rest=out.filter(c=>!c.must);out=must.slice(0,14).concat(rest.slice(0,Math.max(0,18-Math.min(14,must.length))))}}catch(e){}return out}}
 
@@ -15160,19 +15160,20 @@ try{if(typeof buildSeasonRecap==='function'){const _bsSB853=buildSeasonRecap;bui
   else if(sp<45&&sb>=1&&sb<=3)L.push([`${gn} 도루${sb>1?' '+sb+'개':''}는 올해 최대 이변이다 ㅋㅋ`,['상대가 완전히 방심했다','뛰는 거 보고 중계진도 놀람']]);
   const O=S._once853=S._once853||{},k=L.length?L[0][0].replace(/\d+/g,'N').slice(0,10):'';if(!L.length||O[k]||seenHas(L[0][0])||R()>.7)return q;O[k]=1;seenAdd(L[0][0]);q.cm.splice(Math.min(q.cm.length,2),0,mkC(L[0][0],L[0][1].slice(0,ri(1,2)),{up:ri(500,2600)}))}catch(e){}return q}}}catch(e){}
 
-/* ===== v854 수상 기준 다시 맞춤 (W35+W36+W37 최대 육성 표본 2,451명·약 5만 2천 시즌 합침, 게임 수상 공식을 그대로 재현해서 맞춤) =====
+/* ===== v855 수상 기준 다시 맞춤 (W35+W36+W37+W38 최대 육성 표본 3,288명·약 6만 9천 시즌 합침, 게임 수상 공식을 그대로 재현해서 맞춤) =====
+   v855: 포지션 보정(팬그래프식)을 KBO ×0.8 · MLB ×0.9로 줄인 뒤(유저 결정 11/17 00:19) 바뀐 시즌 WAR로 다시 맞춤
+     (1루·좌익·우익·지명은 시즌 WAR가 조금 오르고, 포수·유격·2루·중견은 조금 내려감 → 포지션마다 수상률이 같게 기준값을 옮김)
    목표(규정 시즌당, 포지션마다 같게): KBO 골든글러브 33% · KBO MVP 5% (선발 100이닝 시즌도 5%) · MLB MVP 3% · MLB 골드글러브 20% · 실버슬러거 25% · 신인왕 25% (투수 포함)
-   · W37 검증: W35+W36으로 맞춘 값의 재현이 실제 게임 결과랑 거의 같게 나옴(공식은 맞음) → 포지션별 차이는 표본(포지션당 약 100명) 흔들림이라 세 표본 합쳐서 다시 맞춤
    · 포지션별 수상 기준값은 실제 상도 포지션마다 따로 주는 것처럼 '그 포지션 수상자 수준'으로 둠 (경기력 보정 아님)
    · 고교 튀는 반기: 전 포지션 같게 (반기마다 20% · 그 반기 고교 경기 능력 ×1.22) — 유저 허락: 고교 튀는 반기는 지명 밸런스용으로만
-   · 지명 포지션 기준(DRA836): 여기서 0으로 놓고 v161에서 W36+W37 합친 값으로 */
-try{Object.assign(GGPM825,{"C":3.407,"1B":2.815,"2B":4.426,"3B":3.97,"SS":4.11,"LF":2.86,"CF":4.467,"RF":3.018})}catch(e){}
-try{GGP836=0.179}catch(e){}
-var MVB853={KBO:{"C":1.139,"1B":1.15,"2B":0.422,"3B":0.37,"SS":0.54,"LF":1.097,"CF":0.242,"RF":1.048,"DH":0.751},MLB:{"C":2.305,"1B":3.319,"2B":3.028,"3B":2.522,"SS":2.56,"LF":3.508,"CF":2.773,"RF":3.268,"DH":2.91}};
+   · 지명 포지션 기준(DRA836): 여기서 0으로 놓고 v161에서 맞춘 값으로 */
+try{Object.assign(GGPM825,{"C":3.233,"1B":3.107,"2B":4.348,"3B":3.78,"SS":3.907,"LF":3.074,"CF":4.471,"RF":3.118})}catch(e){}
+try{GGP836=0.151}catch(e){}
+var MVB853={KBO:{"C":1.278,"1B":0.931,"2B":0.44,"3B":0.484,"SS":0.727,"LF":1.064,"CF":0.291,"RF":0.952,"DH":0.771},MLB:{"C":2.371,"1B":3.341,"2B":3.018,"3B":2.633,"SS":2.678,"LF":3.443,"CF":2.657,"RF":3.354,"DH":2.937}};
 {const _mv853=mvpM;mvpM=function(w,b,lg){const v=_mv853.apply(this,arguments);try{if(!isP()){const T=MVB853[lg],pos=(S&&S.dhConv&&S.y>=S.dhConv)?'DH':ME.pos;if(T&&T[pos]!=null)return v+T[pos]}}catch(e){}return v}}
 var KPMV853=2.385;
-try{Object.assign(GGLO714,{"C":0.8461,"1B":0.5011,"2B":0.4024,"3B":0.0739,"SS":0.7884,"LF":0.0707,"CF":0.4082,"RF":0.1251});Object.assign(SSLO714,{"C":0.7397,"1B":0.7946,"2B":0.7478,"3B":0.7842,"SS":0.7288,"LF":0.7921,"CF":0.7498,"RF":0.7963,"DH":0.91})}catch(e){}
-var ROY853={"C":0.798,"1B":1.305,"2B":0.483,"3B":0.975,"SS":0.903,"LF":1.214,"CF":0.536,"RF":1.409,"P":0.247};
+try{Object.assign(GGLO714,{"C":0.8433,"1B":0.5003,"2B":0.4014,"3B":0.07,"SS":0.7998,"LF":0.0625,"CF":0.4308,"RF":0.1232});Object.assign(SSLO714,{"C":0.7393,"1B":0.7946,"2B":0.7472,"3B":0.782,"SS":0.725,"LF":0.7916,"CF":0.7525,"RF":0.7934,"DH":0.91})}catch(e){}
+var ROY853={"C":0.953,"1B":1.269,"2B":0.656,"3B":1.009,"SS":0.931,"LF":1.067,"CF":0.569,"RF":1.375,"P":0.247};
 try{for(const k of ['C','1B','2B','3B','SS','LF','CF','RF','DH','SP','RP'])HOTP696[k]=.2;HOTMP840={C:1.22,'1B':1.22,'2B':1.22,'3B':1.22,SS:1.22,LF:1.22,CF:1.22,RF:1.22,DH:1.22,SP:1.22,RP:1.22};HOTM840=1.22}catch(e){}
 try{for(const k in DRA836)DRA836[k]=0}catch(e){}
 
@@ -15367,7 +15368,7 @@ function psForm854(){try{const P=isP(),Q=S._psRun&&S._psRun.y===S.y?S._psRun:nul
   const cb=S.post&&S.post.b,cp=S.post&&S.post.p;
   if(!P&&cb&&cb.AB>=40){const o=(cb.H+(cb.BB||0))/Math.max(1,cb.AB+(cb.BB||0))+(cb.H+(cb.D||0)+2*(cb.T||0)+3*(cb.HR||0))/cb.AB;if(o>=.85)career=true}
   if(P&&cp&&cp.outs>=90&&cp.R*27/cp.outs<=3)career=true;return{good,career,line}}catch(e){return{good:false,career:false,line:''}}}
-const PSWEAK854=/가을엔 왜 이러|가을만 되면 작아|가을만 오면 작아|큰 경기만 오면 작아|큰 경기에 약|가을 체질은 아닌|가을에 약하|가을 울렁증|새가슴|가을만 되면 사라/;
+const PSWEAK854=/가을엔 왜 이러|가을만 되면 작아|가을만 오면 작아|큰 경기만 오면 작아|큰 경기에 약|가을 체질은 아닌|가을에 약하|가을 울렁증|새가슴|가을만 되면 사라|작년엔 잘했는데 올해는 왜|가을의 남자 휴가/;
 {const _cmPF854=comments;comments=function(tone,x){let out=_cmPF854.apply(this,arguments);try{if(!Array.isArray(out)||!x||!x.ps||x.intl||x.gPA==null&&x.ipO==null||!S||!ME)return out;
   const P=isP(),bad=P?((x.ra||0)>=3):((x.gPA||0)>=3&&(x.gH||0)===0);if(!bad)return out;const f=psForm854();if(!f.good&&!f.career)return out;
   const T=c=>String((c&&c.t)||'');const n0=out.length;out=out.filter(c=>!PSWEAK854.test(T(c)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!PSWEAK854.test(T(r)))});
@@ -15409,3 +15410,84 @@ genOpts804=function(lg){const P=isP(),a=age(),mlb=lg!=='KBO',RP=P&&ME.pos!=='SP'
 try{if(typeof optHit804==='function'){const _ohW854=optHit804;optHit804=function(x,y,lg){try{if(x&&x.k==='war')return(((typeof seaWy853==='function'?seaWy853(lg):{})||{})[y]||0)>=x.v;
   if(x&&x.k==='wrc'){const b=yearTot(y,[lg]).b;return(b.PA||0)>=300&&wrcPlus851(b,lg)>=x.v}
   if(x&&x.k==='aw'){const rx=x.rs?new RegExp(x.rs):(x.re instanceof RegExp?x.re:new RegExp(String(x.t||'').replace(/ ?(수상|선정)/g,'').split('·').join('|')||'^$'));return(S.awards||[]).some(a=>a&&a.y===y&&rx.test(String(a.n||'')))}}catch(e){return false}return _ohW854.apply(this,arguments)}}}catch(e){}
+/* ===== WAR 포지션 보정 줄이기 (유저 결정 11/17 00:19: 팬그래프식 포지션 보정을 KBO 0.8배 · MLB 0.9배) =====
+   포지션 보정(포수 +9 · 유격 +7 · 2루 +3 · 중견 +2.5 · 3루 +2 · 좌우익 −7 · 1루 −9.5 · 지명 −15, 시즌당 점수)에 리그별 배율 → 1루·코너 dWAR 덜 깎이고 포수·유격 가산 조금 줄어듦 (모든 포지션 같은 배율) */
+const PADJF854={KBO:.8,MLB:.9};
+{const _bsP854=bWARsplit;bWARsplit=function(b,lv){const x=_bsP854.apply(this,arguments);try{if(x&&typeof x.pos==='number'){const f=PADJF854[lv==='MLB'?'MLB':'KBO'],dp=x.pos*(f-1);x.d+=dp;x.pos+=dp}}catch(e){}return x}}
+
+/* ===== v855 (11/17 새벽) =====
+   1) MLB에서 활약하고 KBO로 돌아올 때 몸값 (유저 지적 00:22: "메이저 WAR 29 · 36세인데 KBO 복귀 3년 최대 63억? 현실은 3년 보장 80억이 최소")
+      현실 사례: 김광현(34세) 4년 151억 · 이대호(35세) 4년 150억 · 류현진(37세) 8년 170억 · 김현수(30세) 4년 115억 · 추신수(39세) 1년 27억
+      → 메이저 통산 WAR(레전드 대우)을 크게 쳐 주고, 최근 2년 메이저 WAR·수상을 더함. 나이는 34세부터 천천히 깎음 (36세 약 −10% · 38세 −30% · 40세 −40%)
+      예) 메이저 통산 WAR 29 · 36세: 최근 폼이 별로여도 연 약 30억(3년 최대 약 90억 · 보장 80억대), 최근에도 잘하면 연 33~37억(3년 최대 100~112억)
+      · 친정팀(마지막 KBO 소속팀)은 보통 가장 높게 부름 (가끔은 다른 구단이 더 씀) · KBO 복귀 제안은 친정팀 포함 최대 3곳 */
+kboReturnPer=function(o,w){const base=faValue(o,w),m=mlbStar806(),a=age(),mw=mlbW();if(mw<3&&m.lw<1.5)return base;
+  const leg=s01((mw-3)/27),form=s01((m.lw-.5)/4.5),f=1-.4*s01((a-34)/6);
+  const per=(130000+210000*leg+150000*form+8000*Math.min(5,m.aw))*f;return Math.round(Math.min(480000,Math.max(base,per))/1000)*1000};
+function retHome855(q){try{if(!q||!q.ch)return q;const isR=c=>c&&c.act==='fa'&&c.arg&&c.arg.ret&&c.arg.tot>0&&c.arg.team!=null;const kb=q.ch.filter(isR);if(!kb.length)return q;
+  const lt=typeof lastKBOTeam==='function'?lastKBOTeam():-1,home=kb.find(c=>c.arg.team===lt),oth=kb.filter(c=>c!==home).sort((x,z)=>z.arg.tot/z.arg.yrs-x.arg.tot/x.arg.yrs);
+  const set=(c,tot)=>{const A=c.arg,y=A.yrs;A.tot=tot;c.s=`${y}년 최대 ${money(tot)}`;c.d=`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/y)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상)`};
+  if(home&&oth.length){const b=oth[0],per=b.arg.tot/b.arg.yrs;if(home.arg.tot/home.arg.yrs<per*1.02&&R()<.75)set(home,Math.round(per*rn(1.05,.02)*home.arg.yrs/10000)*10000)}
+  const keep=new Set([home,...oth.slice(0,home?2:3)].filter(Boolean));q.ch=q.ch.filter(c=>!isR(c)||keep.has(c));
+  keep.forEach(c=>{const y=c.arg.yrs||1;if(c.arg.tot>500000*y)set(c,500000*y)})/* 연 50억 넘는 KBO 복귀 제안은 없음 (경쟁균형세 · 역대 최고 수준) */}catch(e){}return q}
+{const _axR855=abroadExpire;abroadExpire=function(o,w){return retHome855(_axR855.apply(this,arguments))}}
+{const _rlR855=mlbRelease743;mlbRelease743=function(o){return retHome855(_rlR855.apply(this,arguments))}}
+
+/* 2) 가을야구·국제대회 한 경기 기사에 '한 시즌 풀로 봐야 판단 가능' 같은 시즌 단위 평가 X (유저 지적 00:26)
+      같은 꼴: 아직 평가하기엔 이르다 · 성장하는 게 보이긴 함 · 운이 좀 없는 시즌 · 올해가 분기점 · 다음 시즌이 시험대 · 스탯은 좋은데 눈으로 보면
+      · 이 페이스면 올해 상 다 쓸어간다 · 올해는 경쟁자가 안 보임(시즌 중 수상 경쟁 말)
+      (작년 가을 잘하고 오늘 못 친 날 '작년엔 잘했는데 올해는 왜 이러냐'는 가을 성적 따라: 올가을 잘 치고 있으면 v164에서 뺌) */
+const SEAEV855=/한 시즌 풀로 봐야|아직 평가하기|아직 평가하긴|성장하는 게 보이긴|운이 좀 없는 시즌|올해가 진짜 분기점|다음 시즌이 진짜 시험대|스탯은 좋은데 눈으로 보면|이 페이스면 올해|올해는 경쟁자가 안 보/;
+function seaEvCut855(cm){if(!Array.isArray(cm))return cm;const T=c=>String((c&&c.t)||'');const out=cm.filter(c=>!SEAEV855.test(T(c)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!SEAEV855.test(T(r)))});return out}
+{const _cmS855=comments;comments=function(tone,x){const out=_cmS855.apply(this,arguments);try{if(x&&(x.ps||x.intl)&&Array.isArray(out))return seaEvCut855(out)}catch(e){}return out}}
+{const _arS855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arS855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)&&x&&(x.ps||x.intl))a.cm=seaEvCut855(a.cm)}catch(e){}return r}}
+
+/* 3) 가을야구 댓글 답글이 그날 결과와 반대로 달리던 것 (유저 지적 00:28: 탈락 경기 '또 무관으로 끝나네'에 답글 '반지 각') → v104에서 우승·탈락·부진 날 답글 따로 */
+
+/* 4) 댓글이 1~2개만 남던 것 (유저 지적 00:33: 한국시리즈 2차전 대패 기사에 댓글 하나)
+      원인: 커리어가 길고 가을야구를 많이 하면(통산 50경기+) 같은 상황 댓글을 이미 다 써서, 겹침 방지 거름망 여러 겹
+      (최근 80개 · 150기사 창 · 커리어 2회 · 커리어 3회 · 연도별 사용)이 거의 다 걸러 버림
+      → 마지막에 바닥선: 가을·국제대회 경기 기사 6개 · 정규시즌 경기·끝내기·큰 기사 5개 · 나머지 3개 (시즌 결산 목록형은 그대로)
+        모자라면 같은 상황 댓글을 거름망 없이 한 번 더 뽑아서, 커리어에서 덜 쓴 것부터 채움 (예전 댓글/최근 댓글 비율도 맞춰서) */
+function cmFloor855(tone,x){const T=String(tone||'');if(T==='srecap'||T==='phase')return 0;const g=x&&(x.gPA!=null||x.ipO!=null);if(g&&(x.ps||x.intl))return 6;if(g||/^(walkoff|psHero|ring|gold|ws|hof|legend|tour)/.test(T))return 5;return 3}
+const ONCE855=/생수머신|머신이형|퐁당퐁당|영결 커트라인/,WOFF855=/운이 좀 없는 시즌|폼은 좋은데 결과가 안|기복만 잡으면|좋은 날 나쁜 날|장점 단점 확실한|장점은 확실한데 약점도|수비는 좀 더 다듬어야|중립기어|한 시즌 풀로 봐야|아직 평가하기|아직 평가하긴/;
+function cmNorm855(t){return String(t||'').replace(/[\d.,]+/g,'#').replace(/\s+/g,'')}
+function cmRefill855(a,tone,x){try{if(!a||!Array.isArray(a.cm)||!S||!ME||S._inPh854)return;const F=cmFloor855(tone,x),real=a.cm.filter(c=>c&&!c.rl);if(!F||real.length>=F)return;
+  const FRESH={cmSeen:{},cmHist:[],_cmU840:{},_cap854:{},pmY:null},KEEP=['_once853','_once841','_mach854','_pong854','_rk849','_pc853','_ntc853','tf853','_U686','_srU','_srK','cmSeenN'];
+  const bak={};Object.keys(FRESH).concat(KEEP).forEach(k=>{bak[k]=S[k]});const cp={};KEEP.forEach(k=>{try{cp[k]=S[k]==null?S[k]:JSON.parse(JSON.stringify(S[k]))}catch(e){cp[k]=S[k]}});
+  let cand=[];try{Object.keys(FRESH).forEach(k=>{S[k]=Array.isArray(FRESH[k])?[]:FRESH[k]&&typeof FRESH[k]==='object'?{}:FRESH[k]});for(let i=0;i<2&&cand.length<12;i++){const c=comments(tone,x);if(Array.isArray(c))cand=cand.concat(c)}}catch(e){}
+  finally{Object.keys(FRESH).forEach(k=>{S[k]=bak[k]});KEEP.forEach(k=>{S[k]=cp[k]})}
+  const have=new Set(a.cm.map(c=>cmNorm855(c&&c.t))),U=S._cmU840||{},H=new Set((S.cmHist||[]).map(String)),wo=String(tone)==='walkoff'||/끝내기/.test(String(a.head||''));
+  let pool=[];cand.forEach(c=>{if(!c||typeof c!=='object'||c.rl||typeof c.t!=='string')return;const k=cmNorm855(c.t);if(!k||have.has(k)||ONCE855.test(c.t)||(wo&&WOFF855.test(c.t)))return;have.add(k);pool.push(c)});
+  if(x&&(x.ps||x.intl)){pool=seaEvCut855(pool);try{pool=pool.filter(c=>!ctxBad854(String(c.t||''),x))}catch(e){}}
+  try{if(x&&x.gPA!=null&&typeof gameCmFix==='function')pool=gameCmFix(pool,x)}catch(e){}try{if(typeof spdPraiseFix==='function')pool=spdPraiseFix(pool,x)}catch(e){}try{if(typeof cmClean810==='function')pool=cmClean810(pool)}catch(e){}try{if(typeof mugCut854==='function')pool=mugCut854(pool)}catch(e){}
+  const use=c=>(U[cmH840(c.t)]||0)+(H.has(cmNorm855(c.t))?.5:0)+R()*.3;pool.sort((p,q)=>use(p)-use(q));
+  const isN=c=>c&&c._n&&!c._o||(c&&!c._o&&!c._n);let nO=real.filter(c=>c._o).length,nN=real.length-nO;const add=[];
+  while(add.length<F-real.length&&pool.length){const wantO=nN>nO;let i=pool.findIndex(c=>wantO?!isN(c):isN(c));if(i<0)i=0;const c=pool.splice(i,1)[0];if(isN(c))nN++;else nO++;add.push(c)}
+  if(!add.length)return;add.forEach(c=>{const p=1+Math.floor(R()*a.cm.length);a.cm.splice(Math.min(p,a.cm.length),0,c);try{seenAdd(c.t)}catch(e){}const k=cmH840(c.t);U[k]=(U[k]||0)+1;try{(S.cmHist=S.cmHist||[]).push(cmNorm855(c.t))}catch(e){}});
+  try{if(typeof slurClean==='function')slurClean(a)}catch(e){}
+  const free=a.cm.filter(c=>c&&!c.troll&&!c.rl),ups=free.map(c=>+c.up||0).sort((p,q)=>q-p);free.forEach((c,k)=>{c.up=ups[k]})}catch(e){}}
+
+/* 5) 무관 드립: 반지 없이 나이를 먹을수록 조금씩 더 자주 (유저 요청 00:33: "무관인 상태로 나이 먹을수록 무관 드립 살짝만 더 자주")
+      31세부터(그 전엔 v164에서 안 나옴) 기사에 무관 댓글이 없을 때만 한 개 끼움: 31세 약 3% → 35세 약 7% → 39세 이후 약 12%
+      예전 댓글 · 최근 댓글 반반 · 그날 상황(잘한 날 / 못한 날 / 가을 승리 / 가을 패배 / 탈락 / 개인상)에 맞는 것만 · 커리어에서 덜 쓴 것부터 */
+const MUGP855={
+ good:[['이렇게 잘하는데 반지가 없다는 게 말이 되냐',0],['실력은 이미 레전드인데 반지 하나가 없네',0],['무관 탈출만 남았다 올해는 가자',0],['무관기운 끊을 때가 됐다',1],['이번엔 진짜 반지 하나 끼자',1],['개인 성적은 이미 레전드인데 우승만 없었지',1]],
+ bad:[['무관기운 오늘도 출근',1],['무관기운 철철 넘친다',1],['무관 장인 또 시작이네',1],['무관기운 어디 안 감 ㅋㅋㅋ',1],['반지 없는 베테랑의 하루가 또 이렇게 간다',0],['무관기운이 방망이까지 왔다',0]],
+ psW:[['드디어 무관 탈출하나',1],['무관기운 끊을 때가 됐다',1],['이번엔 진짜 반지 하나 끼자',1],['이 나이에 첫 반지 끼면 진짜 운다',0],['무관 탈출 시나리오 쓰는 중이다',0]],
+ psL:[['가을만 되면 무관기운 스멀스멀',1],['이쯤 되면 무관 기운이 팀 전체로 퍼진다 ㅠ',1],['무관기운이 여기까지 느껴진다',1],['반지 한 번 끼기가 이렇게 어렵다',0],['무관 탈출 한 번 하기가 이렇게 힘들다',0]],
+ elim:[['또 무관으로 끝나네',1],['올해도 반지는 남의 얘기… 무관 탈출이 이렇게 어렵다',1],['무관 탈출은 내년에',1],['무관 탈출은 결국 본인이 가을에 해 줘야 한다 내년엔 꼭',0],['반지 하나만 끼고 은퇴하자 제발',0]],
+ aw:[['상은 다 받는데 반지만 없네',0],['개인상은 차고 넘치는데 우승 반지가 없다 ㅠ',0],['개인 성적은 이미 레전드인데 우승만 없었지',1]]};
+const MUGR855={good:['ㄹㅇ 반지만 있으면 완벽','올해는 진짜다'],bad:['ㅋㅋㅋ','그 얘기 그만해 ㅠ'],psW:['제발','올해는 느낌 좋다'],psL:['ㅠㅠ','그 얘기 그만 ㅠ'],elim:['ㅠㅠ','내년엔 꼭'],aw:['반지는 혼자 끼는 게 아니라서','ㅠㅠ']};
+function mugBoost855(a,tone,x){try{if(!a||!Array.isArray(a.cm)||!S||!ME||S.stage!=='pro'||!S.pro||S._inPh854)return;const ag=age();if(ag<31)return;
+  if((S.awards||[]).some(z=>/^(한국시리즈|월드시리즈) 우승$/.test(z.n)))return;if(a.cm.some(c=>c&&MUG854.test(String(c.t||''))))return;
+  const T=String(tone||''),g=x&&(x.gPA!=null||x.ipO!=null);let k=null;
+  if(g&&x.ps&&!x.intl){const elim=x.win===false&&/지면 탈락|마지막 승부/.test(String(x.sub||''));k=elim?'elim':x.win?'psW':'psL'}
+  else if(g&&!x.intl){const P=isP(),gd=P?((x.ipO||0)>=15&&(x.ra||0)<=2):((x.gHR||0)>=1||(x.gH||0)>=2||(x.gRBI||0)>=2),bd=P?((x.ra||0)>=4):((x.gPA||0)>=3&&!(x.gH||0));k=gd?'good':bd?'bad':null}
+  else if(/^award/.test(T)&&!/신인/.test(String(a.head||'')))k='aw';
+  if(!k)return;const p=.03+.09*s01((ag-31)/8);if(R()>=p)return;
+  const M=S._mug855=S._mug855||{},L=MUGP855[k].filter(([t])=>!a.cm.some(c=>c&&c.t===t));if(!L.length)return;
+  const no=L.filter(z=>z[1]).length?L.reduce((s,z)=>s+(z[1]?(M[z[0]]||0):0),0)/L.filter(z=>z[1]).length:0,nn=L.filter(z=>!z[1]).length?L.reduce((s,z)=>s+(!z[1]?(M[z[0]]||0):0),0)/L.filter(z=>!z[1]).length:0;
+  const side=L.filter(z=>(no<=nn)===!!z[1]);const Q=(side.length?side:L).slice().sort((p,q)=>(M[p[0]]||0)-(M[q[0]]||0)+(R()-.5)*.5);const [t,old]=Q[0];M[t]=(M[t]||0)+1;
+  const c=mkC(t,R()<.5?[pick(MUGR855[k])]:[],{up:ri(400,2500)});if(old)c._o=1;else c._n=1;a.cm.splice(Math.min(a.cm.length,1+Math.floor(R()*3)),0,c)}catch(e){}}
+{const _arF855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arF855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)){mugBoost855(a,tone,x);cmRefill855(a,tone,x)}}catch(e){}return r}}
