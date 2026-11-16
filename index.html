@@ -7039,7 +7039,7 @@ function f3m(v){return v.toFixed(3).replace(/^0/,"")}
     if(P)A(`${bp.y}년 가을 ERA ${(bp.p.R*27/bp.p.outs).toFixed(2)} 그 가을의 ${gn}는 진짜 무적이었다`,[]);else A(`${bp.y}년 가을 ${bp.b.HR?bp.b.HR+'홈런 ':''}타율 ${(bp.b.H/Math.max(1,bp.b.AB)).toFixed(3).replace(/^0/,'')} 그 가을 잊을 수가 없다`,['가을의 남자였다'])}
   /* 대기록 */
   const fts=featsClean(S.feats||[]).filter(f=>/사이클링|노히트|퍼펙트|40-40|30-30|50홈런|신기록|1점대|20승/.test(f.t));
-  fts.slice(0,2).forEach(f=>A(`${f.y}년 ${f.t.replace(/^\d{4} /,'')} 그 경기 직관 갔었다 평생 자랑거리`,['나도 중계로 봤는데 소름이었다']));
+  fts.slice(0,2).forEach(f=>A(`${f.y}년 ${f.t.replace(/^\d{4}(시즌)?\s*/,'').replace(/!+$/,'')} 그 경기 직관 갔었다 평생 자랑거리`,['나도 중계로 봤는데 소름이었다']));
   /* 통산 */
   if(!P){if(tb.H>=2000)A(`통산 ${tb.H}안타 이건 아무나 못 하는 거다`,[]);if(tb.HR>=300)A(`통산 ${tb.HR}홈런 거포의 커리어`,[]);else if(tb.HR>=150&&tb.H<2000)A(`통산 ${tb.H}안타 ${tb.HR}홈런 꾸준함의 상징`,[])}
   else{if(tp.W>=100)A(`통산 ${tp.W}승 ${tp.K}탈삼진 에이스의 커리어`,[]);if(tp.SV>=200)A(`통산 ${tp.SV}세이브 뒷문의 전설`,[])}
@@ -16305,33 +16305,95 @@ function cmTidy853(a,tone){try{if(!a||!Array.isArray(a.cm)||!S||!ME)return;const
 {const _arT853=article;article=function(head,body,tone,x){const id0=S&&S.artId;try{const p=S&&S.arts&&S.arts[0];if(p)cmTidy853(p)}catch(e){}const r=_arT853.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0){a.tone853=tone;cmTidy853(a,tone)}}catch(e){}return r}}
 {const _paT853=phaseArticle;phaseArticle=function(){const id0=S&&S.artId;const r=_paT853.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0)cmTidy853(a)}catch(e){}return r}}
 try{if(typeof buildSeasonRecap==='function'){const _bsT853=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsT853.apply(this,arguments);try{if(q&&Array.isArray(q.cm))cmTidy853(q,'srecap')}catch(e){}return q}}}catch(e){}
+/* 도루 곡선 뒤 생긴 장면 (펨코 '포수 도루' 쓰임: "도영씨보다 도루 많이 한 포수 있긴 함", "포수 단일 시즌 도루 1위는 ○○ 아닌지")
+   · 시즌 결산: 포수가 도루 10개↑ / 주력 45↓ 느린 타자가 도루 1~3개 성공 (시도 자체가 드문 선수) */
+try{if(typeof buildSeasonRecap==='function'){const _bsSB853=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsSB853.apply(this,arguments);try{if(!(q&&Array.isArray(q.cm)&&S&&ME&&S.pro&&S.stage==='pro'&&!isP()))return q;
+  const y=q.y||S.y,lg=S.pro.league;if(!['KBO','MLB'].includes(lg))return q;const t=yearTot(y,[lg]).b;if(!t||(t.PA||0)<300)return q;const sb=t.SB||0,gn=typeof g849==='function'?g849():ME.name,sp=DV(E('spd')),L=[];
+  if(ME.pos==='C'&&sb>=10)L.push([`포수가 도루 ${sb}개 ㅋㅋ 이게 되네`,['포수 단일 시즌 도루 기록 찾아봐야겠다','발 빠른 포수 진짜 귀하다']]);
+  else if(sp<45&&sb>=1&&sb<=3)L.push([`${gn} 도루${sb>1?' '+sb+'개':''}는 올해 최대 이변이다 ㅋㅋ`,['상대가 완전히 방심했다','뛰는 거 보고 중계진도 놀람']]);
+  const O=S._once853=S._once853||{},k=L.length?L[0][0].replace(/\d+/g,'N').slice(0,10):'';if(!L.length||O[k]||seenHas(L[0][0])||R()>.7)return q;O[k]=1;seenAdd(L[0][0]);q.cm.splice(Math.min(q.cm.length,2),0,mkC(L[0][0],L[0][1].slice(0,ri(1,2)),{up:ri(500,2600)}))}catch(e){}return q}}}catch(e){}
 
-/* ===== v853 수상·지명 기준 다시 맞춤 (W35+W36 최대 육성 표본 1,411명·약 3만 시즌, 게임 수상 공식을 그대로 재현해서 맞춤) =====
+/* ===== v854 수상 기준 다시 맞춤 (W35+W36+W37 최대 육성 표본 2,451명·약 5만 2천 시즌 합침, 게임 수상 공식을 그대로 재현해서 맞춤) =====
    목표(규정 시즌당, 포지션마다 같게): KBO 골든글러브 33% · KBO MVP 5% (선발 100이닝 시즌도 5%) · MLB MVP 3% · MLB 골드글러브 20% · 실버슬러거 25% · 신인왕 25% (투수 포함)
+   · W37 검증: W35+W36으로 맞춘 값의 재현이 실제 게임 결과랑 거의 같게 나옴(공식은 맞음) → 포지션별 차이는 표본(포지션당 약 100명) 흔들림이라 세 표본 합쳐서 다시 맞춤
    · 포지션별 수상 기준값은 실제 상도 포지션마다 따로 주는 것처럼 '그 포지션 수상자 수준'으로 둠 (경기력 보정 아님)
    · 고교 튀는 반기: 전 포지션 같게 (반기마다 20% · 그 반기 고교 경기 능력 ×1.22) — 유저 허락: 고교 튀는 반기는 지명 밸런스용으로만
-   · 지명 포지션 기준(DRA836): 예전 값이 지금 빌드랑 안 맞아서 0으로 놓고 W36 표본으로 다시 맞춤 → v161 */
-try{Object.assign(GGPM825,{"C":3.257,"1B":2.925,"2B":4.57,"3B":3.94,"SS":4.35,"LF":2.686,"CF":4.493,"RF":3.126})}catch(e){}
-try{GGP836=0.219}catch(e){}
-var MVB853={KBO:{"C":1.198,"1B":1.179,"2B":0.284,"3B":0.372,"SS":0.43,"LF":1.338,"CF":0.269,"RF":1.03,"DH":0.762},MLB:{"C":2.525,"1B":3.176,"2B":3.148,"3B":2.598,"SS":2.528,"LF":3.446,"CF":2.842,"RF":3.08,"DH":2.918}};
+   · 지명 포지션 기준(DRA836): 여기서 0으로 놓고 v161에서 W36+W37 합친 값으로 */
+try{Object.assign(GGPM825,{"C":3.407,"1B":2.815,"2B":4.426,"3B":3.97,"SS":4.11,"LF":2.86,"CF":4.467,"RF":3.018})}catch(e){}
+try{GGP836=0.179}catch(e){}
+var MVB853={KBO:{"C":1.139,"1B":1.15,"2B":0.422,"3B":0.37,"SS":0.54,"LF":1.097,"CF":0.242,"RF":1.048,"DH":0.751},MLB:{"C":2.305,"1B":3.319,"2B":3.028,"3B":2.522,"SS":2.56,"LF":3.508,"CF":2.773,"RF":3.268,"DH":2.91}};
 {const _mv853=mvpM;mvpM=function(w,b,lg){const v=_mv853.apply(this,arguments);try{if(!isP()){const T=MVB853[lg],pos=(S&&S.dhConv&&S.y>=S.dhConv)?'DH':ME.pos;if(T&&T[pos]!=null)return v+T[pos]}}catch(e){}return v}}
-var KPMV853=2.341;
-try{Object.assign(GGLO714,{"C":0.8354,"1B":0.5462,"2B":0.3964,"3B":0.0809,"SS":0.7718,"LF":0.0429,"CF":0.4169,"RF":0.1181});Object.assign(SSLO714,{"C":0.7365,"1B":0.801,"2B":0.7493,"3B":0.782,"SS":0.729,"LF":0.7927,"CF":0.7481,"RF":0.7957,"DH":0.91})}catch(e){}
-var ROY853={"C":0.904,"1B":1.266,"2B":0.498,"3B":0.999,"SS":0.886,"LF":1.143,"CF":0.696,"RF":1.526,"P":0.288};
+var KPMV853=2.385;
+try{Object.assign(GGLO714,{"C":0.8461,"1B":0.5011,"2B":0.4024,"3B":0.0739,"SS":0.7884,"LF":0.0707,"CF":0.4082,"RF":0.1251});Object.assign(SSLO714,{"C":0.7397,"1B":0.7946,"2B":0.7478,"3B":0.7842,"SS":0.7288,"LF":0.7921,"CF":0.7498,"RF":0.7963,"DH":0.91})}catch(e){}
+var ROY853={"C":0.798,"1B":1.305,"2B":0.483,"3B":0.975,"SS":0.903,"LF":1.214,"CF":0.536,"RF":1.409,"P":0.247};
 try{for(const k of ['C','1B','2B','3B','SS','LF','CF','RF','DH','SP','RP'])HOTP696[k]=.2;HOTMP840={C:1.22,'1B':1.22,'2B':1.22,'3B':1.22,SS:1.22,LF:1.22,CF:1.22,RF:1.22,DH:1.22,SP:1.22,RP:1.22};HOTM840=1.22}catch(e){}
 try{for(const k in DRA836)DRA836[k]=0}catch(e){}
 
-/* ===== v853 명전·영결·투어·레전드 기준 + 지명 포지션 기준 다시 맞춤 (W36 최대 육성 표본: 타자 448 · 선발 168 · 마무리 112 · 셋업 112) =====
-   메인·서브 훈련 복구 + 코너 슬럼프 제거로 커리어 WAR이 v842 수준으로 돌아와서(타자 중앙 47 → 58) 기준도 거의 v842 값으로 돌아감
-   · 명예의 전당 (반올림 점수): 타자 33 → 47 (95.5%) · 선발 62 → 65 (91.1%) · 마무리 30 → 38 (91.1%) · 셋업 33 → 37 (92.0%) — 새 수상 기준(포지션별 고르게) 반영된 점수로
-   · 영구결번 배율: 타자 ×0.42 → 0.68 (48.9%, 목표 49%) · 투수 ×0.75 → 0.875 (선발 약 14.6%)
-   · 레전드·스타 대우 WAR 배율: 0.67 → 0.84 · 은퇴투어: KBO WAR + 메이저 WAR×1.3 ≥ 58 → 72 (전체 자격자 33.3%)
+/* ===== v854 명전·영결·투어·레전드 기준 + 지명 포지션 기준 (W36+W37 최대 육성 표본 합침: 타자 920 · 선발 336 · 마무리 224 · 셋업 224) =====
+   이전(v853)은 W36 하나로 맞춰서 W37 검증 때 영결(선발 19.8%)·지명 1라운드(포수·중견 높고 유격·2루 낮음)가 표본 따라 흔들림 → 두 표본 합쳐서 다시 맞춤
+   · 명예의 전당 (반올림 점수): 타자 47 → 49 (95.3%) · 선발 65 그대로 (90.2%) · 마무리 38 → 37 (90.6%) · 셋업 37 → 38 (90.2%)
+   · 영구결번 배율: 타자 ×0.68 그대로 (49.6%) · 투수 ×0.875 → 0.895 (선발 약 14.7%, 목표 14.6%)
+   · 레전드·스타 대우 WAR 배율 0.84 그대로 · 은퇴투어: KBO WAR + 메이저 WAR×1.3 ≥ 72 → 73 (전체 자격자 약 33%)
    · 지명 포지션 기준(스카우트 평가 가산, 유저 허락: '지명 기준은 포지션마다 달라도 됨 — 타격 포지션은 더 쳐야'):
-     고교 튀는 반기를 전 포지션 같게 놓고 0에서 맞춤 → 포지션마다 지명 약 86~95% · 1라운드 약 43~53%
-     포수 +1.5 · 유격 +2.9 · 중견 +2.3 (수비 프리미엄) / 1루 −2.2 · 2루 −3.0 · 3루 −2.6 · 좌익 −3.4 · 우익 −2.8 (타격으로 더 증명해야) · 선발 −0.7 · 불펜 −3.6 */
-try{Object.assign(HOFT720,{B:47,SP:65,CL:38,RP:37})}catch(e){}
-WARF842B=0.68;WARF842P=0.875;WARF842=0.84;TOURW852=72;
-try{Object.assign(DRA836,{C:1.5,'1B':-2.17,'2B':-2.99,'3B':-2.64,SS:2.89,LF:-3.4,CF:2.25,RF:-2.76,SP:-.7,RP:-3.57})}catch(e){}
+     두 표본 합쳐서 포지션마다 지명 약 89~95% · 1라운드 약 49~55%로 맞춤 (고교 튀는 반기는 전 포지션 같게)
+     포수 +0.9 · 유격 +3.8 · 중견 +1.4 (수비 프리미엄) / 1루 −0.8 · 2루 −2.5 · 3루 −1.7 · 좌익 −2.0 · 우익 −2.7 (타격으로 더 증명해야) · 선발 +0.4 · 불펜 −2.5 */
+try{Object.assign(HOFT720,{B:49,SP:65,CL:37,RP:38})}catch(e){}
+WARF842B=0.68;WARF842P=0.895;WARF842=0.84;TOURW852=73;
+try{Object.assign(DRA836,{C:.9,'1B':-.82,'2B':-2.49,'3B':-1.7,SS:3.77,LF:-2.02,CF:1.4,RF:-2.73,SP:.44,RP:-2.54})}catch(e){}
+
+/* ===== v854 댓글: '케이팝 모델 생수머신' (펨코 제목들 · 나무위키 별명 문단 공부)
+   - 유래: 올스타 홈런 레이스 인터뷰에서 외국인 동료가 몸을 칭찬하면서 한 말을 통역이 그대로 옮겨서 퍼진 별명. 순화된 '생수머신'으로 광고까지 찍었고 동료들은 '머신이형'이라고 부름
+   - 쓰임: 몸 좋고(근육형) 파워·주력 다 되는 타자가 홈런·도루로 피지컬을 보여 줄 때 팬들이 붙이는 칭찬. 게임 안에서는 실명 없이 별명만
+   - 조건: 프로 · 21살↑ · 근육형 체형 · 파워 72↑ · 주력 70↑ 타자 / 이긴 경기 홈런 기사 · 20-20 시즌 결산 · 은퇴(커리어 중에 그 별명을 들었을 때만)
+   - 빈도: 문장마다 커리어에 한 번 · 한 시즌에 한 번 · 커리어 최대 4번 (+ 은퇴 1번)
+   - 같이 고침: 근육형인데 발 빠른 타자(주력 65↑)한테 붙던 '느림보·돼지' 드립 빼기 (근육형 = 무조건 느린 거구로 보던 것) */
+function mach854(){try{if(!S||!ME||isP()||ME.body!=='거구'||S.stage!=='pro'||age()<21)return 0;return DV(E('pow'))>=72&&DV(E('spd'))>=70?1:0}catch(e){return 0}}
+function fastBig854(){try{return !!(ME&&!isP()&&ME.body==='거구'&&DV(E('spd'))>=65)}catch(e){return false}}
+const SLOW854=/돼지|뚱|뱃살|몸무게|체중|천천히 도는|뛰는 속도보다|한 베이스 더 가는 순간|홈런 아니면 안 뛰|덩치로 도루하면|한 베이스씩 손해|유니폼이 점점 꽉|몸 관리만 잘하면 더 오래|1루까지 뛰는 게|2루까지 가면 상대 팀이 실책|산책하는|지명타자로만 쓰기/;
+function slowCut854(arr){try{if(!Array.isArray(arr)||!fastBig854())return arr;const T=c=>String((c&&c.t)||''),o=arr.filter(c=>!SLOW854.test(T(c)));o.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!SLOW854.test(T(r)))});return o}catch(e){return arr}}
+function machKey854(t){return String(t).replace(/\d+/g,'N').slice(0,14)}
+function machOk854(t){try{const M=S._mach854||{n:0,y:null},O=S._once853||{};return M.n<4&&M.y!==S.y&&!O[machKey854(t)]&&!seenHas(t)}catch(e){return false}}
+function machUse854(t){try{const M=S._mach854=S._mach854||{n:0,y:null},O=S._once853=S._once853||{};M.n++;M.y=S.y;O[machKey854(t)]=1;seenAdd(t)}catch(e){}}
+{const _cmM854=comments;comments=function(tone,x){let out=_cmM854.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||isP())return out;out=slowCut854(out);
+  if(tone==='retire'){const M=S._mach854;if(M&&M.n>=1&&!M.ret&&R()<.7){M.ret=1;out.splice(Math.min(out.length,3),0,mkC('케이팝 모델 생수머신 은퇴라니 몸은 아직 현역인데 ㅠ',shuffle(['은퇴해도 몸은 그대로일 듯 ㅋㅋ','생수 광고는 이제 찍어도 된다','머신이형 그동안 고마웠다']).slice(0,2),{up:ri(900,4200)}))}return out}
+  /* 별명이 붙은 뒤(커리어에 한 번씩): 부진 기사엔 '머신이형 마지막 안타가 언제냐', 멀티히트로 이긴 날엔 '머신이형 내일도 오늘만큼만' (펨코 제목 쓰임 그대로) */
+  {const M=S._mach854;if(M&&M.n>=1&&S.stage==='pro'){
+    if(!M.slump&&tone==='bad'&&R()<.5){M.slump=1;const nh=x&&x.gPA!=null&&(x.gH||0)===0;out.splice(Math.min(out.length,2),0,mkC(nh?'머신이형 마지막 안타가 언제였냐 ㅠ':'머신이형 마지막 홈런이 언제였냐 ㅠ',shuffle(['몸은 그대로인데 타구가 안 뜬다','생수 좀 마시고 힘내라','머신도 기름칠이 필요하다']).slice(0,2),{up:ri(500,2600)}));return out}
+    if(M.n>=2&&!M.more&&tone==='hype'&&x&&x.gPA!=null&&(x.gH||0)>=2&&x.win!==false&&!x.intl&&R()<.25){M.more=1;out.splice(Math.min(out.length,2),0,mkC('머신이형 내일도 오늘만큼만 해 줘',[pick(['오늘 같은 날이 매일이면 좋겠다','머신 가동 시작이다'])],{up:ri(600,3000)}));return out}}}
+  if(!x||x.gPA==null||!((x.gHR||0)>=1)||x.win===false||x.intl||!mach854())return out;
+  const L=[];
+  if(S.pro&&S.pro.league==='MLB')L.push(['메이저 가서도 몸으로 안 밀리네 ㅋㅋ 케이팝 모델 생수머신 수출',['양키들 사이에서도 덩치 안 꿇림','몸은 원래 메이저 사이즈였다','머신이형 미국에서도 머신']]);
+  else{
+    if((x.gSB||0)>=1)L.push(['넘기고 훔치고 혼자 다 하네 ㅋㅋ 근육질에 발까지 빠른 건 반칙이지',['역시 케이팝 모델 생수머신','피지컬 툴 끝판왕']]);
+    if((x.gHR||0)>=2)L.push(['멀티홈런 생수머신 ㄷㄷ 오늘 몸 상태 미쳤다',['기계처럼 넘기네 ㅋㅋ','유니폼 터지겠다']]);
+    L.push(['역시 케이팝 모델 생수머신 ㅋㅋㅋㅋ',['몸 보면 그냥 납득됨','생수 광고 언제 찍냐 ㅋㅋ','머신이형 또 넘겼다']]);
+    L.push(['몸 좋은 놈이 치니까 타구 소리부터 다르네 생수머신 ㄷㄷ',['팔뚝 보소','저 피지컬은 타고난 거다']]);
+  }
+  const C=L.filter(z=>machOk854(z[0]));if(!C.length||R()>.14)return out;const z=C[0];machUse854(z[0]);out.splice(Math.min(out.length,1+ri(0,1)),0,mkC(z[0],shuffle(z[1].slice()).slice(0,ri(1,2)),{up:ri(700,3800)}))}catch(e){}return out}}
+try{if(typeof buildSeasonRecap==='function'){const _bsM854=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsM854.apply(this,arguments);try{if(!(q&&Array.isArray(q.cm)&&S&&ME&&S.pro)||isP())return q;q.cm=slowCut854(q.cm);if(!mach854())return q;
+  const lg=S.pro.league;if(!['KBO','MLB'].includes(lg))return q;const t=yearTot(q.y||S.y,[lg]).b;if(!t||(t.PA||0)<300)return q;const hr=t.HR||0,sb=t.SB||0;let z=null;
+  if(hr>=30&&sb>=30)z=['30-30 생수머신 ㄷㄷ 몸이 그냥 툴 그 자체',['이 몸으로 30도루는 사기','외국인 선수들도 몸 보고 감탄하겠다 ㅋㅋ']];
+  else if(hr>=20&&sb>=20)z=[`${hr}홈런 ${sb}도루에 몸까지 좋은 케이팝 모델 생수머신 ㅋㅋㅋㅋ`,['파워에 발까지 다 되는 몸','비시즌에 쇠질이랑 달리기만 했나 보다']];
+  if(!z||!machOk854(z[0])||R()>.55)return q;machUse854(z[0]);q.cm.splice(Math.min(q.cm.length,2),0,mkC(z[0],shuffle(z[1].slice()).slice(0,ri(1,2)),{up:ri(900,4200)}))}catch(e){}return q}}}catch(e){}
+/* 같은 댓글(숫자·내 이름만 다른 것 포함)은 커리어에 3번까지 — 최근 900개 창이 지나면 불펜 칭찬·가을 연호('대 ○ ○') 같은 말이 4~5번씩 다시 나오던 것 (기사에 댓글이 3개 이하로 남으면 그대로 둠) */
+function h854(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)}
+try{if(typeof cmTidy853==='function'){const _ct854=cmTidy853;cmTidy853=function(a,tone){let fresh=null;try{if(a&&Array.isArray(a.cm))fresh=new Set(a.cm.filter(c=>c&&typeof c.t==='string'&&!c._t853))}catch(e){}
+  _ct854.apply(this,arguments);try{if(!fresh||!fresh.size||!S||!ME)return;const U=S._cap854=S._cap854||{},nm=String(ME.name||''),gn=String(typeof g849==='function'?g849():nm);let left=a.cm.length;tone=tone||a.tone853;
+  const norm=s=>{let t=String(s);if(nm)t=t.split(nm).join('@');if(gn&&gn.length>=2)t=t.split(gn).join('@');return t.replace(/\d+(\.\d+)?/g,'N')};
+  /* 댓글이 1~3개뿐인 시즌 결산(출전 적은 해)에서 같은 비시즌 인사가 4번째부터는 다른 인사로 · 큰 경기 캐스터 멘트 인용은 같은 멘트 커리어에 2번까지 */
+  const OFF=['시즌 끝나니까 벌써 야구 보고 싶다','벌써 내년 개막이 기다려진다','겨울 너무 길다 빨리 봄 와라','비시즌 동안 몸 잘 만들어 와라','1년 동안 고생 많았다 푹 쉬어라','내년엔 더 자주 보자'];
+  a.cm=a.cm.filter(c=>{if(!fresh.has(c))return true;const k=h854(norm(c.t));U[k]=(U[k]||0)+1;
+    const q=c.t.match(/^캐스터 "([^"]+)"/);let over=U[k]>3;if(q){const kq='Q'+h854(norm(q[1]));U[kq]=(U[kq]||0)+1;if(U[kq]>2)over=true}
+    if(!over)return true;
+    if(left>3){left--;return false}
+    if(tone==='srecap'){const alt=OFF.find(z=>z!==c.t&&(U[h854(norm(z))]||0)<3);if(alt){c.t=alt;c.re=[];const ka=h854(norm(alt));U[ka]=(U[ka]||0)+1}}
+    return true})}catch(e){}}}}catch(e){}
+/* 팀 동료 이름 댓글('역시 ○○ 투수 GOAT' 다답글 등): 이름 만들 때 실존 선수 이름 거르기 (내 선수 이름 만들 때처럼) */
+try{if(typeof mateNames==='function'){const _mn854=mateNames;mateNames=function(n,kind){const L=_mn854.call(this,(n||1)+4,kind)||[];const bad=t=>{try{return (typeof REALN2!=='undefined'&&REALN2.has(t))||(typeof REALN!=='undefined'&&REALN.test(t))}catch(e){return false}};return L.filter(t=>!bad(t)).slice(0,n)}}}catch(e){}
+/* '퐁당퐁당 골글'은 커리어에 한 번 (900개 창이 지나면 4년 뒤 같은 말이 또 나오던 것) */
+{const _cmP854=comments;comments=function(tone,x){let out=_cmP854.apply(this,arguments);try{if(tone!=='award'||!Array.isArray(out)||!S)return out;const i=out.findIndex(c=>c&&typeof c.t==='string'&&/^퐁당퐁당 골글/.test(c.t));if(i<0)return out;if(S._pong854){out.splice(i,1)}else S._pong854=S.y}catch(e){}return out}}
+/* 이름 만들 때 거르는 실존 인물에 다른 종목 스타·유명 연예인 추가 (라이벌 이름이 '박지성'으로 나온 것) */
+try{if(typeof REALN2!=='undefined'&&REALN2&&REALN2.add)['박지성','손흥민','이강인','황희찬','기성용','차범근','이영표','안정환','박주영','김민재','이승우','황의조','조규성','김연아','이상화','박태환','김연경','서장훈','허재','현주엽','이승훈','유재석','강호동','이효리','송중기','박서준','김수현','이민호','현빈','원빈','장동건','정우성','이정재','송강호','이병헌','박보검','차은우','정해인','공유','마동석','하정우','유아인','김태희','전지현','송혜교','아이유'].forEach(n=>REALN2.add(n))}catch(e){}
 
 </script>
 
