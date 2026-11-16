@@ -15188,6 +15188,9 @@ try{for(const k in DRA836)DRA836[k]=0}catch(e){}
 try{Object.assign(HOFT720,{B:50,SP:64,CL:36,RP:37})}catch(e){}/* v854c: W36+W37+W38 합쳐(타자 1,368 · 선발 504 · 마무리 336 · 셋업 336) — 타자 49→50 (95.0%) · 선발 65→64 (90.7%) · 마무리 37→36 (90.8%) · 셋업 38→37 (91.4%) */
 WARF842B=0.67;WARF842P=0.905;WARF842=0.84;TOURW852=74;/* v854c: 영결 타자 0.68→0.67 (49.7%) · 투수 0.895→0.905 (선발 약 14.4%) · 투어 73→74 (자격자 약 33.7%) */
 try{Object.assign(DRA836,{C:.9,'1B':-.82,'2B':-2.49,'3B':-1.7,SS:3.77,LF:-2.02,CF:1.4,RF:-2.73,SP:.44,RP:-2.54})}catch(e){}
+try{Object.assign(HOFT720,{B:53,SP:67,CL:30,RP:34})}catch(e){}WARF842P=0.897;/* v855g: 최종 공식(포지션 보정 KBO 0.76·MLB 0.855·수비 ×1.0506)으로 돌린 W42 최대 육성 표본(타자 512 · 선발 184 · 마무리 120 · 셋업 120)으로 다시 맞춤
+   · 명예의 전당 (반올림 점수, 투수는 선발 비중 섞인 기준선 그대로 재현해서): 타자 50→53 (96.1→95.3%) · 선발 64→67 (92.4→91.3%) · 마무리 36→30 (84.2→90.8%) · 셋업 37→34 (87.5→90.0%)
+   · 영구결번: 타자 ×0.67 그대로 (49.1%) · 투수 ×0.905→0.897 (선발 11.9→약 14.6%) · 은퇴투어 74 그대로 (전체 자격자 33.3%) */
 
 /* ===== v854 댓글: '케이팝 모델 생수머신' (펨코 제목들 · 나무위키 별명 문단 공부)
    - 유래: 올스타 홈런 레이스 인터뷰에서 외국인 동료가 몸을 칭찬하면서 한 말을 통역이 그대로 옮겨서 퍼진 별명. 순화된 '생수머신'으로 광고까지 찍었고 동료들은 '머신이형'이라고 부름
@@ -15624,7 +15627,7 @@ function thrAdd855(a,x){try{if(!a||!Array.isArray(a.cm)||!x||!x.lsc||S._inPh854)
     if((k>=Math.ceil(n*.5)||cl>=n-1&&thr>=2)&&(T.margin<=3||n>=5)){put(thrPick855([x.win?'ser':'serL'],{n:n>=5?n:undefined,k:k>=2?k:undefined}),ri(0,2))}}}catch(e){}}
 {const _arT855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arT855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&x&&x.lsc)thrAdd855(a,x)}catch(e){}return r}}
 
-/* ===== v855f 온라인 명예의 전당 · 통산 순위 → 최대 육성 표본으로 새로 채움 (유저 요청 11/17 01:16)
+/* ===== v855f→g 온라인 명예의 전당 · 통산 순위 → 최대 육성 표본으로 새로 채움 (유저 요청 11/17 01:16)
    "사이트에 있는 명전들이랑 안타 홈런 등등 다 내리고, 새로 표본 엄청 많이 돌려서 나열해 줘 — 잘 키운다는 가정하에 어느 정도인지 보자"
    · 예전 기록은 서버에서 지우지 않고 화면에서만 내림: HOF_RESET855 시각 이후 올라온 기록만 보여 줌 (되돌리려면 이 시각만 옛날로)
    · 표본: 최대 육성(포지션별 같은 수, 유저처럼 키움) 커리어를 v855e 최종 공식으로 돌린 결과 — hof_sample.json (사이트에서만 불러옴)
@@ -15632,7 +15635,7 @@ function thrAdd855(a,x){try{if(!a||!Array.isArray(a.cm)||!x||!x.lsc||S._inPh854)
 const HOF_RESET855='2026-11-16T16:30:00Z';
 let HOFS855=null,HOFSP855=null;
 function hofSample855(){if(HOFS855)return Promise.resolve(HOFS855);if(HOFSP855)return HOFSP855;
-  HOFSP855=(typeof fetch==='function'?fetch('hof_sample.json?v=855f').then(r=>r.ok?r.json():[]):Promise.resolve([])).then(d=>{HOFS855=Array.isArray(d)?d:(d&&Array.isArray(d.rows)?d.rows:[]);if(d&&d.n){HOFS855.n=d.n;HOFS855.hof=d.hof}return HOFS855}).catch(()=>{HOFS855=[];return HOFS855});return HOFSP855}
+  HOFSP855=(typeof fetch==='function'?fetch('hof_sample.json?v=855g').then(r=>r.ok?r.json():[]):Promise.resolve([])).then(d=>{HOFS855=Array.isArray(d)?d:(d&&Array.isArray(d.rows)?d.rows:[]);if(d&&d.n){HOFS855.n=d.n;HOFS855.hof=d.hof}return HOFS855}).catch(()=>{HOFS855=[];return HOFS855});return HOFSP855}
 function hofQ855(arr,q){try{const P={};String(q||'').split('&').forEach(s=>{const i=s.indexOf('=');if(i>0)P[s.slice(0,i)]=decodeURIComponent(s.slice(i+1))});
   const al=c=>{const a=String(c||'').replace(/^extra->st->/,'');return a==='r'?'runs':a};let a=(arr||[]).slice();
   if(P.kind)a=a.filter(r=>r&&r.kind===P.kind.replace(/^eq\./,''));
@@ -15648,3 +15651,5 @@ hofList=async function(q){let srv=[],ok=false;try{const r=await hofReq('hof_reco
 /* 명예의 전당 탭 안내: 표본으로 채웠다는 걸 한 줄로 */
 {const _vhh855=vHofHall;vHofHall=function(){let h=_vhh855.apply(this,arguments);try{if(HOFS855&&HOFS855.length&&h.indexOf('hof-note')>=0){const n=HOFS855.n||HOFS855.length,hf=HOFS855.hof!=null?HOFS855.hof:HOFS855.filter(r=>r.hof).length;
   h=h.replace('</div><div class="hof-grp">',`<br><span style="opacity:.85">지금 순위는 최대로 키운 표본 ${n.toLocaleString()}명 커리어(명예의 전당 헌액 ${hf.toLocaleString()}명)로 채워져 있어요 · 표본은 'by 표본'으로 표시 · 새로 올리는 기록은 같이 섞여요</span></div><div class="hof-grp">`)}}catch(e){}return h}}
+/* 명예의 전당 'MVP N회'는 정규시즌 MVP만 (예전엔 준PO·PO·KS·WS·WBC MVP까지 세서 'MVP 11회'처럼 부풀려 보였음 — 표본 점검에서 발견) */
+{const _hrM855=hofRecord;hofRecord=function(owner){const rec=_hrM855.apply(this,arguments);try{rec.mvps=(S.awards||[]).filter(a=>/^(정규시즌 MVP|아메리칸리그 MVP|내셔널리그 MVP|MLB MVP)$/.test(String(a.n||''))).length}catch(e){}return rec}}
