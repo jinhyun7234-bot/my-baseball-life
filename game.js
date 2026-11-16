@@ -15577,3 +15577,74 @@ function repFix855(cm,tone){try{if(!Array.isArray(cm))return cm;const EMOP=/ㅠ|
     else if(/^(미쳤다 진짜|레전드|ㄹㅇ 가을 남자|가을 남자 인정)/.test(t)&&/못했는데|못 했는데|부진|침묵/.test(p))r.t=/이겼/.test(p)?pick(['ㅋㅋㅋ','이겼으면 됐지 ㅋㅋ']):pick(['ㅋㅋㅋ','다음엔 하겠지'])})});
   return cm}catch(e){return cm}}
 {const _arR855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arR855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm))repFix855(a.cm,tone)}catch(e){}return r}}
+
+/* 10) 후반기 결산(=시즌 끝)엔 '페이스' X (유저 지적 01:20: "후반기 끝난 거면 시즌이 끝난 건데 페이스는 쓰는 거 아님 · 전반기 끝나고 페이스는 그럴 수 있음")
+       후반기 결산·시즌 결산 기사의 제목 '… 시즌 N홈런 페이스'·'… 다승왕 페이스' 꼬리, 본문 페이스 문장, 페이스 댓글·답글 뺌 */
+function paceCut855(a,tone){try{if(!a)return;const H=String(a.head||''),T=String(tone||a.tone||'');if(!/후반기/.test(H)&&T!=='srecap')return;
+  if(/페이스/.test(H)){let h=H.replace(/…\s*[^…]*페이스\s*$/,'').replace(/[,·]\s*[^,·…]*페이스\s*$/,'').trim();if(h&&h!==H)a.head=h}
+  if(typeof a.body==='string'&&/페이스/.test(a.body))a.body=a.body.split(/(?<=[.!?다])\s+/).filter(s=>!/페이스/.test(s)).join(' ');
+  const PX=/페이스|경쟁 (제대로 )?들어갔|이대로만 가면|남은 경기/;if(Array.isArray(a.cm)){a.cm=a.cm.filter(c=>!(c&&PX.test(String(c.t||''))));a.cm.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!PX.test(String((r&&r.t)||r||'')))})}}catch(e){}}
+{const _arP855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arP855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0){const n0=(a.cm||[]).length;paceCut855(a,tone);if((a.cm||[]).length<n0&&!S._inPh854)cmRefill855(a,tone,x)}}catch(e){}return r}}
+try{if(typeof buildSeasonRecap==='function'){const _bsP855=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsP855.apply(this,arguments);try{if(q&&Array.isArray(q.cm)){const k=q.cm.filter(c=>!(c&&/페이스/.test(String(c.t||''))));if(k.length)q.cm=k}}catch(e){}return q}}}catch(e){}
+
+/* 11) 엎치락뒤치락 재밌는 경기 댓글 (유저 요청 01:20: "엎치락뒤치락 재밌는 경기엔 '경기 진짜 재밌다' 같은 건 경기마다 나와도 됨 — 똑같은 말 X, 변형으로 골고루 ·
+       '내가 본 가을야구 중에 젤 재밌네' · 시리즈 전체가 한 점 차 박빙이면 '내가 본 시리즈 중 가장 재밌었던 시리즈'" · 참고: 2018 PO 5차전 SK-넥센 — 9-4 → 9회초 9-9 → 10회초 9-10 → 10회말 백투백 끝내기 11-10)
+       라인스코어로 그 경기 흐름을 읽음: 리드 바뀐 횟수 · 동점 횟수 · 7회 이후 뒤집힘 · 최대 점수 차 뒤집기 · 연장 · 최종 점수 차 → 재밌는 경기면 그 경기 숫자를 넣은 댓글 하나(아주 재밌으면 '내가 본 가을야구 중 최고'급 하나 더)
+       같은 말은 커리어에서 덜 쓴 것부터 · 시리즈가 끝나는 경기에서 시리즈 전체가 박빙이었으면 시리즈 댓글 하나 */
+function thrill855(x){try{const L=x&&x.lsc;if(!Array.isArray(L)||L.length<2||!Array.isArray(L[0]))return null;const my=x.mySide===1?1:0,n=Math.max(L[0].length,L[1].length);let s=[0,0],lead=0,chg=0,ties=0,late=0,defMy=0,defOp=0,tieLate=0;
+  for(let i=0;i<n;i++)for(const side of[0,1]){const r=+(L[side][i]||0);if(!r)continue;s[side]+=r;const d=Math.sign(s[0]-s[1]);if(lead!==0&&d!==0&&d!==lead){chg++;if(i>=6)late++}if(lead!==0&&d===0){ties++;if(i>=6){late++;tieLate++}}if(d!==0)lead=d;defMy=Math.max(defMy,s[1-my]-s[my]);defOp=Math.max(defOp,s[my]-s[1-my])}
+  const margin=Math.abs(s[0]-s[1]),extra=n>9,win=x.win===true,cb=win?defMy:defOp;const sc=chg*1.3+ties*.7+(extra?1.2:0)+(margin<=1?1:0)+(late?1.3:0)+(cb>=3?1:0)+(cb>=5?1:0);
+  return{chg,ties,late,tieLate,extra,inns:n,margin,cb,win,sc,my:s[my],op:s[1-my]}}catch(e){return null}}
+const THR855={
+ any:['경기 진짜 재밌다','오늘 경기 미쳤다 진짜 재밌었다','이런 경기 보려고 야구 본다','각본 없는 드라마 그 자체','드라마 작가도 이렇게는 못 쓴다','중간에 채널 돌렸으면 큰일 날 뻔','심장 약한 사람은 오늘 경기 보지 마라','야구 몰라요 진짜','도파민 터지는 경기였다','롤러코스터 탄 기분 ㅋㅋ','오늘 경기는 승패 떠나서 명경기','양 팀 다 박수 쳐 주고 싶은 경기','오늘 야구 레전드 찍었다','한순간도 눈을 못 뗐다'],
+ anyW:['하이라이트 열 번 돌려 본다','이긴 것보다 경기가 재밌어서 더 좋다','오늘 이 경기 보려고 하루 버텼다'],
+ chg:['역전에 재역전에… {chg}번 뒤집혔다 ㄷㄷ','엎치락뒤치락 {chg}번 이게 야구지','리드가 {chg1}번이나 바뀌는 경기는 진짜 처음 봄','뒤집고 뒤집히고 {chg}번 정신이 하나도 없다 ㅋㅋ'],
+ tie:['동점만 {ties}번 나옴 ㅋㅋ 심장 터지는 줄','{ties}번이나 동점 됐다 끝까지 손에 땀 쥐었다'],
+ extra:['연장 {inns}회까지 가는 혈투 하나도 안 지루했다','{inns}회까지 본 사람 손 ㅋㅋ 근데 시간 가는 줄 몰랐다','연장까지 갈 줄 누가 알았냐 진짜 재밌었다'],
+ cbW:['{cb}점 차를 뒤집는 거 보고 소름 돋았다','{cb}점 지고 있을 때 TV 끈 사람 손 ㅋㅋ','{cb}점 차 역전승 이 맛에 야구 본다'],
+ late:['7회부터 진짜 야구 시작이었다','후반에 뒤집히는 거 보고 소리 질렀다','끝날 때까지 끝난 게 아니다 오늘 제대로 배웠다'],
+ one:['끝까지 한 점 차 피 말렸다','마지막 아웃까지 한 점 차 숨도 못 쉬었다'],
+ lose:['졌지만 오늘 경기는 진짜 재밌었다','결과는 아쉬운데 경기 자체는 레전드였다','이렇게 재밌는 경기를 지다니 ㅠ 그래도 잘 싸웠다','지긴 했어도 이런 경기면 인정이다'],
+ epicPs:['내가 본 가을야구 중에 젤 재밌네','가을야구 역사에 남을 경기다','몇 년 뒤에도 얘기 나올 경기','이게 포스트시즌이지 평생 기억한다','가을야구 명경기 TOP3 안에 든다 진짜','이 경기 직관한 사람들 평생 자랑해라','야구 20년 봤는데 이런 가을 경기 처음이다'],
+ epicIntl:['국대 경기 중에 제일 재밌었다','국제대회에서 이런 명승부라니 평생 기억한다','이 경기 직관한 사람들 평생 자랑해라','대표팀 경기 중 역대급이다'],
+ ser:['내가 본 시리즈 중 가장 재밌었던 시리즈','{n}경기 중에 {k}경기가 한 점 차 ㄷㄷ 역대급 시리즈','이 시리즈 다큐로 만들어라','{n}차전까지 가는 명승부 시리즈였다','어느 팀이 올라가도 이상하지 않았던 시리즈','시리즈 내내 심장이 남아나질 않았다'],
+ serL:['졌지만 시리즈 내내 진짜 재밌었다 고생했다','이 시리즈는 져도 박수 쳐 줘야 한다','시리즈 내내 명승부였다 졌어도 후회 없다']};
+const THRRE855=['ㄹㅇ','ㅇㅈ 이게 야구지','심장 아직도 뜀','인정합니다','이 맛에 본다','직관 간 사람 부럽다'];
+function thrPick855(keys,v){const U=S._thr855=S._thr855||{};let L=[];keys.forEach(k=>(THR855[k]||[]).forEach(t=>L.push(t.replace(/\{(\w+)\}/g,(m,z)=>v[z]!=null?v[z]:m))));L=L.filter(t=>!/\{\w+\}/.test(t));if(!L.length)return null;
+  L.sort((p,q)=>((U[p]||0)-(U[q]||0))+(R()-.5)*.6);const t=L[0];U[t]=(U[t]||0)+1;return t}
+function thrAdd855(a,x){try{if(!a||!Array.isArray(a.cm)||!x||!x.lsc||S._inPh854)return;const T=thrill855(x);if(!T)return;
+  /* 시리즈 기록 */
+  if(x.ps&&!x.intl&&/차전/.test(String(x.title||''))){const key=S.y+'|'+String(x.title).replace(/ ?\d+차전/,'');const Z=S._ser855&&S._ser855.k===key?S._ser855:(S._ser855={k:key,g:[]});const gn=+((String(x.title).match(/(\d+)차전/)||[])[1]||0);if(!Z.g.some(z=>z.n===gn))Z.g.push({n:gn,m:T.margin,sc:T.sc,ex:T.extra})}
+  const has=t=>a.cm.some(c=>c&&c.t===t),put=(t,i)=>{if(!t||has(t))return;const c=mkC(t,R()<.6?[pick(THRRE855)]:[],{up:ri(1500,5200)});c._n=1;a.cm.splice(Math.min(a.cm.length,i),0,c)};
+  const v={chg:T.chg,chg1:T.chg+1,ties:T.ties,inns:T.inns,cb:T.cb};
+  if(T.sc>=3.5&&(T.chg>=2||T.ties>=2||T.late>=1||T.extra)){const ks=['any'];if(T.chg>=2)ks.push('chg');if(T.ties>=2)ks.push('tie');if(T.extra)ks.push('extra');if(T.win&&T.cb>=3)ks.push('cbW');if(T.late)ks.push('late');if(T.margin<=1)ks.push('one');if(!T.win)ks.push('lose');else ks.push('anyW');put(thrPick855(ks,v),ri(0,2))}
+  if(T.sc>=5.5)put(thrPick855([x.intl?'epicIntl':'epicPs'],v),ri(1,3));
+  /* 시리즈가 끝나는 경기: 시리즈 전체 박빙이면 */
+  if(x.ps&&!x.intl&&x.last&&S._ser855&&S._ser855.g.length>=3){const g=S._ser855.g,n=g.length,k=g.filter(z=>z.m<=1).length,cl=g.filter(z=>z.m<=2).length,thr=g.filter(z=>z.sc>=3).length;
+    if((k>=Math.ceil(n*.5)||cl>=n-1&&thr>=2)&&(T.margin<=3||n>=5)){put(thrPick855([x.win?'ser':'serL'],{n:n>=5?n:undefined,k:k>=2?k:undefined}),ri(0,2))}}}catch(e){}}
+{const _arT855=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arT855.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&x&&x.lsc)thrAdd855(a,x)}catch(e){}return r}}
+
+/* ===== v855f 온라인 명예의 전당 · 통산 순위 → 최대 육성 표본으로 새로 채움 (유저 요청 11/17 01:16)
+   "사이트에 있는 명전들이랑 안타 홈런 등등 다 내리고, 새로 표본 엄청 많이 돌려서 나열해 줘 — 잘 키운다는 가정하에 어느 정도인지 보자"
+   · 예전 기록은 서버에서 지우지 않고 화면에서만 내림: HOF_RESET855 시각 이후 올라온 기록만 보여 줌 (되돌리려면 이 시각만 옛날로)
+   · 표본: 최대 육성(포지션별 같은 수, 유저처럼 키움) 커리어를 v855e 최종 공식으로 돌린 결과 — hof_sample.json (사이트에서만 불러옴)
+     이름 옆 'by 표본' 표시 · 새로 은퇴해서 올리는 실제 기록은 표본과 같이 순위에 섞여 들어감 */
+const HOF_RESET855='2026-11-16T16:30:00Z';
+let HOFS855=null,HOFSP855=null;
+function hofSample855(){if(HOFS855)return Promise.resolve(HOFS855);if(HOFSP855)return HOFSP855;
+  HOFSP855=(typeof fetch==='function'?fetch('hof_sample.json?v=855f').then(r=>r.ok?r.json():[]):Promise.resolve([])).then(d=>{HOFS855=Array.isArray(d)?d:(d&&Array.isArray(d.rows)?d.rows:[]);if(d&&d.n){HOFS855.n=d.n;HOFS855.hof=d.hof}return HOFS855}).catch(()=>{HOFS855=[];return HOFS855});return HOFSP855}
+function hofQ855(arr,q){try{const P={};String(q||'').split('&').forEach(s=>{const i=s.indexOf('=');if(i>0)P[s.slice(0,i)]=decodeURIComponent(s.slice(i+1))});
+  const al=c=>{const a=String(c||'').replace(/^extra->st->/,'');return a==='r'?'runs':a};let a=(arr||[]).slice();
+  if(P.kind)a=a.filter(r=>r&&r.kind===P.kind.replace(/^eq\./,''));
+  for(const k in P){if(['kind','order','limit','select','created_at','career_id'].includes(k))continue;const v=P[k],c=al(k);
+    if(/^gte\./.test(v)){const n=+v.slice(4);a=a.filter(r=>r&&+r[c]>=n)}else if(v==='not.is.null')a=a.filter(r=>r&&r[c]!=null)}
+  if(P.order){const[c0,dir]=P.order.split('.'),c=al(c0),asc=dir==='asc';a.sort((x,y)=>{const u=x&&x[c],v=y&&y[c];if(u==null&&v==null)return 0;if(u==null)return 1;if(v==null)return-1;return asc?(+u)-(+v):(+v)-(+u)})}
+  if(P.limit)a=a.slice(0,+P.limit);return a}catch(e){return arr||[]}}
+hofList=async function(q){let srv=[],ok=false;try{const r=await hofReq('hof_records?select='+HOF_COLS+'&created_at=gte.'+HOF_RESET855+'&'+q);if(r.ok){srv=await r.json();ok=true}}catch(e){}
+  let smp=[];try{smp=await hofSample855()}catch(e){}if(!ok&&!smp.length)throw new Error('load');
+  const seen=new Set(),all=[];srv.concat(hofQ855(smp,q)).forEach(r=>{if(r&&!seen.has(r.career_id)){seen.add(r.career_id);all.push(r)}});return hofQ855(all,q)};
+{const _hv855=hofViewLoad;hofViewLoad=function(id){if(!/^smp/.test(String(id||'')))return _hv855.apply(this,arguments);const key='v:'+id;if(HOFD[key]&&(HOFD[key].row||HOFD[key].err))return HOFD[key];
+  HOFD[key]={loading:1,t:Date.now()};hofSample855().then(d=>{const row=(d||[]).find(r=>r.career_id===id);HOFD[key]=row?{row,t:Date.now()}:{err:1,t:Date.now()};render();if(row)try{hofCardMake(key)}catch(e){}});return HOFD[key]}}
+/* 명예의 전당 탭 안내: 표본으로 채웠다는 걸 한 줄로 */
+{const _vhh855=vHofHall;vHofHall=function(){let h=_vhh855.apply(this,arguments);try{if(HOFS855&&HOFS855.length&&h.indexOf('hof-note')>=0){const n=HOFS855.n||HOFS855.length,hf=HOFS855.hof!=null?HOFS855.hof:HOFS855.filter(r=>r.hof).length;
+  h=h.replace('</div><div class="hof-grp">',`<br><span style="opacity:.85">지금 순위는 최대로 키운 표본 ${n.toLocaleString()}명 커리어(명예의 전당 헌액 ${hf.toLocaleString()}명)로 채워져 있어요 · 표본은 'by 표본'으로 표시 · 새로 올리는 기록은 같이 섞여요</span></div><div class="hof-grp">`)}}catch(e){}return h}}
