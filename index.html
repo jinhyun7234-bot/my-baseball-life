@@ -3087,7 +3087,7 @@ function offerTbl(q){return'';const fa=q.ch.filter(c=>c.act==='fa'&&c.arg&&c.arg
 /* 추가 댓글: MLB에서도 통함 · x추강대엽 · 구속 */
 {const _sp5=situPools;situPools=function(){const r=_sp5(),g=perfGrade(),good=g==='elite'||g==='good',f=ME.name[0];
   if(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'&&good)r.pos.push('MLB에서도 통하네 ㄷㄷ','KBO 출신이 메이저에서 이게 된다고?','메이저에서도 클라스는 못 숨기네');
-  if(!isP()&&g==='elite'&&(proYears()>=4||mlbW()>=3)&&(careerTot(PRO).w>=20||mlbW()>=5))r.pos.push(`${f}추강대엽 아니냐 이제`,`이추강대엽 순위 다시 매겨야 함 ${f}추강대엽 가자`,`${f}추강대엽 인정하는 사람?`);
+  if(!isP()&&g==='elite'&&(proYears()>=4||mlbW()>=3)&&(careerTot(PRO).w>=20||mlbW()>=5))r.pos.push(...(mlbW()>=35||careerTot(PRO).w>=70?[`${f}추강대엽 아니냐 이제`,`이추강대엽 순위 다시 매겨야 함 ${f}추강대엽 가자`,`${f}추강대엽 인정하는 사람?`]:[`추강대엽${f} 이제 붙여 줘야 하는 거 아니냐`,`추강대엽 다음 자리는 ${f}다 인정?`]));
   if(isP()&&S.stage==='pro'){const v=+kmh(E('velo'));if(v>=157.5&&good)r.pos.push(`${v}km/h 실화냐 ㄷㄷ`,`${v} 던지는 투수가 우리 팀에 있다니`,'전광판 구속 찍힐 때마다 관중석 술렁임');if(v>=162)r.pos.push(`${Math.round(v)}km/h면 메이저에서도 탑급 구속인데`)}
   return r}}
 {const _cl2=ctxLines;ctxLines=function(tone,x){const L=_cl2(tone,x);if(x&&x.gHR&&!isP()&&R()<.4){const v=158+Math.round(Math.pow(R(),1.8)*(S.pro&&S.pro.league==='MLB'?5:3));L.push(`${v}km/h를 받아치네 ㄷㄷ`,`${v}짜리 직구를 넘겨버림`)}return L}}
@@ -8448,8 +8448,8 @@ function loveWin(){try{return!!((S.gf&&S.gf.since!=null&&S.y-S.gf.since<=1)||(S.
   const elite=P?((p.outs>=300&&p.R*27/p.outs<=2.6)||mw>=25||(Pp.W||0)>=100):(((b.PA||0)>=300&&opsN(b)>=.95)||mw>=25||(B.HR||0)>=150);if(!elite)return out;
   const good=P?((x.ipO||0)>=15&&(x.ra||0)<=2):((x.gH||0)>=2||(x.gHR||0)>=1);if(!good||R()>=.5)return out;const add=[];
   const put=(t,re)=>{t=josaFix(t);if(seenHas(t))return;seenAdd(t);add.push(mkC(t,re.map(r=>({nk:pick(NICKS),t:r,up:ri(100,1500)})),{up:ri(4000,12000),must:1}))};
-  if(!P)put(pick([`${sur}추강대엽 이제 인정이지?`,`추${sur}강대엽 아니고 ${sur}추강대엽이다`,`${sur}추강대엽 완성 ㅋㅋㅋ`]),[pick(['이제 추도 확실히 넘은 듯','추는 넘었고 이제 강이랑 비교 불가','ㅇㅈ 개추','반박 불가'])]);
-  put(pick([`대한민국 ${P?'투수':'타자'} GOAT ${gn}`,`역대 한국인 메이저리거 중 ${P?'투수':'타자'} GOAT 아니냐`,`${gn} 대한민국 ${P?'투수':'타자'} GOAT 확정`]),[pick(['반박 시 니 말이 틀림','이건 인정해야 함','국뽕 차오른다','기록이 말해준다'])]);
+  if(!P)put(pick(mw>=35||(B.HR||0)>=220?[`${sur}추강대엽 이제 인정이지?`,`추${sur}강대엽 아니고 ${sur}추강대엽이다`,`${sur}추강대엽 완성 ㅋㅋㅋ`]:[`추${sur}강대엽 정도는 이제 인정이지?`,`${gn} 추강대엽 사이에 끼워 줘야 한다`]),[pick(mw>=35||(B.HR||0)>=220?['이제 추도 확실히 넘은 듯','추는 넘었고 이제 강이랑 비교 불가','ㅇㅈ 개추','반박 불가']:['ㅇㅈ 개추','반박 불가','이대로 몇 년만 더 가면 진짜 인정'])]);
+  if(mw>=30)put(pick([`대한민국 ${P?'투수':'타자'} GOAT ${gn}`,`역대 한국인 메이저리거 중 ${P?'투수':'타자'} GOAT 아니냐`,`${gn} 대한민국 ${P?'투수':'타자'} GOAT 확정`]),[pick(['반박 시 니 말이 틀림','이건 인정해야 함','국뽕 차오른다','기록이 말해준다'])]);
   out.splice(0,0,...add)}catch(e){}return out}}
 /* 접전 승리에서 내 타점이 점수 차를 만들었으면 레전드급으로 */
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||isP()||!x||!x.win||!(x.ps||x.intl)||!Array.isArray(x.lsc)||x.mySide==null||x._wo||x._dhr)return out;
@@ -11399,7 +11399,7 @@ function wbcWon(){try{return(S.awards||[]).some(a=>a&&/WBC 우승/.test(String(a
     if(sG&&!(oG&&dG))L.push('도루까지 했는데 아쉽다','열심히 뛰었는데 결과가 안 따라줬다');
     if(sB)L.push('그 도루 실패가 너무 아쉬웠다','도루 실패로 흐름 끊긴 게 컸다');}
   if(!L.length||R()>.85)return out;const c=L.filter(t=>!seenHas(josaFix(t))).sort(()=>R()-.5).slice(0,(oG&&dG)||(oB&&dB)?2:1);
-  c.forEach((t,i)=>{t=josaFix(t);seenAdd(t);out.splice(Math.min(out.length,i*2),0,mkC(t,R()<.5?[{nk:pick(NICKS),t:pick(W?['ㄹㅇ','인정','오늘 지분 1등']:['ㅠㅠ','인정','다음엔 이기자'])},].map(r=>({...r,up:ri(20,400)})):[],{up:ri(800,5200)}))})}catch(e){}return out}}
+  c.forEach((t,i)=>{t=josaFix(t);seenAdd(t);out.splice(Math.min(out.length,i*2),0,mkC(t,R()<.5?[{nk:pick(NICKS),t:pick(W?(/별로|다행인 경기/.test(t)?['ㄹㅇ','ㅋㅋㅋ 인정','다음엔 잘하자']:['ㄹㅇ','인정','오늘 지분 1등']):['ㅠㅠ','인정','다음엔 이기자'])},].map(r=>({...r,up:ri(20,400)})):[],{up:ri(800,5200)}))})}catch(e){}return out}}
 
 /* v612: 진짜 공수주 다 되는 선수 — 툴(컨택·파워·주력·수비·어깨) 전부 높거나, 시즌 성적이 공수주 모두 좋으면 '5툴'·'놓치면 안 된다' 댓글 */
 {const _c5T=comments;comments=function(tone,x){let out=_c5T(tone,x);try{if(!Array.isArray(out)||isP()||S.stage!=='pro'||!S.pro)return out;const t=String(tone||'');
@@ -12242,7 +12242,7 @@ function champLines(c){const S1=[],S2=[],S3=[],gn=c.gn,N=c.dr;
   else if((c.ks||c.ws)&&c.R0>=3)S2.push(`반지 ${c.R0}개째… 손가락이 모자라겠다`,`${gn} 있는 팀이 우승한다 이건 이제 공식이다`);
   if(c.a>=36)S2.push(`${c.a}살에 끼는 반지는 무게가 다르다`,'마지막일지도 모르는 가을에 반지라니 영화다');
   if(c.retY)S2.push('은퇴 시즌에 우승이라니… 이보다 완벽한 마무리가 있을까','꽃길 은퇴 확정이다 진짜 고생 많았다');
-  if(c.one&&c.py>=8)S2.push(`처음 입은 유니폼으로 끼는 반지 원클럽맨의 정석`,`이 팀에서만 ${c.py}년 드디어 정상이다`);
+  if(c.one&&c.py>=8)S2.push(`처음 입은 유니폼으로 끼는 반지 원클럽맨의 정석`,c.R0===1?`이 팀에서만 ${c.py}년 드디어 정상이다`:`이 팀에서만 ${c.py}년 원클럽맨이 또 정상에 섰다`);
   if(c.faFirst)S2.push('FA로 와서 첫해에 우승 시켜주네 돈값 제대로 했다');
   if(c.wbc)S2.push(`${gn} 태극마크 달고 세계 정상… 커리어 하이라이트는 무조건 이거다`);
   /* ③ 팬 사연 */
@@ -14981,7 +14981,7 @@ try{if(typeof resignComments==='function')resignComments=(function(_rc){return f
   OLD=/이 나이에 (1군에|메이저 로스터에) 있는 것 자체가 대단한 거임/;
  const est=()=>{try{return new Set((S.rows||[]).filter(z=>(z.lv==='KBO'||z.lv==='MLB')&&((z.b&&z.b.PA>=200)||(z.p&&z.p.outs>=150))).map(z=>z.y)).size>=2}catch(e){return false}};
  const _arQA841=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arQA841.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(!a||a.id===id0||!Array.isArray(a.cm))return r;
-   const T=String(tone||''),hd=String(head||''),X=x||{};
+   const T=String(tone||''),hd=String((a&&a.head)||head||''),X=x||{};
    const dropPot=PSET.size&&(CEL.test(T)||est());
    let intlSmall=false,intlKO=true,diff=0;if(X.intl||X.wbc){const tt=hd+' '+String(body||'')+' '+String(X.title||'');diff=Math.abs((X.myR!=null?X.myR:(X.kr||0))-(X.opR!=null?X.opR:(X.op||0)));intlKO=/준결승|결승|8강|4강|슈퍼라운드|동메달/.test(tt);intlSmall=!intlKO&&X.opp!=='일본'&&!/일본/.test(hd)}
    let noCarry=false;if(X.ps&&!X.win&&!X.intl){const isB=!(X.ipO>0);noCarry=!(isB?((X.gH||0)>=3||((X.gHR||0)>=1&&(X.gRBI||0)>=2)||(X.gRBI||0)>=3):((X.ipO||0)>=21||((X.ipO||0)>=18&&(X.ra||0)<=2)))}
@@ -15027,6 +15027,24 @@ try{if(typeof resignComments==='function')resignComments=(function(_rc){return f
  const _arQC841=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arQC841.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(!a||a.id===id0||!Array.isArray(a.cm)||!ME)return r;
    const T=String(tone||''),cel=CEL2.test(T),young=age()<33,slump=a.cm.some(c=>c&&typeof c.t==='string'&&SLUMP.test(c.t));
    const bad=t=>(cel&&JAB.test(t))||(young&&REV.test(t))||(slump&&HOT.test(t));
+   a.cm=a.cm.filter(c=>{if(!c||typeof c.t!=='string')return true;if(bad(c.t))return false;if(Array.isArray(c.re))c.re=c.re.filter(w=>!(w&&typeof w.t==='string'&&bad(w.t)));return true})}catch(e){}return r}}
+/* · 성적이 나쁠 때(부진 기사·성적 등급 bad)는 '잘하는데 깎아내리는' 안티 댓글('약팀 상대로만 잘함'·'상대 팀이 약했던 거지'·'스탯 세탁'·'구장 효과' 등) X
+   · 1군·메이저에서 4시즌 넘게 자리 잡은 선수에게 '반짝 스타 몇 명 봤는지' X
+   · 부상·징계·연애·결혼 기사에 '팬들 단체로 고산병' X */
+{const GJ=/약팀 상대로만 잘함|스탯 세탁|거품 아님\? 표본 좀 더 보자|상대 팀이 약했던 거지|이 정도로 기사까지 쓰냐|언론 플레이 오지네|에이 이건 운빨이지|이거 다 구장 효과임|솔직히 과대평가|기사 제목만 보면 MVP인 줄|동체시력 미쳤다|스탯은 좋은데 영양가는 글쎄|하이라이트만 보고 빠는/,
+  FLASH=/반짝 스타 몇 명 봤는지/,ALT=/고산병/,ALTT=/^(injury|scandal|love|wedding|baby|famDay|injRet)$/;
+ const _arQD841=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arQD841.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(!a||a.id===id0||!Array.isArray(a.cm)||!ME)return r;
+   const T=String(tone||'');let g='none';try{g=perfGrade()}catch(e){}
+   const X=x||{},game=('gPA' in X)||('ipO' in X)||!!X.ps||!!X.intl,poor=T==='bad'||T==='psGoat'||T==='psLose'&&(X.gH||0)===0&&!(X.ipO>0)||(g==='bad'&&!game&&!/^(hype|feat|record|award|gold|walkoff)$/.test(T));
+   let est4=false;try{const lv=S.pro&&S.pro.league;est4=!!lv&&new Set((S.rows||[]).filter(z=>z.lv===lv&&((z.b&&z.b.PA>=300)||(z.p&&z.p.outs>=300))).map(z=>z.y)).size>=4}catch(e){}
+   const bad=t=>(poor&&GJ.test(t))||(est4&&FLASH.test(t))||(ALTT.test(T)&&ALT.test(t));
+   a.cm=a.cm.filter(c=>{if(!c||typeof c.t!=='string')return true;if(bad(c.t))return false;if(Array.isArray(c.re))c.re=c.re.filter(w=>!(w&&typeof w.t==='string'&&bad(w.t)));return true})}catch(e){}return r}}
+/* · '○○도르 수상 축하드립니다'는 수상 기사에서만 · '이게 ○○의 미래다'는 29세 이하만
+   · '작년 2군(마이너)에서 보던 애 맞음?'은 작년에 1군·메이저 주전(200타석/50이닝)이 아니었을 때만 */
+{const DOR=/도르 수상 축하/,FUT=/의 미래다 반박 안 받음/,LY=/작년 (2군|마이너)에서 보던 애 맞음/;
+ const _arQE841=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arQE841.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(!a||a.id===id0||!Array.isArray(a.cm)||!ME)return r;
+   const T=String(tone||''),awd=/^(award|gold)$/.test(T),old=age()>=30;let reg=false;try{const lv=S.pro&&S.pro.league;reg=!!lv&&(S.rows||[]).some(z=>z.lv===lv&&z.y===S.y-1&&((z.b&&z.b.PA>=200)||(z.p&&z.p.outs>=150)))}catch(e){}
+   const bad=t=>(!awd&&DOR.test(t))||(old&&FUT.test(t))||(reg&&LY.test(t));
    a.cm=a.cm.filter(c=>{if(!c||typeof c.t!=='string')return true;if(bad(c.t))return false;if(Array.isArray(c.re))c.re=c.re.filter(w=>!(w&&typeof w.t==='string'&&bad(w.t)));return true})}catch(e){}return r}}
 
 </script>
