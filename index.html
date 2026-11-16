@@ -16344,10 +16344,10 @@ try{Object.assign(DRA836,{C:.9,'1B':-.82,'2B':-2.49,'3B':-1.7,SS:3.77,LF:-2.02,C
 /* ===== v854 댓글: '케이팝 모델 생수머신' (펨코 제목들 · 나무위키 별명 문단 공부)
    - 유래: 올스타 홈런 레이스 인터뷰에서 외국인 동료가 몸을 칭찬하면서 한 말을 통역이 그대로 옮겨서 퍼진 별명. 순화된 '생수머신'으로 광고까지 찍었고 동료들은 '머신이형'이라고 부름
    - 쓰임: 몸 좋고(근육형) 파워·주력 다 되는 타자가 홈런·도루로 피지컬을 보여 줄 때 팬들이 붙이는 칭찬. 게임 안에서는 실명 없이 별명만
-   - 조건: 프로 · 21살↑ · 근육형 체형 · 파워 72↑ · 주력 70↑ 타자 / 이긴 경기 홈런 기사 · 20-20 시즌 결산 · 은퇴(커리어 중에 그 별명을 들었을 때만)
+   - 조건: 프로 · 21살↑ · 근육형 체형 · 파워·주력 둘 다 76↑ 타자 (v854b 유저 요청: 72·70 → 76·76) / 이긴 경기 홈런 기사 · 20-20 시즌 결산 · 은퇴(커리어 중에 그 별명을 들었을 때만)
    - 빈도: 문장마다 커리어에 한 번 · 한 시즌에 한 번 · 커리어 최대 4번 (+ 은퇴 1번)
    - 같이 고침: 근육형인데 발 빠른 타자(주력 65↑)한테 붙던 '느림보·돼지' 드립 빼기 (근육형 = 무조건 느린 거구로 보던 것) */
-function mach854(){try{if(!S||!ME||isP()||ME.body!=='거구'||S.stage!=='pro'||age()<21)return 0;return DV(E('pow'))>=72&&DV(E('spd'))>=70?1:0}catch(e){return 0}}
+function mach854(){try{if(!S||!ME||isP()||ME.body!=='거구'||S.stage!=='pro'||age()<21)return 0;return DV(E('pow'))>=76&&DV(E('spd'))>=76?1:0}catch(e){return 0}}
 function fastBig854(){try{return !!(ME&&!isP()&&ME.body==='거구'&&DV(E('spd'))>=65)}catch(e){return false}}
 const SLOW854=/돼지|뚱|뱃살|몸무게|체중|천천히 도는|뛰는 속도보다|한 베이스 더 가는 순간|홈런 아니면 안 뛰|덩치로 도루하면|한 베이스씩 손해|유니폼이 점점 꽉|몸 관리만 잘하면 더 오래|1루까지 뛰는 게|2루까지 가면 상대 팀이 실책|산책하는|지명타자로만 쓰기/;
 function slowCut854(arr){try{if(!Array.isArray(arr)||!fastBig854())return arr;const T=c=>String((c&&c.t)||''),o=arr.filter(c=>!SLOW854.test(T(c)));o.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!SLOW854.test(T(r)))});return o}catch(e){return arr}}
@@ -16394,6 +16394,22 @@ try{if(typeof mateNames==='function'){const _mn854=mateNames;mateNames=function(
 {const _cmP854=comments;comments=function(tone,x){let out=_cmP854.apply(this,arguments);try{if(tone!=='award'||!Array.isArray(out)||!S)return out;const i=out.findIndex(c=>c&&typeof c.t==='string'&&/^퐁당퐁당 골글/.test(c.t));if(i<0)return out;if(S._pong854){out.splice(i,1)}else S._pong854=S.y}catch(e){}return out}}
 /* 이름 만들 때 거르는 실존 인물에 다른 종목 스타·유명 연예인 추가 (라이벌 이름이 '박지성'으로 나온 것) */
 try{if(typeof REALN2!=='undefined'&&REALN2&&REALN2.add)['박지성','손흥민','이강인','황희찬','기성용','차범근','이영표','안정환','박주영','김민재','이승우','황의조','조규성','김연아','이상화','박태환','김연경','서장훈','허재','현주엽','이승훈','유재석','강호동','이효리','송중기','박서준','김수현','이민호','현빈','원빈','장동건','정우성','이정재','송강호','이병헌','박보검','차은우','정해인','공유','마동석','하정우','유아인','김태희','전지현','송혜교','아이유'].forEach(n=>REALN2.add(n))}catch(e){}
+/* 은퇴투어 발표 기사 (펨코 '은퇴투어' 제목 공부: "친목의 신이라 은퇴투어 얼마나 끈적할지", "은퇴투어 하기 전에 우승 시켜 주고 해라"):
+   팀 케미 75↑ → 친목왕 은퇴투어 · 우승 반지 없음 → 마지막 시즌에 반지 하나는 */
+{const _cmT854=comments;comments=function(tone,x){let out=_cmT854.apply(this,arguments);try{if(tone!=='tourAnn'||!Array.isArray(out)||!S||!ME)return out;const gn=typeof g849==='function'?g849():ME.name,L=[];
+  const rings=(S.awards||[]).filter(z=>/^(한국시리즈|월드시리즈) 우승$/.test(String(z&&z.n||''))).length;
+  if(((S.rel&&S.rel.chem)||0)>=75)L.push([`${gn} 친목왕이라 은퇴투어 얼마나 끈적할지 ㅋㅋ`,['원정 구장마다 상대 선수들 줄 서서 인사할 듯','상대 더그아웃까지 울릴 듯']]);
+  if(!rings)L.push(['마지막 시즌인데 우승 반지 하나는 끼워 주고 보내자',['반지 없이 보내면 평생 한이다','올해 가을은 무조건 간다']]);
+  const C=L.filter(z=>!seenHas(z[0]));C.forEach((z,i)=>{seenAdd(z[0]);out.splice(Math.min(out.length,1+i*2),0,mkC(z[0],z[1].slice(0,ri(1,2)),{up:ri(900,5000)}))})}catch(e){}return out}}
+/* 영결 아깝게 못 받은 원클럽맨 은퇴 (펨코 "그놈의 영결 커트라인은"): KBO 한 팀 9시즌↑ · 팀 WAR이 영결 기준의 85~100% · 다른 영결도 없음 */
+function rnNear854(){try{if(typeof retireNos==='function'&&retireNos().length)return null;const W=rs=>rs.reduce((a,r)=>{try{return a+rowWAR(r)}catch(e){return a}},0),rs=S.rows.filter(r=>r.lv==='KBO'),teams=[...new Set(rs.map(r=>r.team))];if(teams.length!==1)return null;
+  const seasons=new Set(rs.filter(r=>((r.b&&r.b.G)||0)+((r.p&&r.p.G)||0)>0).map(r=>r.y));if(seasons.size<9)return null;const starter=y=>rs.some(r=>r.y===y&&(((r.b&&r.b.PA)||0)>=300||((r.p&&r.p.outs)||0)>=180));
+  const rings=(S.awards||[]).filter(a=>a&&/한국시리즈 우승/.test(a.n)&&seasons.has(a.y)&&starter(a.y)).length,need=(60*(isP()?WARF842P:WARF842B)-2*rings-Math.max(0,W(S.rows.filter(r=>r.lv==='MLB')))*.1)/WARK('KBO'),w=W(rs);
+  return w<need&&w>=need*.85?{team:teams[0],w,need}:null}catch(e){return null}}
+{const _cmN854=comments;comments=function(tone,x){let out=_cmN854.apply(this,arguments);try{if(tone!=='retire'||!Array.isArray(out)||!S||!ME||S._rnN854)return out;const nr=rnNear854();if(!nr||R()>.6)return out;S._rnN854=1;
+  out.splice(Math.min(out.length,4),0,mkC('그놈의 영결 커트라인은 ㅋㅋ 이 정도면 해 줘라',shuffle(['한 팀에서만 이만큼 했는데','구단이 기준을 너무 빡세게 잡았다','영결 아니어도 우리 마음속엔 영결이다']).slice(0,2),{up:ri(1200,5200)}))}catch(e){}return out}}
+/* 신인 레전드 이름 풀(LEGN)에 실존 선수 이름 3개(김동현·정우진·김도현)가 섞여 있던 것 → 이름 거르기 목록으로 빼기 */
+try{if(typeof LEGN!=='undefined'&&Array.isArray(LEGN))LEGN.forEach(o=>{for(const k in o)if(Array.isArray(o[k]))o[k]=o[k].filter(n=>!((typeof REALN2!=='undefined'&&REALN2.has(n))||(typeof REALN!=='undefined'&&REALN.test(n))))})}catch(e){}
 
 </script>
 
