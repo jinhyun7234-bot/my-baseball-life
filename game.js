@@ -15933,6 +15933,26 @@ function dkey857(t){const s=String(t||'');if(/^대 ?[가-힣] ?[가-힣]( ?[가-
 /* 12) 콜업 기사(성적 기사 아님)에 '안타는 잘 치는데 장타가 너무 부족하다'·'전형적인 똑딱이네' 같은 성적평 X (v842s 원칙 · W46·W47 점검에서 9건) */
 {const _cmC857=comments;comments=function(tone,x){let out=_cmC857.apply(this,arguments);try{if(Array.isArray(out)&&String(tone||'')==='callup')out=out.filter(c=>!(c&&typeof c.t==='string'&&!c.must&&/장타가 너무 부족|똑딱이/.test(c.t)))}catch(e){}return out}}
 
+/* 13) v857c: 투수 이벤트 보직 맞춤 — W47 점검: 셋업·마무리한테 '😮‍💨 불펜 대기 자청'(선발 등판 사이 불펜 대기) 471번 ·
+       '감독의 부탁 — 로테이션에 구멍이 났다'(짧은 휴식 후 등판) 366번 · '순위 싸움'(이닝 더 먹고 등판 간격 당기자) 346번 /
+       선발한테 '연투 요청'(마무리 쪽이 지쳤다 3연투) 143번 / 고교 불펜한테 '에이스의 무게'(다음 경기도 선발로) 26번 /
+       1군 불펜에 있는 선발 지망생 부진 면담에 '선발로 나가서 자꾸 초반에 무너진다…로테이션에서 버텨볼래?' 42번 → 지금 보직에 맞는 말로 */
+const PW857={
+ sp:[['불펜이 무너졌다','불펜이 연일 무너지고 있다. 감독이 따로 불러 "당분간 네가 좀 더 길게 던져줘야겠다"고 한다.'],['로테이션에 구멍이 났다','선발 두 명이 동시에 빠졌다. 감독이 짧은 휴식 후 등판을 요청했다.'],['순위 싸움','순위 싸움이 치열하다. 감독이 "네가 이닝을 더 먹어줘야 한다"며 등판 간격을 당기자고 한다.']],
+ cl:[['불펜이 무너졌다','불펜이 연일 무너지고 있다. 감독이 따로 불러 "당분간 8회 2아웃부터라도 네가 막아줘야겠다"고 한다.'],['연투 요청','한 점 차 경기가 계속된다. 감독이 3연투도 가능하냐고 묻는다.'],['순위 싸움','순위 싸움이 치열하다. 감독이 "동점이어도 9회는 네가 나가줘야 한다"고 한다.']],
+ su:[['불펜이 무너졌다','불펜이 연일 무너지고 있다. 감독이 따로 불러 "당분간 네가 좀 더 던져줘야겠다"고 한다.'],['연투 요청','마무리 쪽이 지쳤다. 감독이 3연투도 가능하냐고 묻는다.'],['순위 싸움','순위 싸움이 치열하다. 감독이 "당분간 7회부터 2이닝씩 맡아줘야겠다"고 한다.']],
+ hsSP:[['전국대회 연투','전국대회 토너먼트. 감독이 결승까지 네가 책임져 달라고 한다.'],['에이스의 무게','팀에 던질 투수가 너 하나뿐이다. 감독이 다음 경기도 선발로 나가자고 한다.']],
+ hsRP:[['전국대회 연투','전국대회 토너먼트. 감독이 결승까지 뒷문은 네가 책임져 달라고 한다.'],['불펜의 무게','믿고 맡길 불펜 투수가 너 하나뿐이다. 감독이 매 경기 몸을 풀어 달라고 한다.']]};
+function pwK857(){try{if(!S||!ME||!isP())return null;if(S.stage==='pro'){const r=S.role;if(r==='SP')return'sp';if(r==='CL')return'cl';if(r==='SU'||r==='MR')return'su';return ME.pos==='SP'?'sp':(S.rpPref==='CL'?'cl':'su')}
+  return pRole856()==='SP'?'hsSP':'hsRP'}catch(e){return null}}
+{const _ms=monthStep;monthStep=function(rep){let k0=null,h0=null;try{const k=pwK857();if(k&&typeof PWREQ==='object'&&PWREQ){k0=PWREQ.pro;h0=PWREQ.hs;if(k==='hsSP'||k==='hsRP')PWREQ.hs=PW857[k];else PWREQ.pro=PW857[k]}}catch(e){}
+  try{return _ms.apply(this,arguments)}finally{if(k0){PWREQ.pro=k0;PWREQ.hs=h0}}}}
+{const _py=ACT.pwYes;ACT.pwYes=function(){let r=_py.apply(this,arguments);try{const k=pwK857();if(typeof r==='string'&&k&&k!=='sp'&&k!=='hsSP')r=r.replace('"역시 에이스다."','"역시 믿을맨이다."')}catch(e){}return r}}
+{const _pf=pickFev;pickFev=function(){let f=false;try{f=!!(S&&S.stage==='pro'&&isP()&&pRole856()!=='SP')}catch(e){}
+  if(!f)return _pf.apply(this,arguments);const keep=FEV.slice();try{const L=FEV.filter(e=>!(e&&e.t==='불펜 대기 자청'));FEV.length=0;L.forEach(e=>FEV.push(e));return _pf.apply(this,arguments)}finally{FEV.length=0;keep.forEach(e=>FEV.push(e))}}}
+{const SPL857=['"선발로 나가서 자꾸 초반에 무너진다. 2군 가서 투구 밸런스부터 다시 잡고 올래, 아니면 로테이션에서 버텨볼래?"','"요즘 공에 힘이 없어 보인다. 퓨처스에서 한 달 투구폼 점검하고 올래, 아니면 다음 등판에서 증명해볼래?"','"이대로 로테이션 돌리긴 어렵다. 2군에서 한 달 재정비하고 오는 게 어떠냐?"'];
+ const _ms=monthStep;monthStep=function(rep){const r=_ms.apply(this,arguments);try{if(S&&S.stage==='pro'&&isP()&&S.role!=='SP'&&typeof rpLine==='function')(S.queue||[]).forEach(q=>{if(!q||q._sp857||q.title!=='📋 감독 면담 — 부진'||typeof q.text!=='string')return;const hit=SPL857.find(s=>q.text.includes(s));if(!hit)return;q._sp857=1;q.text=q.text.replace(hit,rpLine(!!(S.pro&&S.pro.league==='MLB')))})}catch(e){}return r}}
+
 /* ===== v857 기준 다시 맞춤 (최대 육성 표본 W46·W47 4,080명: 타자 1,920 · 선발 701 · 마무리 727 · 셋업 732 — W47 2,040명은 최종 코드) =====
    · 명예의 전당 (반올림 점수): 타자 47→48 (W46·W47 95.2% · W47 95.2%) · 선발 69→60 (W46·W47 91.0% · W47 89.1%) · 마무리 32→35 (90.5% · 90.1%) · 셋업 33→37 (90.2% · 91.3%)
      (불펜은 고른 보직 그대로 뛰면서 세이브·홀드 타이틀이 늘어 점수↑ · 선발은 KBO 다승왕·탈삼진왕 기준이 실제처럼 올라가면서 점수↓ — W47(최종 KBO 리그 보정)에서 더 낮게 나와서 두 표본 사이)
