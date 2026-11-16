@@ -329,14 +329,15 @@ function reliefDec(t,g,row,m){const tp=blankP();try{addTo(tp,row.p);addTo(tp,m)}
   const ws=cl(.5-(e-4.2)*.42,.08,.72),p=g.R?Math.max(.03,ws-.4):Math.min(.88,ws+.2);return R()<p?1:-1}
 function simPit(role,tg,L,row,lvk){
   const m=blankP(),apps=[],st=S.str,d=`${S.m}월`,pro=PRO.includes(lvk);
-  const sp=role==='SP'||role==='ace'||((role==='fP'||S.stage==='mil')&&ME.pos==='SP');
-  if(sp){const n=role==='ace'?Math.ceil(tg/3):Math.max(0,Math.round(tg/5.2+rn(0,.4)));for(let i=0;i<n;i++)apps.push('SP');if(role==='ace'&&R()<.6)apps.push('MR')}
-  else{const rate={CL:.4,SU:.42,MR:.33,fP:.38,hsP:.35,hsBench:.15}[role]??.3,n=Math.round(tg*rate+rn(0,.6));
-    for(let i=0;i<n;i++)apps.push(role==='CL'?'CL':role==='SU'||role==='fP'?'SU':'MR');
-    if(role==='hsP'&&R()<.6)apps.unshift('SP')}
+  const am857=S.stage==='hs'||S.stage==='univ';/* v857: 고교·대학은 유저가 고른 보직대로 (선발 고르면 선발 · 불펜 고르면 불펜만) */
+  const sp=role==='SP'||((role==='fP'||S.stage==='mil')&&ME.pos==='SP')||(am857?(ME.pos==='SP'&&(role==='ace'||role==='hsP'||role==='hsBench')):role==='ace');
+  if(sp){const n=role==='ace'?Math.ceil(tg/3):(am857&&role==='hsP')?Math.max(0,Math.round(tg/4.2+rn(0,.4))):(am857&&role==='hsBench')?Math.max(0,Math.round(tg/9+rn(0,.4))):Math.max(0,Math.round(tg/5.2+rn(0,.4)));for(let i=0;i<n;i++)apps.push('SP');if(role==='ace'&&R()<.6)apps.push('MR')}
+  else{const rate=({CL:.4,SU:.42,MR:.33,fP:.38,hsP:.35,hsBench:.15,ace:.42}[role]??.3)*(typeof relRate857==='function'?relRate857(role,lvk):1),n=Math.round(tg*rate+rn(0,.6));
+    const t0=(role==='CL'||role==='ace')?'CL':(role==='SU'||role==='fP'||(am857&&role==='hsP'))?'SU':'MR';
+    for(let i=0;i<n;i++)apps.push(typeof relApp857==='function'?relApp857(t0,role,lvk):t0)}
   const tadj=teamD()*.8;
   let pcT=0;
-  for(const t of apps){S._multi=(t==='CL'||t==='SU')&&R()<cl(.1+(E('sta')-50)*.006+relQ()+mlBon(),.02,.38);const g=pitchGame(L,t==='CL'||t==='SU'?'RP':t);S._multi=false;m.G++;
+  for(const t of apps){S._multi=(t==='CL'||t==='SU')&&R()<cl(.1+(E('sta')-50)*.006+relQ()+mlBon(),.02,.38*(typeof multiF857==='function'?multiF857(t,role,lvk):1));const g=pitchGame(L,t==='CL'||t==='SU'?'RP':t==='MOP'?'MR':t);S._multi=false;m.G++;
     m.outs+=g.outs;m.H+=g.H;m.R+=g.R;m.BB+=g.BB;m.K+=g.K;m.HR+=g.HR;pcT+=g.pc;
     let W=0,Lo=0;
     if(t==='SP'){m.GS++;if(pro&&!S.ach.first_qs&&g.outs>=18&&g.R<=3){S.ach.first_qs=S.y;ME.xp+=1;feat(`${d} 프로 첫 퀄리티스타트 (성장 포인트 +1)`,1)}
@@ -344,10 +345,12 @@ function simPit(role,tg,L,row,lvk){
         if(!g.H){m.NH++;if(!g.BB&&R()<.45){feat(`${d} 퍼펙트게임!!! 27타자 연속 아웃`,1);if(pro){S.ach.perfect=S.ach.perfect||S.y;S.ach.nh=S.ach.nh||S.y}}else{feat(`${d} 노히트노런 달성!`,1);if(pro)S.ach.nh=S.ach.nh||S.y}}
         else feat(`${d} ${g.K}탈삼진 완봉승`)}else feat(`${d} 완투승 역투`)}
       const pw=g.outs>=15?cl(.42-(g.R-3)*.09+tadj,.08,.8):.04,pl=cl(.3+(g.R-3)*.1-tadj,.08,.75),rr=R();if(rr<pw)W=1;else if(rr<pw+pl)Lo=1}
-    else{let svd=false;const svB=m.outs>=30?cl((3.6-m.R*27/m.outs)*.022,-.06,.085):0;const svF=svFac();
-      if(t==='CL'&&R()<(.645+svB)*svF.sv){if(!g.R||(g.R===1&&R()<.4)){m.SV++;st.sv++;svd=true}else st.sv=0}
-      else if(t==='SU'&&R()<(.59+svB)*svF.hd&&!g.R){m.HLD++;svd=true}
-      if(!svd){const dr=reliefDec(t,g,row,m);W=dr===1?1:0;Lo=dr===-1?1:0}}
+    else{let svd=false;const svB=m.outs>=30?cl((3.6-m.R*27/m.outs)*.022,-.06,.085):0;const svF=svFac();S._bs857=0;S._op857=0;const sa857=typeof svAdj857==='function'?svAdj857(t,role,lvk):0;
+      /* v857: 리드 지키기 — 1점 줘도 리드 남으면 세이브·홀드 (리드 1·2·3점 반반쯤: 1실점 65% · 2실점 32% · 3실점↑ 5%) / 못 지키면 블론 → 패전·승리 가능 */
+      const keep857=()=>!g.R||(g.R===1?R()<.65:g.R===2?R()<.32:R()<.05);
+      if(t==='CL'&&R()<(.645+svB+sa857)*svF.sv){S._op857=1;if(keep857()){m.SV++;st.sv++;svd=true}else{st.sv=0;S._bs857=1}}
+      else if(t==='SU'&&R()<(.59+svB+sa857)*svF.hd){S._op857=2;if(keep857()){m.HLD++;svd=true}else S._bs857=2}
+      if(!svd){const dr=reliefDec(t,g,row,m);W=dr===1?1:0;Lo=dr===-1?1:0}S._bs857=0;S._op857=0}
     m.W+=W;m.L+=Lo;if(W)st.win++;if(Lo)st.win=0;
     if(g.K>=12)feat(`${d} 한 경기 ${g.K}탈삼진`,g.K>=15);if(pro&&g.K>S.pb.gK)S.pb.gK=g.K;
     if(!g.R)st.zero+=g.outs;else st.zero=0;
@@ -551,7 +554,7 @@ function tourney(name,rep,ps){
   let res;
   if(w===4){const playing=['start','ace','hsP','bench'].includes(S.role);const opp=pick(SCHOOLS.filter((s,i)=>i!==S.school));
     const lvk=S.stage,myR=LV[lvk]+(base-41)*.6+2,opR=LV[lvk]+(opp.s-41)*.6+2;
-    const g=followGame({title:`${name} 결승`,sub:`${teamLabel()} vs ${opp.n}`,me:{ab:teamLabel().slice(0,3),c:'#24589c',bR:myR,pR:myR},op:{ab:opp.n.slice(0,3),c:'#5e6879',bR:opR,pR:opR},home:R()<.5,role:playing?(isP()?'SP':'start'):'none',lvk,L:LV[lvk]});
+    const g=followGame({title:`${name} 결승`,sub:`${teamLabel()} vs ${opp.n}`,me:{ab:teamLabel().slice(0,3),c:'#24589c',bR:myR,pR:myR},op:{ab:opp.n.slice(0,3),c:'#5e6879',bR:opR,pR:opR},home:R()<.5,role:playing?(isP()?(ME.pos==='SP'?'SP':(S.role==='ace'?'CL':'SU')):'start'):'none',lvk,L:LV[lvk]});/* v857: 불펜 고른 고교·대학 투수는 결승도 불펜으로 */
     if(g.win)w=5;S.queue.push({type:'game',g});res=g.win?'우승!':'준우승'}
   else res=['1회전 탈락','16강 탈락','8강 탈락','4강 진출'][w];
   S.rel.fame+=[0,.5,1,2,4,7][w];if(w>=4)ME.xp+=2;
@@ -695,10 +698,10 @@ function followGame(o){
   const T=[A,H],idx=[0,0],star=ovrE()>=o.L+5,spot=o.role==='start'&&S.order?S.order-1:star?ri(2,3):ri(4,6);
   const mb=blankB(),mp=blankP();let pitching=false,pc=0,used=false,phUsed=false,ra=0,prOn=-1;
   const _bigPS0=!o.intl&&/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||''),_ace0=isP()&&ovrE()>=66,lim=Math.min(72+(DV(E('sta'))-40)*.85+Math.max(0,DV(E('sta'))-85)*.35+ri(-4,4)+(sk('eater')?7:0)+(_ace0?6:0)-(_bigPS0?7:0)-(S.stage==='hs'?9:0),o.pitchCap||999),role=o.role,isB=!isP();S._pRole=(role==='SP'||role==='ace')?'SP':'RP';let relInn=0;const bigPS=!o.intl&&/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'');const multiG=role==='CL'?R()<cl(.22+(E('sta')-50)*.006+relQ()*1.5+mlBon(),.05,.5):bigPS&&(role==='SU'||role==='MR')&&R()<cl((role==='MR'?.3:.24)+(E('sta')-50)*.006+relQ()*1.5+mlBon()*.6,.04,.52)||(!bigPS&&!o.intl&&role==='MR'&&!S.mopNow&&R()<mlBon()*2);
-  const psEnt=role==='MR'?ri(5,7):role==='SU'?(R()<.45?7:8):9;let relLead=null;
+  const psEnt=role==='MR'?ri(5,7):role==='SU'?((bigPS&&R()<.18)?(R()<.33?5:6):(R()<.45?7:8)):9;let relLead=null;const cl7=bigPS&&role==='CL'&&R()<.06;/* v857: 가을야구 변칙 — 셋업 5~9회 · 마무리 가끔 7회 */
   let pendC=false,irLeft=0,ueLeft=0,crisisCont=0;const _pev=(typeof pitEval==='function'&&!isB)?pitEval():null,_tier=_pev?_pev.t:2;G.ent=null;
   const pCr=(role==='CL'?.36:role==='SU'?.32:role==='MR'?.18:0)*(_tier>=4?1.3:_tier>=3?1.1:_tier<=1?.5:1)*(bigPS?1.15:1);const crisis=!isB&&role!=='SP'&&role!=='none'&&R()<pCr;
-  const crIn=bigPS&&role!=='CL'?psEnt-1:role==='CL'?8:role==='SU'?7:5;
+  const crIn=bigPS&&role!=='CL'?Math.max(role==='SU'?5:4,psEnt-1):role==='CL'?8:role==='SU'?7:5;
   const st={b:[0,0,0],outs:0,inn:1,half:0,last:null};
   const snap=(t,cls)=>{G.ev.push({t,c:cls||'',line:G.line.map(l=>l.slice()),R:G.R.slice(),Hh:G.Hh.slice(),BBt:G.BBt.slice(),Et:G.Et.slice(),b:st.b.slice(),outs:st.outs,inn:st.inn,half:st.half,last:st.last,pc,mk:mp.K,mo:mp.outs});st.last=null};
   snap(`플레이볼! ${o.sub}`+(role==='none'?` · ${name}는 벤치에서 지켜본다`:isB?(role==='bench'?` · ${name} 대타 대기`:role==='pr'?` · ${name} 대주자 대기`:` · ${name} ${spot+1}번 ${POS[ME.pos]}`):role==='SP'?` · 선발 투수 ${name}`:` · ${name} 불펜 대기`));
@@ -714,8 +717,8 @@ function followGame(o){
       if(fld===my&&!isB&&role!=='none'){const lead=G.R[my]-G.R[1-my];
         if(role==='SP'){if(inn===1&&!used){pitching=true;used=true}else if(pitching&&(pc>lim-(_bigPS0&&Math.abs(G.R[0]-G.R[1])<=2&&!_ace0?6:0)||(ra>=(o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'')?4:5)&&inn>=3)||inn>9)){pitching=false;snap(`${it} — ${name} 마운드를 내려간다 (${ip(mp.outs)}이닝 ${ra}실점, 투구수 ${pc})`,'sub')}}
         else if(!used&&crisis&&!G.crTried&&inn===crIn&&lead>=0&&lead<=3){G.crTried=1;pendC=true}
-        else if(!used&&(((bigPS||o.intl)&&role==='MR'&&ME.pos==='SP'&&aceP())?(inn>=6&&inn<=9&&R()<tightP(lead)):((role==='CL'&&inn>=9&&lead>=1&&lead<=3)||(multiG&&inn===8&&lead>=0&&lead<=3)||(multiG&&inn>=9&&lead===0)||(role==='SU'&&inn===8&&lead>=0&&lead<=3)||(role==='MR'&&(o.intl?(inn>=6&&inn<=8&&Math.abs(lead)<=3):((inn===6&&mrOk(lead,0))||(inn===7&&mrOk(lead,1)))))||(o.intl&&role==='CL'&&inn>=9&&lead>=0&&lead<=4)||(o.intl&&S._intlElite&&(role==='CL'||role==='MR')&&inn>=6&&inn<=9&&lead<0&&R()<tightP(lead)*.55)||(o.intl&&S._intlElite&&role==='CL'&&inn>=7&&inn<=8&&lead>=0&&lead<=2&&R()<.35)||(o.intl&&S._intlElite&&(role==='MR'||role==='CL')&&inn>=7&&inn<=9&&R()<(S._intlElite>=2?.6:.3))||(bigPS&&role!=='CL'&&inn===psEnt&&lead>=-3&&lead<=4)||(bigPS&&role==='CL'&&inn>=9&&lead>=-1&&lead<=4)||(bigPS&&inn===9&&(role==='SU'||role==='MR')&&R()<.6)||(bigPS&&role==='CL'&&inn===9&&R()<.35)||(bigPS&&role!=='SP'&&aceP()&&inn>=7&&R()<tightP(lead)*.8)))){pitching=true;used=true;relInn=1;relLead=lead;snap(`${it} — ${name} 마운드에 오른다 (${lead>0?`${lead}점 리드`:lead===0?'동점':`${-lead}점 차`})${multiG&&inn>=9&&lead===0?' — 연장 승부':''}`,'sub')}
-        else if(role!=='SP'&&pitching){if(crisisCont){crisisCont=0;relInn++;snap(`${it} — ${name} 이어서 마운드를 지킨다`,'me')}else if(multiG&&relInn<2&&ra<=1&&Math.abs(G.R[my]-G.R[1-my])<=4){relInn++;snap(`${it} — ${name} 한 이닝 더 간다!`,'me')}else if(multiG&&relInn===2&&G._go3){relInn++;G.cl3=1;G._p23=R()<.45;snap(`${it} — ${name} 3이닝째 마운드에 선다!`,'me')}else if(role==='CL'&&(bigPS||inn>=10||o.intl)&&relInn===2&&ra===0&&R()<.3){relInn++;G.cl3=1;snap(`${it} — ${name} 3이닝째 마운드에 선다!`,'me')}else pitching=false}}
+        else if(!used&&(((bigPS||o.intl)&&role==='MR'&&ME.pos==='SP'&&aceP())?(inn>=6&&inn<=9&&R()<tightP(lead)):((role==='CL'&&inn>=9&&lead>=1&&lead<=3)||(multiG&&inn===8&&lead>=0&&lead<=3)||(multiG&&inn>=9&&lead===0)||(role==='SU'&&inn===8&&lead>=0&&lead<=3)||(role==='MR'&&(o.intl?(inn>=6&&inn<=8&&Math.abs(lead)<=3):((inn===6&&mrOk(lead,0))||(inn===7&&mrOk(lead,1)))))||(o.intl&&role==='CL'&&inn>=9&&lead>=0&&lead<=4)||(o.intl&&S._intlElite&&(role==='CL'||role==='MR')&&inn>=6&&inn<=9&&lead<0&&R()<tightP(lead)*.55)||(o.intl&&S._intlElite&&role==='CL'&&inn>=7&&inn<=8&&lead>=0&&lead<=2&&R()<.35)||(o.intl&&S._intlElite&&(role==='MR'||role==='CL')&&inn>=7&&inn<=9&&R()<(S._intlElite>=2?.6:.3))||(bigPS&&role!=='CL'&&inn===psEnt&&lead>=-3&&lead<=4)||(bigPS&&role==='CL'&&inn>=9&&lead>=-1&&lead<=4)||(cl7&&inn===7&&lead>=0&&lead<=3)||(bigPS&&inn===9&&(role==='SU'||role==='MR')&&R()<.6)||(bigPS&&role==='CL'&&inn===9&&R()<.35)||(bigPS&&role!=='SP'&&aceP()&&inn>=7&&R()<tightP(lead)*.8)))){pitching=true;used=true;relInn=1;relLead=lead;snap(`${it} — ${name} 마운드에 오른다 (${lead>0?`${lead}점 리드`:lead===0?'동점':`${-lead}점 차`})${multiG&&inn>=9&&lead===0?' — 연장 승부':''}`,'sub')}
+        else if(role!=='SP'&&pitching){if(crisisCont){crisisCont=0;relInn++;snap(`${it} — ${name} 이어서 마운드를 지킨다`,'me')}else if((multiG||cl7)&&relInn<2&&ra<=1&&Math.abs(G.R[my]-G.R[1-my])<=4){relInn++;snap(`${it} — ${name} 한 이닝 더 간다!`,'me')}else if(multiG&&relInn===2&&G._go3){relInn++;G.cl3=1;G._p23=R()<.45;snap(`${it} — ${name} 3이닝째 마운드에 선다!`,'me')}else if(role==='CL'&&(bigPS||inn>=10||o.intl)&&relInn===2&&ra===0&&R()<.3){relInn++;G.cl3=1;snap(`${it} — ${name} 3이닝째 마운드에 선다!`,'me')}else pitching=false}}
       while(outs<3){
         if(fld===my&&isB&&role==='start'&&ME.pos==='C'&&b[0]&&!b[1]&&outs<2&&R()<((bigPS||o.intl)?.12:.075)){const armD=DV(E('arm')),csP=cl((.13+(armD-50)*.0065)*((bigPS||o.intl)?1.15:1),.08,.55),diff=G.R[my]-G.R[1-my],close=Math.abs(diff)<=2&&inn>=6,lateBig=close&&inn>=8;
           const caught=R()<csP;G.csLog=G.csLog||[];G.csLog.push({inn,outs,diff,close,lateBig,caught,big:!!(o.intl||bigPS)});G.def=G.def||{g:0,e:0};
@@ -1402,7 +1405,7 @@ function situPools(tone,x){const pos=[],neg=[],L=curLvL(),{b,p}=yearTot(S.y,[...
     if(hi('velo')&&k9>=8)pos.push('직구 꽂히는 소리부터 다름','구속 찍히는 거 보고 소리 지름',`${p.K}K 타자들 배트가 늦음`);
     if(hi('ctl')&&bb9<=2.6)pos.push('제구 칼이다 원하는 데 다 꽂음','포수 미트 안 움직임 ㄷㄷ','볼넷을 안 줌 수비하기 편하겠다');
     if(lo('ctl')&&bb9>=4.5)neg.push(`볼넷 ${p.BB}개 볼질 좀 그만`,'포수가 공 잡으러 일어나는 게 일임');
-    if(hi('sta')&&ME.pos==='SP'&&p.outs/Math.max(1,p.GS)>=17)pos.push('이닝이터 불펜 쉬는 날','7회에도 구속 그대로 체력 괴물');
+    if(hi('sta')&&ME.pos==='SP'&&(p.GS||0)>=5&&(p.GS||0)>=(p.G||0)*.5&&p.outs/Math.max(1,p.GS)>=17)pos.push('이닝이터 불펜 쉬는 날','7회에도 구속 그대로 체력 괴물');
     if(ME.hid.men>=66)pos.push('위기 때 더 강해짐 멘탈 갑','만루에서 삼진 잡는 거 보고 반함');
     if(ME.hid.men<=38)neg.push('주자만 나가면 흔들림 새가슴','위기 관리 능력 제로')}
   if(ME.hid.we>=70)pos.push('연습벌레 소문 자자함 새벽에 제일 먼저 나온대','노력파라 응원하게 됨','훈련량 미쳤다더라 티 남');
@@ -1684,7 +1687,7 @@ const _cmx={
   '중립기어 박는다','좀 더 지켜봐야 알 듯','잘하는 날은 진짜 잘함','한 단계만 올라가면 됨','장단점이 너무 확실한 타입','이 선수 보면 롤러코스터 타는 기분','팬들 기대치가 너무 높은 듯','평가 박하게 하는 사람 많네','못하는 건 아닌데 아쉬움','딱 기대만큼 하는 중'],
  anti:[
   '또 {n} 기사냐 ㅋㅋ','기자님 {n} 팬클럽 회장이세요?','이 정도로 띄울 일인가','표본 쌓이면 다 들통남','약팀 상대로 쌓은 스탯 아님?','팬들 김칫국 너무 마심','하이라이트만 보면 다 잘하는 것 같지','작년 이맘때도 이 소리 들었다','언플 오늘도 성실하네','좋을 때 팔아라 진심',
-  '기사 제목만 보면 MVP인 줄','국대급은 무슨 ㅋㅋㅋ','실드 치는 사람들 정병 오겠다','진짜 잘하는 애들이랑 비교하면 아직','시즌 끝나고 다시 얘기하자','댓글 분위기 너무 훈훈한 거 아님?','이 정도는 다른 팀에도 많다','반짝하고 끝날 듯','오버하지 마라 진짜','과대평가 1순위'],
+  '기사 제목만 보면 MVP인 줄','국대급은 무슨 ㅋㅋㅋ','실드 치는 사람들 또 신났네','진짜 잘하는 애들이랑 비교하면 아직','시즌 끝나고 다시 얘기하자','댓글 분위기 너무 훈훈한 거 아님?','이 정도는 다른 팀에도 많다','반짝하고 끝날 듯','오버하지 마라 진짜','과대평가 1순위'],
  feat:[
   '{ts} 역사적인 순간 박제','소름 쫙 돋았다 진짜','이 장면 평생 기억할 듯','오늘 날짜 기억해둬라','나만 울컥함?','중계 보다가 소리 질러서 가족 다 깸','영상 소장각','이건 진짜 레전드 경기','쇼츠 조회수 터지겠다','기록실 오늘 바쁘겠네 ㅋㅋ','이거 보려고 야구 본다','직관 간 사람들 평생 자랑할 듯'],
  record:['역사가 바뀌었다','이 기록 다시 깨질까?','교과서에 실려야 함','신기록 순간 현장에 있었다는 게 자랑','기록의 사나이','레전드가 탄생하는 순간','이건 진짜 대단하다 인정'],
@@ -1942,7 +1945,7 @@ function offerTbl(q){return'';const fa=q.ch.filter(c=>c.act==='fa'&&c.arg&&c.arg
 {const _sp5=situPools;situPools=function(){const r=_sp5(),g=perfGrade(),good=g==='elite'||g==='good',f=ME.name[0];
   if(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'&&good)r.pos.push('MLB에서도 통하네 ㄷㄷ','KBO 출신이 메이저에서 이게 된다고?','메이저에서도 클라스는 못 숨기네');
   if(!isP()&&g==='elite'&&(proYears()>=4||mlbW()>=3)&&(careerTot(PRO).w>=20||mlbW()>=5))r.pos.push(...(mlbW()>=35||careerTot(PRO).w>=70?[`${f}추강대엽 아니냐 이제`,`이추강대엽 순위 다시 매겨야 함 ${f}추강대엽 가자`,`${f}추강대엽 인정하는 사람?`]:[`추강대엽${f} 이제 붙여 줘야 하는 거 아니냐`,`추강대엽 다음 자리는 ${f}다 인정?`]));
-  if(isP()&&S.stage==='pro'){const v=+kmh(E('velo'));if(v>=157.5&&good)r.pos.push(`${v}km/h 실화냐 ㄷㄷ`,`${v} 던지는 투수가 우리 팀에 있다니`,'전광판 구속 찍힐 때마다 관중석 술렁임');if(v>=162)r.pos.push(`${Math.round(v)}km/h면 메이저에서도 탑급 구속인데`)}
+  if(isP()&&S.stage==='pro'){const v=+kmh(E('velo'));if(v>=158&&good)r.pos.push(`${v}km/h 실화냐 ㄷㄷ`,`${v} 던지는 투수가 우리 팀에 있다니`,'전광판 구속 찍힐 때마다 관중석 술렁임');if(v>=162)r.pos.push(`${Math.round(v)}km/h면 메이저에서도 탑급 구속인데`)}
   return r}}
 {const _cl2=ctxLines;ctxLines=function(tone,x){const L=_cl2(tone,x);if(x&&x.gHR&&!isP()&&R()<.4){const v=158+Math.round(Math.pow(R(),1.8)*(S.pro&&S.pro.league==='MLB'?5:3));L.push(`${v}km/h를 받아치네 ㄷㄷ`,`${v}짜리 직구를 넘겨버림`)}return L}}
 {const _tl3=trainLevels;trainLevels=function(rep){_tl3(rep);const gm=Object.values(rep.games||{}).find(x=>x.m&&(x.m.PA||x.m.outs));
@@ -2620,7 +2623,7 @@ ACT.shRehab=function(){ME.inj={n:'어깨 재활',wk:9,sev:2};ME.r.stf=cl(ME.r.st
 const PWREQ={pro:[['불펜이 무너졌다','불펜이 연일 무너지고 있다. 감독이 따로 불러 "당분간 네가 좀 더 던져줘야겠다"고 한다.'],['로테이션에 구멍이 났다','선발 두 명이 동시에 빠졌다. 감독이 짧은 휴식 후 등판을 요청했다.'],['순위 싸움','순위 싸움이 치열하다. 감독이 "네가 이닝을 더 먹어줘야 한다"며 등판 간격을 당기자고 한다.'],['연투 요청','마무리 쪽이 지쳤다. 감독이 3연투도 가능하냐고 묻는다.']],
   hs:[['전국대회 연투','전국대회 토너먼트. 감독이 결승까지 네가 책임져 달라고 한다.'],['에이스의 무게','팀에 던질 투수가 너 하나뿐이다. 감독이 다음 경기도 선발로 나가자고 한다.']]};
 {const _ms2=monthStep;monthStep=function(rep){_ms2(rep);if(!isP())return;if((S.pwT||0)>0)S.pwT--;
-  const live=!['off','pre','inj','army'].includes(S.role)&&!ME.inj&&S.phase!==0&&S.m>=4&&S.m<=8&&(S.stage==='pro'||S.stage==='hs'||S.stage==='univ'),cool=(S.pwCool||0)>=S.y-1;
+  const live=!['off','pre','inj','army'].includes(S.role)&&!ME.inj&&S.phase!==0&&S.m>=4&&S.m<=8&&!(S.phase===2&&S.m>=9)&&/* v857: 시즌 중에만 */(S.stage==='pro'||S.stage==='hs'||S.stage==='univ'),cool=(S.pwCool||0)>=S.y-1;
   if(live&&!cool&&!(S.pwT>0)&&pwEraOK()&&R()<(S.stage==='pro'?.045:.05)){S.pwCool=S.y;const [t,txt]=pick(S.stage==='pro'?PWREQ.pro:PWREQ.hs);
     S.queue.push({title:`⚾ 감독의 부탁 — ${t}`,text:txt+(S.armW>=6?'\n요즘 팔이 무거운 느낌이 든다.':''),ch:[{t:'던지겠습니다',s:`3개월간 등판 수 약 30%↑ · 이닝·투구 수↑ · 감독 신뢰↑ · 실전 경험으로 성장${S.stage==='pro'?' · 다음 연봉 협상에서 조금 더 대우':''} · 피로↑↑ · 어깨·팔꿈치 부상 위험↑`,act:'pwYes'},{t:'몸 관리가 필요하다고 말한다',s:'감독 신뢰↓ · 몸은 지킨다',act:'pwNo'}]})}}}
 ACT.pwYes=function(){S.pwT=3;if(S.stage==='pro')S.pwBonusY=S.y;S.rel.coach=cl(S.rel.coach+4,0,100);return pick(['감독이 어깨를 두드렸다. "믿는다."','"역시 에이스다." 감독의 표정이 밝아졌다.','팀을 위해 팔을 내놓기로 했다.'])};
@@ -3626,7 +3629,7 @@ function traitLines(tone,x){const P=isP(),gn=giv(ME.name),pos=['hype','psHero','
     fld:()=>[`수비 들어가면 불안함 공 오면 기도부터 함`,`${O()}전 그 실책 아직도 기억남`],
     arm:()=>[`어깨가 약해서 주자가 막 뜀`,`송구가 원바운드로 굴러가는 거 실화냐 ㅋㅋ`]};
   const ST={pcl:()=>[`볼배합이 진짜 영리함 ${O()} 완전히 속았다`,`직구 기다리는 타이밍에 체인지업 ㅋㅋ ${O()} 헛스윙하는 거 봤냐`],
-    ctl:()=>[`포수 미트에 레이저 꽂음`,`볼넷 하나 안 주는 칼제구`],velo:()=>v>=157.5?[`${v}km/h 꽂히면 ${O()}도 배트가 늦음`,`전광판 ${v} 찍힐 때 관중석 술렁임`]:v>=152?[`직구 힘으로 밀어붙이는 스타일 ${O()}도 밀리더라`,`구속보다 볼끝이 좋아서 체감은 더 빠를 듯`]:[`구속은 평범한데 직구 볼끝이 살아 있음`],
+    ctl:()=>[`포수 미트에 레이저 꽂음`,`볼넷 하나 안 주는 칼제구`],velo:()=>v>=158?[`${v}km/h 꽂히면 ${O()}도 배트가 늦음`,`전광판 ${v} 찍힐 때 관중석 술렁임`]:v>=152?[`직구 힘으로 밀어붙이는 스타일 ${O()}도 밀리더라`,`구속보다 볼끝이 좋아서 체감은 더 빠를 듯`]:[`구속은 평범한데 직구 볼끝이 살아 있음`],
     stf:()=>[`구위가 묵직해서 맞아도 안 뻗음`,`${jo(O(),'이','가')} 정타 맞혔는데 내야 뜬공 ㅋㅋ 공 끝 미쳤다`],sta:()=>[`100구 넘어도 구속 그대로 체력 괴물`],
     con:()=>[`${O()} 공도 다 커트해냄 컨택 미쳤음`,`어떻게 던져도 맞혀냄 ㅋㅋ`],pow:()=>[`맞으면 그냥 넘어감 파워가 다름`,`${O()} 상대로 친 타구 비거리 봤냐`],
     eye:()=>[`볼넷 골라내는 눈이 미쳤음`,`유인구에 꿈쩍도 안 함 투수가 질려함`],spd:()=>[`1루 땅볼도 세이프 만들어냄`,`${O()} 포수 송구 전에 이미 2루 도착`],
@@ -5060,7 +5063,7 @@ const REGT={서울:[0,1,2],부산:[8],광주:[7],대구:[6],대전:[5],수원:[4
 
 /* ===================== 선택형 이벤트 빈도 60%로 ===================== */
 const EV_KEEP=/계약|FA|드래프트|병역|입대|방출|연봉|포스팅|피로 경고|수술|인대|부상|트레이드|보직|진로|면담|살림|출산|프러포즈|이별|육아|이름|아빠|국가대표|WBC|프리미어|2세|투수 진로/;
-{const _adv9=advance;advance=function(...a){const n0=S&&S.queue?S.queue.length:0;const r=_adv9.apply(this,a);try{if(S&&S.queue&&S.queue.length>n0){const keep=S.queue.slice(0,n0),add=S.queue.slice(n0).filter(q=>{if(!q||q.type||!q.ch||q.ch.length<2)return true;/* v665: 선택지 1개짜리(이미 일어난 일을 알려주는 창)는 절대 안 버림 */if(q.ch.some(c=>CRIT.has(c.act))||EV_KEEP.test(q.title||''))return true;return R()<.4});S.queue=keep.concat(add);if(typeof afterQueue==='function'&&!S.queue.length)afterQueue()}}catch(e){}return r}}
+{const _adv9=advance;advance=function(...a){const n0=S&&S.queue?S.queue.length:0;const r=_adv9.apply(this,a);try{if(S&&S.queue&&S.queue.length>n0){const keep=S.queue.slice(0,n0),add=S.queue.slice(n0).filter(q=>{if(!q||q.type||!q.ch||q.ch.length<2)return true;/* v665: 선택지 1개짜리(이미 일어난 일을 알려주는 창)는 절대 안 버림 */if(q.ch.some(c=>CRIT.has(c.act))||EV_KEEP.test(q.title||''))return true;return R()<.267});/* v857: 일반 이벤트 2/3로 (.4→.267) · 보직·계약·부상·FA 같은 필수 이벤트는 그대로 */S.queue=keep.concat(add);if(typeof afterQueue==='function'&&!S.queue.length)afterQueue()}}catch(e){}return r}}
 /* 리그 순위: 비시즌(캠프)엔 지난 시즌 기록으로 나도 포함 */
 {const _mk=myKBO;myKBO=function(){const r=_mk();if(r)return r;try{if(!(S.stage==='pro'&&S.pro&&S.pro.league==='KBO'))return null;const y=S.phase===0?S.y-1:S.y,rows=S.rows.filter(x=>x.y===y&&x.lv==='KBO');if(!rows.length)return null;const b=blankB(),p=blankP();rows.forEach(x=>{addTo(b,x.b);addTo(p,x.p)});return{n:ME.name,t:S.pro.team,k:isP()?'P':'B',me:true,s:isP()?p:b}}catch(e){return null}}}
 /* 이벤트 결과 창을 다 본 다음에 중계/결산 화면으로 */
@@ -7730,11 +7733,12 @@ function phaseTopHtml(){try{const r=S.report;if(!r||!(r.ph===1||r.ph===2))return
   const k=role==='CL'?'CL':role==='SU'||role==='fP'?'SU':'MR',era=m.outs?m.R*27/m.outs:9,good=cl(1.35-era/5,.25,1.3),bad=cl(era/4,.4,2.2),sr=x=>Math.floor(x)+(R()<x%1?1:0);
   const P={SU:{h:.40,s:.035,w:.075,l:.05},MR:{h:.17,s:.008,w:.055,l:.038},CL:{h:.05,s:.0,w:.06,l:.055}}[k];
   const add=(f,n)=>{if(n<=0)return;const room=rel-(m.HLD+m.SV+m.W+m.L);n=Math.min(n,Math.max(0,room));if(n<=0)return;m[f]+=n;if(row&&row.p)row.p[f]=(row.p[f]||0)+n};
-  add('HLD',sr(rel*P.h*good)-m.HLD);if(P.s)add('SV',sr(rel*P.s*good)-(k==='CL'?99:0)-(k!=='CL'?m.SV:0));
-  add('W',sr(rel*P.w*cl(1.2-era/12,.5,1.2))-m.W);add('L',sr(rel*P.l*bad)-m.L)}catch(e){}return r}}
+  const own857=(typeof relPick857==='function')&&relPick857()===role&&(lvk==='KBO'||lvk==='MLB');/* v857: 유저가 고른 보직(마무리·셋업)은 등판 하나하나에서 세이브·홀드가 정해짐 → 여기서 따로 채워 넣던 홀드·세이브 X */
+  if(!own857){add('HLD',sr(rel*P.h*good)-m.HLD);if(P.s)add('SV',sr(rel*P.s*good)-(k==='CL'?99:0)-(k!=='CL'?m.SV:0))}
+  if(!own857){add('W',sr(rel*P.w*cl(1.2-era/12,.5,1.2))-m.W);add('L',sr(rel*P.l*bad)-m.L)}}catch(e){}return r}}/* v857: 고른 보직 승패도 등판 하나하나에서 (블론·동점 등판) */
 /* 2군·마이너에서 뛰는 동안의 내 경기·활약 기사엔 머리말: [퓨처스] / [마이너] (리그 용어 그대로) */
 {const LIFE=/wedding|love|baby|famDay|gfbreak|marry|scandal|salary|move|franMove|homeBack|trade|injury|injRet|draft|retire|legend|hof|award|tourAnn|tourStop|tourCer/;
- const _ar=article;article=function(head,body,tone,x){const prev=S&&S._cmMinor;try{S._cmMinor=null;const mi=(typeof head==='string'&&/선언|계약|입단|지명|직행|사인|도전/.test(head))?null:artMinor();if(mi&&!LIFE.test(String(tone||''))&&!(x&&(x.ps||x.intl))){S._cmMinor=mi;if(mi.mlb&&typeof head==='string')head=head.replace(/ ?\(MLB\)/g,'');if(typeof head==='string'&&head.indexOf(ME.name)>=0&&!/\[(마이너|퓨처스)/.test(head)&&!/^\[(?!\d{4} )/.test(head)){const m=head.match(/^\[(\d{4} [^\]]*)\] /);if(m)head=`[${m[1]} · ${mi.mlb?mi.ln:'퓨처스'}] `+head.slice(m[0].length);else head=`[${mi.lab}] `+head.replace(/^\[(퓨처스|마이너)\] /,'')}if(mi.mlb&&typeof body==='string')body=body.replace(/ ?\(MLB\)/g,` 산하 ${mi.ln}`)}
+ const _ar=article;article=function(head,body,tone,x){const prev=S&&S._cmMinor;try{S._cmMinor=null;const mi=(typeof head==='string'&&/선언|계약|입단|지명|직행|사인|도전|^대한민국|아시안게임|올림픽|WBC|프리미어12|금메달/.test(head))?null:artMinor();/* v857: 국가대표 기사에 [퓨처스]·[마이너] 머리말 X */if(mi&&!LIFE.test(String(tone||''))&&!(x&&(x.ps||x.intl))){S._cmMinor=mi;if(mi.mlb&&typeof head==='string')head=head.replace(/ ?\(MLB\)/g,'');if(typeof head==='string'&&head.indexOf(ME.name)>=0&&!/\[(마이너|퓨처스)/.test(head)&&!/^\[(?!\d{4} )/.test(head)){const m=head.match(/^\[(\d{4} [^\]]*)\] /);if(m)head=`[${m[1]} · ${mi.mlb?mi.ln:'퓨처스'}] `+head.slice(m[0].length);else head=`[${mi.lab}] `+head.replace(/^\[(퓨처스|마이너)\] /,'')}if(mi.mlb&&typeof body==='string')body=body.replace(/ ?\(MLB\)/g,` 산하 ${mi.ln}`)}
   else if(!mi&&S.stage==='pro'&&S.phase!==0&&S.pro&&!S.pro.dev&&typeof head==='string'&&head.indexOf(ME.name)>=0&&!LIFE.test(String(tone||''))&&!/award|contract|trade|retire|ring|ws|intl/.test(String(tone||''))&&!(x&&(x.ps||x.intl))&&!/^\[(?!\d{4} )/.test(head)&&!/\[(메이저|KBO 1군|1군)/.test(head)&&!/대한민국|국가대표|아시안게임|WBC|올림픽|프리미어|대표팀|전역|입대|은퇴/.test(head)){
     const lv=S._artLv||S.pro.league;const lab=lv==='MLB'?'메이저리그':lv==='KBO'?'KBO 1군':null;if(lab){const m=head.match(/^\[(\d{4} [^\]]*)\] /);head=m?`[${m[1]} · ${lab}] `+head.slice(m[0].length):`[${lab}] `+head}}}catch(e){}try{return _ar(head,body,tone,x)}finally{S._cmMinor=prev||null}}}
 /* 지금 기사가 2군/마이너 경기 내용인지: 결산 기사는 그 기간 실제 뛴 레벨 기준 */
@@ -7914,11 +7918,11 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
   if(S.awards.some(a=>a.y===S.y&&/^MLB (다승|평균자책|탈삼진|세이브|홀드|홈런|타격|타점|도루|최다안타|득점|출루율|장타율)/.test(a.n)))return;const P=isP(),got=[];
   const give=n=>{got.push(n);S.awards.push({y:S.y,n:'MLB '+n});S.rel.fame=cl(S.rel.fame+3,0,100);feat(`${S.y} MLB ${n} 타이틀 획득`,1)};
   if(P){const p=rows.reduce((a,r)=>(addTo(a,r.p),a),blankP()),ip=p.outs/3,era=p.outs?p.R*27/p.outs:99;
-    const eP=typeof lgEnv==='function'?lgEnv('MLB'):0;if(p.W>=Math.round(rn(18,1.6)))give('다승왕');if(ip>=162&&era<=rn(2.4,.28)+eP*.18)give('평균자책점왕');if(p.K>=Math.round(rn(258,18)*(1-eP*.03)))give('탈삼진왕');const ML=(S.mlbLead=S.mlbLead||{})[S.y]||(S.mlbLead[S.y]={sv:Math.round(rn(42,3)),hd:Math.round(rn(36,3))});if((p.SV||0)>=ML.sv)give('세이브왕');if((p.HLD||0)>=ML.hd)give('홀드왕')}
+    const eP=typeof lgEnv==='function'?lgEnv('MLB'):0;if(p.W>=Math.round(rn(18.6,1.7)))give('다승왕');if(ip>=162&&era<=rn(2.42,.34)+eP*.18)give('평균자책점왕');if(p.K>=Math.round(rn(247,18)*(1-eP*.03)))give('탈삼진왕');const ML=(S.mlbLead=S.mlbLead||{})[S.y]||(S.mlbLead[S.y]={sv:Math.round(rn(43.5,4.5)),hd:Math.round(rn(32.5,4.5))});/* v857: 실제 MLB 리그 1위 분포(MLB 공식 기록) — 다승 18.6±1.7 · 평균자책(실점 기준) 2.42±.34 · 탈삼진 247±18(2021~2025) · 세이브 43.5±4.5 · 홀드 32.5±4.5 */if((p.SV||0)>=ML.sv)give('세이브왕');if((p.HLD||0)>=ML.hd)give('홀드왕')}
   else{const b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB()),avg=b.AB?b.H/b.AB:0;
     const obp=b.PA?(b.H+b.BB)/b.PA:0,slg=b.AB?(b.H+(b.D||0)+2*(b.T||0)+3*b.HR)/b.AB:0,q=b.PA>=502;
-    const eV=typeof lgEnv==='function'?lgEnv('MLB'):0;if(q&&avg>=rn(.332,.012)+eV*.008)give('타격왕');if(b.HR>=Math.round(rn(47.5,4)*(1+eV*.09)))give('홈런왕');if(b.RBI>=Math.round(rn(127,8)*(1+eV*.04)))give('타점왕');if(b.SB>=Math.round(rn(51.5,7)))give('도루왕');
-    if(b.H>=Math.round(rn(201.5,8)*(1+eV*.02)))give('최다안타');if(b.R>=Math.round(rn(123.5,7)*(1+eV*.04)))give('득점왕');if(q&&obp>=rn(.427,.015)+eV*.008)give('출루율왕');if(q&&slg>=rn(.62,.025)+eV*.02)give('장타율왕')}
+    const eV=typeof lgEnv==='function'?lgEnv('MLB'):0;if(q&&avg>=rn(.331,.012)+eV*.008)give('타격왕');if(b.HR>=Math.round(rn(50,6.5)*(1+eV*.09)))give('홈런왕');if(b.RBI>=Math.round(rn(127,8.5)*(1+eV*.04)))give('타점왕');if(b.SB>=Math.round(rn(48,12)))give('도루왕');/* v857: 실제 MLB 리그 1위 분포 — 타율 .331±.012 · 홈런 50±6.5 · 타점 127±8.5 · 도루 48±12 · 안타 198.5±10.5 · 득점 128.5±9 · 출루율 .425±.022 · 장타율 .633±.034 */
+    if(b.H>=Math.round(rn(198.5,10.5)*(1+eV*.02)))give('최다안타');if(b.R>=Math.round(rn(128.5,9)*(1+eV*.04)))give('득점왕');if(q&&obp>=rn(.425,.022)+eV*.008)give('출루율왕');if(q&&slg>=rn(.633,.034)+eV*.02)give('장타율왕')}
   if(!got.length)return;rep.lines.push(`MLB ${got.join('·')} 타이틀 획득!`);{const ex=got.length>1?got.map(n=>'MLB '+n):[];ex._gx=4*got.length;celebrate('crown',got.length>1?`MLB ${got.length}관왕`:`MLB ${got[0]}`,`${S.y} 메이저리그 개인 타이틀${got.length>1?' · '+got.join('·'):''}`,ex)}news(`${ME.name}, ${S.y} 메이저리그 ${got.join('·')} 차지`);
   /* v673: 트리플 크라운 별도 축하 X — n관왕 화면으로 통일 */
   article(`${ME.name}, 메이저리그 ${got.join('·')} 등극`,`${jo(ME.name,'이','가')} 올 시즌 메이저리그 ${got.join(', ')} 타이틀을 거머쥐었다.`,'award')}catch(e){}}}
@@ -12247,7 +12251,7 @@ function focusEv744(){const P=isP(),pro=S.stage==='pro',mlb=pro&&S.pro&&S.pro.le
     {t:'일찍 잔다',s:'내구성↑ · 팀 분위기 조금↓',fx:{dur:2.5,chem:-1.5},r:'푹 잤다. 단톡방엔 사진이 잔뜩 올라왔다.'}]}}
 {const _ncF744=newCard;newCard=function(){const r=_ncF744.apply(this,arguments);try{if(S&&S.me===ME&&['pro','univ','hs'].includes(S.stage)&&!ME.inj){
     const off=S.phase===0,p=off?(S.stage==='pro'?.6:.4):(S.stage==='pro'?.3:.15);
-    if(R()<p&&S._fcK744!==S.y+'-'+S.phase){S._fcK744=S.y+'-'+S.phase;const q=focusEv744();if(q){q.ch.forEach(c=>{try{const cost=c.fx&&c.fx.money<0?-c.fx.money:0;if(cost&&S.money<cost){const fx={};for(const k in c.fx){if(k==='money')continue;const v=c.fx[k];fx[k]=v>0&&['we','men','dur'].includes(k)?v*.5:v}c.fx=fx;c.t+=S.stage==='pro'?' (구단 지원)':' (학교 지원)';c.s=String(c.s).replace(/^−[^·]*· /,'자금 부족 · 지원 프로그램으로 대신 · ').replace(/ 크게↑/g,'↑');c.r=(S.stage==='pro'?'구단':'학교')+' 지원 프로그램으로 대신했다. 효과는 기대만큼은 아니었다.'}}catch(e){}});S.queue.push(q)} /* v779: 돈 모자라면 지원 프로그램(효과 절반) */}}}catch(e){}return r}}
+    if(R()<p&&S._fcK744!==S.y+'-'+S.phase){S._fcK744=S.y+'-'+S.phase;const q=focusEv744();if(q){q.ch=q.ch.filter(c=>{try{const cost=c.fx&&c.fx.money<0?-c.fx.money:0;return !(cost&&S.money<cost)}catch(e){return true}});if(q.ch.length>=2)S.queue.push(q)} /* v857: 돈 모자라는 선택지는 아예 안 보임 (예전 '(학교 지원)/(구단 지원)' 대체 선택지 X · 유저 요청) · 남는 선택지 2개 미만이면 이벤트 X */}}}catch(e){}return r}}
 /* v744: 개인 은퇴 한계 나이 37~43 — 33세 때 멘탈+내구성+워크에식 합(곡선)과 운을 반반 섞어 정함 (설명 노노)
    한계 2년 전부터 노화 가속 → WAR 하락 → 방출 곡선 / 한계 나이에 시즌 끝나면 은퇴 */
 function limT744(){try{if(S._T744==null){if(age()<33)return 43;const u=s01((hidSum744()-130)/150);S._T744=Math.max(37,Math.min(43,Math.round(37+6*(.5*u+.5*R()))))}return S._T744}catch(e){return 43}}
@@ -13097,7 +13101,7 @@ function recapLines840(rc){const out=[],g=rc.g,P=g.kind==='P',m=g.m,lv=g.lvk,hal
   else{if(!m||m.outs<45)return out;const ip=m.outs/3,era=m.R*27/m.outs,rp=(m.GS||0)<(m.G||0)/2;Object.assign(o,{era:era.toFixed(2),ip:Math.round(ip),k:m.K,w:m.W||0,sv:m.SV||0,hld:m.HLD||0,phr:m.HR||0,k9:(m.K*27/m.outs).toFixed(1),bb9:(m.BB*27/m.outs).toFixed(1)});
     if(!rp){const dl=lv==='MLB'?.15:0;let t=rcTier840(-(era-(typeof ythP851==='function'?ythP851(lv):0)),[-5.4-dl,-4.4-dl,-3.6-dl,-2.9-dl,-2.2-dl]);if(tone==='hype')t=Math.max(4,t);else if(tone==='bad')t=Math.min(1,t);else t=Math.max(1,Math.min(4,t));up=t>=3?1:t<=1?-1:0;take(ip/Math.max(1,m.GS||0)>=5.6?RCP840[t]:RCP840[t].filter(s=>!/6이닝|6회는/.test(s)));/* v842s: 경기당 6이닝 못 채우면 '6이닝 먹어 주는' X */
       const H=[];if(m.K*27/m.outs>=9.6&&m.K>=55)H.push('kPit');if(m.BB*27/m.outs>=4.3&&ip>=40)H.push('bbPit');if((m.HR||0)*27/m.outs>=1.5&&ip>=40)H.push('hrPit');if(ip>=95)H.push('ipHi');if((m.W||0)>=9)H.push('wHi');H.sort(()=>R()-.5).slice(0,1).forEach(h=>take(RCH840[h]))}
-    else{if((m.SV||0)>=10)take(era<=3.3?RCR840.cl:RCR840.clBad);else if((m.HLD||0)>=9)take(era<=3.6?RCR840.su:RCR840.suBad);else take(era<=4?RCR840.mr:RCR840.mrBad);up=era<=3?1:era>=5?-1:0;if(m.K*27/m.outs>=11&&m.K>=30&&R()<.6)take(RCH840.kPit)}}
+    else{const rk857=(typeof relPick857==='function'&&relPick857())||null;/* v857: 고른 보직(마무리·셋업)이면 세이브·홀드가 적은 반기도 그 보직 말로 (예전: 9세이브 마무리한테 '추격조든 롱릴리프든 이닝 먹어 주는 게 고맙다') */const nX857=L=>L.filter(t=>!/\{(sv|hld)\}/.test(t));if((m.SV||0)>=10||(rk857==='CL'&&(m.SV||0)>=2))take((m.SV||0)>=10?(era<=3.3?RCR840.cl:RCR840.clBad):nX857(era<=3.3?RCR840.cl:RCR840.clBad));else if((m.HLD||0)>=9||(rk857==='SU'&&(m.HLD||0)>=2))take((m.HLD||0)>=9?(era<=3.6?RCR840.su:RCR840.suBad):nX857(era<=3.6?RCR840.su:RCR840.suBad));else if(rk857)take(era<=4?RCR840[rk857==='CL'?'cl':'su'].filter(t=>!/\{(sv|hld)\}/.test(t)):RCR840[rk857==='CL'?'clBad':'suBad']);else take(era<=4?RCR840.mr:RCR840.mrBad);up=era<=3?1:era>=5?-1:0;if(m.K*27/m.outs>=11&&m.K>=30&&R()<.6)take(RCH840.kPit)}}
   if(up&&R()<.45){const gg=rcAgeG840(a);take(RCA840[gg][up>0?'up':'down'])}
   try{const sal=S.pro.salary||0,mlb=S.pro.league==='MLB',rich=mlb?sal>=1500000:sal>=80000,fa=rcFA840()&&proYears()>=3;
     if(R()<.4){if(fa&&up)take(up>0?RCS840.faYear:RCS840.faYearBad);else if(rich&&up)take(mlb?(up>0?RCS840.mlbRich:RCS840.mlbRichBad):(up>0?RCS840.richGood:RCS840.richBad));else if(up>0&&!mlb&&sal<=15000&&proYears()>=2)take(RCS840.cheapGood);else if(up>0&&mlb&&sal<=100000)take(RCS840.mlbCheap)}}catch(e){}
@@ -14255,7 +14259,7 @@ function flow849(x){try{const L=x&&x.lsc,me=x&&x.mySide;if(!Array.isArray(L)||!A
   if(win&&f.maxDef>=3)L.push(`${f.maxDef}점 차를 뒤집었다 역전승 이 맛에 야구 본다`,`${f.maxDef}점 지고 있을 때 채널 돌린 사람 손 ㅋㅋ`,'포기하려던 순간 뒤집었다 소름 돋았다');
   else if(win&&f.maxDef>=1)L.push('끌려가다가 뒤집었다 역시 끝까지 봐야 한다','역전하는 순간 소리 질렀다 ㅋㅋ');
   if(!win&&f.maxLead>=3)L.push(`${f.maxLead}점 차 리드를 날렸다… 이건 진짜 잠 못 잔다`,'다 이긴 경기 내줬다 불펜 뭐 하냐 ㅠ','리드할 때 설레발 친 사람 누구냐 ㅠ');
-  if(f.tot<=3&&f.inns<=9)L.push(win?'투수전 끝에 웃었다 오늘 경기 순삭이다':'1점이 이렇게 멀다 타선 좀 터져라 ㅠ',win?'점수 안 나는 경기는 보는 사람 피가 마른다 ㅋㅋ':'오늘 투수들은 잘 던졌다 방망이가 문제');
+  if(f.tot<=3&&f.inns<=9)L.push(win?'투수전 끝에 웃었다 오늘 경기 순삭이다':'1점이 이렇게 멀다 타선 좀 터져라 ㅠ',win?'점수 안 나는 경기는 보는 사람 피가 마른다 ㅋㅋ':(isP()&&(x.ra||0)>=2?'점수가 안 나니까 한 점 한 점이 너무 컸다':'오늘 투수들은 잘 던졌다 방망이가 문제'));/* v857: 내가 2점 이상 준 투수면 '투수들은 잘 던졌다' X */
   if(f.tot>=17)L.push('야구가 아니라 핸드볼 스코어 ㅋㅋ','오늘 양 팀 불펜 다 녹았다 ㅋㅋ',win?'난타전 끝에 이기긴 했다 근데 너무 힘들다':'난타전 끝에 졌다 투수 누가 남아 있었냐');
   if(L.length)put849(out,L,['ㄹㅇ','ㅋㅋㅋ','오늘 경기 레전드'],{pos:ri(2,4),rp:.45})}catch(e){}return out}}
 
@@ -15640,7 +15644,7 @@ function thrAdd855(a,x){try{if(!a||!Array.isArray(a.cm)||!x||!x.lsc||S._inPh854)
 const HOF_RESET855='2026-11-16T16:30:00Z';
 let HOFS855=null,HOFSP855=null;
 function hofSample855(){if(HOFS855)return Promise.resolve(HOFS855);if(HOFSP855)return HOFSP855;
-  HOFSP855=(typeof fetch==='function'?fetch('hof_sample.json?v=856').then(r=>r.ok?r.json():[]):Promise.resolve([])).then(d=>{HOFS855=Array.isArray(d)?d:(d&&Array.isArray(d.rows)?d.rows:[]);if(d&&d.n){HOFS855.n=d.n;HOFS855.hof=d.hof}return HOFS855}).catch(()=>{HOFS855=[];return HOFS855});return HOFSP855}
+  HOFSP855=(typeof fetch==='function'?fetch('hof_sample.json?v=857').then(r=>r.ok?r.json():[]):Promise.resolve([])).then(d=>{HOFS855=Array.isArray(d)?d:(d&&Array.isArray(d.rows)?d.rows:[]);if(d&&d.n){HOFS855.n=d.n;HOFS855.hof=d.hof}return HOFS855}).catch(()=>{HOFS855=[];return HOFS855});return HOFSP855}
 function hofQ855(arr,q){try{const P={};String(q||'').split('&').forEach(s=>{const i=s.indexOf('=');if(i>0)P[s.slice(0,i)]=decodeURIComponent(s.slice(i+1))});
   const al=c=>{const a=String(c||'').replace(/^extra->st->/,'');return a==='r'?'runs':a};let a=(arr||[]).slice();
   if(P.kind)a=a.filter(r=>r&&r.kind===P.kind.replace(/^eq\./,''));
@@ -15776,3 +15780,155 @@ function final856(a,tone,x){try{if(!a||!Array.isArray(a.cm)||a.cm.length<2)retur
 try{if(typeof buildSeasonRecap==='function'){const _bs856=buildSeasonRecap;buildSeasonRecap=function(){const q=_bs856.apply(this,arguments);try{if(q&&Array.isArray(q.cm)&&q.cm.length>1){const k=fix856(q.cm,null,'srecap');if(k.length)q.cm=k;repFix856(q.cm);final856(q,'srecap',null)}}catch(e){}return q}}}catch(e){}
 /* 전반기·후반기 결산(phaseArticle)은 댓글을 따로 붙이고 끝나서 위 기사 마무리를 안 거침 → 결산 기사 끝난 뒤에 같은 정리(빼기·답글·겹침)만 한 번 (점검: '올해 N경기 N승 N패 N홀드 ERA N… 반등이 필요하다'·'ERA N… 반등이 필요하다', '○○ 템포 확실히 다르다'·'○○ 제구 확실히 다르다') */
 try{if(typeof phaseArticle==='function'){const _ph856=phaseArticle;phaseArticle=function(){const id0=S&&S.artId;const r=_ph856.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)&&a.cm.length>1){const k=fix856(a.cm,null,'phase');if(k.length)a.cm=k;repFix856(a.cm);final856(a,'phase',null)}}catch(e){}return r}}}catch(e){}
+
+/* ===== v857 (11/17 새벽) 불펜 보직 · 고교 보직 · 메이저 파워 반기 · 타이틀 현실화 · 이벤트 정리 · 투수 댓글 =====
+   실제 기록 기준 (브라우저로 직접 모음)
+   · MLB 2015~2025(2020 제외) 불펜 2,645시즌 (MLB 공식 Stats API) — 정규 마무리(30세이브↑) ERA별:
+       ERA 1점대 66경기·66이닝·38세이브·블론 3.6·홀드 1.4·패 2.5 / 2점대 65·65·36.5·4.5·1.5·3.5 / 3점대 64·62·35.3·5.8·0.8·5.1 / 4점↑ 65·62·35.2·6.6·1.0·6.7
+       셋업(10홀드↑, 홀드≥세이브) ERA 1점대 홀드 20·세이브 3.5·패 2.3 → 5점대 홀드 12.9·패 4.2 · 팀 승수 10승당 세이브 +0.8 (팀 영향 작음)
+   · KBO 2015~2026 투수 1,440시즌 (KBO 공식 기록실) — 정규 마무리(25세이브↑) ERA 1점대 64경기·33세이브·홀드 0.7·패 3.0 / 2점대 31.6·0.8·3.6 / 3점대 30.1·0.4·4.7 / 4점↑ 27.6·0.6·5.0
+       셋업 ERA 1점대 홀드 20.9·세이브 2.6·패 2.4 → 6점↑ 홀드 12.5·패 3.9 · 최다 세이브 44 · 최다 홀드 40
+   유저 결정 (03:02~03:22): 고른 보직은 확실히 · 성적 나쁠수록 곡선으로 원치 않는 홀드(마무리)·세이브(셋업)·패전조 등판·패전↑ · ERA 1점대면 고른 기록만 더 많이
+     · 강등은 패전조나 2군 · 좋아지면 곡선으로 서서히 원래 보직 · 가을야구는 예외(변칙 등판 OK) · 너무 못하면 면담(기존 부진 면담) */
+
+/* 0) 공통: 지금 고른 불펜 보직 (마무리 CL / 셋업 SU) · 숫자는 전부 여기 — 최대 육성 불펜 표본(C1~C6, 시즌 약 3,000개)으로 실제 기록에 맞춤
+      맞춘 결과(고른 보직 그대로 뛴 시즌 · ERA 1점대→5점대): KBO 마무리 세이브 37→17 · 원치 않는 홀드 0.2→2.6 · 패 3.0→4대 / MLB 마무리 세이브 40→19 · 홀드 0.2→2.7 · 패 2.4→5~6
+      KBO 셋업 홀드 30→12.5 · 원치 않는 세이브 0.2→2 · MLB 셋업 홀드 30→13 · 경기 수 마무리 KBO 63·MLB 67 / 셋업 66·71 · 경기당 1.05이닝 */
+var RL857={lgR:{KBO:1.06,MLB:1.01},gUp:.06,gDn:.08,mop0:.02,mopA:.28,mopC:4.8,mopW:.7,xA:.35,xC:4.9,xW:.45,
+  clLg:{KBO:-.02,MLB:0},suLg:{KBO:-.115,MLB:-.13},el:.03,elC:2.8,td:.08,multi:.15,
+  bsL:.50,bsW:.10,bhL:.45,bhW:.12,nsL:.30,nsLs:.20,nsW:.18,mopD:.04,
+  dem:.5,demC:6.2,demW:.45,upA:.15,upB:.7,upC:4.0,upW:.8,
+  lm:{CL:{KBO:[1.0,.04,1.18,1.4],MLB:[.6,.13,1.0,1.45]},SU:{KBO:[1.6,-.15,.75,1.4],MLB:[1.2,-.06,.8,1.15]}}};/* 패전 배율 cl(a+b×ERA, 최소, 최대): 실제 KBO 마무리 패는 ERA 따라 조금만(3.0→5.0) · MLB는 많이(2.5→6.7) · 셋업 2.3~2.4→3.9~4.2 */
+function relPick857(){try{if(!isP()||!S||S.stage!=='pro'||!S.pro||S.pro.dev)return null;const pf=S.rolePref;let k=pf&&pf.y===S.y?pf.k:S.rpPref;if(k!=='CL'&&k!=='SU')return null;if(ME.pos==='SP')return null;return k}catch(e){return null}}
+function relEra857(){try{const e=typeof relEra==='function'?relEra():null;return e==null?3.4:e}catch(e){return 3.4}}
+const sg857=x=>1/(1+Math.exp(-x));
+function relLg857(lvk){return lvk==='KBO'||lvk==='MLB'}
+function relSea857(){let o=0,r=0;try{(S.rows||[]).forEach(w=>{if(w&&w.y===S.y&&(w.lv==='KBO'||w.lv==='MLB')&&w.p){o+=w.p.outs||0;r+=w.p.R||0}})}catch(e){}return{o,r}}
+function relAll857(){let o=0,r=0;try{(S.rows||[]).forEach(w=>{if(w&&w.y===S.y&&w.lv!=='hs'&&w.lv!=='univ'&&w.p){o+=w.p.outs||0;r+=w.p.R||0}})}catch(e){}return{o,r}}
+
+/* 1) 한 달 보직: 고른 보직 그대로 (예전 'ERA 3.6 넘으면 반기마다 셋업·패전조로 자동 이동' X)
+      · 강등(패전조/2군)은 그 시즌 1군 ERA가 확실히 나쁠 때만 곡선으로 (6점대 초반 한가운데 · 15이닝부터 · 한 달에 한 번 판정)
+      · 강등된 뒤엔 그 뒤(패전조·2군에서) 성적이 좋을수록 빨리 복귀 (곡선) · 새 시즌은 다시 고른 보직에서 시작 */
+function relStand857(){try{if(!relPick857())return null;let R8=S._rl857;if(!R8||R8.y!==S.y)R8=S._rl857={y:S.y,st:'ok',o0:0,r0:0,m0:0,chk:0};return R8}catch(e){return null}}
+{const _dr857=decideRole;decideRole=function(){let r=_dr857.apply(this,arguments);try{const k=relPick857();if(!k||S.m<3||S.m>9)return r;
+    if(!['CL','SU','MR'].includes(r))return r;/* 부상·출장정지·2군(실력 모자람)·마이너는 그대로 */
+    const now=S.y*12+S.m,pf=S.rolePref;if(pf&&pf.force&&pf.y===S.y)return r;if(S.clDown&&now<S.clDown.until)return r;if(S.slRole&&now<S.slRole.until)return r;/* 유저가 면담에서 직접 고른 셋업 이동·패전조는 그대로 */
+    const R8=relStand857();if(!R8)return r;const Q=RL857;
+    if(R8.chk!==now){R8.chk=now;
+      if(R8.st==='ok'){const s=relSea857();if(s.o>=45){const e=s.r*27/s.o;if(R()<Q.dem*sg857((e-Q.demC)/Q.demW)){const a=relAll857(),mlb=S.pro.league==='MLB',noMin=mlb&&S.pro.noMinor;R8.st=(!noMin&&R()<.35+.3*s01((e-6)/2))?'fut':'mop';R8.o0=a.o;R8.r0=a.r;R8.m0=now;try{news(`${S.y}년 ${S.m}월 ${R8.st==='fut'?(mlb?'트리플A행':'2군행'):'패전조로 이동'}.`);const er=e.toFixed(2),pos=k==='CL'?'9회':'8회';S.queue.push(R8.st==='fut'?{title:mlb?'📄 트리플A행 통보':'📄 2군행 통보',text:`평균자책 ${er}. 감독이 따로 불렀다.\n"요즘 공이 계속 맞아 나간다. ${mlb?'트리플A':'2군'}에서 감 찾고 와라. 거기서 좋아지면 바로 부른다."\n\n(${mlb?'트리플A':'2군'}에서 잘 던질수록 빨리 돌아온다)`,ch:[{t:'짐을 싼다',s:`${mlb?'트리플A':'2군'}에서 재정비`}]}:{title:'📋 감독 면담 — 보직 조정',text:`평균자책 ${er}. 감독이 조용히 불렀다.\n"당분간은 점수 차 큰 경기에서 던지면서 감 좀 찾자. 좋아지면 ${pos}는 다시 네 자리다."\n\n(패전조에서 잘 던질수록 빨리 돌아온다)`,ch:[{t:'알겠습니다',s:'패전조에서 재정비'}]})}catch(x){}}}}
+      else if(now>R8.m0){const a=relAll857(),dO=a.o-R8.o0,dR=a.r-R8.r0,e=dO>=9?dR*27/dO:null,pUp=e==null?.2:Q.upA+Q.upB*sg857((Q.upC-e)/Q.upW);if(R()<pUp){const was=R8.st;R8.st='ok';try{news(`${S.y}년 ${S.m}월 ${k==='CL'?'마무리':'필승조'} 복귀.`);S.queue.push({title:'📋 감독 면담 — 보직 복귀',text:`${was==='fut'?((S.pro.league==='MLB'?'트리플A':'2군')+'에서 다시 올라왔다. '):''}감독이 불렀다.\n"공 좋아졌더라. 오늘부터 다시 ${k==='CL'?'9회 맡아라':'8회 맡아라'}."`,ch:[{t:'맡겨 주십시오',s:`다시 ${k==='CL'?'마무리':'필승조'}`}]})}catch(x){}}}}
+    if(R8.st==='ok'){S.mopNow=0;return k}if(R8.st==='mop'){S.mopNow=1;return'MR'}S.mopNow=0;return'fP'}catch(e){}return r}}
+
+/* 2) 등판 하나하나 (정규시즌 1군만 · 가을야구는 따로 변칙):
+      · 성적이 나쁠수록 곡선으로 패전조 등판(큰 점수 차)↑ · 원치 않는 상황(마무리→홀드 상황 / 셋업→세이브 상황)↑ — ERA 4.5~5 근처부터 확 늘고 1~2점대는 거의 0
+      · 잘할수록 등판 수↑ · 세이브·홀드 기회↑ · 팀이 강할수록 기회 조금↑ (실제: 팀 10승당 세이브 +0.8)
+      · 멀티이닝은 실제처럼 가끔 (실제 마무리·셋업 경기당 1.0이닝 안팎) */
+function relApp857(t0,role,lvk){try{const k=relPick857();if(!k||!relLg857(lvk)||role!==k)return t0;const e=relEra857(),Q=RL857;let td=0;try{td=teamD()}catch(x){}
+    const pMop=Q.mop0+Q.mopA*sg857((e-Q.mopC)/Q.mopW)-.05*td;if(R()<pMop)return'MOP';
+    const pX=Q.xA*sg857((e-Q.xC)/Q.xW);if(R()<pX)return k==='CL'?'SU':'CL';return k}catch(e){return t0}}
+function relRate857(role,lvk){try{const k=relPick857();if(!k||role!==k||!relLg857(lvk))return 1;const e=relEra857(),Q=RL857;return (Q.lgR[lvk]||1)*(1+Q.gUp*(1-sg857((e-3.2)/.6)))*(1-Q.gDn*sg857((e-5)/.6))}catch(e){return 1}}
+function svAdj857(t,role,lvk){try{const k=relPick857();if(!k||t!==k||role!==k||!relLg857(lvk))return 0;const e=relEra857(),Q=RL857;let td=0;try{td=teamD()}catch(x){}return (k==='CL'?Q.clLg:Q.suLg)[lvk]+Q.el*(1-sg857((e-Q.elC)/.6))+Q.td*td}catch(e){return 0}}
+function multiF857(t,role,lvk){try{const k=relPick857();if(!k||role!==k||!relLg857(lvk)||!(t==='CL'||t==='SU'))return 1;return RL857.multi}catch(e){return 1}}
+/* 승패: 블론세이브 → 패전 약 절반·가끔 팀이 뒤집어서 승리 (실제 마무리 ERA 1점대 패 2.5 → 4점↑ 6.7) · 블론홀드도 비슷 · 세이브·홀드 상황 아닌 등판은 실점하면 패전 가능 · 패전조 등판은 거의 승패 X */
+{const _rd857=reliefDec;reliefDec=function(t,g,row,m){try{const k=relPick857(),lg=S.pro&&S.pro.league;if(k&&S.stage==='pro'&&(S.role===k||S.role==='MR')&&(lg==='KBO'||lg==='MLB')){const Q=RL857,bs=S._bs857,z=((Q.lm||{})[k]||{})[lg]||[1,0,1,1],lm=cl(z[0]+z[1]*relEra857(),z[2],z[3]);
+    if(t==='MOP')return R()<Q.mopD?(g.R?-1:1):0;
+    if(bs===1){const q=R(),pl=(Q.bsL+(g.R>=2?.08:0))*lm;return q<pl?-1:q<pl+Q.bsW?1:0}
+    if(bs===2){const q=R(),pl=(Q.bhL+(g.R>=2?.08:0))*lm;return q<pl?-1:q<pl+Q.bhW?1:0}
+    if(S.role===k&&(t==='CL'||t==='SU')){if(g.R)return R()<(k==='SU'?(Q.nsLs??Q.nsL):Q.nsL)*(g.R>=2?1.25:1)*lm?-1:0;return R()<Q.nsW?1:0}}}catch(e){}return _rd857.apply(this,arguments)}}
+
+/* 3) 메이저 파워 반기 (유저 결정 03:05→03:22): 파워 95 초과 + 동체시력 80 초과면 반기마다 20% 확률로 그 반기 파워 +1 (메이저 1군만 · 화면 안내 없음) */
+function mpw857(){try{if(isP()||!S||S.stage!=='pro'||!S.pro||S.pro.league!=='MLB'||S.pro.dev||/^f/.test(S.role||''))return false;const k=S.y+'-'+S.phase;if(!S._mpw857||S._mpw857.k!==k){const ok=DV(E('pow'))>95&&DV(E('vis'))>80;S._mpw857={k,on:ok&&R()<.2}}return!!S._mpw857.on}catch(e){return false}}
+{const _sb857=spBonus;spBonus=function(k){let v=_sb857.apply(this,arguments);try{if(k==='pow'&&S&&S.me===ME&&mpw857())v+=.75}catch(e){}return v}}/* 표시 능력치 +1 = 내부 +0.75 */
+
+/* 4) KBO 리그 1위 수준 = 실제 KBO 2015~2025 리그 1위 평균 (KBO 기록실 · 득점은 연도별 득점상) — 유저 성적은 안 건드리고 NPC 리그만
+      NPC 리그만 200시즌 돌려 본 1위 평균 (전 → 후 · 실제): 득점 126 → 116 (116.5) · 타점 123 → 129 (128) · 다승 18.1 → 18.6 (18.5) · 탈삼진 195 → 202 (202)
+      · 홀드 34.6 → 33.5 (32.4) · 평균자책(실점 기준) 2.40 → 2.57 (실제 ERA 2.46 ≈ 실점 기준 2.6) / 홈런 41 · 안타 199 · 도루 42 · 타율 .354 · 세이브 36.4는 원래 실제와 비슷해서 그대로
+      (리그 wOBA 등 계산엔 안타·볼넷·장타만 쓰여서 득점·타점·실점 보정은 순위표·타이틀에만 영향) */
+var TB857={r:.92,rbi:1.045},TP857={ra:1.08};
+try{TP835.w=1.215;TP835.k=.99;TP835.hld=.965;TB835.sb=1.095}catch(e){}/* 도루 1위 42 → 45.6 (실제 45.6) */
+{const _lsp857=lpSimP;lpSimP=function(p,n){if(!p||!p.s)return _lsp857.apply(this,arguments);const m=p.s,k0=m.K||0,r0=m.R||0;try{return _lsp857.apply(this,arguments)}finally{try{const sc=(k,v0,f)=>{const d=(m[k]||0)-v0;if(d>0&&f!==1){const t=d*f;m[k]=v0+Math.floor(t)+(R()<t%1?1:0)}};if(TP835.k<1)sc('K',k0,TP835.k);sc('R',r0,TP857.ra)}catch(e){}}}}
+{const _lsb857=lpSimB;lpSimB=function(p,n){if(!p||!p.s)return _lsb857.apply(this,arguments);const m=p.s,r0=m.R||0,b0=m.RBI||0;try{return _lsb857.apply(this,arguments)}finally{try{const sc=(k,v0,f)=>{const d=(m[k]||0)-v0;if(d>0&&f!==1){const t=d*f;m[k]=v0+Math.floor(t)+(R()<t%1?1:0)}};sc('R',r0,TB857.r);sc('RBI',b0,TB857.rbi)}catch(e){}}}}
+
+/* 5) 이벤트: 시즌 중에만 의미 있는 이벤트(감독의 부탁·부진/보직 면담)가 시즌 끝난 뒤(스토브리그)에 뜨는 일 X (안전장치) */
+const INSEA857=/^⚾ 감독의 부탁|^📋 감독 면담 — (부진|보직|슬럼프)/;
+{const _adv857=advance;advance=function(){const n0=S&&S.queue?S.queue.length:0;const r=_adv857.apply(this,arguments);try{if(S&&S.queue&&S.phase===0&&S.queue.length>n0){const keep=S.queue.slice(0,n0),add=S.queue.slice(n0).filter(q=>!(q&&!q.type&&INSEA857.test(String(q.title||''))));S.queue=keep.concat(add)}}catch(e){}return r}}
+
+/* 5-2) 일반 이벤트 2/3로 (유저 요청 03:15 '진짜 이벤트는 2/3으로 · 보직 묻는 이벤트 같은 필수는 그대로')
+      선택형 이벤트 중 v86 빈도 조절을 안 거치던 것들(시즌 중간에 바로 뜨는 현장 이벤트 😮‍💨 · 감독의 부탁 · 연애·가족 일상 이벤트)도 2/3만 남김
+      · 계약·보직·FA·드래프트·병역·부상·수술·은퇴·투어·포스팅·트레이드 같은 필수, 연애 시작·프러포즈·결혼·출산·작명 같은 인생 이정표는 그대로 */
+const FLAV857=new Set(['lv','gift','gfaff','kidT','famXp','pwYes','pwNo','fev']);
+const FLAVT857=/^(😭|👨‍👩‍👦|🍱|🎁|📱|🎬|😤|🏟️ 직관|🏟️ 패밀리|😮‍💨 |⚾ 감독의 부탁)|집안의 경조사|부모님의 걱정/;
+const MILE857=/프러포즈|결혼|출산|아빠가|2세|이름|이별|은퇴|투어|계약|FA|드래프트|병역|입대|수술|트레이드|포스팅|보직|면담/;
+function gen857(q){try{if(!q||q.type||!Array.isArray(q.ch)||q.ch.length<2)return false;const t=String(q.title||'');if(FLAVT857.test(t)||/^💘 새로운 인연/.test(t))return true;if(MILE857.test(t))return false;const acts=q.ch.map(c=>c&&c.act).filter(Boolean);if(!acts.length)return false;if(acts.some(a=>CRIT.has(a)&&!FLAV857.has(a)))return false;return acts.some(a=>FLAV857.has(a))}catch(e){return false}}
+function cut857(n0){try{if(!S||!S.queue||S.queue.length<=n0)return;const add=S.queue.slice(n0).filter(q=>!(gen857(q)&&R()>=.667));S.queue=S.queue.slice(0,n0).concat(add)}catch(e){}}
+{const _ms857=monthStep;monthStep=function(rep){const n0=S&&S.queue?S.queue.length:0;const r=_ms857.apply(this,arguments);cut857(n0);return r}}
+{const _nc857=newCard;newCard=function(){const n0=S&&S.queue?S.queue.length:0;const r=_nc857.apply(this,arguments);cut857(n0);return r}}
+
+/* 6) 결산 기사 댓글 (유저 지적 03:15 · '[KBO 1군] ○○, 후반기 결산: 6세이브 ERA 5.60'에 '신인 구위 맞냐 ㄷㄷ'·'역시 ○○'이 붙고 전반기 잘하다 후반기 무너진 얘기가 없던 것)
+      ① 그 반기 성적이 나쁘면(프로 투수 ERA 5↑ · 타자 OPS .650↓ / 고교·대학 ERA 4↑ · OPS .750↓) 칭찬 댓글·답글 X
+      ② 전반기 좋았는데(프로 ERA 3.5↓ · OPS .800↑ / 고교·대학 ERA 2.3↓ · OPS 1.000↑) 후반기 무너지면 그 흐름 댓글 1~2개 (커리어에서 덜 나온 말부터 → 골고루)
+      ③ 아시안게임·국제대회 기사에 '가을의 전설'·'가을 남자' 같은 가을야구 말 X */
+const PHPRZ857=/신인 구위 맞냐|구위 맞냐 ㄷㄷ|^역시 |믿고 보는|철벽|난공불락|언터처블|레전드 루트|GOAT|에이스 냄새|필승조 냄새|평자책 실화냐|클래스 (보소|ㄷㄷ|미쳤)|진짜 미쳤다|미쳤음$|신인왕 (그냥|투수 부문|레이스 끝)|이름값 한다|= 믿음/;
+const PHKEEP857=/그래도|했는데|였는데|더니|아쉽|아쉬운|부진|힘내|기다린다|기죽지/;
+function phPrz857(t){try{if(typeof t!=='string')return false;if(PHKEEP857.test(t))return false;if(PHPRZ857.test(t))return true;if(typeof ROOKIE_P!=='undefined'&&(ROOKIE_P.includes(t)||ROOKIE_B.includes(t)||ROOKIE_MLB.includes(t)))return true;try{if(nmL().pos.includes(t))return true}catch(e){}return false}catch(e){return false}}
+const DROP857={P:['전반기는 뽀록이었나…','벌써 공략당하는 건가','프로의 벽은 높긴 하다','전반기랑 후반기가 완전 다른 사람이네','상대 팀들이 분석 끝낸 듯 후반기엔 다 맞아 나간다','체력 떨어진 건지 후반기엔 공이 다 몰린다','전반기 보고 기대했는데 후반기에 다 까먹었다','한 시즌 풀로 던지는 게 이렇게 어렵다','후반기 들어서 구위가 확 떨어진 듯','풀시즌 체력이 숙제다 겨울에 몸 만들자','전반기 성적 보고 설레발 친 내가 바보지','데이터 쌓이니까 바로 털리네'],
+ B:['전반기는 뽀록이었나…','벌써 약점 다 털린 건가','프로의 벽은 높긴 하다','전반기랑 후반기가 완전 다른 사람이네','상대 투수들이 공략법 찾은 듯 후반기엔 다 범타','체력 떨어지니까 배트가 안 나온다','전반기 보고 기대했는데 후반기에 다 까먹었다','한 시즌 풀로 뛰는 게 이렇게 어렵다','후반기엔 몸쪽 승부에 완전히 막혔다','풀시즌 체력이 숙제다 겨울에 몸 만들자','전반기 성적 보고 설레발 친 내가 바보지','분석 들어오니까 바로 식네'],
+ HP:['전반기는 뽀록이었나…','벌써 공략당하는 건가','상대 학교들도 이제 분석하고 나오네','전반기랑 후반기가 완전 다른 사람이네','큰 대회 가니까 확실히 타자 수준이 다르다','체력 관리가 숙제다','전반기 보고 기대했는데 아쉽다','후반기 보고 스카우트들 고민 좀 하겠다','아직 어리니까 겨울에 몸 만들면 된다'],
+ HB:['전반기는 뽀록이었나…','벌써 약점 다 털린 건가','상대 학교들도 이제 분석하고 나오네','전반기랑 후반기가 완전 다른 사람이네','큰 대회 가니까 확실히 투수 수준이 다르다','체력 관리가 숙제다','전반기 보고 기대했는데 아쉽다','후반기 보고 스카우트들 고민 좀 하겠다','아직 어리니까 겨울에 몸 만들면 된다']};
+const DROPRE857={pro:['ㄹㅇ','이게 프로다','내년엔 다를 거다','겨울에 잘 준비하자','ㅠㅠ','한 해로 판단하긴 이르다'],am:['ㄹㅇ','아직 어리잖아','겨울에 잘 준비하자','ㅠㅠ','성장통이라 생각하자']};
+function phEv857(P,m,am,good){try{if(!m)return 0;if(P){const o=m.outs||0;if(o<(good?(am?18:30):(am?12:18)))return 0;const e=(m.R||0)*27/o;return e<=(am?2.3:3.5)?1:e>=(am?4.0:5.0)?-1:0}
+  if((m.PA||0)<(good?(am?40:60):(am?30:45)))return 0;const ab=m.AB||0,obp=((m.H||0)+(m.BB||0))/Math.max(1,ab+(m.BB||0)),slg=((m.H||0)+(m.D||0)+2*(m.T||0)+3*(m.HR||0))/Math.max(1,ab),o=obp+slg;return o>=(am?1.0:.8)?1:o<=(am?.75:.65)?-1:0}catch(e){return 0}}
+const STRP857=/신 ㅋㅋ|신 믿습니다|= 믿음|믿고 있었다|진짜 미쳤다|레전드|GOAT|에이스 냄새|필승조 냄새|평자책 실화냐|언터처블/,ROYX857=/신인왕 (투수 부문 )?확정|신인왕 그냥 지금 줘라|신인왕 레이스 끝났다|올해의 신인 투표 1위 각/;
+function phMid857(a,g,am){try{const P=g.kind==='P',m=g.m;let mid=false,elite=false;if(P){const o=m.outs||0;if(o>=18){const e=(m.R||0)*27/o;mid=e>(am?2.8:3.9);elite=o>=(am?30:60)&&e<=(am?1.5:2.5)}}else{const pa=m.PA||0;if(pa>=45){const ab=m.AB||0,o=((m.H||0)+(m.BB||0))/Math.max(1,ab+(m.BB||0))+((m.H||0)+(m.D||0)+2*(m.T||0)+3*(m.HR||0))/Math.max(1,ab);mid=o<(am?.85:.74);elite=pa>=(am?80:150)&&o>=(am?1.1:.9)}}
+  a.cm=a.cm.filter(c=>{if(!c||typeof c.t!=='string'||c.must)return true;if(mid&&STRP857.test(c.t)&&!PHKEEP857.test(c.t))return false;if(!elite&&ROYX857.test(c.t))return false;return true})}catch(e){}}
+function phFix857(a,g,ph,prev){try{if(!a||!Array.isArray(a.cm)||!g||!g.m||!ME)return;const P=g.kind==='P',am=S.stage==='hs'||S.stage==='univ',ev=phEv857(P,g.m,am);phMid857(a,g,am);if(ev!==-1)return;
+    a.cm=a.cm.filter(c=>!(c&&!c.must&&phPrz857(c.t)));a.cm.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!phPrz857(String((r&&r.t)||r||'')))});
+    if(ph!==2||!prev||prev.y!==S.y||prev.ph!==1||!prev.games||!prev.games[g.lvk])return;if(phEv857(P,prev.games[g.lvk].m,am,1)!==1)return;
+    const L=DROP857[(am?'H':'')+(P?'P':'B')],U=S._drop857=S._drop857||{},have=new Set(a.cm.map(c=>c&&c.t));const n=R()<.4?2:1;
+    for(let i=0;i<n;i++){const Q0=L.filter(t=>!have.has(t));if(!Q0.length)break;const mn=Math.min(...Q0.map(t=>U[t]||0)),t=pick(Q0.filter(t=>(U[t]||0)===mn));U[t]=(U[t]||0)+1;have.add(t);
+      const c=mkC(t,R()<.5?[pick(DROPRE857[am?'am':'pro'])]:[],{up:ri(600,3600)});a.cm.splice(Math.min(a.cm.length,ri(0,2)),0,c)}}catch(e){}}
+{const _phA857=phaseArticle;phaseArticle=function(g,ps){const id0=S&&S.artId,ph=S&&S.phase,prev=S&&S.report;const r=_phA857.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0)phFix857(a,g,ph,prev)}catch(e){}return r}}
+const AUT857=/가을의 전설|가을 남자|가을 사나이|가을야구|가을 DNA|가을만 되면|가을에만|가을 체질|가을 [가-힣]{0,4}(영웅|주인공)/;
+function autOut857(a){try{if(!a||!Array.isArray(a.cm))return 0;const n0=a.cm.length;a.cm=a.cm.filter(c=>!(c&&typeof c.t==='string'&&AUT857.test(c.t)));a.cm.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!AUT857.test(String((r&&r.t)||r||'')))});return n0-a.cm.length}catch(e){return 0}}
+{const _cmA857=comments;comments=function(tone,x){let out=_cmA857.apply(this,arguments);try{if(Array.isArray(out)&&((x&&(x.intl||x.wbc))||/^(gold|intl)/.test(String(tone||'')))){out=out.filter(c=>!(c&&typeof c.t==='string'&&AUT857.test(c.t)));out.forEach(c=>{if(c&&Array.isArray(c.re))c.re=c.re.filter(r=>!AUT857.test(String((r&&r.t)||r||'')))})}}catch(e){}return out}}
+{const _arA857=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arA857.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&((x&&(x.intl||x.wbc))||/^(gold|intl)/.test(String(tone||''))||/아시안게임|올림픽|WBC|프리미어12|금메달|국가대표/.test(String(head||'')))){for(let k=0;k<2;k++){const d=autOut857(a);if(!d)break;if(typeof cmRefill855==='function')cmRefill855(a,tone,x)}autOut857(a)}}catch(e){}return r}}
+
+/* 7) 자리 잡은 선수(프로 6년↑ + 그해 잘하는 중) 좋은 기사에 실력 깎아내리는 악플('이 정도는 리그에 수두룩함'·'거품 아님? 표본 좀 더 보자'·'반짝 스타' 같은 말) X
+      (W46 점검: '[후반기 · 메이저리그] ○○, 10년 연속 20세이브'에 '이 정도는 리그에 수두룩함') — '기사 쓰는 사람 직원임?' 같은 실력과 상관없는 장난은 그대로 */
+const DISM857=/들통|김칫국|하이라이트만 보면|이맘때도 이 소리|기사 제목만 보면|국대급은 무슨|잘하는 애들이랑 비교|다른 팀에도 많다|띄울 일인가|약팀 상대로 쌓은|거품|표본 좀 더|상대 팀이 약했던|이 정도로 기사까지|작년엔 어땠는지|FA 앞두고 반짝|과대평가|한두 경기로 판단|딱 거기까지|스탯 세탁|약팀 상대로만|국대 가면 다 털림|구장 효과|운빨|반짝 스타|하이라이트로만 보면|리그에 수두룩|해주는 거 본 적 없음|오면 벤치일 듯|연봉 대비 아직 멀었음|너무 띄워줌/;
+const POST857=['hype','feat','record','award','psHero','psWin','gold','mix','ring','ws','hof','legend'];
+function est857(head){try{if(!S||S.stage!=='pro')return false;const py=typeof proYears==='function'?proYears():0;if(/\d+년 연속|통산 \d|역대|최초|최연소|최고령|명예의 전당|영구결번/.test(String(head||''))&&py>=4)return true;return py>=6&&['elite','good'].includes(perfGrade())}catch(e){return false}}
+{const _arD857=article;article=function(head,body,tone,x){const id0=S&&S.artId;const r=_arD857.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm)&&POST857.includes(String(tone||''))&&est857(head)){const n0=a.cm.length;a.cm=a.cm.filter(c=>!(c&&typeof c.t==='string'&&!c.must&&DISM857.test(c.t)));if(a.cm.length<n0&&typeof cmRefill855==='function')cmRefill855(a,tone,x);a.cm=a.cm.filter(c=>!(c&&typeof c.t==='string'&&!c.must&&DISM857.test(c.t)))}}catch(e){}return r}}
+try{RPMAP856.push([/7회에도 구속 그대로 체력 괴물/,'연투에도 구속 그대로 체력 괴물'])}catch(e){}
+/* 8) W46 점검 추가: ① 불펜 투수 콜업 기사에 'N점대 ERA는 로테이션 지키기 어렵다' (선발 말) X
+                    ② 속상한 댓글('1회 3실점에서 이미 끝났다')에 '현장에서 봤다 미쳤음' 같은 신난 답글 X → 같이 속상한 답글로 */
+const RPROT857=/로테이션 지키|로테이션 자리|로테이션 한 자리|선발 한 자리|선발 로테이션 (진입|합류)/;
+const SADP857=/이미 끝났|끝난 경기|망했다|답이 없다|졌다$|대패|오늘은 잊자|보기 힘들다/;
+const HYPR857=/^(현장에서 봤다 미쳤음|진짜 그 장면 소름|미쳤다 진짜|이거지|소름 아직도 안 가라앉음|심장 아직도 뜀|이 맛에 본다|ㅇㅈ 이게 야구지)$/;
+{const _cmR857=comments;comments=function(tone,x){let out=_cmR857.apply(this,arguments);try{if(Array.isArray(out)&&isP()&&typeof pRole856==='function'&&pRole856()==='RP')out=out.filter(c=>!(c&&typeof c.t==='string'&&!c.must&&RPROT857.test(c.t)));
+  if(Array.isArray(out))out.forEach(c=>{if(c&&typeof c.t==='string'&&SADP857.test(c.t)&&Array.isArray(c.re))c.re=c.re.map(r=>{const t=String((r&&r.t)||r||'');if(!HYPR857.test(t))return r;const nt=pick(['ㄹㅇ…','222','하 진짜…','오늘은 빨리 잊자']);return typeof r==='string'?nt:Object.assign({},r,{t:nt})})})}catch(e){}return out}}
+try{RPMAP856.push([/이닝 먹는 거 보니까 든든하다/,'뒤에서 막아 주니까 든든하다'],[/선발 로테이션에 넣겠다는 거다/,'필승조로 쓰겠다는 거다'],[/진짜 이닝이터 될 듯/,'진짜 언터처블 될 듯'],[/\d이닝은 기본 됐다/,'연투도 거뜬하다'],[/로테이션에서 빼야 하는 거 아니냐/,'필승조에서 빼야 하는 거 아니냐'],[/진짜 에이스각/,'진짜 언터처블 각'])}catch(e){}/* v857: W46 불펜 기사 점검에서 나온 선발 말 → 불펜 말 */
+/* 9) W46 가을 기사 점검: ① 내가 잘했는데(투수 1이닝↑ 무실점 · 타자 2안타↑/홈런) 팀이 진 경기에 '○○도 사람이다'·'기죽지 마' 같은 내 부진 위로 댓글 X
+                      ② 자리 잡은 선수 좋은 기사에 깎아내리는 말 목록 보강 (v14 악플 목록) */
+const OWNNEG857=/도 사람이다$|믿고 기다린다$|힘내라 다음 경기 있다$|기죽지 마$|한 경기로 판단하지 말자$|우리 팀 기둥임$/;
+{const _cmO857=comments;comments=function(tone,x){let out=_cmO857.apply(this,arguments);try{if(Array.isArray(out)&&x&&(x.ps||x.intl)&&x.win===false){const P=isP(),good=P?((x.ipO||0)>=3&&!(x.ra>0)):((x.gH||0)>=2||(x.gHR||0)>=1);if(good)out=out.filter(c=>!(c&&typeof c.t==='string'&&!c.must&&OWNNEG857.test(c.t)))}}catch(e){}return out}}
+/* 10) 불펜 결산 댓글 보강 (마무리·셋업은 반기마다 결산이 나와서 예전 6·5·4·3줄로는 몇 년 지나면 금방 바닥남 → 커뮤 말투로 더 넣고 기존 말이랑 골고루 섞여 나오게) */
+try{if(typeof RCR840==='object'){
+  RCR840.cl.push('{n} 올라오면 그냥 경기 끝났다고 보면 됨','9회 {n} 등장하면 채널 돌려도 됨 ㅋㅋ','뒷문 걱정 없는 게 이렇게 편한 거였구나','세이브마다 깔끔하다 삼자범퇴 장인','9회만 되면 상대 타자들 표정이 굳는다 ㅋㅋ','{n} 있으니까 리드만 잡으면 이긴다','{half} {sv}세이브 끝판 대장 소리 나올 만하다');
+  RCR840.clBad.push('9회만 되면 심장이 쪼그라든다 ㅠ','세이브는 세이브인데 매번 주자 깔고 시작함','{n} 요즘 공이 몰린다 9회가 무섭다','불 지르고 불 끄는 자작극 그만 ㅠ','마무리 바꾸자는 말 나오기 전에 정신 차리자');
+  RCR840.su.push('8회는 {n} 지정석','{n} 나오면 7·8회는 그냥 삭제','다리 역할 이렇게 잘하는 선수 귀하다','홀드 머신 {n} 꾸준히 적립 중','{n}이 있어서 9회까지 편하게 간다','셋업이 이 정도면 어디 가서도 마무리 한다','{half} {hld}홀드 필승조 대들보');
+  RCR840.suBad.push('{n} 올라오면 리드가 불안하다 ㅠ','홀드는 쌓는데 내용이 너무 아슬아슬하다','필승조 소리 계속 들으려면 반등해야 한다','7·8회만 되면 손에 땀 ㅠ');
+  RCR840.mr.push('점수 차 큰 경기 묵묵히 막아 주는 것도 실력이다','안 보이는 데서 고생하는 {n} 응원한다');
+  RCR840.mrBad.push('지는 경기에서라도 감 좀 찾자 ㅠ','지금은 패전조에서 다시 올라가는 수밖에 없다')}}catch(e){}
+
+/* ===== v857 기준 다시 맞춤 (W46 최대 육성 표본 2,040명: 타자 960 · 선발 352 · 마무리 362 · 셋업 366 — v857 불펜 보직·고교 보직·타이틀 반영) =====
+   · 명예의 전당 (반올림 점수): 타자 47→48 (95.2%) · 선발 69→65 (90.3%) · 마무리 32→35 (90.6%) · 셋업 33→36 (90.7%)
+     (불펜은 고른 보직 그대로 뛰면서 세이브·홀드 타이틀이 늘어 점수↑ · 선발은 KBO 다승왕 기준이 실제처럼 18.5승으로 올라가면서 점수↓)
+   · 영구결번: 타자 ×0.665→0.645 (49.1%) · 투수 ×0.89→0.849 (선발 약 14.6%) · 은퇴투어 73→67 (전체 32.6% · 불펜 경기당 이닝이 실제처럼 줄면서 커리어 WAR↓)
+   · 지명 포지션 기준(DRA836): 불펜 +3.0 (고교 불펜이 이제 불펜으로만 뛰어서 이닝↓ → 1라운드 37% → 약 52%) · 선발 −0.25 · 타자는 W42~W46 합친 표본 차이의 절반만 (C +0.55 · 1B −0.87 · 2B +0.21 · 3B +0.86 · SS −0.1 · LF −0.14 · CF +0.41 · RF +0.52)
+   · 실버슬러거 기준선 평균 −0.0066 (22.9% → 25%) · KBO 선발 MVP 2.51→2.43 (4.3% → 5%) · 나머지 수상(KBO 골든글러브 32.8% · KBO MVP 5.0% · MLB MVP 2.9% · MLB 골드글러브 21% · 신인왕 26%)은 목표 안이라 그대로 */
+try{Object.assign(HOFT720,{B:48,SP:65,CL:35,RP:36})}catch(e){}
+WARF842B=0.645;WARF842P=0.849;TOURW852=67;
+try{const D=DRA836;Object.assign(D,{C:D.C+.55,'1B':D['1B']-.87,'2B':D['2B']+.21,'3B':D['3B']+.86,SS:D.SS-.10,LF:D.LF-.14,CF:D.CF+.41,RF:D.RF+.52,SP:D.SP-.25,RP:D.RP+3.0})}catch(e){}
+try{Object.assign(SSLO714,{C:.7237,'1B':.7844,'2B':.7485,'3B':.7744,SS:.7189,LF:.783,CF:.7415,RF:.7871,DH:.9034})}catch(e){}
+KPMV853=2.43;
