@@ -15184,8 +15184,8 @@ try{for(const k in DRA836)DRA836[k]=0}catch(e){}
    · 지명 포지션 기준(스카우트 평가 가산, 유저 허락: '지명 기준은 포지션마다 달라도 됨 — 타격 포지션은 더 쳐야'):
      두 표본 합쳐서 포지션마다 지명 약 89~95% · 1라운드 약 49~55%로 맞춤 (고교 튀는 반기는 전 포지션 같게)
      포수 +0.9 · 유격 +3.8 · 중견 +1.4 (수비 프리미엄) / 1루 −0.8 · 2루 −2.5 · 3루 −1.7 · 좌익 −2.0 · 우익 −2.7 (타격으로 더 증명해야) · 선발 +0.4 · 불펜 −2.5 */
-try{Object.assign(HOFT720,{B:49,SP:65,CL:37,RP:38})}catch(e){}
-WARF842B=0.68;WARF842P=0.895;WARF842=0.84;TOURW852=73;
+try{Object.assign(HOFT720,{B:50,SP:64,CL:36,RP:37})}catch(e){}/* v854c: W36+W37+W38 합쳐(타자 1,368 · 선발 504 · 마무리 336 · 셋업 336) — 타자 49→50 (95.0%) · 선발 65→64 (90.7%) · 마무리 37→36 (90.8%) · 셋업 38→37 (91.4%) */
+WARF842B=0.67;WARF842P=0.905;WARF842=0.84;TOURW852=74;/* v854c: 영결 타자 0.68→0.67 (49.7%) · 투수 0.895→0.905 (선발 약 14.4%) · 투어 73→74 (자격자 약 33.7%) */
 try{Object.assign(DRA836,{C:.9,'1B':-.82,'2B':-2.49,'3B':-1.7,SS:3.77,LF:-2.02,CF:1.4,RF:-2.73,SP:.44,RP:-2.54})}catch(e){}
 
 /* ===== v854 댓글: '케이팝 모델 생수머신' (펨코 제목들 · 나무위키 별명 문단 공부)
@@ -15380,3 +15380,32 @@ function mugCut854(arr){try{if(!Array.isArray(arr)||!ME||!S||S.stage!=='pro'||ag
 {const _arMg854=article;article=function(){const id0=S&&S.artId;const r=_arMg854.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm))a.cm=mugCut854(a.cm)}catch(e){}return r}}
 try{if(typeof buildSeasonRecap==='function'){const _bsMg854=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsMg854.apply(this,arguments);try{if(q&&Array.isArray(q.cm))q.cm=mugCut854(q.cm)}catch(e){}return q}}}catch(e){}
 try{if(typeof phaseArticle==='function'){const _phMg854=phaseArticle;phaseArticle=function(){const id0=S&&S.artId;const r=_phMg854.apply(this,arguments);try{const a=S&&S.arts&&S.arts[0];if(a&&a.id!==id0&&Array.isArray(a.cm))a.cm=mugCut854(a.cm)}catch(e){}return r}}}catch(e){}
+/* ===== 계약 옵션 다양화 (유저 요청 11/17 00:06: '550타석 이상'·'650타석 이상'처럼 겹치는 조건 X) =====
+   · 출전 조건(타석·경기·이닝·등판)은 딱 하나 + 성적 하나(WAR · OPS · wRC+ · 홈런 · 타율 · 타점 · 도루 / WAR · 평균자책 · 승 · 탈삼진 · 세이브 · 홀드)
+     + 팀 포스트시즌 진출 · 수상 · 다른 종류 성적 중 하나 — 기준은 작년 성적의 85~93%쯤(나이 들면 조금 낮게)
+   · (실제 MLB는 노사협약 때문에 성적 보너스를 못 넣지만 게임에선 유저 요청대로 KBO·MLB 둘 다 다양하게)
+   · 같이 고침: 수상 옵션이 정규식으로 저장돼서 저장→불러오기 뒤엔 판정이 깨지던 것(지급 안 됨) → 글자로 저장 */
+genOpts804=function(lg){const P=isP(),a=age(),mlb=lg!=='KBO',RP=P&&ME.pos!=='SP',cur=(S.pro&&S.pro.league)||'KBO';
+  let {b,p}=yearTot(S.y,[cur]),yy=S.y;if(P?p.outs<120:b.PA<200){const pv=yearTot(S.y-1,[cur]);if(P?pv.p.outs>p.outs:pv.b.PA>b.PA){b=pv.b;p=pv.p;yy=S.y-1}}
+  const ag=a>=36?.88:a>=33?.94:1,r5=x=>Math.floor(x/5)*5,r10=x=>Math.round(x/10)*10,cl2=(x,l,h)=>Math.max(l,Math.min(h,x)),o=[];
+  const W=((typeof seaWy853==='function'?seaWy853(cur)[yy]:0)||0)*(mlb&&cur!=='MLB'?.6:1);
+  if(!P){if(mlb){const t=cl2(Math.round(b.PA*.85*ag/50)*50,350,600);o.push({k:'pa',v:t,t:`${t}타석 이상`})}else{const g=cl2(r10(b.G*.95*ag),90,130);o.push(b.PA>=480&&a<36&&R()<.4?{k:'pa',v:446,t:'규정타석(446) 달성'}:{k:'g',v:g,t:`${g}경기 이상 출전`})}}
+  else if(!RP){const t=cl2(r10(p.outs/3*.88*ag),100,180);o.push({k:'ip',v:t,t:`${t}이닝 이상`})}
+  else{const t=cl2(r5(p.G*.88*ag),40,65);o.push({k:'app',v:t,t:`${t}경기 이상 등판`})}
+  const perf=[],wv=Math.max(1,Math.round(W*.75*ag*2)/2);perf.push({k:'war',v:wv,t:`WAR ${wv.toFixed(1)} 이상`,g:'war'});
+  if(!P){const ops=b.PA?opsN(b):.7,v=+cl2(Math.floor(ops*.95*ag*100)/100,.70,.95).toFixed(2);perf.push({k:'ops',v,t:`OPS ${v.toFixed(3).replace(/^0/,'')} 이상`,g:'rate'});
+    let wr=100;try{wr=wrcPlus851(b,cur)||100}catch(e){}const wv2=[150,140,130,120,110,100].find(v=>v<=wr*.93*ag)||100;perf.push({k:'wrc',v:wv2,t:`wRC+ ${wv2} 이상`,g:'rate'});
+    if(b.HR>=12){const v=Math.max(10,r5(b.HR*.85*ag));perf.push({k:'hr',v,t:`${v}홈런`,g:'cnt'})}
+    if(b.AB>=300&&b.H/b.AB>=.28){const v=b.H/b.AB>=.3*(2-ag)?.300:.280;perf.push({k:'avg',v,t:`타율 ${v.toFixed(3).replace(/^0/,'')}`,g:'rate'})}
+    if(b.RBI>=55){const v=Math.max(50,r10(b.RBI*.85*ag));perf.push({k:'rbi',v,t:`${v}타점`,g:'cnt'})}
+    if(b.SB>=15){const v=Math.max(10,r5(b.SB*.8*ag));perf.push({k:'sb',v,t:`${v}도루`,g:'cnt'})}}
+  else{const era=p.outs?eraN(p):4.5;perf.push({k:'era',v:+cl2(Math.round(era*1.12/ag*4)/4,RP?2.5:2.75,4.5).toFixed(2),g:'rate'});
+    if(!RP){if(p.W>=8)perf.push({k:'w',v:Math.max(7,Math.round((p.W-2)*ag)),g:'cnt'});if(p.K>=110)perf.push({k:'k',v:Math.max(100,r10(p.K*.85*ag)),g:'cnt'})}
+    else{if(p.SV>=12)perf.push({k:'sv',v:Math.max(10,r5(p.SV*.8*ag)),g:'cnt'});if(p.HLD>=10)perf.push({k:'hld',v:Math.max(8,r5(p.HLD*.8*ag)),g:'cnt'})}
+    perf.forEach(s=>{if(!s.t)s.t=s.k==='era'?`평균자책점 ${s.v.toFixed(2)} 이하`:s.k==='w'?`${s.v}승`:s.k==='k'?`${s.v}탈삼진`:s.k==='sv'?`${s.v}세이브`:`${s.v}홀드`})}
+  const s1=pick(perf);o.push(s1);
+  const team={k:'ps',t:mlb?'팀 포스트시즌 진출':'팀 가을야구 진출'},aw=mlb?(P?(RP?{k:'aw',rs:'세이브왕|홀드왕|올스타',t:'구원 부문 타이틀·올스타'}:{k:'aw',rs:'사이영|올스타',t:'올스타·사이영상 수상'}):pick([{k:'aw',rs:'실버슬러거',t:'실버슬러거 수상'},{k:'aw',rs:'골드글러브',t:'골드글러브 수상'}])):{k:'aw',rs:'골든글러브',t:'골든글러브 수상'};
+  const other=perf.filter(z=>z.k!==s1.k&&z.g!==s1.g),c3=[team,team,aw];if(other.length)c3.push(pick(other),pick(other));o.push(pick(c3));return o};
+try{if(typeof optHit804==='function'){const _ohW854=optHit804;optHit804=function(x,y,lg){try{if(x&&x.k==='war')return(((typeof seaWy853==='function'?seaWy853(lg):{})||{})[y]||0)>=x.v;
+  if(x&&x.k==='wrc'){const b=yearTot(y,[lg]).b;return(b.PA||0)>=300&&wrcPlus851(b,lg)>=x.v}
+  if(x&&x.k==='aw'){const rx=x.rs?new RegExp(x.rs):(x.re instanceof RegExp?x.re:new RegExp(String(x.t||'').replace(/ ?(수상|선정)/g,'').split('·').join('|')||'^$'));return(S.awards||[]).some(a=>a&&a.y===y&&rx.test(String(a.n||'')))}}catch(e){return false}return _ohW854.apply(this,arguments)}}}catch(e){}
