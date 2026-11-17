@@ -2733,8 +2733,8 @@ function psPick(base,gn,g7,need){if(!isP()||!base||base==='none')return base||'n
     if(P.day-P.last-1>=rest){P.last=P.day;S._b2b=0;return base}
     if(g7&&P.day-P.last-1>=2&&sta>=55&&R()<.65){P.last=P.day;S._b2b=0;return'MR'}
     return'none'}
-  if(['CL','SU','MR','RP','fP'].includes(base)){const maxS=sta>=68?3:2,cons=P.lastDay===P.day-1?P.streak:0;if(cons>=maxS)return'none';
-    if(g7||R()<cl((base==='CL'?.72:base==='SU'?.74:.66)+relQ()*1.5+(sta-55)*.004,.35,.92)){P.streak=cons+1;P.lastDay=P.day;S._b2b=cons;return base}return'none'}
+  if(['CL','SU','MR','RP','fP'].includes(base)){/* v857n: 불펜 연투 한도·등판 확률을 체력 곡선으로 (선발보다 낮은 체력에서 열림 · 조금만 올려도 효과) — 예전: 체력 68 넘으면 3연투 · 아니면 2연투 (계단) */const s1=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)},maxS=2+(R()<s1((sta-45)/20)?1:0)+(R()<.5*s1((sta-60)/20)?1:0),cons=P.lastDay===P.day-1?P.streak:0;if(cons>=maxS)return'none';
+    if(g7||R()<cl((base==='CL'?.72:base==='SU'?.74:.66)+relQ()*1.5+.24*(s1((sta-40)/35)-.5),.35,.94)){P.streak=cons+1;P.lastDay=P.day;S._b2b=cons;return base}return'none'}
   return base}
 {const _po=postseason;postseason=function(rep){S._ps=null;S._b2b=0;return _po(rep)}}
 {const _mp=mlbPost;mlbPost=function(rep){S._ps=null;S._b2b=0;return _mp(rep)}}
@@ -16015,20 +16015,24 @@ tourElig=function(){try{if(!S||!S.pro||S.pro.league!=='KBO')return null;let k=0,
        · 진행 과정(예선·조별·8강·준결승): 앞 경기에 던졌으면 다음 경기 등판 확률↓ (체력 곡선 · 2이닝 가까이 던졌으면 더↓) · 2연투 했으면 거의 쉼
        · WBC 경기도 같은 방식 (연투 휴식) · 결승전은 웬만하면(90%) 등판 — 단 바로 앞(준결승)에 던졌으면 대부분 휴식
        · 올림픽·아시안게임은 결승전에 던졌으면 준결승은 '결승 대비 휴식' (결승 중계가 먼저 정해져서 거꾸로 맞춤) */
+/* v857n (유저 결정 14:23): 체력 좋으면 더 자주 · 연투도 가능 — 불펜은 선발보다 낮은 체력에서 열리는 곡선 (조금만 올려도 효과)
+   다음 경기 등판 배율(앞 경기 던졌을 때): 체력 35 → 0.30 · 52 → 0.58 · 70↑ → 0.85 / 2연투 뒤: 체력 45 → 0.10 · 60 → 0.35 · 75↑ → 0.60 · 결승 전날(준결승) 던졌으면 결승 등판 = 위 배율 */
+function ipF1_857(sta){return .3+.55*s01((sta-35)/35)}function ipF2_857(sta){return .1+.5*s01((sta-45)/30)}
 function ipFin857(){try{for(let i=S.queue.length-1;i>=0;i--){const q=S.queue[i];if(q&&q.type==='game'&&q.g&&/(올림픽|아시안게임|프리미어)/.test(q.g.title||'')&&/(결승전|동메달 결정전)/.test(q.g.title||''))return{final:/결승전/.test(q.g.title),pitched:!!(q.g.mp&&q.g.mp.outs>0)}}}catch(e){}return null}
 {const _ipm857=ipMe;ipMe=function(p,AG){try{if(!isP()||ME.pos==='SP')return _ipm857.apply(this,arguments);
   const o=ovrE(),weak=AG&&/홍콩|태국|필리핀/.test(p.t),edge=(o-(LV.KBO||50))/10+(weak?1.2:0),gd=typeof intlGood==='function'&&(intlGood()||(typeof eliteIntl==='function'&&eliteIntl()));
-  const st=ipMe._r857||(ipMe._r857={last:0,rc:0,lo:0}),sta=DV(E('sta')),f1=(.3+.45*s01((sta-45)/45))*(st.lo>=4?.6:1);
-  let pr=gd?(weak?.65:.8):(weak?.3:.55),note=st.last?'등판 없음 · 연투 휴식':'등판 없음';if(st.rc>=2)pr*=.12;else if(st.last)pr*=f1;
-  if(/준결승/.test(p.r)){const fg=ipFin857();if(fg&&fg.pitched){if(fg.final){pr=0;note='등판 없음 · 결승 대비 휴식'}else pr*=.45}}
+  const st=ipMe._r857||(ipMe._r857={last:0,rc:0,lo:0}),sta=DV(E('sta')),f1=ipF1_857(sta)*(st.lo>=4?.7:1),f2=ipF2_857(sta);
+  let pr=(gd?(weak?.65:.8):(weak?.3:.55))*(.9+.2*s01((sta-40)/35)),note=st.last?'등판 없음 · 연투 휴식':'등판 없음';if(st.rc>=2)pr*=f2;else if(st.last)pr*=f1;
+  if(/준결승/.test(p.r)){const fg=ipFin857();if(fg&&fg.pitched){pr*=fg.final?f1:f1*.8;if(fg.final)note='등판 없음 · 결승 대비 휴식'}}
   if(R()<pr){const er=R()<cl(.18-edge*.05,.03,.4)?1:0,k=ri(0,3),oo=R()<.25?ri(4,6):3;st.rc=st.last?st.rc+1:1;st.last=1;st.lo=oo;return`${Math.floor(oo/3)}${['','⅓','⅔'][oo%3]}이닝 ${er?'1실점':'무실점'}${k?` ${k}K`:''}`}
   st.last=0;st.rc=0;st.lo=0;return note}catch(e){return _ipm857.apply(this,arguments)}}}
 {const _in857=intl;intl=function(rep,cy){try{ipMe._r857=null}catch(e){}return _in857.apply(this,arguments)}}
 {const _fgW857=followGame;followGame=function(o){let L=null,o2=o;try{if(o&&o.intl&&S&&ME&&isP()&&ME.pos!=='SP'&&['CL','SU','MR'].includes(o.role)){
   const key=(o.wbc?'w':'i')+S.y;L=S._il857;if(!L||L.k!==key)L=S._il857={k:key,last:0,rc:0,lo:0};
-  const fin=/결승전/.test(o.title||''),sta=DV(E('sta')),f1=(.3+.45*s01((sta-45)/45))*(L.lo>=4?.6:1);
+  const fin=/결승전/.test(o.title||''),sta=DV(E('sta')),f1=ipF1_857(sta)*(L.lo>=4?.7:1),f2=ipF2_857(sta);
   if(fin&&!L.last)o2=Object.assign({},o,{mustPitch:R()<.9});
-  else if(o.wbc){let rest=L.rc>=2?.88:L.last?1-f1:0;if(fin)rest=Math.max(rest,.7);if(rest>0&&R()<rest)o2=Object.assign({},o,{role:'none'})}}}catch(e){L=null;o2=o}
+  else if(fin)o2=R()<f1?Object.assign({},o,{mustPitch:true}):Object.assign({},o,{role:'none'});
+  else if(o.wbc){const rest=L.rc>=2?1-f2:L.last?1-f1:0;if(rest>0&&R()<rest)o2=Object.assign({},o,{role:'none'})}}}catch(e){L=null;o2=o}
   const g=_fgW857.call(this,o2);if(L)try{const pt=!!(g&&g.mp&&g.mp.outs>0);L.rc=pt?(L.last?L.rc+1:1):0;L.last=pt?1:0;L.lo=pt?g.mp.outs:0}catch(e){}return g}}
 
 /* ===== v857 기준 다시 맞춤 — 최종 코드 표본 W47 2,040명 + W48 1,904명 = 3,944명 (타자 1,856 · 선발 671 · 마무리 704 · 셋업 713) =====
