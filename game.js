@@ -3860,6 +3860,10 @@ function fixYears(){try{const p=S&&S.pro;if(!p||p.years!==1||p.dev)return;let y=
 const MLB30={AL:['양키스','레드삭스','블루제이스','오리올스','레이스','가디언스','타이거스','로열스','트윈스','화이트삭스','애스트로스','레인저스','매리너스','에인절스','애슬레틱스'],
   NL:['브레이브스','필리스','메츠','말린스','내셔널스','컵스','브루어스','카디널스','레즈','파이리츠','다저스','파드리스','자이언츠','다이아몬드백스','로키스']};
 const MLB_CITY={시애틀:'매리너스',샌디에이고:'파드리스',토론토:'블루제이스',텍사스:'레인저스',디트로이트:'타이거스',피츠버그:'파이리츠',애리조나:'다이아몬드백스'};
+/* v857o: MLB 오퍼·직행·트레이드 구단을 30개 전부로 (예전 7개 도시만 — 양키스·다저스 같은 팀은 오퍼가 안 왔음) · 골고루 같은 확률 */
+Object.assign(MLB_CITY,{보스턴:'레드삭스',볼티모어:'오리올스',탬파베이:'레이스',클리블랜드:'가디언스',캔자스시티:'로열스',미네소타:'트윈스',휴스턴:'애스트로스',애틀랜타:'브레이브스',필라델피아:'필리스',마이애미:'말린스',워싱턴:'내셔널스',밀워키:'브루어스',세인트루이스:'카디널스',신시내티:'레즈',샌프란시스코:'자이언츠',콜로라도:'로키스','뉴욕 양키스':'양키스','뉴욕 메츠':'메츠','LA 다저스':'다저스','LA 에인절스':'에인절스','시카고 컵스':'컵스','시카고 화이트삭스':'화이트삭스',애슬레틱스:'애슬레틱스'});
+try{ABROAD.MLB.length=0;Object.keys(MLB_CITY).forEach(k=>ABROAD.MLB.push(k))}catch(e){}
+function mlbFull857(T){const n=MLB_CITY[T];return(!n||n===T||String(T).includes(' '))?String(T):`${T} ${n}`}
 function myMLBNick(){const t=S.pro&&S.pro.tname;return MLB_CITY[t]||t}
 function mlbGames(){if(S.m<3)return S.phase===0?0:162;return S.m>9?162:Math.round(cl((S.m-3+(S.phase===2?1:.5))/7,0,1)*162)}
 function mlbStandings(){const g=mlbGames(),mine=myMLBNick(),seed=s=>{let h=2166136261;for(const c of String(s))h=Math.imul(h^c.charCodeAt(0),16777619);return((h>>>0)%10000)/10000};
@@ -4856,14 +4860,14 @@ function tradeTargets(){if(S.pro.league==='MLB')return Object.keys(MLB_CITY).fil
   const used=P?(ip>=100||(pp.SV+pp.HLD)>=15||pp.GS>=15):b.PA>=350,good=P?(ip>=50&&era<=3.8):(b.PA>=200&&ops>=.8),youngGood=proYears()<=2&&lastWAR()>=2;
   const bench=!used&&!['start','SP','CL','SU'].includes(S.role)&&!(lastWAR()>=2)&&ryW<2&&!ryAw&&(()=>{try{return careerTot(PRO).w<20}catch(e){return true}})(),star=DV(ovrE())>=85&&age()>=27&&proYears()>=4;
   let p=(good||youngGood||ryAw||ryW>=3||(S.lastTradeY&&S.y-S.lastTradeY<3))?0:bench?(mlb?.06:.03):(mlb?.012:.004),big=false;const chemBad=(S.rel.chem||50)<30&&!(S.lastTradeY&&S.y-S.lastTradeY<2);if(chemBad)p=Math.max(p,mlb?.04:.03);if(star&&mlb&&R()<.006){big=true;p=1}if(R()>=p)return;
-  const T=pick(tradeTargets()),tn=mlb?`${T} ${MLB_CITY[T]}`:`${TEAMS[T].city} ${TEAMS[T].nick}`,pkg=big?pick(['유망주 4명','유망주 3명 + 현금','주전급 2명 + 유망주 2명','1라운드 지명권 2장 + 유망주 2명']):(bench?pick(['유망주 1명','불펜 투수 1명','현금','하위 라운드 지명권']):(ryW>=4||lastWAR()>=4)?pick(P?['상대 주전 4번 타자','주전 외야수 + 1라운드 지명권','국가대표 마무리 투수']:['상대 에이스 선발','10승 선발 투수 + 유망주','국가대표 마무리 + 1라운드 지명권']):pick(P?['주전급 야수 1명','유망주 2명 + 현금','1라운드 지명권']:['선발 투수 1명','필승조 투수 + 유망주','1라운드 지명권']));
+  const T=pick(tradeTargets()),tn=mlb?mlbFull857(T):`${TEAMS[T].city} ${TEAMS[T].nick}`,pkg=big?pick(['유망주 4명','유망주 3명 + 현금','주전급 2명 + 유망주 2명','1라운드 지명권 2장 + 유망주 2명']):(bench?pick(['유망주 1명','불펜 투수 1명','현금','하위 라운드 지명권']):(ryW>=4||lastWAR()>=4)?pick(P?['상대 주전 4번 타자','주전 외야수 + 1라운드 지명권','국가대표 마무리 투수']:['상대 에이스 선발','10승 선발 투수 + 유망주','국가대표 마무리 + 1라운드 지명권']):pick(P?['주전급 야수 1명','유망주 2명 + 현금','1라운드 지명권']:['선발 투수 1명','필승조 투수 + 유망주','1라운드 지명권']));
   const cw=(()=>{try{return careerTot(PRO).w}catch(e){return 0}})(),stP=lastWAR()>=4||ryW>=4||cw>=30*WARF842,rich=(S.pro.salary||0)>=(mlb?200000:100000);
   const why=chemBad&&!big?`라커룸 분위기가 많이 안 좋다는 거, 너도 알지? 구단이 분위기 쇄신이 필요하다고 판단했다.`:bench?'거기선 매일 뛸 수 있을 거다.':stP&&rich?`솔직히 말하마. 구단이 팀 연봉을 줄여야 한다. 네 연봉이 제일 크다.`:stP?`우승을 노리는 ${tn} 쪽에서 ${isP()?'마운드':'핵심 타선'}을 보강하려고 너를 콕 집었다.`:`우리 팀은 ${pkg}${jo(pkg,'이','가').slice(-1)} 필요하고, 그쪽은 주전급 선수가 필요하다.`;
   const txt=big?`🔥 블록버스터 트레이드!\n${jo(tn,'이','가')} ${pkg}${jo(pkg,'을','를').slice(-1)} 내주고 ${stP?(isP()?'리그 최고 투수 중 한 명인 ':'리그 최고 타자 중 한 명인 '):''}당신을 데려간다. 리그 전체가 들썩인다.`:`${mlb?'트레이드 마감일':'비시즌'}, 단장실에 불려갔다.\n"${tn}에서 너를 원한다. ${jo(pkg,'과','와')} 맞트레이드다. ${why}"`;
   const ch=[{t:'새 팀에서 새 출발',s:big?'인기↑↑ · 새 감독·동료':(bench?'새 감독·동료 · 출전 기회 기대':'새 감독·동료'),act:'tradeGo',arg:{T,big}}];if(mlb&&S.pro.noMinor)ch.push({t:'트레이드 거부권을 행사한다',s:'팀에 남는다 · 구단과 관계↓',act:'tradeNo'});
   S.queue.push({title:big?'💥 블록버스터 트레이드':'📞 트레이드 통보',text:txt,ch})}catch(e){}}}
 ACT.tradeGo=function(a){S.lastTradeY=S.y;const mlb=S.pro.league==='MLB';if(mlb){S.pro.tname=a.T}else{S.pro.team=a.T}S.rel.coach=55;S.rel.chem=45;S.coach=mkName()+' 감독';if(a.big)S.rel.fame=cl(S.rel.fame+8,0,100);
-  const tn=mlb?`${a.T} ${MLB_CITY[a.T]}`:`${TEAMS[a.T].city} ${TEAMS[a.T].nick}`;news(`트레이드 — ${tn} 이적.`);article(a.big?`[속보] 초대형 트레이드! ${ME.name}, ${tn} 유니폼 입는다`:`[오피셜] ${ME.name}, ${tn}로 트레이드`,a.big?'리그 판도를 흔들 블록버스터 트레이드가 성사됐다.':'새 팀에서 출전 기회를 늘릴 전망이다.','mix',{});
+  const tn=mlb?mlbFull857(a.T):`${TEAMS[a.T].city} ${TEAMS[a.T].nick}`;news(`트레이드 — ${tn} 이적.`);article(a.big?`[속보] 초대형 트레이드! ${ME.name}, ${tn} 유니폼 입는다`:`[오피셜] ${ME.name}, ${tn}로 트레이드`,a.big?'리그 판도를 흔들 블록버스터 트레이드가 성사됐다.':'새 팀에서 출전 기회를 늘릴 전망이다.','mix',{});
   return a.big?'짐을 싸는 손이 떨렸다. 새 팀 단장이 공항까지 마중 나왔다.':'짐을 쌌다. 새 유니폼, 새 출발이다.'};
 ACT.tradeNo=function(){S.rel.coach=cl(S.rel.coach-6,0,100);return'계약서의 거부권 조항을 꺼냈다. 구단 분위기가 싸늘해졌다.'};
 CRIT.add('tradeGo');CRIT.add('tradeNo');
@@ -5397,7 +5401,7 @@ function aaaGood(){const {b,p}=yearTot(S.y,['fut']);if(isP()){const ip=p.outs/3;
       S.queue.push({title:'📞 콜업!',text:`트리플A 감독이 불렀다.\n"짐 싸라. 내일부터 메이저다."\n${aaaGood()?'마이너에서 보여준 성적이 결국 통했다.':'빅리그에 자리가 났다. 기회를 잡아야 한다.'}`,ch:[{t:'메이저 무대로!',s:'',act:'lifeok'}]});news(`${S.y}년 ${S.m}월 메이저리그 콜업.`)}}}catch(e){}return r}}
 /* 마이너에 오래 묶이면 트레이드로 기회 */
 {const _ms15=monthStep;monthStep=function(rep){_ms15(rep);try{if(!(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'&&(S.m===7||S.m===12)&&(S.farmHalves||0)>=2&&S.queue.length<3))return;if(S.lastTradeY&&S.y-S.lastTradeY<1)return;if(S.ftY===S.y+'-'+S.m)return;S.ftY=S.y+'-'+S.m;
-  if(R()>=.2+kboPedigree()*.1)return;const T=pick(tradeTargets()),tn=`${T} ${MLB_CITY[T]}`;
+  if(R()>=.2+kboPedigree()*.1)return;const T=pick(tradeTargets()),tn=mlbFull857(T);
   S.queue.push({title:'📞 트레이드 통보',text:`단장실에 불려갔다.\n"${tn}에서 너를 메이저 전력으로 원한다. 거기선 바로 빅리그에서 뛸 수 있을 거다."`,ch:[{t:'새 팀에서 메이저 도전',s:'새 감독·동료 · 메이저 기회↑',act:'tradeGoF',arg:{T}}]})}catch(e){}}}
 ACT.tradeGoF=function(a){const r=ACT.tradeGo({T:a.T,big:false});S.tradeBoostY=S.y;S.mlbFarm=null;S.farmHalves=0;return r};CRIT.add('tradeGoF');
 /* 10월: 계약·연봉 등 선택 이벤트는 가을야구·시즌 결산 다 끝난 뒤로 */
@@ -10343,7 +10347,7 @@ function cuTryUp(s,boost){const c=cuCtx(),a=cuMix(c.upT,c.farm,true,c.ex+(boost|
 /* 4개월 넘게 1군(메이저) 기회를 못 받으면 가끔 트레이드 */
 {const _msCT=monthStep;monthStep=function(rep){_msCT(rep);try{if(S.stage!=='pro'||!S.pro||S.pro.dev||S.m<4||S.m>8)return;const lg=S.pro.league,s=S[lg==='KBO'?'kcu':'mcu'];if(!s||s.y!==S.y||s.lv!==2)return;
   if(S.lastTradeY===S.y||S.queue.some(q=>q&&/트레이드/.test(q.title||'')))return;const st=s.stuck||0,th=lg==='KBO'?6:4,p=.45*(1-Math.exp(-Math.max(0,st-th+1)/4))*knot(age(),[34,38],[1,.3]);if(R()>=p)return;
-  const T=pick(tradeTargets()),tn=lg==='MLB'?`${T} ${MLB_CITY[T]}`:`${TEAMS[T].city} ${TEAMS[T].nick}`;
+  const T=pick(tradeTargets()),tn=lg==='MLB'?mlbFull857(T):`${TEAMS[T].city} ${TEAMS[T].nick}`;
   S.queue.push({title:'📞 트레이드 통보',text:`단장실에 불려갔다.\n"${st}개월째 ${lg==='MLB'?'마이너':'2군'}에만 있는 거 우리도 안다. ${tn}에서 너한테 기회를 주겠다고 해서 트레이드가 결정됐다."`,ch:[
     {t:'새 팀에서 기회를 잡는다',s:'콜업 기회↑ · 새 감독·동료 적응',act:'tradeCU',arg:{T}},
     ...(lg==='MLB'&&S.pro.noMinor?[{t:'트레이드 거부권을 행사한다',s:'팀에 남는다 · 감독 신뢰·멘탈↑ · 기회는 스스로 따내야 함',fx:{coach:3,men:2},r:'계약서의 거부권 조항을 꺼냈다. "여기서 올라가겠습니다."'}]:[])]})}catch(e){}}}
