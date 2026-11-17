@@ -16504,3 +16504,43 @@ if (typeof article === 'function') {
     return r;
   };
 }
+
+/* v857z 드래프트 연도 버그 (쇼츠용 은퇴 리캡 화면 다시 보다가 발견, 11/18)
+   · 고3 9월에 열리는 드래프트(중계 화면·기사는 "2030 신인 드래프트")를 시즌이 넘어간 뒤 계약하면 기록된 연도가 이미 다음 해라서,
+     은퇴 리캡 '시작'·은퇴 카드·기록 화면에 "2031 드래프트 1라운드"처럼 1년 늦게 나오던 것
+   · 계약할 때 드래프트 연도를 따로 저장하고(새 커리어), 예전 저장본은 마지막 학교 시즌을 보고 맞는 연도로 표시 */
+function draftCY857z() {
+  try {
+    const d = S && S.pro && S.pro.draft; if (!d) return null;
+    if (d.cy) return d.cy;
+    const sch = (S.rows || []).filter(r => r && (r.lv === 'hs' || r.lv === 'univ')).map(r => r.y);
+    const last = sch.length ? Math.max(...sch) : null;
+    return last != null && d.y > last ? d.y : d.y + 1;
+  } catch (e) { return null; }
+}
+function draftYrFix857z(h) {
+  try {
+    const d = S && S.pro && S.pro.draft, cy = draftCY857z();
+    if (!d || cy == null || cy === d.y + 1 || typeof h !== 'string') return h;
+    return h.split(`${d.y + 1} 드래프트`).join(`${cy} 드래프트`);
+  } catch (e) { return h; }
+}
+if (typeof ACT === 'object' && ACT && typeof ACT.draftSign === 'function') {
+  const _ds857z = ACT.draftSign;
+  ACT.draftSign = function () {
+    const cy = (S.phase === 0 ? S.y : S.y + 1);
+    const r = _ds857z.apply(this, arguments);
+    try { if (S.pro && S.pro.draft) S.pro.draft.cy = cy; } catch (e) {}
+    return r;
+  };
+}
+if (typeof vRecord === 'function') { const _vr857z = vRecord; vRecord = function () { return draftYrFix857z(_vr857z.apply(this, arguments)); }; }
+if (typeof vRetCard === 'function') { const _vc857z = vRetCard; vRetCard = function () { return draftYrFix857z(_vc857z.apply(this, arguments)); }; }
+if (typeof recapSlides === 'function') {
+  const _rs857z = recapSlides;
+  recapSlides = function () {
+    const sl = _rs857z.apply(this, arguments);
+    try { (sl || []).forEach(s => { if (s && typeof s.sub === 'string') s.sub = draftYrFix857z(s.sub); }); } catch (e) {}
+    return sl;
+  };
+}
