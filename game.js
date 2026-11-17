@@ -554,7 +554,7 @@ function tourney(name,rep,ps){
   let res;
   if(w===4){const playing=['start','ace','hsP','bench'].includes(S.role);const opp=pick(SCHOOLS.filter((s,i)=>i!==S.school));
     const lvk=S.stage,myR=LV[lvk]+(base-41)*.6+2,opR=LV[lvk]+(opp.s-41)*.6+2;
-    const g=followGame({title:`${name} 결승`,sub:`${teamLabel()} vs ${opp.n}`,me:{ab:teamLabel().slice(0,3),c:'#24589c',bR:myR,pR:myR},op:{ab:opp.n.slice(0,3),c:'#5e6879',bR:opR,pR:opR},home:R()<.5,role:playing?(isP()?(ME.pos==='SP'?'SP':(S.role==='ace'?'CL':'SU')):'start'):'none',lvk,L:LV[lvk]});/* v857: 불펜 고른 고교·대학 투수는 결승도 불펜으로 */
+    const g=followGame({title:`${name} 결승`,sub:`${teamLabel()} vs ${opp.n}`,me:{ab:teamLabel().slice(0,3),c:'#24589c',bR:myR,pR:myR},op:{ab:opp.n.slice(0,3),c:'#5e6879',bR:opR,pR:opR},home:R()<.5,role:playing?(isP()?(ME.pos==='SP'?'SP':(S.role==='ace'?'CL':'SU')):'start'):((isP()&&S.role==='hsBench'&&R()<.7)?'MR':'none'),mustPitch:isP()&&R()<.95,lvk,L:LV[lvk]});/* v857: 불펜 고른 고교·대학 투수는 결승도 불펜으로 · v857l: 결승은 불펜도 웬만하면(95%) 등판 — 셋업 8회·마무리 9회(원정에서 지고 있으면 8회말)에 점수 상관없이 · 벤치 투수도 70%는 중간 계투로 */
     if(g.win)w=5;S.queue.push({type:'game',g});res=g.win?'우승!':'준우승'}
   else res=['1회전 탈락','16강 탈락','8강 탈락','4강 진출'][w];
   S.rel.fame+=[0,.5,1,2,4,7][w];if(w>=4)ME.xp+=2;
@@ -717,7 +717,7 @@ function followGame(o){
       if(fld===my&&!isB&&role!=='none'){const lead=G.R[my]-G.R[1-my];
         if(role==='SP'){if(inn===1&&!used){pitching=true;used=true}else if(pitching&&(pc>lim-(_bigPS0&&Math.abs(G.R[0]-G.R[1])<=2&&!_ace0?6:0)||(ra>=(o.intl||/시리즈|플레이오프|와일드카드|챔피언십|디비전/.test(o.title||'')?4:5)&&inn>=3)||inn>9)){pitching=false;snap(`${it} — ${name} 마운드를 내려간다 (${ip(mp.outs)}이닝 ${ra}실점, 투구수 ${pc})`,'sub')}}
         else if(!used&&crisis&&!G.crTried&&inn===crIn&&lead>=0&&lead<=3){G.crTried=1;pendC=true}
-        else if(!used&&(((bigPS||o.intl)&&role==='MR'&&ME.pos==='SP'&&aceP())?(inn>=6&&inn<=9&&R()<tightP(lead)):((role==='CL'&&inn>=9&&lead>=1&&lead<=3)||(multiG&&inn===8&&lead>=0&&lead<=3)||(multiG&&inn>=9&&lead===0)||(role==='SU'&&inn===8&&lead>=0&&lead<=3)||(role==='MR'&&(o.intl?(inn>=6&&inn<=8&&Math.abs(lead)<=3):((inn===6&&mrOk(lead,0))||(inn===7&&mrOk(lead,1)))))||(o.intl&&role==='CL'&&inn>=9&&lead>=0&&lead<=4)||(o.intl&&S._intlElite&&(role==='CL'||role==='MR')&&inn>=6&&inn<=9&&lead<0&&R()<tightP(lead)*.55)||(o.intl&&S._intlElite&&role==='CL'&&inn>=7&&inn<=8&&lead>=0&&lead<=2&&R()<.35)||(o.intl&&S._intlElite&&(role==='MR'||role==='CL')&&inn>=7&&inn<=9&&R()<(S._intlElite>=2?.6:.3))||(bigPS&&role!=='CL'&&inn===psEnt&&lead>=-3&&lead<=4)||(bigPS&&role==='CL'&&inn>=9&&lead>=-1&&lead<=4)||(cl7&&inn===7&&lead>=0&&lead<=3)||(bigPS&&inn===9&&(role==='SU'||role==='MR')&&R()<.6)||(bigPS&&role==='CL'&&inn===9&&R()<.35)||(bigPS&&role!=='SP'&&aceP()&&inn>=7&&R()<tightP(lead)*.8)))){pitching=true;used=true;relInn=1;relLead=lead;snap(`${it} — ${name} 마운드에 오른다 (${lead>0?`${lead}점 리드`:lead===0?'동점':`${-lead}점 차`})${multiG&&inn>=9&&lead===0?' — 연장 승부':''}`,'sub')}
+        else if(!used&&(((bigPS||o.intl)&&role==='MR'&&ME.pos==='SP'&&aceP())?(inn>=6&&inn<=9&&R()<tightP(lead)):((o.mustPitch&&((role==='SU'&&inn>=8)||(role==='CL'&&(inn>=9||(inn===8&&!o.home&&lead<0)))||(role==='MR'&&inn>=6)))||(role==='CL'&&inn>=9&&lead>=1&&lead<=3)||(multiG&&inn===8&&lead>=0&&lead<=3)||(multiG&&inn>=9&&lead===0)||(role==='SU'&&inn===8&&lead>=0&&lead<=3)||(role==='MR'&&(o.intl?(inn>=6&&inn<=8&&Math.abs(lead)<=3):((inn===6&&mrOk(lead,0))||(inn===7&&mrOk(lead,1)))))||(o.intl&&role==='CL'&&inn>=9&&lead>=0&&lead<=4)||(o.intl&&S._intlElite&&(role==='CL'||role==='MR')&&inn>=6&&inn<=9&&lead<0&&R()<tightP(lead)*.55)||(o.intl&&S._intlElite&&role==='CL'&&inn>=7&&inn<=8&&lead>=0&&lead<=2&&R()<.35)||(o.intl&&S._intlElite&&(role==='MR'||role==='CL')&&inn>=7&&inn<=9&&R()<(S._intlElite>=2?.6:.3))||(bigPS&&role!=='CL'&&inn===psEnt&&lead>=-3&&lead<=4)||(bigPS&&role==='CL'&&inn>=9&&lead>=-1&&lead<=4)||(cl7&&inn===7&&lead>=0&&lead<=3)||(bigPS&&inn===9&&(role==='SU'||role==='MR')&&R()<.6)||(bigPS&&role==='CL'&&inn===9&&R()<.35)||(bigPS&&role!=='SP'&&aceP()&&inn>=7&&R()<tightP(lead)*.8)))){pitching=true;used=true;relInn=1;relLead=lead;snap(`${it} — ${name} 마운드에 오른다 (${lead>0?`${lead}점 리드`:lead===0?'동점':`${-lead}점 차`})${multiG&&inn>=9&&lead===0?' — 연장 승부':''}`,'sub')}
         else if(role!=='SP'&&pitching){if(crisisCont){crisisCont=0;relInn++;snap(`${it} — ${name} 이어서 마운드를 지킨다`,'me')}else if((multiG||cl7)&&relInn<2&&ra<=1&&Math.abs(G.R[my]-G.R[1-my])<=4){relInn++;snap(`${it} — ${name} 한 이닝 더 간다!`,'me')}else if(multiG&&relInn===2&&G._go3){relInn++;G.cl3=1;G._p23=R()<.45;snap(`${it} — ${name} 3이닝째 마운드에 선다!`,'me')}else if(role==='CL'&&(bigPS||inn>=10||o.intl)&&relInn===2&&ra===0&&R()<.3){relInn++;G.cl3=1;snap(`${it} — ${name} 3이닝째 마운드에 선다!`,'me')}else pitching=false}}
       while(outs<3){
         if(fld===my&&isB&&role==='start'&&ME.pos==='C'&&b[0]&&!b[1]&&outs<2&&R()<((bigPS||o.intl)?.12:.075)){const armD=DV(E('arm')),csP=cl((.13+(armD-50)*.0065)*((bigPS||o.intl)?1.15:1),.08,.55),diff=G.R[my]-G.R[1-my],close=Math.abs(diff)<=2&&inn>=6,lateBig=close&&inn>=8;
@@ -16011,6 +16011,25 @@ rnNear854=function(){try{if(typeof retireNos==='function'&&retireNos().length)re
 tourElig=function(){try{if(!S||!S.pro||S.pro.league!=='KBO')return null;let k=0,m=0;const ky=new Set();S.rows.forEach(r=>{if(r.lv==='KBO'){k+=rowWAR(r);if((r.b&&r.b.PA)||(r.p&&r.p.outs))ky.add(r.y)}else if(r.lv==='MLB')m+=rowWAR(r)});
   let tot=k+1.3*m;if(isP()){const P1=S.rows.filter(r=>r.lv==='KBO'||r.lv==='MLB');let g=0,gs=0,sv=0,hd=0;P1.forEach(r=>{const p=r.p||{},f=r.lv==='MLB'?1.3:1;g+=p.G||0;gs+=p.GS||0;sv+=(p.SV||0)*f;hd+=(p.HLD||0)*f});if(g>0&&gs<g/2)tot+=RPTR857.sv*sv+RPTR857.hld*hd}
   return ky.size>=5&&tot>=TOURW852?{kbo:k,mlb:m,tot,yrs:ky.size}:null}catch(e){return null}};
+/* 18) v857m (유저 결정 14:00·14:06): 국제대회 불펜 등판 — 체력에 비해 너무 많이 나오던 것 (예선 3경기·8강·준결승·결승까지 전부 등판)
+       · 진행 과정(예선·조별·8강·준결승): 앞 경기에 던졌으면 다음 경기 등판 확률↓ (체력 곡선 · 2이닝 가까이 던졌으면 더↓) · 2연투 했으면 거의 쉼
+       · WBC 경기도 같은 방식 (연투 휴식) · 결승전은 웬만하면(90%) 등판 — 단 바로 앞(준결승)에 던졌으면 대부분 휴식
+       · 올림픽·아시안게임은 결승전에 던졌으면 준결승은 '결승 대비 휴식' (결승 중계가 먼저 정해져서 거꾸로 맞춤) */
+function ipFin857(){try{for(let i=S.queue.length-1;i>=0;i--){const q=S.queue[i];if(q&&q.type==='game'&&q.g&&/(올림픽|아시안게임|프리미어)/.test(q.g.title||'')&&/(결승전|동메달 결정전)/.test(q.g.title||''))return{final:/결승전/.test(q.g.title),pitched:!!(q.g.mp&&q.g.mp.outs>0)}}}catch(e){}return null}
+{const _ipm857=ipMe;ipMe=function(p,AG){try{if(!isP()||ME.pos==='SP')return _ipm857.apply(this,arguments);
+  const o=ovrE(),weak=AG&&/홍콩|태국|필리핀/.test(p.t),edge=(o-(LV.KBO||50))/10+(weak?1.2:0),gd=typeof intlGood==='function'&&(intlGood()||(typeof eliteIntl==='function'&&eliteIntl()));
+  const st=ipMe._r857||(ipMe._r857={last:0,rc:0,lo:0}),sta=DV(E('sta')),f1=(.3+.45*s01((sta-45)/45))*(st.lo>=4?.6:1);
+  let pr=gd?(weak?.65:.8):(weak?.3:.55),note=st.last?'등판 없음 · 연투 휴식':'등판 없음';if(st.rc>=2)pr*=.12;else if(st.last)pr*=f1;
+  if(/준결승/.test(p.r)){const fg=ipFin857();if(fg&&fg.pitched){if(fg.final){pr=0;note='등판 없음 · 결승 대비 휴식'}else pr*=.45}}
+  if(R()<pr){const er=R()<cl(.18-edge*.05,.03,.4)?1:0,k=ri(0,3),oo=R()<.25?ri(4,6):3;st.rc=st.last?st.rc+1:1;st.last=1;st.lo=oo;return`${Math.floor(oo/3)}${['','⅓','⅔'][oo%3]}이닝 ${er?'1실점':'무실점'}${k?` ${k}K`:''}`}
+  st.last=0;st.rc=0;st.lo=0;return note}catch(e){return _ipm857.apply(this,arguments)}}}
+{const _in857=intl;intl=function(rep,cy){try{ipMe._r857=null}catch(e){}return _in857.apply(this,arguments)}}
+{const _fgW857=followGame;followGame=function(o){let L=null,o2=o;try{if(o&&o.intl&&S&&ME&&isP()&&ME.pos!=='SP'&&['CL','SU','MR'].includes(o.role)){
+  const key=(o.wbc?'w':'i')+S.y;L=S._il857;if(!L||L.k!==key)L=S._il857={k:key,last:0,rc:0,lo:0};
+  const fin=/결승전/.test(o.title||''),sta=DV(E('sta')),f1=(.3+.45*s01((sta-45)/45))*(L.lo>=4?.6:1);
+  if(fin&&!L.last)o2=Object.assign({},o,{mustPitch:R()<.9});
+  else if(o.wbc){let rest=L.rc>=2?.88:L.last?1-f1:0;if(fin)rest=Math.max(rest,.7);if(rest>0&&R()<rest)o2=Object.assign({},o,{role:'none'})}}}catch(e){L=null;o2=o}
+  const g=_fgW857.call(this,o2);if(L)try{const pt=!!(g&&g.mp&&g.mp.outs>0);L.rc=pt?(L.last?L.rc+1:1):0;L.last=pt?1:0;L.lo=pt?g.mp.outs:0}catch(e){}return g}}
 
 /* ===== v857 기준 다시 맞춤 — 최종 코드 표본 W47 2,040명 + W48 1,904명 = 3,944명 (타자 1,856 · 선발 671 · 마무리 704 · 셋업 713) =====
    · 명예의 전당 (반올림 점수): 타자 47 (W47+W48 94.9% · 수상 조정 반영하면 약 95%) · 선발 60 (90.0%) · 마무리 35 (89.9%) · 셋업 36 (90.7%)
