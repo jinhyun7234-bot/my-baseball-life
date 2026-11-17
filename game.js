@@ -15967,6 +15967,50 @@ function smin857(x,M){return x>0?Math.pow(Math.pow(x,-4)+Math.pow(M,-4),-.25):0}
 {const _hp857=hrPw;hrPw=function(){let m=_hp857.apply(this,arguments);try{if(!isP()&&S.stage==='pro'&&S.pro&&S.pro.league==='MLB'&&!S.pro.minor){const g=Math.max(0,78-DV(E('eye')))+Math.max(0,VIS_ML-DV(E('vis')));if(g>0){const r=Math.pow(g/40,1.4)*.1,nw=Math.max(.9,1-r);m*=(1-smin857(r,.1))/nw}}}catch(e){}return m}}
 {const _mg857=mlbGapPen;mlbGapPen=function(){try{if(!isP()&&S&&S.stage==='pro'&&S.pro&&S.pro.league==='MLB'&&!S.pro.minor){const st=78,cv=d=>d>0?Math.pow(d/10,1.5):0;
   const ks=gapKeys(),gap=ks.reduce((t,k)=>t+cv(st-DV(prioVal(k))),0),ev=cv(st-DV(E('eye')))+cv(VIS_ML-DV(E('vis')));return smin857(gap*.1+ev*.06,.45)}}catch(e){}return _mg857.apply(this,arguments)}}
+/* 16) v857j (유저 결정 13:43)
+   a) 프로 첫해 선발 골랐다가 2군 선발 수업을 받은 투수: 수료하면 그 시즌 남은 기간은 1군 선발 로테이션 (예전: '1군에서 한번 보자' 하고는 1군 롱릴리프로 — W48 84번)
+   b) 보직이 바뀐 달에 뜬 '감독의 부탁'은 보여 줄 때 지금 보직 말로 다시 · 선발이 아니게 되면 '😮‍💨 불펜 대기 자청'은 빼기 (W48 8번)
+   c) 선발이 '감독의 부탁'을 받으면 3개월간 등판 수 약 30%↑ → 약 20%↑ · 그동안 더 쌓이는 피로 +4 → +3.6 (마무리·셋업은 그대로) — 39선발·287이닝 같은 극단 시즌 줄이기
+   d) 메이저 선발: 구속·구위·제구·볼배합이 다 좋으면 탈삼진 아주 살짝↑ (곡선 · 넷 중 가장 낮은 값 72→84로 열리고, 구속·구위 35%씩 · 제구·볼배합 15%씩 가중 평균 74→86에서 커짐 · 맞은 공의 최대 3%가 삼진으로) */
+{const _ms=monthStep;monthStep=function(rep){const had=!!(S&&S.spLesson),w=(typeof pwork==='function')?pwork():1,sp=(()=>{try{const k=pwK857();return k==='sp'||k==='hsSP'}catch(e){return false}})();
+  const r=_ms.apply(this,arguments);
+  try{if(had&&isP()&&S.stage==='pro'&&!S.spLesson&&ME.pos==='SP'&&(S.queue||[]).some(q=>q&&q.title==='⚾ 선발 수업 수료'))S.spGrantY=S.y}catch(e){}
+  try{const g=S.lastGame;if(w===2&&sp&&isP()&&g&&g.kind==='P'&&g.m&&g.m.G>0)ME.fat=cl(ME.fat-.4,0,100)}catch(e){}
+  try{pwFix857()}catch(e){}
+  return r}}
+function pwFix857(){if(!S||!ME||!isP()||!Array.isArray(S.queue))return;const k=pwK857();if(!k)return;const H='⚾ 감독의 부탁 — ';
+  for(const q of S.queue){if(!q||typeof q.title!=='string'||!q.title.startsWith(H)||typeof q.text!=='string')continue;const t=q.title.slice(H.length);let lk=null,ix=-1;
+    for(const L of ['sp','cl','su','hsSP','hsRP']){const i=PW857[L].findIndex(z=>z[0]===t&&q.text.startsWith(z[1]));if(i>=0){lk=L;ix=i;break}}
+    if(!lk)continue;const hs=lk==='hsSP'||lk==='hsRP',kk=hs?((k==='hsSP'||k==='hsRP')?k:lk):((k==='sp'||k==='cl'||k==='su')?k:lk);
+    if(kk!==lk){const [nt,nx]=PW857[kk][Math.min(ix,PW857[kk].length-1)];q.text=nx+q.text.slice(PW857[lk][ix][1].length);q.title=H+nt}
+    if(q.ch&&q.ch[0]&&typeof q.ch[0].s==='string')q.ch[0].s=q.ch[0].s.replace(/등판 수 약 \d+%↑/,(kk==='sp'||kk==='hsSP')?'등판 수 약 20%↑':'등판 수 약 30%↑')}
+  if(S.stage==='pro'&&k!=='sp')for(let i=S.queue.length-1;i>=0;i--){const q=S.queue[i];if(q&&q.title==='😮‍💨 불펜 대기 자청')S.queue.splice(i,1)}}
+{const _sp857=simPit;simPit=function(role,tg,L,row,lvk){try{if(typeof pwork==='function'&&pwork()===2){const k=pwK857();if(k==='sp'||k==='hsSP')return _sp857.call(this,role,tg*1.21/1.32,L,row,lvk)}}catch(e){}return _sp857.apply(this,arguments)}}
+function kB857(){try{if(!isP()||!mlbOn()||(S._pRole||'SP')!=='SP')return 0;const v=k=>DV(E(k)),a=v('velo'),b=v('stf'),c=v('ctl'),d=v('pcl'),mn=Math.min(a,b,c,d),w=.35*a+.35*b+.15*c+.15*d;return .03*s01((mn-72)/12)*s01((w-74)/12)}catch(e){return 0}}
+{const _mpK857=mePitPA;mePitPA=function(bR,risp,tired){const r=_mpK857.apply(this,arguments);try{if(r&&r!=='K'&&r!=='BB'){const b=kB857();if(b>0&&R()<b)return'K'}}catch(e){}return r}}
+/* 17) v857k (유저 결정 13:45 · 목표 13:47): 불펜(마무리·셋업)도 영구결번·은퇴투어 — 세이브·홀드 개수만큼 기준을 낮춤 (그 팀·그 리그에서 불펜으로 뛴 경우만 · 선발은 그대로)
+       W47+W48 최대 육성 표본(마무리 696 · 셋업 696)으로 맞춤: 목표 마무리·셋업 둘 다 영결 14.6%(선발과 같게) · 투어 40%(타자와 비슷하게)
+       · 영결: 그 팀 WAR + 세이브 × 0.0558 + 홀드 × 0.0642 → 마무리 13.9% · 셋업 14.8% (전 0%)
+       · 투어: KBO WAR + 1.3 × MLB WAR + (세이브 KBO + 1.3 × MLB) × 0.048 + (홀드 KBO + 1.3 × MLB) × 0.0522 → 마무리 40.7% · 셋업 40.8% (전 0%) */
+var RPRN857={sv:.0558,hld:.0642},RPTR857={sv:.048,hld:.0522};
+function rpCr857(rows,F){try{let g=0,gs=0,sv=0,hd=0;rows.forEach(r=>{const p=r.p||{};g+=p.G||0;gs+=p.GS||0;sv+=p.SV||0;hd+=p.HLD||0});return(g>0&&gs<g/2)?F.sv*sv+F.hld*hd:0}catch(e){return 0}}
+retireNos=function(){const out=[];try{const W=rs=>{let w=0;rs.forEach(r=>{try{w+=rowWAR(r)}catch(e){}});return w};
+  const mlbW=W(S.rows.filter(r=>r.lv==='MLB')),SER={KBO:/한국시리즈 우승/,MLB:/월드시리즈 우승/};const FT=S.forcedTo||[];
+  for(const lv of ['KBO','MLB']){const rs=S.rows.filter(r=>r.lv===lv);if(!rs.length)continue;const teams=[...new Set(rs.map(r=>r.team))];let best=null;
+    for(const team of teams){const one=teams.length===1,forced=FT.some(f=>f.lv===lv&&f.team===team);if(!one&&!forced)continue;
+      const tr=rs.filter(r=>r.team===team),seasons=new Set(tr.filter(r=>(r.b.G||0)+(r.p.G||0)>0).map(r=>r.y));if(seasons.size<9)continue;
+      const starter=y=>tr.some(r=>r.y===y&&((r.b.PA||0)>=300||(r.p.outs||0)>=180));
+      const rings=(S.awards||[]).filter(a=>a&&SER[lv].test(a.n)&&seasons.has(a.y)&&starter(a.y)).length;
+      const need=(60*(isP()?WARF842P:WARF842B)-2*rings-(lv==='KBO'?Math.max(0,mlbW)*.1:0))/WARK(lv),w=W(tr),we=w+(isP()?rpCr857(tr,RPRN857):0);
+      if(we>=need&&(!best||we>best.we))best={team,w,we,lv,traded:!one}}
+    if(best)out.push(best)}}catch(e){}return out};
+rnNear854=function(){try{if(typeof retireNos==='function'&&retireNos().length)return null;const W=rs=>rs.reduce((a,r)=>{try{return a+rowWAR(r)}catch(e){return a}},0),rs=S.rows.filter(r=>r.lv==='KBO'),teams=[...new Set(rs.map(r=>r.team))];if(teams.length!==1)return null;
+  const seasons=new Set(rs.filter(r=>((r.b&&r.b.G)||0)+((r.p&&r.p.G)||0)>0).map(r=>r.y));if(seasons.size<9)return null;const starter=y=>rs.some(r=>r.y===y&&(((r.b&&r.b.PA)||0)>=300||((r.p&&r.p.outs)||0)>=180));
+  const rings=(S.awards||[]).filter(a=>a&&/한국시리즈 우승/.test(a.n)&&seasons.has(a.y)&&starter(a.y)).length,need=(60*(isP()?WARF842P:WARF842B)-2*rings-Math.max(0,W(S.rows.filter(r=>r.lv==='MLB')))*.1)/WARK('KBO'),w=W(rs)+(isP()?rpCr857(rs,RPRN857):0);
+  return w<need&&w>=need*.85?{team:teams[0],w,need}:null}catch(e){return null}};
+tourElig=function(){try{if(!S||!S.pro||S.pro.league!=='KBO')return null;let k=0,m=0;const ky=new Set();S.rows.forEach(r=>{if(r.lv==='KBO'){k+=rowWAR(r);if((r.b&&r.b.PA)||(r.p&&r.p.outs))ky.add(r.y)}else if(r.lv==='MLB')m+=rowWAR(r)});
+  let tot=k+1.3*m;if(isP()){const P1=S.rows.filter(r=>r.lv==='KBO'||r.lv==='MLB');let g=0,gs=0,sv=0,hd=0;P1.forEach(r=>{const p=r.p||{},f=r.lv==='MLB'?1.3:1;g+=p.G||0;gs+=p.GS||0;sv+=(p.SV||0)*f;hd+=(p.HLD||0)*f});if(g>0&&gs<g/2)tot+=RPTR857.sv*sv+RPTR857.hld*hd}
+  return ky.size>=5&&tot>=TOURW852?{kbo:k,mlb:m,tot,yrs:ky.size}:null}catch(e){return null}};
 
 /* ===== v857 기준 다시 맞춤 — 최종 코드 표본 W47 2,040명 + W48 1,904명 = 3,944명 (타자 1,856 · 선발 671 · 마무리 704 · 셋업 713) =====
    · 명예의 전당 (반올림 점수): 타자 47 (W47+W48 94.9% · 수상 조정 반영하면 약 95%) · 선발 60 (90.0%) · 마무리 35 (89.9%) · 셋업 36 (90.7%)
