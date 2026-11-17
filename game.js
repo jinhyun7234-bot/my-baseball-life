@@ -15648,7 +15648,7 @@ function thrAdd855(a,x){try{if(!a||!Array.isArray(a.cm)||!x||!x.lsc||S._inPh854)
 const HOF_RESET855='2026-11-16T16:30:00Z';
 let HOFS855=null,HOFSP855=null;
 function hofSample855(){if(HOFS855)return Promise.resolve(HOFS855);if(HOFSP855)return HOFSP855;
-  HOFSP855=(typeof fetch==='function'?fetch('hof_sample.json?v=857e').then(r=>r.ok?r.json():[]):Promise.resolve([])).then(d=>{HOFS855=Array.isArray(d)?d:(d&&Array.isArray(d.rows)?d.rows:[]);if(d&&d.n){HOFS855.n=d.n;HOFS855.hof=d.hof}return HOFS855}).catch(()=>{HOFS855=[];return HOFS855});return HOFSP855}
+  HOFSP855=(typeof fetch==='function'?fetch('hof_sample.json?v=857p').then(r=>r.ok?r.json():[]):Promise.resolve([])).then(d=>{HOFS855=Array.isArray(d)?d:(d&&Array.isArray(d.rows)?d.rows:[]);if(d&&d.n){HOFS855.n=d.n;HOFS855.hof=d.hof}return HOFS855}).catch(()=>{HOFS855=[];return HOFS855});return HOFSP855}
 function hofQ855(arr,q){try{const P={};String(q||'').split('&').forEach(s=>{const i=s.indexOf('=');if(i>0)P[s.slice(0,i)]=decodeURIComponent(s.slice(i+1))});
   const al=c=>{const a=String(c||'').replace(/^extra->st->/,'');return a==='r'?'runs':a};let a=(arr||[]).slice();
   if(P.kind)a=a.filter(r=>r&&r.kind===P.kind.replace(/^eq\./,''));
@@ -16014,7 +16014,8 @@ rnNear854=function(){try{if(typeof retireNos==='function'&&retireNos().length)re
   return w<need&&w>=need*.85?{team:teams[0],w,need}:null}catch(e){return null}};
 tourElig=function(){try{if(!S||!S.pro||S.pro.league!=='KBO')return null;let k=0,m=0;const ky=new Set();S.rows.forEach(r=>{if(r.lv==='KBO'){k+=rowWAR(r);if((r.b&&r.b.PA)||(r.p&&r.p.outs))ky.add(r.y)}else if(r.lv==='MLB')m+=rowWAR(r)});
   let tot=k+1.3*m;if(isP()){const P1=S.rows.filter(r=>r.lv==='KBO'||r.lv==='MLB');let g=0,gs=0,sv=0,hd=0;P1.forEach(r=>{const p=r.p||{},f=r.lv==='MLB'?1.3:1;g+=p.G||0;gs+=p.GS||0;sv+=(p.SV||0)*f;hd+=(p.HLD||0)*f});if(g>0&&gs<g/2)tot+=RPTR857.sv*sv+RPTR857.hld*hd}
-  return ky.size>=5&&tot>=TOURW852?{kbo:k,mlb:m,tot,yrs:ky.size}:null}catch(e){return null}};
+  return ky.size>=5&&tot>=(isP()?TOURWP857:TOURW852)?{kbo:k,mlb:m,tot,yrs:ky.size}:null}catch(e){return null}};
+var TOURWP857=TOURW852;/* v857p: 은퇴투어 기준점은 타자·투수 따로 (둘 다 같은 확률이 되게) — 값은 v169에서 */
 /* 18) v857m (유저 결정 14:00·14:06): 국제대회 불펜 등판 — 체력에 비해 너무 많이 나오던 것 (예선 3경기·8강·준결승·결승까지 전부 등판)
        · 진행 과정(예선·조별·8강·준결승): 앞 경기에 던졌으면 다음 경기 등판 확률↓ (체력 곡선 · 2이닝 가까이 던졌으면 더↓) · 2연투 했으면 거의 쉼
        · WBC 경기도 같은 방식 (연투 휴식) · 결승전은 웬만하면(90%) 등판 — 단 바로 앞(준결승)에 던졌으면 대부분 휴식
@@ -16039,21 +16040,28 @@ function ipFin857(){try{for(let i=S.queue.length-1;i>=0;i--){const q=S.queue[i];
   else if(o.wbc){const rest=L.rc>=2?1-f2:L.last?1-f1:0;if(rest>0&&R()<rest)o2=Object.assign({},o,{role:'none'})}}}catch(e){L=null;o2=o}
   const g=_fgW857.call(this,o2);if(L)try{const pt=!!(g&&g.mp&&g.mp.outs>0);L.rc=pt?(L.last?L.rc+1:1):0;L.last=pt?1:0;L.lo=pt?g.mp.outs:0}catch(e){}return g}}
 
-/* ===== v857 기준 다시 맞춤 — 최종 코드 표본 W47 2,040명 + W48 1,904명 = 3,944명 (타자 1,856 · 선발 671 · 마무리 704 · 셋업 713) =====
-   · 명예의 전당 (반올림 점수): 타자 47 (W47+W48 94.9% · 수상 조정 반영하면 약 95%) · 선발 60 (90.0%) · 마무리 35 (89.9%) · 셋업 36 (90.7%)
-     (불펜은 고른 보직 그대로 뛰면서 세이브·홀드 타이틀이 늘어 점수↑ · 선발은 KBO 다승왕·탈삼진왕 기준이 실제처럼 올라가면서 점수↓)
-   · 영구결번: 타자 ×0.655 (49.1%) · 투수 ×0.849 (선발 14.6%) · 은퇴투어 69 (예전 표본 구성 기준 전체 약 33% — 타자 8 · 선발 3 · 마무리 2 · 셋업 2)
-   · 지명 포지션 기준(DRA836): 불펜 +3.0 (고교 불펜이 이제 불펜으로만 뛰어서 이닝↓ → 1라운드 37% → 51~54%) · 선발 −0.25+0.45+0.6 (W48 1R 48% · 지명 89%)
-     · 타자 C +0.55+0.5 · 1B −0.87−1.2 · 2B +0.21+0.5 · 3B +0.86+0.9+0.8 · SS −0.1−0.45 · LF −0.14+1.0 · CF +0.41−0.5 · RF +0.52−0.4 (W46·W47·W48 포지션별 1라운드 차이를 조금씩)
-   · 수상 (W47+W48 3,944명 · 시즌 8만 3천 개로 다시 맞춤 — 포지션 전체가 같이 움직인 만큼은 그대로, 포지션별로 따로 튄 부분은 반만 · 신인왕은 30%):
-     지금 값 재현 → 새 값 재현: KBO 골든글러브 타자 30.7~34.5% → 32.4~34.2% · 선발 30.3% → 33.0% / KBO MVP 타자 3.6~5.8% → 4.5~5.6% · 선발 4.2% → 4.9%
-     MLB MVP 2.1~3.9% → 2.5~3.6% (전체 3.0%) · MLB 골드글러브 18.8~21.2% → 19.2~20.7% · 실버슬러거 25.8% → 25.0% · 신인왕 26.0% → 약 25% */
-try{Object.assign(HOFT720,{B:47,SP:60,CL:35,RP:36})}catch(e){}
-WARF842B=0.655;WARF842P=0.849;TOURW852=69;
-try{const D=DRA836;Object.assign(D,{C:D.C+.55+.5,'1B':D['1B']-.87-1.2,'2B':D['2B']+.21+.5,'3B':D['3B']+.86+.9+.8,SS:D.SS-.10-.45,LF:D.LF-.14+1.0,CF:D.CF+.41-.5,RF:D.RF+.52-.4,SP:D.SP-.25+.45+.6,RP:D.RP+3.0})}catch(e){}
-try{Object.assign(GGPM825,{C:3.038,'1B':3.09,'2B':4.198,'3B':3.57,SS:3.786,LF:2.99,CF:4.413,RF:3.042})}catch(e){}
-try{Object.assign(MVB853.KBO,{C:1.438,'1B':.953,'2B':.468,'3B':.554,SS:.722,LF:1.188,CF:.199,RF:1.027});Object.assign(MVB853.MLB,{C:2.919,'1B':3.564,'2B':2.865,'3B':2.988,SS:2.596,LF:3.7,CF:3.163,RF:3.437})}catch(e){}
-try{Object.assign(GGLO714,{C:.7991,'1B':.4477,'2B':.3693,'3B':.0245,SS:.7533,LF:.0425,CF:.4184,RF:.0907})}catch(e){}
-try{Object.assign(SSLO714,{C:.7282,'1B':.7899,'2B':.7488,'3B':.7756,SS:.7233,LF:.7821,CF:.7406,RF:.7926,DH:.9034})}catch(e){}
-try{Object.assign(ROY853,{C:.931,'1B':1.073,'2B':.54,'3B':1.03,SS:.801,LF:1.085,CF:.614,RF:1.337})}catch(e){}
-try{GGP836=0.312}catch(e){}KPMV853=2.265;
+/* ===== v857p 기준 다시 맞춤 — 최종 코드 표본 W50 2,040명 (타자 960 · 선발 355 · 마무리 362 · 셋업 363) =====
+   (불펜 체력 곡선 · 국제대회/결승 등판 · 메이저 선발 탈삼진 · 극단 시즌 20% 등 v857j~n 다 들어간 코드로 새로 돌림 → WAR가 바뀐 만큼 기준도 다시)
+   · 명예의 전당 (반올림 점수): 타자 47 (95.4%) · 선발 60 (90.7%) · 마무리 35 (90.1%) · 셋업 36 → 38 (93.7% → 90.6%)
+   · 영구결번 — 유저 요청으로 타자·선발·마무리·셋업 전부 70% (전: 타자 49% · 투수 14.6%):
+     타자 배율 0.655 → 0.5126 (69.9%) · 투수 배율 0.849 → 0.5163 (선발 70.2%) · 불펜 세이브당 WAR 0.0558 → 0.0433 · 홀드당 0.0642 → 0.0483 (마무리 69.6% · 셋업 69.2%)
+     (한 팀 9시즌 조건 때문에 최대치가 타자 85% · 선발 80% · 마무리 84% · 셋업 86%)
+   · 은퇴투어 자격 — 전부 70% (전: 69 하나로 타자 44% · 선발 57% · 마무리·셋업 40%):
+     타자 기준 69 → 54.9 (70.0%) · 투수 기준 따로 61.9 (선발 69.9%) · 불펜 세이브당 0.048 → 0.0517 · 홀드당 0.0522 → 0.055 (마무리 69.4% · 셋업 70.3%)
+   · 지명 포지션 기준(DRA836): 포지션은 W50 1라운드 차이의 반만 (표본 120명씩이라 흔들림 큼 — 지난번 조정이 넘친 쪽을 되돌리는 방향)
+     포수 +0.15 · 1루 +1.1 · 2루 −0.3 · 3루 −0.5 · 유격 −0.1 · 좌익 −0.55 · 중견 +1.05 · 우익 +1.05 / 선발 +0.33 · 불펜 −1.18 (표본 360·720명이라 그대로)
+     → 1라운드 모델 예상: 포지션 46.6~54.1% · 선발 52.0% · 마무리 49.8% · 셋업 54.2% / 지명 90~96%
+   · 수상 (W50 시즌 4만 3천 개 · 포지션 전체 이동은 그대로, 포지션별로 따로 튄 건 반만 · 신인왕 30% · 선발은 그대로):
+     지금 값 재현 → 새 값 재현: KBO 골든글러브 타자 29.7~35.4% → 31.6~33.7% · 선발 34.7% → 33.5% / KBO MVP 타자 4.2~6.4% → 4.4~5.7% · 선발 5.0%
+     MLB MVP 타자 2.8~4.3% → 2.4~3.2% · MLB 골드글러브 18.5~25.2% → 18.3~22.0% (전체 20.1%) · 실버슬러거 27.7% → 24.9% · 신인왕 24.1% → 24.7% */
+try{Object.assign(HOFT720,{B:47,SP:60,CL:35,RP:38})}catch(e){}
+WARF842B=0.5126;WARF842P=0.5163;TOURW852=54.9;
+try{TOURWP857=61.9}catch(e){}
+try{Object.assign(RPRN857,{sv:.0433,hld:.0483});Object.assign(RPTR857,{sv:.0517,hld:.055})}catch(e){}
+try{const D=DRA836;Object.assign(D,{C:D.C+.55+.5+.15,'1B':D['1B']-.87-1.2+1.1,'2B':D['2B']+.21+.5-.3,'3B':D['3B']+.86+.9+.8-.5,SS:D.SS-.10-.45-.1,LF:D.LF-.14+1.0-.55,CF:D.CF+.41-.5+1.05,RF:D.RF+.52-.4+1.05,SP:D.SP-.25+.45+.6+.33,RP:D.RP+3.0-1.18})}catch(e){}
+try{Object.assign(GGPM825,{C:2.898,'1B':3.154,'2B':4.338,'3B':3.562,SS:3.953,LF:3.078,CF:4.521,RF:3.03})}catch(e){}
+try{Object.assign(MVB853.KBO,{C:1.256,'1B':1.007,'2B':.273,'3B':.574,SS:.599,LF:1.016,CF:.112,RF:.982});Object.assign(MVB853.MLB,{C:2.605,'1B':3.291,'2B':2.593,'3B':2.69,SS:2.451,LF:3.341,CF:2.819,RF:3.165})}catch(e){}
+try{Object.assign(GGLO714,{C:.8196,'1B':.4927,'2B':.4121,'3B':.0342,SS:.7637,LF:.0558,CF:.4194,RF:.0853})}catch(e){}
+try{Object.assign(SSLO714,{C:.7351,'1B':.7953,'2B':.7586,'3B':.7837,SS:.7319,LF:.7954,CF:.7475,RF:.8014,DH:.9034})}catch(e){}
+try{Object.assign(ROY853,{C:1.039,'1B':1.136,'2B':.581,'3B':1.153,SS:.973,LF:1.179,CF:.571,RF:1.399})}catch(e){}
+try{GGP836=0.239}catch(e){}KPMV853=2.258;
