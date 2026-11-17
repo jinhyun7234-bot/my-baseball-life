@@ -419,8 +419,8 @@ function monthStep(rep){
   if(g){const key=g.lvk;if(!rep.games[key])rep.games[key]={kind:g.kind,lvk:key,m:g.kind==='B'?blankB():blankP()};addTo(rep.games[key].m,g.m);
 }
   let load=load0;
-  if(g){if(g.kind==='B')load+=g.m.G*(role==='start'||role==='fB'?.9:.35);else load+=(g.pc||0)*.035+g.apps*.6*(sk('iron')?.73:1)}
-  const durF=cl(1-(ME.hid.dur-50)/150,.7,1.25);ME.fat=cl(ME.fat*(.42-(ME.hid.dur-50)*.002)+load*durF*fatMul()-itemSum('recov')*.6,0,100);
+  if(g){const GK=typeof GLOADK==='number'?GLOADK:1;if(g.kind==='B')load+=g.m.G*(role==='start'||role==='fB'?.9:.35)*GK;else load+=((g.pc||0)*.035+g.apps*.6*(sk('iron')?.73:1))*GK}
+  const durF=cl(1-(ME.hid.dur-50)/150,.7,1.25),RL=S.fatRelief||0;S.fatRelief=0;ME.fat=cl(ME.fat*(.42-(ME.hid.dur-50)*.002)+load*durF*fatMul()-itemSum('recov')*.6-RL,0,100);
   if(!ME.inj){const risk=(.022+Math.max(0,ME.fat-35)*.004+Math.max(0,ME.fat-65)*.007)*(S.plan.int===2?1.6:1)*cl(1-(ME.hid.dur-50)/70,.35,1.7)*(owned('trainer')?.65:1)*(sk('glass')?1.6:1)*(g?1:.5);if(R()<risk)injure(rep)}
   else{if(ME.inj.mo!=null){ME.inj.wk=ME.inj.mo*4.3;delete ME.inj.mo}ME.inj.wk-=4.3;if(ME.inj.wk<=0){rep.lines.push(`${ME.inj.n}에서 회복했다.`);news(`${ME.inj.n}에서 복귀.`);ME.inj=null}}
   const ps=perfScore(g);S.lastGame=g;
@@ -16283,3 +16283,116 @@ try {
     TP835.r += 0.1; TP835.k *= 1.002; TP835.w *= 1.007; TP835.sv *= 1.012; TP835.hld *= 1.01; TP835._857v = 1;
   }
 } catch (e) {}
+
+/* v857w ① 부상 살짝↓ — "부상이 너무 많대" (11/18)
+   매달 굴리는 부상(일반 부상)과 투수 혹사 부상 둘 다 15%쯤 덜 걸리게. 피로·내구성·나이에 따라 오르는 곡선은 그대로, 전체 비율만 낮춤
+   (훈련 캠프에서 무리했을 때 부상은 화면 문구와 묶여 있어서 그대로) */
+if (typeof injure === 'function') {
+  const _ij857w = injure;
+  injure = function (rep) {
+    try { if (rep && rep.games && R() < 0.15) return; } catch (e) {}
+    return _ij857w.apply(this, arguments);
+  };
+}
+if (typeof armInjury === 'function') {
+  const _ai857w = armInjury;
+  armInjury = function (rep) {
+    try { if (R() < 0.15) return; } catch (e) {}
+    return _ai857w.apply(this, arguments);
+  };
+}
+
+/* v857w ② 은퇴 리캡 문구 버그 (명전 기록 채우려고 돌린 시뮬에서 발견)
+   · 시작: 드래프트 없이 바로 미국 가거나 입단 테스트로 들어온 선수도 '프로의 문은 끝내 열리지 않았다'로 나오던 것
+   · 함께한 팀: 같은 메이저 구단인데 마이너 다녀온 해마다 줄이 쪼개지던 것 (2030 · 메츠 / 2032–34 · 메츠 / …)
+   · 가장 빛났던 순간: '(성장 포인트 +2)'가 붙어 나오고, 'KBO 세이브왕 타이틀 획득'과 '세이브왕'이 같은 해에 두 줄로 나오던 것
+   · 인생 계약·커리어 하이: 그해 성적이 평범해도 '그 가치를 증명하는 한 해였다'·'리그는 당신의 것이었다'로 나오던 것 → 그해 WAR에 맞게 */
+function fixRecap857w(sl) {
+  if (!Array.isArray(sl) || !S || !Array.isArray(S.rows)) return sl;
+  const seasons = (() => { try { return wrSeasons(); } catch (e) { return []; } })();
+  const wOf = y => { const s = seasons.find(x => x.y === y); return s ? s.w : null; };
+  /* 시작 */
+  const st = sl.find(s => s.ey === '시작');
+  if (st && /프로의 문은 끝내 열리지 않았다\./.test(st.sub || '')) {
+    const firstPro = S.rows.filter(r => !['hs', 'univ', 'mil'].includes(r.lv) && ((r.b && (r.b.PA || r.b.G)) || (r.p && (r.p.outs || r.p.G)) || PRO.includes(r.lv)))
+      .sort((a, b) => a.y - b.y)[0];
+    if (firstPro) {
+      const abroad = !['KBO', 'fut'].includes(firstPro.lv) || /\((MLB|NPB)\)/.test(firstPro.team || '');
+      st.sub = st.sub.replace('프로의 문은 끝내 열리지 않았다.', abroad ? '고교를 마치고 곧장 바다를 건넜다.' : '드래프트 없이, 입단 테스트로 프로의 문을 열었다.');
+    }
+  }
+  /* 함께한 팀 */
+  const ti = sl.findIndex(s => s.ey === '함께한 팀');
+  if (ti >= 0) {
+    try {
+      const m = [];
+      stints().filter(s => PRO.includes(s.kind)).forEach(s => {
+        const L = m[m.length - 1];
+        if (L && L.name === s.name) L.y2 = Math.max(L.y2, s.y2);
+        else m.push({ name: s.name, y1: s.y1, y2: s.y2 });
+      });
+      if (m.length) sl[ti].list = m.map(s => `${s.y1 === s.y2 ? s.y1 : `${s.y1}–${String(s.y2).slice(2)}`} · ${s.name}`);
+    } catch (e) {}
+  }
+  /* 가장 빛났던 순간 */
+  const mi = sl.findIndex(s => s.ey === '가장 빛났던 순간');
+  if (mi >= 0 && Array.isArray(sl[mi].list)) {
+    const seen = new Set(), out = [];
+    sl[mi].list.forEach(t => {
+      const x = String(t).replace(/\s*\(성장 포인트 [+-]?\d+\)/g, '').trim();
+      const m = x.match(/^(\d{4}) · (.*)$/);
+      const key = m ? m[1] + '|' + m[2].replace(/^(KBO|MLB)\s+/, '').replace(/\s*타이틀 획득$/, '').trim() : x;
+      if (seen.has(key)) return;
+      seen.add(key); out.push(x);
+    });
+    sl[mi].list = out;
+  }
+  /* 인생 계약 */
+  const ci = sl.findIndex(s => s.ey === '인생 계약');
+  if (ci >= 0 && sl[ci].sub) {
+    const y = +(String(sl[ci].sub).match(/^(\d{4})년/) || [])[1], w = y ? wOf(y) : null;
+    const txt = w == null ? '새 유니폼과 함께 새로운 장이 열렸다.' : w >= 3 ? '그 가치를 증명하는 한 해였다.' : w >= 1.2 ? '몸값의 무게를 견디며 제 몫을 해냈다.' : '기대만큼은 아니었지만, 그만큼 인정받은 선수였다.';
+    sl[ci].sub = String(sl[ci].sub).replace(/그 가치를 증명하는 (한 해였다|시간이었다)\./, txt);
+  }
+  /* 커리어 하이 */
+  const hi = sl.find(s => s.ey === '커리어 하이');
+  if (hi && hi.sub && /그해, 리그는 당신의 것이었다\./.test(hi.sub)) {
+    const w = wOf(+hi.big);
+    if (w != null && w < 5) hi.sub = hi.sub.replace('그해, 리그는 당신의 것이었다.', w >= 3 ? '그해, 당신은 누구보다 빛났다.' : '화려하진 않아도, 당신이 가장 빛난 해.');
+  }
+  return sl;
+}
+if (typeof recapSlides === 'function') {
+  const _rs857w = recapSlides;
+  recapSlides = function () {
+    const sl = _rs857w.apply(this, arguments);
+    try { fixRecap857w(sl); } catch (e) {}
+    return sl;
+  };
+}
+
+/* v857w ③ 피로 — "피로도 쌓이는 것도 살짝 덜, 이벤트에서 피로 내려가는 거 고르면 내려가게, 경기 뛰면서 나는 피로 조금만 감소" (11/18)
+   · 쌓이는 피로 전체 ×0.92 (훈련·경기 모두, 나이·내구성 곡선은 그대로)
+   · 경기 출전 피로 ×0.9 (v2_sim 월 피로 계산의 경기 부분에 GLOADK)
+   · 이벤트 선택으로 피로가 내려가면: 그 자리에서 30% 더 내려가고, 다음 달 피로 계산 때도 내려간 만큼의 60%를 한 번 더 빼 줌
+     (예전엔 다음 달 계산에서 내려간 몫이 대부분 사라져서 '골라도 안 내려간다'는 느낌) */
+var GLOADK = 0.9;
+if (typeof fatMul === 'function') {
+  const _fm857w = fatMul;
+  fatMul = function () { return _fm857w.apply(this, arguments) * 0.92; };
+}
+if (typeof choose === 'function') {
+  const _ch857w = choose;
+  choose = function (i) {
+    const f0 = (ME && typeof ME.fat === 'number') ? ME.fat : null;
+    const out = _ch857w.apply(this, arguments);
+    try {
+      if (f0 != null && ME && typeof ME.fat === 'number' && S && S.stage !== 'ret' && ME.fat < f0 - 0.5) {
+        const d = f0 - ME.fat;
+        ME.fat = cl(ME.fat - d * 0.3, 0, 100);
+        S.fatRelief = (S.fatRelief || 0) + d * 0.6;
+      }
+    } catch (e) {}
+    return out;
+  };
+}
