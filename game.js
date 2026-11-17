@@ -16411,3 +16411,43 @@ if (typeof vHofView === 'function') {
     return _vhv857x.apply(this, arguments);
   };
 }
+
+/* v857y 공식 인스타그램 링크 — "웹사이트에 내 인스타 링크도 올려주고" (11/18)
+   · 첫 화면: 소개 카드(나의 야구 인생 제목 카드) 아래 작은 버튼 + 맨 아래 링크 줄(게임 가이드 · 건의하기 · 인스타그램)
+   · 설정: 건의하기 · 버그 제보 아래 한 줄
+   · 새 탭으로 열림 (게임 화면은 그대로) */
+var IG_URL857y = 'https://www.instagram.com/my_baseball_life7234/', IG_ID857y = '@my_baseball_life7234';
+function igLink857y(cls, inner) {
+  return `<a class="${cls}" href="${IG_URL857y}" target="_blank" rel="noopener" aria-label="공식 인스타그램 ${IG_ID857y} (새 탭)">${inner}</a>`;
+}
+if (typeof document !== 'undefined') {
+  try {
+    const st = document.createElement('style');
+    st.textContent = '.lp-sns{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 7px;max-width:100%;box-sizing:border-box;margin-top:14px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--soft);color:var(--ink)!important;font-size:.84rem;font-weight:700;line-height:1.25;text-decoration:none}'
+      + '.lp-sns:hover{filter:brightness(1.12)}.lp-sns small{color:var(--muted);font-weight:600;font-size:.78rem}'
+      + '.lp-links a{color:inherit;font:inherit;text-decoration:none;cursor:pointer}html .lp-links a{color:var(--muted)!important}'
+      + 'a.set-link{text-decoration:none;box-sizing:border-box}';
+    document.head.appendChild(st);
+  } catch (e) {}
+}
+if (typeof vTitle === 'function') {
+  const _vt857y = vTitle;
+  vTitle = function () {
+    let h = _vt857y.apply(this, arguments);
+    try {
+      h = h.replace(/(<section class="lp-card lp-hero">[\s\S]*?<\/p>)(<\/section>)/, (m, a, b) => a + igLink857y('lp-sns', `📷 공식 인스타그램 <small>${IG_ID857y}</small>`) + b);
+      h = h.replace('<button data-fb="open">건의하기</button></div>', '<button data-fb="open">건의하기</button>' + igLink857y('', '인스타그램') + '</div>');
+    } catch (e) {}
+    return h;
+  };
+}
+if (typeof vSettings === 'function') {
+  const _vs857y = vSettings;
+  vSettings = function () {
+    let h = _vs857y.apply(this, arguments);
+    try {
+      h = h.replace(/(<button class="set-link" data-st="fb">[\s\S]*?<\/button>)/, (m) => m + igLink857y('set-link', '<span class="set-ic">📷</span>공식 인스타그램<span class="set-go">↗</span>'));
+    } catch (e) {}
+    return h;
+  };
+}
