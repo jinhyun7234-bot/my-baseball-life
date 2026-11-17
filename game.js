@@ -15836,8 +15836,9 @@ function multiF857(t,role,lvk){try{const k=relPick857();if(!k||role!==k||!relLg8
     if(bs===2){const q=R(),pl=(Q.bhL+(g.R>=2?.08:0))*lm;return q<pl?-1:q<pl+Q.bhW?1:0}
     if(S.role===k&&(t==='CL'||t==='SU')){if(g.R)return R()<(k==='SU'?(Q.nsLs??Q.nsL):Q.nsL)*(g.R>=2?1.25:1)*lm?-1:0;return R()<Q.nsW?1:0}}}catch(e){}return _rd857.apply(this,arguments)}}
 
-/* 3) 메이저 파워 반기 (유저 결정 03:05→03:22): 파워 95 초과 + 동체시력 80 초과면 반기마다 20% 확률로 그 반기 파워 +1 (메이저 1군만 · 화면 안내 없음) */
-function mpw857(){try{if(isP()||!S||S.stage!=='pro'||!S.pro||S.pro.league!=='MLB'||S.pro.dev||/^f/.test(S.role||''))return false;const k=S.y+'-'+S.phase;if(!S._mpw857||S._mpw857.k!==k){const ok=DV(E('pow'))>95&&DV(E('vis'))>80;S._mpw857={k,on:ok&&R()<.2}}return!!S._mpw857.on}catch(e){return false}}
+/* 3) 메이저 파워 반기 (유저 결정 03:05→03:22→13:05): 포지션 메인툴 1~3순위가 다 80 이상(표시 기준 · 묶음은 높은 쪽)이면 반기마다 20% 확률로 그 반기 파워 +1 (메이저 1군만 · 화면 안내 없음)
+   예전 조건(파워 95 초과 + 동체시력 80 초과)은 동체시력 80 넘는 타자가 거의 없어서 메이저 시즌 1만 5천 개 중 6번만 해당 */
+function mpw857(){try{if(isP()||!S||S.stage!=='pro'||!S.pro||S.pro.league!=='MLB'||S.pro.dev||/^f/.test(S.role||''))return false;const k=S.y+'-'+S.phase;if(!S._mpw857||S._mpw857.k!==k){const pr=POSPRIO[ME.pos]||POSPRIO.DH,top=pr.slice(0,3).map(g=>Math.max(...g.map(k=>DV(prioVal(k))))),ok=top.length>=3&&top.every(v=>v>=80);S._mpw857={k,on:ok&&R()<.2}}return!!S._mpw857.on}catch(e){return false}}
 {const _sb857=spBonus;spBonus=function(k){let v=_sb857.apply(this,arguments);try{if(k==='pow'&&S&&S.me===ME&&mpw857())v+=.75}catch(e){}return v}}/* 표시 능력치 +1 = 내부 +0.75 */
 
 /* 4) KBO 리그 1위 수준 = 실제 KBO 2015~2025 리그 1위 평균 (KBO 기록실 · 득점은 연도별 득점상) — 유저 성적은 안 건드리고 NPC 리그만
@@ -15954,6 +15955,10 @@ function pwK857(){try{if(!S||!ME||!isP())return null;if(S.stage==='pro'){const r
  const _ms=monthStep;monthStep=function(rep){const r=_ms.apply(this,arguments);try{if(S&&S.stage==='pro'&&isP()&&S.role!=='SP'&&typeof rpLine==='function')(S.queue||[]).forEach(q=>{if(!q||q._sp857||q.title!=='📋 감독 면담 — 부진'||typeof q.text!=='string')return;const hit=SPL857.find(s=>q.text.includes(s));if(!hit)return;q._sp857=1;q.text=q.text.replace(hit,rpLine(!!(S.pro&&S.pro.league==='MLB')))})}catch(e){}return r}}
 /* 13-2) 메이저 선발 부진 면담('로테이션 자리 지키기 힘들어' · '로테이션에서 버틴다')은 지금 선발로 뛰고 있을 때만 — 불펜에 있는 선발 지망생은 일반 부진 면담으로 (W48 점검) */
 {const _mss=mlbSpSlump;mlbSpSlump=function(){try{if(S&&S.role!=='SP')return 0}catch(e){}return _mss.apply(this,arguments)}}
+/* 14) v857e: 반기 결산 댓글(불펜·타자·선발 결산 틀)은 최근 900개 안 겹치는 것 중에서 커리어 전체로 덜 쓴 틀 먼저 — 20년 넘게 뛰면 같은 틀이 몰려 나오던 것 (W48: '올해도 전반기에만 N세이브 이제 놀랍지도 않다' 한 커리어 4~5번) */
+{const _rt857=rcTake840;rcTake840=function(L,o,out,pre){try{const K=t=>(pre||'rc:')+String(t).replace(/[\d.,]+/g,'N');const U=S._rcU857||(S._rcU857={});
+  const C=(L||[]).map(t=>rcFill840(t,o)).filter(s=>!seenHas(K(s))&&!out.includes(s));if(!C.length)return false;
+  let mn=Infinity;for(const s of C){const u=U[K(s)]||0;if(u<mn)mn=u}const s=pick(C.filter(s=>(U[K(s)]||0)===mn));U[K(s)]=(U[K(s)]||0)+1;seenAdd(K(s));out.push(s);return true}catch(e){return _rt857.apply(this,arguments)}}}
 
 /* ===== v857 기준 다시 맞춤 — 최종 코드 표본 W47 2,040명 + W48 1,904명 = 3,944명 (타자 1,856 · 선발 671 · 마무리 704 · 셋업 713) =====
    · 명예의 전당 (반올림 점수): 타자 47 (W47+W48 94.9% · 수상 조정 반영하면 약 95%) · 선발 60 (90.0%) · 마무리 35 (89.9%) · 셋업 36 (90.7%)
