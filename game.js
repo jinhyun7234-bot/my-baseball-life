@@ -16413,20 +16413,29 @@ if (typeof vHofView === 'function') {
 }
 
 /* v857y 공식 인스타그램 링크 — "웹사이트에 내 인스타 링크도 올려주고" (11/18)
-   · 첫 화면: 소개 카드(나의 야구 인생 제목 카드) 아래 작은 버튼 + 맨 아래 링크 줄(게임 가이드 · 건의하기 · 인스타그램)
-   · 설정: 건의하기 · 버그 제보 아래 한 줄
+   → "트로피 오른쪽에 인스타 아이콘, 누르면 인스타로" (11/18 03:20) — 제목 카드 밑 버튼은 뺌(짜쳐서)
+   · 첫 화면 헤더: 🏆(명예의 전당) 바로 오른쪽에 인스타 아이콘 (명예의 전당이 꺼져 있으면 📝 왼쪽)
+   · 맨 아래 링크 줄(게임 가이드 · 건의하기 · 인스타그램), 설정의 '공식 인스타그램' 한 줄은 그대로
+   · 아이콘 모양은 Bootstrap Icons의 instagram 아이콘을 CDN에서 불러와 글자색으로 칠함(마스크) — 직접 그리지 않음
    · 새 탭으로 열림 (게임 화면은 그대로) */
 var IG_URL857y = 'https://www.instagram.com/my_baseball_life7234/', IG_ID857y = '@my_baseball_life7234';
-function igLink857y(cls, inner) {
-  return `<a class="${cls}" href="${IG_URL857y}" target="_blank" rel="noopener" aria-label="공식 인스타그램 ${IG_ID857y} (새 탭)">${inner}</a>`;
+var IG_ICON857y = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/instagram.svg';
+function igLink857y(cls, inner, title) {
+  return `<a class="${cls}" href="${IG_URL857y}" target="_blank" rel="noopener" aria-label="공식 인스타그램 ${IG_ID857y} (새 탭)"${title ? ` title="${title}"` : ''}>${inner}</a>`;
 }
 if (typeof document !== 'undefined') {
   try {
     const st = document.createElement('style');
-    st.textContent = '.lp-sns{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 7px;max-width:100%;box-sizing:border-box;margin-top:14px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--soft);color:var(--ink)!important;font-size:.84rem;font-weight:700;line-height:1.25;text-decoration:none}'
-      + '.lp-sns:hover{filter:brightness(1.12)}.lp-sns small{color:var(--muted);font-weight:600;font-size:.78rem}'
+    st.textContent = `a.lp-ib{display:inline-grid;place-items:center;text-decoration:none;color:var(--ink)}`
+      + `.ig-ic{display:block;width:20px;height:20px;background:currentColor;-webkit-mask:url(${IG_ICON857y}) center/contain no-repeat;mask:url(${IG_ICON857y}) center/contain no-repeat}`
+      + `.set-ic .ig-ic{width:16px;height:16px;color:var(--ink)}`
       + '.lp-links a{color:inherit;font:inherit;text-decoration:none;cursor:pointer}html .lp-links a{color:var(--muted)!important}'
-      + 'a.set-link{text-decoration:none;box-sizing:border-box}';
+      + 'a.set-link{text-decoration:none;box-sizing:border-box}'
+      /* 아이콘이 5개가 되면서 폭 좁은 폰(360px 등)에서 '나의 야구 인생'이 두 줄로 꺾이던 것 → 좁을수록 아이콘 칸을 조금씩 줄임 */
+      + '.lp-brand{white-space:nowrap}'
+      + '@media (max-width:420px){.lp-ic{gap:0}.lp-ib{width:36px}}'
+      + '@media (max-width:350px){.lp-ib{width:32px;font-size:1.05rem}.lp-ib .ig-ic{width:18px;height:18px}}'
+      + '@media (max-width:300px){.lp-ib{width:26px;font-size:.95rem}.lp-ib .ig-ic{width:16px;height:16px}}';
     document.head.appendChild(st);
   } catch (e) {}
 }
@@ -16435,7 +16444,10 @@ if (typeof vTitle === 'function') {
   vTitle = function () {
     let h = _vt857y.apply(this, arguments);
     try {
-      h = h.replace(/(<section class="lp-card lp-hero">[\s\S]*?<\/p>)(<\/section>)/, (m, a, b) => a + igLink857y('lp-sns', `📷 공식 인스타그램 <small>${IG_ID857y}</small>`) + b);
+      const ic = igLink857y('lp-ib lp-ig', '<span class="ig-ic" aria-hidden="true"></span>', '공식 인스타그램');
+      const trophy = /(<button class="lp-ib" data-hof="open"[^>]*>🏆<\/button>)/;
+      if (trophy.test(h)) h = h.replace(trophy, (m) => m + ic);
+      else h = h.replace('<button class="lp-ib" data-fb="open"', ic + '<button class="lp-ib" data-fb="open"');
       h = h.replace('<button data-fb="open">건의하기</button></div>', '<button data-fb="open">건의하기</button>' + igLink857y('', '인스타그램') + '</div>');
     } catch (e) {}
     return h;
@@ -16446,7 +16458,7 @@ if (typeof vSettings === 'function') {
   vSettings = function () {
     let h = _vs857y.apply(this, arguments);
     try {
-      h = h.replace(/(<button class="set-link" data-st="fb">[\s\S]*?<\/button>)/, (m) => m + igLink857y('set-link', '<span class="set-ic">📷</span>공식 인스타그램<span class="set-go">↗</span>'));
+      h = h.replace(/(<button class="set-link" data-st="fb">[\s\S]*?<\/button>)/, (m) => m + igLink857y('set-link', '<span class="set-ic"><span class="ig-ic" aria-hidden="true"></span></span>공식 인스타그램<span class="set-go">↗</span>'));
     } catch (e) {}
     return h;
   };
