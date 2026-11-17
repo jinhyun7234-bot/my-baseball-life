@@ -52,7 +52,7 @@ function start(){if(busy)return;msg('옮기는 중…');sent=false;
 function ui(){if(document.getElementById('migbox'))return;
   var d=document.createElement('div');d.id='migbox';
   d.setAttribute('style','position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483647;background:rgba(5,10,20,.92);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box');
-  d.innerHTML='<div style="max-width:360px;width:100%;background:#121a2b;border:1px solid #2a3550;border-radius:18px;padding:22px;color:#e8eef8;text-align:center;line-height:1.6;font-family:Pretendard,system-ui,-apple-system,\'Apple SD Gothic Neo\',\'Malgun Gothic\',sans-serif">'
+  d.innerHTML='<div style="max-width:360px;width:100%;background:#121a2b;border:1px solid #2a3550;border-radius:18px;padding:22px;color:#e8eef8;text-align:center;line-height:1.6;word-break:keep-all;overflow-wrap:break-word;font-family:Pretendard,system-ui,-apple-system,\'Apple SD Gothic Neo\',\'Malgun Gothic\',sans-serif">'
     +'<div style="font-size:19px;font-weight:800;margin-bottom:8px">주소가 바뀌었어요</div>'
     +'<div style="font-size:15px;color:#a9b6cc">이제 <b style="color:#fff">my-baseball-life.com</b>에서 해요.<br>버튼을 누르면 저장된 커리어도 그대로 옮겨져요.</div>'
     +'<button id="migbtn" type="button" style="margin-top:16px;width:100%;padding:13px;border:0;border-radius:12px;background:#3182f6;color:#fff;font-size:16px;font-weight:700;cursor:pointer">커리어 옮기고 새 주소로 가기</button>'
