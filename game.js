@@ -3308,7 +3308,7 @@ myAvatar=function(size,opt={}){return pxAvatar(ME,size,opt)};
   if(kind==='suit')return spImg(spURL('o_suit',{kind:'body'}),H);
   const sr=/선배|고참|주장|캡틴|룸메이트|베테랑/.test(seed),jr=/후배/.test(seed);return spImg(spURL((jr?'jr':sr?'sr':(h%2?'jr':'sr'))+(1+(h>>>3)%3),{team,kind:'body'}),H)}}
 /* VS 컷인: 스프라이트로 */
-{const _vc=vsCut;vsCut=function(g,e){if(!SP_READY)return _vc(g,e);const my=g.my,bat=e.half,fld=1-e.half,P=isP(),od=crestData(g.ab[P?bat:fld],g.c[P?bat:fld]),seed=g.ab[P?bat:fld]+g.title+(e.inn||0),h=_h32(seed),opName=P?'o_home':'o_away';
+{const _vc=vsCut;vsCut=function(g,e){if(!SP_READY)return _vc(g,e);const my=g.my,bat=e.half,fld=1-e.half,P=isP(),od=crestData(g.ab[P?bat:fld],g.c[P?bat:fld]),seed=g.ab[P?bat:fld]+g.title+(e.inn||0),h=_h32(seed),opName=P?'p_bat':'p_pitch';/* v857q: 상대 투수가 글러브+배트를 든 외출복 그림(o_away)이라 '투수인데 배트' — 상대 투수는 투구 자세, 상대 타자는 타격 자세 그림으로 (팀 색 · 좌우 반전) */
   return`<div class="vscut" key="v${g.idx}"><div class="vs-bg"></div><div class="vs-l">${spImg(spURL(P?'p_pitch':'p_bat',{kind:'body',team:spTeam(),hair:SP_HC[spLook(ME).shc%SP_HC.length][1]}),150)}<span class="vs-n">${esc(ME.name)}</span></div><div class="vs-vs">VS</div><div class="vs-r">${spImg(spURL(opName,{kind:'body',team:od.c1,hair:SP_HC[(h>>>5)%3][1],flip:true}),165)}<span class="vs-n">${esc(g.ab[P?bat:fld])} ${P?'타자':'투수'}</span></div></div>`}}
 /* 공유 카드 캔버스 */
 let _spCard=null;function spCardURL(){return spURL(spBodyName(ME),{kind:'body',hair:SP_HC[spLook(ME).shc%SP_HC.length][1],team:spTeam()})}
@@ -15645,10 +15645,10 @@ function thrAdd855(a,x){try{if(!a||!Array.isArray(a.cm)||!x||!x.lsc||S._inPh854)
    · 예전 기록은 서버에서 지우지 않고 화면에서만 내림: HOF_RESET855 시각 이후 올라온 기록만 보여 줌 (되돌리려면 이 시각만 옛날로)
    · 표본: 최대 육성(포지션별 같은 수, 유저처럼 키움) 커리어를 v855e 최종 공식으로 돌린 결과 — hof_sample.json (사이트에서만 불러옴)
      이름 옆 'by 표본' 표시 · 새로 은퇴해서 올리는 실제 기록은 표본과 같이 순위에 섞여 들어감 */
-const HOF_RESET855='2026-11-16T16:30:00Z';
+const HOF_RESET855='2026-11-17T08:20:00Z';/* v857q: 유저 요청(11/17 17:07 '명전 순위 다 지우자')으로 다시 비움 — 서버 기록은 그대로, 이 시각 뒤에 올라온 기록만 보임 (되돌리려면 '2026-11-16T16:30:00Z') · 표본(hof_sample.json)도 빈 목록 */
 let HOFS855=null,HOFSP855=null;
 function hofSample855(){if(HOFS855)return Promise.resolve(HOFS855);if(HOFSP855)return HOFSP855;
-  HOFSP855=(typeof fetch==='function'?fetch('hof_sample.json?v=857p').then(r=>r.ok?r.json():[]):Promise.resolve([])).then(d=>{HOFS855=Array.isArray(d)?d:(d&&Array.isArray(d.rows)?d.rows:[]);if(d&&d.n){HOFS855.n=d.n;HOFS855.hof=d.hof}return HOFS855}).catch(()=>{HOFS855=[];return HOFS855});return HOFSP855}
+  HOFSP855=(typeof fetch==='function'?fetch('hof_sample.json?v=857q').then(r=>r.ok?r.json():[]):Promise.resolve([])).then(d=>{HOFS855=Array.isArray(d)?d:(d&&Array.isArray(d.rows)?d.rows:[]);if(d&&d.n){HOFS855.n=d.n;HOFS855.hof=d.hof}return HOFS855}).catch(()=>{HOFS855=[];return HOFS855});return HOFSP855}
 function hofQ855(arr,q){try{const P={};String(q||'').split('&').forEach(s=>{const i=s.indexOf('=');if(i>0)P[s.slice(0,i)]=decodeURIComponent(s.slice(i+1))});
   const al=c=>{const a=String(c||'').replace(/^extra->st->/,'');return a==='r'?'runs':a};let a=(arr||[]).slice();
   if(P.kind)a=a.filter(r=>r&&r.kind===P.kind.replace(/^eq\./,''));
