@@ -15959,6 +15959,11 @@ function pwK857(){try{if(!S||!ME||!isP())return null;if(S.stage==='pro'){const r
 {const _rt857=rcTake840;rcTake840=function(L,o,out,pre){try{const K=t=>(pre||'rc:')+String(t).replace(/[\d.,]+/g,'N');const U=S._rcU857||(S._rcU857={});
   const C=(L||[]).map(t=>rcFill840(t,o)).filter(s=>!seenHas(K(s))&&!out.includes(s));if(!C.length)return false;
   let mn=Infinity;for(const s of C){const u=U[K(s)]||0;if(u<mn)mn=u}const s=pick(C.filter(s=>(U[K(s)]||0)===mn));U[K(s)]=(U[K(s)]||0)+1;seenAdd(K(s));out.push(s);return true}catch(e){return _rt857.apply(this,arguments)}}}
+/* 15) v857g (유저 결정 13:15 → 13:16 ×0.8): MLB 타자 선구안·동체시력 감점 정도 ×0.8 — 기준(선구안 78 · 동체시력 84 · 메인툴 78)은 그대로
+       · 동체시력 미달 자동 삼진: 최대 7% → 5.6% · 선구안·동체시력 미달 홈런 파워: 최대 −10% → −8% · 메인툴·선구안·동체시력 미달 상대 수준: 최대 +0.45 → +0.36 (투수 감점은 그대로) */
+{const _vk857=visKx;visKx=function(){return _vk857.apply(this,arguments)*.8}}
+{const _hp857=hrPw;hrPw=function(){let m=_hp857.apply(this,arguments);try{if(!isP()&&S.stage==='pro'&&S.pro&&S.pro.league==='MLB'&&!S.pro.minor){const g=Math.max(0,78-DV(E('eye')))+Math.max(0,VIS_ML-DV(E('vis')));const nw=Math.max(.9,1-Math.pow(g/40,1.4)*.1);if(nw<1)m*=(1-.8*(1-nw))/nw}}catch(e){}return m}}
+{const _mg857=mlbGapPen;mlbGapPen=function(){const v=_mg857.apply(this,arguments);try{if(!isP())return v*.8}catch(e){}return v}}
 
 /* ===== v857 기준 다시 맞춤 — 최종 코드 표본 W47 2,040명 + W48 1,904명 = 3,944명 (타자 1,856 · 선발 671 · 마무리 704 · 셋업 713) =====
    · 명예의 전당 (반올림 점수): 타자 47 (W47+W48 94.9% · 수상 조정 반영하면 약 95%) · 선발 60 (90.0%) · 마무리 35 (89.9%) · 셋업 36 (90.7%)
