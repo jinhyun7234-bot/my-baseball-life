@@ -16065,3 +16065,141 @@ try{Object.assign(GGLO714,{C:.8196,'1B':.4927,'2B':.4121,'3B':.0342,SS:.7637,LF:
 try{Object.assign(SSLO714,{C:.7351,'1B':.7953,'2B':.7586,'3B':.7837,SS:.7319,LF:.7954,CF:.7475,RF:.8014,DH:.9034})}catch(e){}
 try{Object.assign(ROY853,{C:1.039,'1B':1.136,'2B':.581,'3B':1.153,SS:.973,LF:1.179,CF:.571,RF:1.399})}catch(e){}
 try{GGP836=0.239}catch(e){}KPMV853=2.258;
+
+/* ===== v857r 명예의 전당 지킴이 — 금칙어 이름 · 나올 수 없는 기록 가리기 + 올리기 막기 =====
+   유저 요청(11/17 18:30 "조사해서 알려줘 필터 뭐뭐했는지 싹다"): 커뮤니티 홍보 전에 욕 이름·장난 기록 막기
+   · 보여 줄 때: 서버 기록 중 선수 이름·닉네임·팀 이름에 금칙어가 있거나 나올 수 없는 기록이면 명예의 전당·통산 순위·기록 보기에서 안 보임
+   · 서버에 물어볼 때부터 '나올 수 없는 기록' 상한을 붙임 → 장난 기록이 순위 칸(limit)을 먼저 차지해서 진짜 기록을 밀어내는 것도 막음
+   · 올릴 때: 선수 이름이 걸리면 올리기 버튼 자리에 안내, 닉네임이 걸리면 바꿔 달라는 안내 (서버로 아예 안 보냄)
+   · 가벼운 욕은 그대로 둠: ㅅㅂ ㅆㅂ ㅈㄴ 존나 졸라 미친 ㅁㅊ 지랄 꺼져 닥쳐 새끼 딸배
+   · 우회도 잡음: 띄어쓰기·숫자·기호 끼우기(씨1발·씨.발) · 자모 쪼개기(ㅆㅣㅂㅏㄹ) · 한영 안 바꾸고 치기(tlqkf) · 전각 문자 · 안 보이는 문자 · 영어 leet(sh1t)
+   · 글자 단위로 비교(자모 단위 아님) → '조진우'가 '좆'에 걸리는 식의 오탐 없음 */
+const HG857=(()=>{
+  const CHO=['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+  const JUNG=['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+  const JONG=['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+  const SPLIT={'ㄳ':'ㄱㅅ','ㄵ':'ㄴㅈ','ㄶ':'ㄴㅎ','ㄺ':'ㄹㄱ','ㄻ':'ㄹㅁ','ㄼ':'ㄹㅂ','ㄽ':'ㄹㅅ','ㄾ':'ㄹㅌ','ㄿ':'ㄹㅍ','ㅀ':'ㄹㅎ','ㅄ':'ㅂㅅ','ㅘ':'ㅗㅏ','ㅙ':'ㅗㅐ','ㅚ':'ㅗㅣ','ㅝ':'ㅜㅓ','ㅞ':'ㅜㅔ','ㅟ':'ㅜㅣ','ㅢ':'ㅡㅣ'};
+  const VC={'ㅗㅏ':'ㅘ','ㅗㅐ':'ㅙ','ㅗㅣ':'ㅚ','ㅜㅓ':'ㅝ','ㅜㅔ':'ㅞ','ㅜㅣ':'ㅟ','ㅡㅣ':'ㅢ'};
+  const FC={'ㄱㅅ':'ㄳ','ㄴㅈ':'ㄵ','ㄴㅎ':'ㄶ','ㄹㄱ':'ㄺ','ㄹㅁ':'ㄻ','ㄹㅂ':'ㄼ','ㄹㅅ':'ㄽ','ㄹㅌ':'ㄾ','ㄹㅍ':'ㄿ','ㄹㅎ':'ㅀ','ㅂㅅ':'ㅄ'};
+  const NOFIN={'ㄸ':1,'ㅃ':1,'ㅉ':1};
+  /* 두벌식 자판: 한영 안 바꾸고 친 글자 → 자모 */
+  const KB={q:'ㅂ',w:'ㅈ',e:'ㄷ',r:'ㄱ',t:'ㅅ',y:'ㅛ',u:'ㅕ',i:'ㅑ',o:'ㅐ',p:'ㅔ',a:'ㅁ',s:'ㄴ',d:'ㅇ',f:'ㄹ',g:'ㅎ',h:'ㅗ',j:'ㅓ',k:'ㅏ',l:'ㅣ',z:'ㅋ',x:'ㅌ',c:'ㅊ',v:'ㅍ',b:'ㅠ',n:'ㅜ',m:'ㅡ',Q:'ㅃ',W:'ㅉ',E:'ㄸ',R:'ㄲ',T:'ㅆ',O:'ㅒ',P:'ㅖ'};
+  const isC=c=>CHO.indexOf(c)>=0,isV=c=>JUNG.indexOf(c)>=0;
+  /* 글자 → 자모 (겹받침·겹모음도 쪼갬) */
+  function jam(ch,out){const c=ch.charCodeAt(0);
+    if(c>=0xAC00&&c<=0xD7A3){const i=c-0xAC00,v=JUNG[Math.floor(i%588/28)],t=JONG[i%28];out.push(CHO[Math.floor(i/588)]);(SPLIT[v]||v).split('').forEach(x=>out.push(x));if(t)(SPLIT[t]||t).split('').forEach(x=>out.push(x));return true}
+    if(c>=0x3131&&c<=0x3163){(SPLIT[ch]||ch).split('').forEach(x=>out.push(x));return true}
+    /* NFKC가 따로 친 자모(ㅅㅣㅂ…)를 첫가끝 자모로 바꿔 놓으므로 다시 일반 자모로 */
+    if(c>=0x1100&&c<=0x1112){out.push(CHO[c-0x1100]);return true}
+    if(c>=0x1161&&c<=0x1175){const v=JUNG[c-0x1161];(SPLIT[v]||v).split('').forEach(x=>out.push(x));return true}
+    if(c>=0x11A8&&c<=0x11C2){const t=JONG[c-0x11A7];(SPLIT[t]||t).split('').forEach(x=>out.push(x));return true}
+    return false}
+  /* 자모 → 글자 (두벌식 오토마타: 받침 뒤에 모음이 오면 받침이 다음 글자로 넘어감) */
+  function compose(js){let out='',L=null,V=null,T=[];
+    const flush=()=>{if(L!==null&&V!==null){const tf=T.length===2?FC[T[0]+T[1]]:(T[0]||'');out+=String.fromCharCode(0xAC00+(CHO.indexOf(L)*21+JUNG.indexOf(V))*28+JONG.indexOf(tf))}else if(L!==null)out+=L;L=null;V=null;T=[]};
+    for(const ch of js){
+      if(isC(ch)){
+        if(L===null){L=ch;continue}
+        if(V===null){out+=L;L=ch;continue}
+        if(T.length===0){if(NOFIN[ch]){flush();L=ch}else T=[ch];continue}
+        if(T.length===1&&FC[T[0]+ch]){T.push(ch);continue}
+        flush();L=ch;continue}
+      if(isV(ch)){
+        if(L===null){out+=ch;continue}
+        if(V===null){V=ch;continue}
+        if(T.length===0){if(VC[V+ch]){V=VC[V+ch];continue}flush();out+=ch;continue}
+        const mv=T.pop();flush();L=mv;V=ch;continue}
+      flush();out+=ch}
+    flush();return out}
+  const ZW=/[­͏؜ᅟᅠ឴឵᠎​-‏‪-‮⁠-⁯ㅤ︀-️﻿ﾠ]/g;
+  /* 전각·동그라미 글자 등은 NFKC로 펴되, 한글(글자·자모)은 그대로 둠 (NFKC가 ㅄ·ㅀ 같은 자모를 옛 첫소리로 바꿔 버림) */
+  const base=s=>String(s==null?'':s).replace(/[^\u3131-\u318E\uAC00-\uD7A3]+/g,m=>m.normalize('NFKC')).replace(ZW,'');
+  /* 한글만 (숫자·기호·영어·띄어쓰기 빼고 다시 조립) */
+  const hang=s=>{const js=[];for(const ch of s)jam(ch,js);return compose(js)};
+  /* 한영 안 바꾸고 친 것까지 (영어 글자를 자모로) */
+  const kbd=s=>{const js=[];for(const ch of s){if(/[A-Za-z]/.test(ch)){const m=KB[ch]||KB[ch.toLowerCase()];if(m)js.push(m)}else jam(ch,js)}return compose(js)};
+  const LEET={'0':'o','1':'i','3':'e','4':'a','5':'s','7':'t','8':'b','@':'a','$':'s','!':'i','|':'l','+':'t'};
+  const eng=s=>s.toLowerCase().replace(/[0134578@$!|+]/g,c=>LEET[c]).replace(/[^a-z]/g,'');
+  /* ---------- 금칙어 (조사: korcen 카테고리 · 스마일게이트 UnSmile 혐오 분류 · 커뮤니티 혐오 접사 꼴~/~충) ---------- */
+  const W={
+    gen:['씨발','시발','씨빨','시빨','씨팔','시팔','씨벌','시벌','씨펄','시펄','씨바','씨빠','씨부랄','시부랄','씨부럴','시부럴','쓰발','쓰벌','씌발','쒸발','쉬발','쉬벌','싀발','슈발','슈벌','씨이발','시이발','ㅆ발','ㅅ발','ㅆ벌','씹','썅','쌍년','쌍놈',
+      '병신','븅신','빙신','병쉰','븅쉰','빙쉰','뷩신','병시나','븅시나','ㅂ신',
+      '개새끼','개새기','개새키','개색기','개색끼','개섀끼','개세끼','개쉐끼','개쉑','개쌔끼','개쌕','개새','개색','개시키','개자식','개년','개좆',
+      '좆','좃','조까','좆까','족까','미친년','뒤져라','디져라','뒤질래','자살'],
+    par:['느금','늬금','니애미','니애비','니앰','니엄마','니미럴','니기미','애미','애비','에미뒤','엠창','앰창'],
+    sex:['섹스','쎅스','섹쓰','쎅쓰','보지','보짓','자지','딸딸이','딸치','자위','야동','포르노','강간','성폭행','몰카','오나홀','창녀','창년','화냥','걸레년','갈보','매춘','원조교제','질싸','질내사정','정액','후장','애널','떡치','따먹','빨통','보빨','젖꼭지'],
+    reg:['홍어','전라디언','절라디언','절라도','깽깽이','쌍도','개쌍도','경상디언','과메기','멍청도','핫바지','감자국','슨상'],
+    gnd:['한남충','한남들','한남새','한남놈','한녀','김치녀','김치남','된장녀','보슬아치','메갈','워마드','꼴페미','페미년','페미충','맘충','냄저','상폐녀','퐁퐁남','자댕이','숨쉴한'],
+    race:['짱깨','짱개','짱꼴라','떼놈','되놈','쪽바리','쪽발이','쪽국','왜놈','섬숭이','조센징','깜둥','깜씨','흑형','니거','똥남아','튀기','착짱죽짱','칭챙총','칭총'],
+    dis:['정박아','저능아','장애새끼'],
+    lgbt:['똥꼬충','호모새끼','게이새끼','트젠충'],
+    age:['틀딱','틀니딱','급식충'],
+    rel:['개독','개슬람','먹사'],
+    comm:['일베','일간베스트','일베충','노알라','이기야','부엉이바위','엠씨무현'],
+    pol:['문재앙','문죄인','대깨문','닭근혜','근혜어','쥐박','쥐명박','명박이','윤짜장','찢재명','찢명','개딸','수꼴','좌좀','우좀','좌빨','빨갱이','토착왜구','굥'],
+    pname:['이승만','박정희','전두환','노태우','김영삼','김대중','노무현','이명박','박근혜','문재인','윤석열','이재명','김일성','김정일','김정은','히틀러'],
+    team:['꼴데','꼴쥐','꼴칰','엘쥐','꼴기','꼴삼','꼴엘','칰','기레기','쓰레기팀','쓰레기구단'],
+    imp:['운영자','운영진','운영팀','관리자','개발자','나의야구인생'],
+    spam:['토토사이트','사설토토','먹튀검증','먹튀사이트','먹튀폴리스','카지노','바카라','슬롯','홀덤','파워볼','꽁머니','첫충','매충','총판','안전놀이터','메이저놀이터','가입코드','추천코드','텔레그램','텔레','카톡','카카오톡','오픈채팅','오픈톡','디스코드','필로폰','대마초']};
+  /* 이름 전체가 딱 이 말일 때만 (실제 이름·낱말과 겹칠 수 있는 말) */
+  const EXACT={comm:['운지','무현'],gnd:['한남'],dis:['애자'],imp:['공지','공식'],spam:['토토'],par:['니미']};
+  /* 초성만 쓴 욕 (따로 친 자음끼리만 봄 — '밥순'의 ㅂ·ㅅ 같은 건 안 걸림) · ㅅㅂ·ㅆㅂ·ㅈㄴ·ㅁㅊ는 허용 */
+  const CHOS=['ㅂㅅ','ㄴㄱㅁ','ㅅㅂㄴ','ㅆㅂㄴ','ㄱㅅㄲ','ㅅㅂㄹㅁ','ㅆㅂㄹㅁ','ㅁㅊㄴ'];
+  const EN_SUB=['fuck','fck','fvck','phuck','shit(?!a)','bitch','biatch','cunt','whore','slut','porn','nigger','nigga','faggot','retard','hitler','motherf','sibal','ssibal','shibal','sibbal','ssibbal','byungsin','byeongsin','byungshin','gaesaekki','gaesaeki','gaesaki'];
+  const EN_RE=EN_SUB.map(w=>new RegExp(w));
+  const EN_WORD=['sex','rape','anal','jap','chink','gook','nazi','kkk'];
+  const EN_EXACT=['gm','admin','administrator','moderator','official'];
+  const URL=/(https?:|www\.|\.(com|net|org|kr|io|gg|me|xyz|top|shop|site|club|co|info|link|ly|tv)(?![a-z]))/i;
+  const PHONE=/(01[016789]|0[2-6]\d?)[\s.\-]?\d{3,4}[\s.\-]?\d{4}/,LONGNUM=/\d{8,}/,EIGHTEEN=/18(놈|새끼|색기|새기)/;
+  const SYM=/[🖕凸卐]/u;
+  const LIST=[];for(const k in W)W[k].forEach(w=>LIST.push([hang(w),k]));
+  const BOK=['황보','남궁','제갈','선우','독고','사공','서문','동방'],sep=h=>{for(const x of BOK)if(h.indexOf(x)===0&&h.length>2)return x+'|'+h.slice(2);return h};
+  const KBX={'개새':1,'개색':1};
+  const EXL=[];for(const k in EXACT)EXACT[k].forEach(w=>EXL.push([w,k]));
+  function name(s){const b=base(s);if(!b.trim())return'';
+    if(SYM.test(b))return'sym';const b0=b.replace(/\s+/g,'');
+    if(URL.test(b0)||PHONE.test(b0)||LONGNUM.test(b0))return'spam';if(EIGHTEEN.test(b0))return'gen';
+    const H0=hang(b),H=sep(H0);
+    for(const [w,k] of LIST)if(H.indexOf(w)>=0)return k;
+    for(const [w,k] of EXL)if(H0===w)return k;
+    const runs=H0.match(/[ㄱ-ㅎ]+/g)||[];for(const r of runs)for(const c of CHOS)if(r.indexOf(c)>=0)return'gen';
+    if(H0.indexOf('ㅗ')>=0)return'sym';
+    if(/[A-Za-z]/.test(b)){const K=sep(kbd(b));if(K!==H)for(const [w,k] of LIST)if(w.length>=2&&!/[ㄱ-ㅣ]/.test(w)&&!KBX[w]&&K.indexOf(w)>=0)return k;
+      const E=eng(b);for(const re of EN_RE)if(re.test(E))return'eng';if(EN_EXACT.indexOf(E)>=0)return'imp';
+      const Ew=' '+b.toLowerCase().replace(/[^a-z]+/g,' ')+' ';for(const w of EN_WORD)if(Ew.indexOf(' '+w+' ')>=0)return'eng'}
+    return''}
+  /* 긴 글(은퇴 카드·리캡 안 문장)용: 게임이 만든 글에는 절대 안 나오는 센 말만, 띄어쓰기는 그대로 둠 (붙여서 생기는 오탐 방지) */
+  const FREE=['씨발','시발','씨빨','시빨','씨팔','시팔','개새끼','개새기','개색기','개색끼','병신','븅신','좆','느금마','니애미','엠창','섹스','강간','성폭행','보빨','니거','짱깨','짱개','쪽바리','쪽발이','조센징','깜둥이','홍어','전라디언','일베','노알라','메갈','워마드','김치녀','한남충','토토사이트','먹튀검증','먹튀사이트','카지노','바카라','텔레그램'].concat(W.pname);
+  const FREE_EN=['fuck','nigger','nigga','faggot'];
+  function text(s){const b=base(s);if(!b)return'';if(SYM.test(b))return'sym';if(URL.test(b))return'spam';
+    for(const w of FREE)if(b.indexOf(w)>=0)return'free';const l=b.toLowerCase();for(const w of FREE_EN)if(l.indexOf(w)>=0)return'free';return''}
+  /* 나올 수 없는 기록: 최종 표본 2,040명 최고치와 실제 서버의 옛 버전 기록 619개 최고치(명전 점수 325.6·타점 2,885·MVP 15회·27시즌)보다 넉넉하게
+     (옛 기록 619개 중 걸리는 것 0개) — 서버가 받아 주는 한계(WAR 400·명전 점수 800 등)를 꽉 채운 장난 기록만 걸리게 */
+  const CAP={war:250,wwar:450,g:4200,years:28,rings:20,mvps:25,hr:1100,h:5200,rbi:3400,sb:1700,w:480,k:7000,ip:7500};
+  function odd(r){if(!r)return'';const n=k=>+r[k]||0;for(const k in CAP)if(n(k)>CAP[k])return'cap:'+k;
+    if(r.kind==='B'){if(n('hr')>n('h'))return'hr>h';if(n('h')>n('pa'))return'h>pa';if(n('pa')>=1000&&(n('avg')>.42||n('ops')>1.4))return'rate'}
+    else if(r.kind==='P'&&r.era!=null&&n('ip')>=500&&+r.era<.8)return'era';return''}
+  const SRV=Object.keys(CAP).map(k=>`&${k}=lte.${CAP[k]}`).join('');
+  /* 기록 하나: 이름들 + 나올 수 없는 기록 + (있으면) 카드·리캡 안 글 */
+  function row(r){if(!r)return'';let w=name(r.nick)||name(r.owner)||name(r.team);if(w)return w;w=odd(r);if(w)return w;
+    const x=r.extra;if(x&&typeof x==='object'){try{const D=x.D||{};w=name(D.name)||(Array.isArray(D.teams)?D.teams.map(t=>name(t&&t.name)).find(Boolean):'')||'';if(w)return w;
+      let n=0;const walk=(v,d)=>{if(w||d>7||n>4000)return;n++;if(typeof v==='string'){w=text(v)}else if(Array.isArray(v))v.forEach(z=>walk(z,d+1));else if(v&&typeof v==='object')for(const k in v)walk(v[k],d+1)};walk(x,0)}catch(e){}}
+    return w||''}
+  return{name,text,odd,row,SRV,CAP,W,EXACT,CHOS,EN_SUB,EN_WORD,EN_EXACT,FREE,hang,kbd,eng,compose}})();
+function hofBad857(r){try{return HG857.row(r)}catch(e){return''}}
+/* 목록: 서버에 상한 붙여서 묻고(장난 기록이 칸 차지 못하게), 넉넉히 받아서 거른 뒤 원래 개수로 자름 */
+{const _hl857=hofList;hofList=async function(q){q=String(q||'');const m=q.match(/(?:^|&)limit=(\d+)/),lim=m?+m[1]:0;
+  let q2=q+HG857.SRV;if(lim&&lim<400)q2=q2.replace(/((?:^|&)limit=)\d+/,'$1'+Math.min(400,lim*3+10));
+  const d=await _hl857.call(this,q2);let out=(d||[]).filter(r=>!hofBad857(r));if(lim)out=out.slice(0,lim);return out}}
+/* 기록 보기: 걸리는 기록이면 못 불러온 것처럼 */
+{const _vv857=vHofView;vHofView=function(){try{const v=ui.hof&&ui.hof.view,L=v&&HOFD['v:'+v.id];if(L&&L.row&&hofBad857(L.row))return`<button class="btn sm" data-hof="vback">‹ 순위로</button><div class="hof-msg">기록을 불러오지 못했어요.</div>`}catch(e){}return _vv857.apply(this,arguments)}}
+/* 올리기: 서버로 보내는 길목(직접 올리기 + 슬롯 지울 때 자동 올리기) 하나에서 막음 */
+{const _hs857=hofSend;hofSend=async function(rec){try{if(rec&&(HG857.name(rec.nick)||HG857.name(rec.owner)))return{ok:false,status:422,_why:'금칙어',clone(){return this},json:async()=>({message:'금칙어'})}}catch(e){}return _hs857.apply(this,arguments)}}
+/* 올리기 상자: 선수 이름이 걸리면 닉네임 칸 대신 안내 + 버튼 잠금 */
+{const _vs857=vHofSubmit;vHofSubmit=function(){let h=_vs857.apply(this,arguments);try{if(h&&h.indexOf('data-hof="submit"')>=0&&typeof ME!=='undefined'&&ME&&HG857.name(ME.name)){
+  h=h.replace(/<input id="hofowner"[^>]*>/,'<span class="small" style="color:var(--bad)">선수 이름에 쓸 수 없는 말이 들어 있어서 온라인 명예의 전당에는 올릴 수 없어요.</span>')
+   .replace(/<button class="btn pri" style="flex:1\.4" data-hof="submit"[^>]*>[^<]*<\/button>/,'<button class="btn pri" style="flex:1.4" disabled>올릴 수 없어요</button>')}}catch(e){}return h}}
+/* 닉네임이 걸리면 누르는 순간 안내 (기존 처리보다 먼저 받음: window 캡처) */
+if(typeof window!=='undefined')window.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-hof="submit"]');if(!b||typeof ui==='undefined'||!ui||ui.hofBusy)return;let msg='';
+  try{if(typeof ME!=='undefined'&&ME&&HG857.name(ME.name))msg='선수 이름에 쓸 수 없는 말이 들어 있어서 온라인 명예의 전당에는 올릴 수 없어요.';else if(HG857.name(ui.hofOwner))msg='닉네임에 쓸 수 없는 말이 들어 있어요. 닉네임을 바꿔서 다시 올려 주세요.'}catch(er){}
+  if(!msg)return;e.stopImmediatePropagation();e.preventDefault();ui.hofErr=msg;try{render()}catch(er){}},true);
