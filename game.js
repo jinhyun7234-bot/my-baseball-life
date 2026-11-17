@@ -7917,16 +7917,17 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
 {const _ly=lpYear;lpYear=function(){_ly();try{const P=S.lp.filter(p=>p.k!=='B'),B=S.lp.filter(p=>p.k==='B');const mean=(a,k)=>a.reduce((s,p)=>s+p[k],0)/Math.max(1,a.length);
   const mp=mean(P,'r');P.forEach(p=>{p.r=cl(p.r-(mp-56.6)*.85,40,70)});
   [['con',54.4],['pow',51.4],['eye',52.2]].forEach(([k,t])=>{const m=mean(B,k);B.forEach(p=>{p[k]=cl(p[k]-(m-t)*.85,28,79)})})}catch(e){}}}
+/* v857v: MLB 개인 타이틀 기준선 아주 살짝 더↑ (평균 약 1% — 홈런 +0.5 · 타점 +1.2 · 도루 +0.5 · 안타 +1.9 · 득점 +1.3 · 타율 +.0015 · 출루율 +.0015 · 장타율 +.0025 / 승 +0.2 · ERA −0.02 · 탈삼진 +2.5 · 세이브 +0.5 · 홀드 +0.3) */
 /* MLB 개인 타이틀 (리그 1위 기준선과 비교) — v835: 기준선 살짝↑ (홈런 +1.5 · 타점 +2 · 도루 +1.5 · 안타 +1.5 · 득점 +1.5 · 타율·출루율 +.002 · 장타율 +.005 / 투수 승 +0.5 · ERA −0.05 · 탈삼진 +3 · 세이브·홀드 +1) */
 {const _aw=awards;awards=function(rep){_aw(rep);try{if(!(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'))return;const rows=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB');if(!rows.length)return;
   if(S.awards.some(a=>a.y===S.y&&/^MLB (다승|평균자책|탈삼진|세이브|홀드|홈런|타격|타점|도루|최다안타|득점|출루율|장타율)/.test(a.n)))return;const P=isP(),got=[];
   const give=n=>{got.push(n);S.awards.push({y:S.y,n:'MLB '+n});S.rel.fame=cl(S.rel.fame+3,0,100);feat(`${S.y} MLB ${n} 타이틀 획득`,1)};
   if(P){const p=rows.reduce((a,r)=>(addTo(a,r.p),a),blankP()),ip=p.outs/3,era=p.outs?p.R*27/p.outs:99;
-    const eP=typeof lgEnv==='function'?lgEnv('MLB'):0;if(p.W>=Math.round(rn(18.6,1.7)))give('다승왕');if(ip>=162&&era<=rn(2.42,.34)+eP*.18)give('평균자책점왕');if(p.K>=Math.round(rn(247,18)*(1-eP*.03)))give('탈삼진왕');const ML=(S.mlbLead=S.mlbLead||{})[S.y]||(S.mlbLead[S.y]={sv:Math.round(rn(43.5,4.5)),hd:Math.round(rn(32.5,4.5))});/* v857: 실제 MLB 리그 1위 분포(MLB 공식 기록) — 다승 18.6±1.7 · 평균자책(실점 기준) 2.42±.34 · 탈삼진 247±18(2021~2025) · 세이브 43.5±4.5 · 홀드 32.5±4.5 */if((p.SV||0)>=ML.sv)give('세이브왕');if((p.HLD||0)>=ML.hd)give('홀드왕')}
+    const eP=typeof lgEnv==='function'?lgEnv('MLB'):0;if(p.W>=Math.round(rn(18.8,1.7)))give('다승왕');if(ip>=162&&era<=rn(2.40,.34)+eP*.18)give('평균자책점왕');if(p.K>=Math.round(rn(249.5,18)*(1-eP*.03)))give('탈삼진왕');const ML=(S.mlbLead=S.mlbLead||{})[S.y]||(S.mlbLead[S.y]={sv:Math.round(rn(44,4.5)),hd:Math.round(rn(32.8,4.5))});/* v857: 실제 MLB 리그 1위 분포(MLB 공식 기록) — 다승 18.6±1.7 · 평균자책(실점 기준) 2.42±.34 · 탈삼진 247±18(2021~2025) · 세이브 43.5±4.5 · 홀드 32.5±4.5 */if((p.SV||0)>=ML.sv)give('세이브왕');if((p.HLD||0)>=ML.hd)give('홀드왕')}
   else{const b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB()),avg=b.AB?b.H/b.AB:0;
     const obp=b.PA?(b.H+b.BB)/b.PA:0,slg=b.AB?(b.H+(b.D||0)+2*(b.T||0)+3*b.HR)/b.AB:0,q=b.PA>=502;
-    const eV=typeof lgEnv==='function'?lgEnv('MLB'):0;if(q&&avg>=rn(.331,.012)+eV*.008)give('타격왕');if(b.HR>=Math.round(rn(50,6.5)*(1+eV*.09)))give('홈런왕');if(b.RBI>=Math.round(rn(127,8.5)*(1+eV*.04)))give('타점왕');if(b.SB>=Math.round(rn(48,12)))give('도루왕');/* v857: 실제 MLB 리그 1위 분포 — 타율 .331±.012 · 홈런 50±6.5 · 타점 127±8.5 · 도루 48±12 · 안타 198.5±10.5 · 득점 128.5±9 · 출루율 .425±.022 · 장타율 .633±.034 */
-    if(b.H>=Math.round(rn(198.5,10.5)*(1+eV*.02)))give('최다안타');if(b.R>=Math.round(rn(128.5,9)*(1+eV*.04)))give('득점왕');if(q&&obp>=rn(.425,.022)+eV*.008)give('출루율왕');if(q&&slg>=rn(.633,.034)+eV*.02)give('장타율왕')}
+    const eV=typeof lgEnv==='function'?lgEnv('MLB'):0;if(q&&avg>=rn(.3325,.012)+eV*.008)give('타격왕');if(b.HR>=Math.round(rn(50.5,6.5)*(1+eV*.09)))give('홈런왕');if(b.RBI>=Math.round(rn(128.2,8.5)*(1+eV*.04)))give('타점왕');if(b.SB>=Math.round(rn(48.5,12)))give('도루왕');/* v857: 실제 MLB 리그 1위 분포 — 타율 .331±.012 · 홈런 50±6.5 · 타점 127±8.5 · 도루 48±12 · 안타 198.5±10.5 · 득점 128.5±9 · 출루율 .425±.022 · 장타율 .633±.034 */
+    if(b.H>=Math.round(rn(200.4,10.5)*(1+eV*.02)))give('최다안타');if(b.R>=Math.round(rn(129.8,9)*(1+eV*.04)))give('득점왕');if(q&&obp>=rn(.4265,.022)+eV*.008)give('출루율왕');if(q&&slg>=rn(.6355,.034)+eV*.02)give('장타율왕')}
   if(!got.length)return;rep.lines.push(`MLB ${got.join('·')} 타이틀 획득!`);{const ex=got.length>1?got.map(n=>'MLB '+n):[];ex._gx=4*got.length;celebrate('crown',got.length>1?`MLB ${got.length}관왕`:`MLB ${got[0]}`,`${S.y} 메이저리그 개인 타이틀${got.length>1?' · '+got.join('·'):''}`,ex)}news(`${ME.name}, ${S.y} 메이저리그 ${got.join('·')} 차지`);
   /* v673: 트리플 크라운 별도 축하 X — n관왕 화면으로 통일 */
   article(`${ME.name}, 메이저리그 ${got.join('·')} 등극`,`${jo(ME.name,'이','가')} 올 시즌 메이저리그 ${got.join(', ')} 타이틀을 거머쥐었다.`,'award')}catch(e){}}}
@@ -16213,3 +16214,72 @@ if(typeof setupSig==='function'){const _ss857u=setupSig;setupSig=function(){_ss8
     if(!c.signed&&Array.isArray(c.sig)&&c.sig.some(s=>s&&s.length>=2)){c.signed=true;try{AU.sfx('pen')}catch(x){}
       const b=document.getElementById('abar');if(b)b.innerHTML=vBar();try{save()}catch(x){}}};
   cv.onpointerup=cv.onpointercancel=fin}catch(e){}}}
+
+/* v857v 밸런스 3가지 (전부 살짝 · 곡선식 · 화면 설명 없음)
+   ① MLB 팀 성적: 내 WAR가 높을수록 팀 승률이 조금 더 오름 → 포스트시즌 진출 확률 살짝↑ (잘할수록 더, WAR 0 이하는 그대로)
+      추가 승률 = 0.016 × tanh(WAR/14) → WAR 4 ≈ +0.7승 · 6 ≈ +1.0승 · 8 ≈ +1.3승 · 10 ≈ +1.6승 (162경기 기준)
+   ② 성장 포인트: 고교 때와 프로 1~3년차에 조금 더 (3년차 중반부터 4년차까지 부드럽게 줄어듦)
+      반기마다 (0.5 + 그 반기에 받은 포인트의 15%) × 가중치 (고교 1 · 프로 1~2년차 1 · 3년차 1→0.3 · 4년차 거의 0)
+   ③ KBO 개인 타이틀 기준 아주 살짝↑ (NPC 리그 1위 쪽을 v835의 1/3쯤 더) — MLB 기준선은 v130에서 같이 살짝↑ */
+
+/* ① MLB 순위: 내 팀 승수에 성적 비례 보정 */
+if (typeof mlbStandings === 'function') {
+  const _ms857v = mlbStandings;
+  mlbStandings = function () {
+    const r = _ms857v.apply(this, arguments);
+    try {
+      if (!r || !r.g || !r.out) return r;
+      const W = (typeof lastLgWAR === 'function' ? lastLgWAR('MLB') : 0) || 0;
+      if (!(W > 0)) return r;
+      const ex = 0.016 * Math.tanh(W / 14);
+      for (const lg of ['AL', 'NL']) {
+        const rows = r.out[lg] || [], row = rows.find(x => x.me);
+        if (!row) continue;
+        const w = Math.max(0, Math.min(r.g, Math.round(row.w + r.g * ex)));
+        row.w = w; row.l = r.g - w;
+        rows.sort((a, b) => b.w - a.w || a.l - b.l);
+      }
+    } catch (e) {}
+    return r;
+  };
+}
+
+/* ② 어릴 때 성장 포인트 조금 더 */
+function youthW857v() {
+  try {
+    if (!S || !ME) return 0;
+    if (S.stage === 'hs') return 1;
+    if (S.stage !== 'pro' || !S.pro) return 0;
+    const p = S.pro;
+    if (p.dev || p.debut > S.y) return 1; /* 육성선수·입단 예정 = 신인 */
+    const t = (S.y - p.debut + 1) + (S.phase || 0) / 3; /* 프로 n년차 (반기까지 이어지게) */
+    const x = Math.max(0, Math.min(1, (t - 2.6) / 1.6));
+    return 1 - x * x * (3 - 2 * x);
+  } catch (e) { return 0; }
+}
+if (typeof phaseXP === 'function') {
+  const _pxp857v = phaseXP;
+  phaseXP = function (rep) {
+    const x0 = (ME && ME.xp) || 0;
+    const out = _pxp857v.apply(this, arguments);
+    try {
+      const w = youthW857v();
+      if (w > 0) {
+        const g = Math.max(0, (ME.xp || 0) - x0), add = w * (0.5 + 0.15 * g);
+        ME.xp += add;
+        if (rep) rep.xp = (rep.xp || 0) + add;
+      }
+    } catch (e) {}
+    return out;
+  };
+}
+
+/* ③ KBO 타이틀 기준 아주 살짝↑ (NPC 리그 1위) */
+try {
+  if (typeof TB835 === 'object' && !TB835._857v) {
+    TB835.con += 0.1; TB835.pow += 0.37; TB835.eye += 0.07; TB835.sb *= 1.012; TB835._857v = 1;
+  }
+  if (typeof TP835 === 'object' && !TP835._857v) {
+    TP835.r += 0.1; TP835.k *= 1.002; TP835.w *= 1.007; TP835.sv *= 1.012; TP835.hld *= 1.01; TP835._857v = 1;
+  }
+} catch (e) {}
