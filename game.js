@@ -16396,3 +16396,18 @@ if (typeof choose === 'function') {
     return out;
   };
 }
+
+/* v857x: 명전 빈 자리 채운 기록(불펜 · 홍현우) 리캡 '시즌별 평균자책' 2044 값 — 올릴 때 4.24를 0.4로 잘못 넣음 → 보여 줄 때 바로잡기 */
+if (typeof vHofView === 'function') {
+  const _vhv857x = vHofView;
+  vHofView = function () {
+    try {
+      const v = ui.hof && ui.hof.view;
+      if (v && v.id === 'mwkxqfunw4c0u74q') {
+        const L = HOFD['v:' + v.id], sl = L && L.row && L.row.extra && L.row.extra.sl;
+        if (Array.isArray(sl)) sl.forEach(s => { if (s && s.chart && s.chart.lbl === 'ERA') (s.chart.pts || []).forEach(p => { if (p && p[3] === 2044 && p[1] === 0.4) p[1] = 4.24; }); });
+      }
+    } catch (e) {}
+    return _vhv857x.apply(this, arguments);
+  };
+}
