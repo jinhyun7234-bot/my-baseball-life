@@ -16463,3 +16463,44 @@ if (typeof vSettings === 'function') {
     return h;
   };
 }
+
+/* v857z 댓글 답글 작성자 버그 (쇼츠 만들려고 기사 화면 뽑다가 발견, 11/18)
+   · 답글 닉네임을 그냥 무작위로 뽑아서, 원 댓글 쓴 사람이 자기 댓글에 "국대에서도 클래스 증명"처럼 맞장구치는 답글이 나오던 것
+     (예: 수원마법사 "역시 메이저리거는 다르다…" → 답글 수원마법사 "국대에서도 클래스 증명")
+   · 기사를 열 때(예전 저장 기사 포함)와 새 기사가 생길 때, 답글 닉네임이 원 댓글·앞 답글과 겹치면 다른 닉네임으로 바꿔 줌 (한 번 바꾸면 저장됨) */
+function reNickFix857z(cm) {
+  try {
+    if (!Array.isArray(cm) || typeof NICKS === 'undefined' || !NICKS.length) return;
+    cm.forEach(c => {
+      if (!c || !Array.isArray(c.re) || !c.re.length) return;
+      const norm = n => String(n || '').replace(/^@/, '');
+      const used = new Set([norm(c.nk)]);
+      c.re.forEach(r => {
+        if (!r || typeof r !== 'object') return;
+        if (used.has(norm(r.nk))) {
+          const i0 = Math.max(0, NICKS.indexOf(norm(r.nk)));
+          for (let k = 1; k < NICKS.length; k++) {
+            const cand = NICKS[(i0 + k * 7) % NICKS.length];
+            if (!used.has(cand)) { r.nk = cand; break; }
+          }
+        }
+        used.add(norm(r.nk));
+      });
+    });
+  } catch (e) {}
+}
+if (typeof vArticle === 'function') {
+  const _va857z = vArticle;
+  vArticle = function (a) {
+    try { if (a) reNickFix857z(a.cm); } catch (e) {}
+    return _va857z.apply(this, arguments);
+  };
+}
+if (typeof article === 'function') {
+  const _ar857z = article;
+  article = function () {
+    const r = _ar857z.apply(this, arguments);
+    try { if (S && S.arts && S.arts[0]) reNickFix857z(S.arts[0].cm); } catch (e) {}
+    return r;
+  };
+}
