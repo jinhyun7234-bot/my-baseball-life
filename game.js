@@ -15644,7 +15644,7 @@ function thrAdd855(a,x){try{if(!a||!Array.isArray(a.cm)||!x||!x.lsc||S._inPh854)
 const HOF_RESET855='2026-11-16T16:30:00Z';
 let HOFS855=null,HOFSP855=null;
 function hofSample855(){if(HOFS855)return Promise.resolve(HOFS855);if(HOFSP855)return HOFSP855;
-  HOFSP855=(typeof fetch==='function'?fetch('hof_sample.json?v=857c').then(r=>r.ok?r.json():[]):Promise.resolve([])).then(d=>{HOFS855=Array.isArray(d)?d:(d&&Array.isArray(d.rows)?d.rows:[]);if(d&&d.n){HOFS855.n=d.n;HOFS855.hof=d.hof}return HOFS855}).catch(()=>{HOFS855=[];return HOFS855});return HOFSP855}
+  HOFSP855=(typeof fetch==='function'?fetch('hof_sample.json?v=857e').then(r=>r.ok?r.json():[]):Promise.resolve([])).then(d=>{HOFS855=Array.isArray(d)?d:(d&&Array.isArray(d.rows)?d.rows:[]);if(d&&d.n){HOFS855.n=d.n;HOFS855.hof=d.hof}return HOFS855}).catch(()=>{HOFS855=[];return HOFS855});return HOFSP855}
 function hofQ855(arr,q){try{const P={};String(q||'').split('&').forEach(s=>{const i=s.indexOf('=');if(i>0)P[s.slice(0,i)]=decodeURIComponent(s.slice(i+1))});
   const al=c=>{const a=String(c||'').replace(/^extra->st->/,'');return a==='r'?'runs':a};let a=(arr||[]).slice();
   if(P.kind)a=a.filter(r=>r&&r.kind===P.kind.replace(/^eq\./,''));
@@ -15952,16 +15952,24 @@ function pwK857(){try{if(!S||!ME||!isP())return null;if(S.stage==='pro'){const r
   if(!f)return _pf.apply(this,arguments);const keep=FEV.slice();try{const L=FEV.filter(e=>!(e&&e.t==='불펜 대기 자청'));FEV.length=0;L.forEach(e=>FEV.push(e));return _pf.apply(this,arguments)}finally{FEV.length=0;keep.forEach(e=>FEV.push(e))}}}
 {const SPL857=['"선발로 나가서 자꾸 초반에 무너진다. 2군 가서 투구 밸런스부터 다시 잡고 올래, 아니면 로테이션에서 버텨볼래?"','"요즘 공에 힘이 없어 보인다. 퓨처스에서 한 달 투구폼 점검하고 올래, 아니면 다음 등판에서 증명해볼래?"','"이대로 로테이션 돌리긴 어렵다. 2군에서 한 달 재정비하고 오는 게 어떠냐?"'];
  const _ms=monthStep;monthStep=function(rep){const r=_ms.apply(this,arguments);try{if(S&&S.stage==='pro'&&isP()&&S.role!=='SP'&&typeof rpLine==='function')(S.queue||[]).forEach(q=>{if(!q||q._sp857||q.title!=='📋 감독 면담 — 부진'||typeof q.text!=='string')return;const hit=SPL857.find(s=>q.text.includes(s));if(!hit)return;q._sp857=1;q.text=q.text.replace(hit,rpLine(!!(S.pro&&S.pro.league==='MLB')))})}catch(e){}return r}}
+/* 13-2) 메이저 선발 부진 면담('로테이션 자리 지키기 힘들어' · '로테이션에서 버틴다')은 지금 선발로 뛰고 있을 때만 — 불펜에 있는 선발 지망생은 일반 부진 면담으로 (W48 점검) */
+{const _mss=mlbSpSlump;mlbSpSlump=function(){try{if(S&&S.role!=='SP')return 0}catch(e){}return _mss.apply(this,arguments)}}
 
-/* ===== v857 기준 다시 맞춤 (최대 육성 표본 W46·W47 4,080명: 타자 1,920 · 선발 701 · 마무리 727 · 셋업 732 — W47 2,040명은 최종 코드) =====
-   · 명예의 전당 (반올림 점수): 타자 47→48 (W46·W47 95.2% · W47 95.2%) · 선발 69→60 (W46·W47 91.0% · W47 89.1%) · 마무리 32→35 (90.5% · 90.1%) · 셋업 33→37 (90.2% · 91.3%)
-     (불펜은 고른 보직 그대로 뛰면서 세이브·홀드 타이틀이 늘어 점수↑ · 선발은 KBO 다승왕·탈삼진왕 기준이 실제처럼 올라가면서 점수↓ — W47(최종 KBO 리그 보정)에서 더 낮게 나와서 두 표본 사이)
-   · 영구결번: 타자 ×0.665→0.65 (W46·W47 49.2% · W47 50.0%) · 투수 ×0.89→0.86 (선발 14.2% · 14.8%) · 은퇴투어 73→70 (예전 표본 구성 기준 전체 32.5%)
-   · 지명 포지션 기준(DRA836): 불펜 +3.0 (고교 불펜이 이제 불펜으로만 뛰어서 이닝↓ → 1라운드 37% → 53.6%) · 선발 −0.25+0.45 · 타자는 W42~W46 합친 표본 차이의 절반 (C +0.55 · 1B −0.87 · 2B +0.21 · 3B +0.86 · SS −0.1 · LF −0.14 · CF +0.41 · RF +0.52)
-     + W46·W47(오프셋 차이 빼고 합친 표본)에서 남은 차이의 3/4 정도 (C +0.5 · 1B −1.2 · 2B +0.5 · 3B +0.9 · SS −0.45)
-   · 실버슬러거 기준선 평균 −0.0066 (22.9% → W47 23.5%) · KBO 선발 MVP 2.51→2.43 · 나머지 수상(W47: KBO 골든글러브 31~34% · KBO MVP 3.6~6.3% · MLB MVP 2.7% · MLB 골드글러브 20.0% · 신인왕 26.4%)은 목표 안이라 그대로 */
-try{Object.assign(HOFT720,{B:48,SP:60,CL:35,RP:37})}catch(e){}
-WARF842B=0.65;WARF842P=0.86;TOURW852=70;/* 투어: 예전 기준 표본 구성(타자 8 · 선발 3 · 마무리 2 · 셋업 2)으로 환산해 전체 32.5% (W47 타자 39.6% · 선발 56.9% · 불펜은 커리어 WAR이 모자라 0%) — 지금 표본은 불펜 비중이 커서 그냥 합치면 낮게 나옴 */
-try{const D=DRA836;Object.assign(D,{C:D.C+.55+.5,'1B':D['1B']-.87-1.2,'2B':D['2B']+.21+.5,'3B':D['3B']+.86+.9,SS:D.SS-.10-.45,LF:D.LF-.14,CF:D.CF+.41,RF:D.RF+.52,SP:D.SP-.25+.45,RP:D.RP+3.0})}catch(e){}
-try{Object.assign(SSLO714,{C:.7237,'1B':.7844,'2B':.7485,'3B':.7744,SS:.7189,LF:.783,CF:.7415,RF:.7871,DH:.9034})}catch(e){}
-KPMV853=2.43;
+/* ===== v857 기준 다시 맞춤 — 최종 코드 표본 W47 2,040명 + W48 1,904명 = 3,944명 (타자 1,856 · 선발 671 · 마무리 704 · 셋업 713) =====
+   · 명예의 전당 (반올림 점수): 타자 47 (W47+W48 94.9% · 수상 조정 반영하면 약 95%) · 선발 60 (90.0%) · 마무리 35 (89.9%) · 셋업 36 (90.7%)
+     (불펜은 고른 보직 그대로 뛰면서 세이브·홀드 타이틀이 늘어 점수↑ · 선발은 KBO 다승왕·탈삼진왕 기준이 실제처럼 올라가면서 점수↓)
+   · 영구결번: 타자 ×0.655 (49.1%) · 투수 ×0.849 (선발 14.6%) · 은퇴투어 69 (예전 표본 구성 기준 전체 약 33% — 타자 8 · 선발 3 · 마무리 2 · 셋업 2)
+   · 지명 포지션 기준(DRA836): 불펜 +3.0 (고교 불펜이 이제 불펜으로만 뛰어서 이닝↓ → 1라운드 37% → 51~54%) · 선발 −0.25+0.45+0.6 (W48 1R 48% · 지명 89%)
+     · 타자 C +0.55+0.5 · 1B −0.87−1.2 · 2B +0.21+0.5 · 3B +0.86+0.9+0.8 · SS −0.1−0.45 · LF −0.14+1.0 · CF +0.41−0.5 · RF +0.52−0.4 (W46·W47·W48 포지션별 1라운드 차이를 조금씩)
+   · 수상 (W47+W48 3,944명 · 시즌 8만 3천 개로 다시 맞춤 — 포지션 전체가 같이 움직인 만큼은 그대로, 포지션별로 따로 튄 부분은 반만 · 신인왕은 30%):
+     지금 값 재현 → 새 값 재현: KBO 골든글러브 타자 30.7~34.5% → 32.4~34.2% · 선발 30.3% → 33.0% / KBO MVP 타자 3.6~5.8% → 4.5~5.6% · 선발 4.2% → 4.9%
+     MLB MVP 2.1~3.9% → 2.5~3.6% (전체 3.0%) · MLB 골드글러브 18.8~21.2% → 19.2~20.7% · 실버슬러거 25.8% → 25.0% · 신인왕 26.0% → 약 25% */
+try{Object.assign(HOFT720,{B:47,SP:60,CL:35,RP:36})}catch(e){}
+WARF842B=0.655;WARF842P=0.849;TOURW852=69;
+try{const D=DRA836;Object.assign(D,{C:D.C+.55+.5,'1B':D['1B']-.87-1.2,'2B':D['2B']+.21+.5,'3B':D['3B']+.86+.9+.8,SS:D.SS-.10-.45,LF:D.LF-.14+1.0,CF:D.CF+.41-.5,RF:D.RF+.52-.4,SP:D.SP-.25+.45+.6,RP:D.RP+3.0})}catch(e){}
+try{Object.assign(GGPM825,{C:3.038,'1B':3.09,'2B':4.198,'3B':3.57,SS:3.786,LF:2.99,CF:4.413,RF:3.042})}catch(e){}
+try{Object.assign(MVB853.KBO,{C:1.438,'1B':.953,'2B':.468,'3B':.554,SS:.722,LF:1.188,CF:.199,RF:1.027});Object.assign(MVB853.MLB,{C:2.919,'1B':3.564,'2B':2.865,'3B':2.988,SS:2.596,LF:3.7,CF:3.163,RF:3.437})}catch(e){}
+try{Object.assign(GGLO714,{C:.7991,'1B':.4477,'2B':.3693,'3B':.0245,SS:.7533,LF:.0425,CF:.4184,RF:.0907})}catch(e){}
+try{Object.assign(SSLO714,{C:.7282,'1B':.7899,'2B':.7488,'3B':.7756,SS:.7233,LF:.7821,CF:.7406,RF:.7926,DH:.9034})}catch(e){}
+try{Object.assign(ROY853,{C:.931,'1B':1.073,'2B':.54,'3B':1.03,SS:.801,LF:1.085,CF:.614,RF:1.337})}catch(e){}
+try{GGP836=0.312}catch(e){}KPMV853=2.265;
