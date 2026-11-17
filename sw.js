@@ -5,6 +5,7 @@ const SHELL=['./','manifest.webmanifest','config.js','game.js?v='+VER,'icons/ico
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL.map(u=>new Request(u,{cache:'reload'})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&/^yagu-/.test(k)).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);if(u.origin!==location.origin)return;
+  if(/^\/mig(\.html)?$/.test(u.pathname))return; /* v857t 커리어 옮기기 화면은 서비스워커가 건드리지 않음(주소 뒤 데이터가 저장본에 남지 않게) */
   const root=new URL('./',self.registration.scope).pathname,isRoot=r.mode==='navigate'&&(u.pathname===root||u.pathname===root+'index.html');
   if(isRoot){const net=fetch(r).then(res=>{if(res.ok&&!res.redirected){const cp=res.clone();return caches.open(CACHE).then(c=>c.put('./',cp)).then(()=>res)}return res});
     e.waitUntil(net.then(()=>{},()=>{}));e.respondWith(caches.open(CACHE).then(c=>c.match('./')).then(hit=>hit||net));return}

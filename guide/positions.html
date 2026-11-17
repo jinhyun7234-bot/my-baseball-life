@@ -1,10 +1,70 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>/* v857t 예전 주소(my-baseball-life.pages.dev) → 새 주소(my-baseball-life.com)로 이사
+   · 저장된 커리어가 없으면 바로 새 주소로 넘김 (같은 경로 그대로)
+   · 커리어가 있으면 안내창 → 버튼 누르면 새 창(새 주소 mig.html)을 열어 저장 데이터를 그대로 넘기고, 끝나면 이 창도 새 주소로
+   · 새 창이 막히거나(팝업 차단·인앱 브라우저·홈 화면 앱) 응답이 없으면 같은 창에서 주소 뒤(#)에 나눠 담아 오가며 넘김
+     (아이폰·사파리는 주소 길이 한도가 짧아 4만5천 자씩, 그 밖은 60만 자씩) · 다 받으면 새 주소가 예전 주소에 '옮김 끝' 표시를 남김
+   · "지금은 여기서 계속" → 이 탭에서는 다시 안 띄움 (다음에 열면 다시 안내) · 예전 주소 데이터는 지우지 않음 */
+(function(){try{
+var H='my-baseball-life.pages.dev',NEW='https://my-baseball-life.com';
+if(location.hostname!==H)return;
+var dest=NEW+location.pathname+location.search+location.hash,ls=null,has=false,done=false,skip=false;
+try{ls=window.localStorage;done=!!ls.getItem('bb_mig_com');for(var i=0;i<ls.length;i++){var k0=ls.key(i);if(/^bb_slot_/.test(k0)||k0==='bb_career_v2'){has=true;break}}}catch(e){}
+if(!has||done){location.replace(dest);return}
+try{skip=!!sessionStorage.getItem('bb_mig_skip')}catch(e){}
+if(skip)return;
+var w=null,sent=false,timer=null,fb=null,busy=false;
+function items(){var o={};for(var i=0;i<ls.length;i++){var k=ls.key(i);if(/^bb_/.test(k)&&!/^bb_mig/.test(k))o[k]=ls.getItem(k)}return o}
+function back(){return location.pathname+location.search}
+function payload(){return{items:items(),back:back()}}
+function msg(t){var m=document.getElementById('migmsg');if(m)m.textContent=t}
+function finish(){try{ls.setItem('bb_mig_com',String(Date.now()))}catch(e){}location.replace(dest)}
+function b64(u){var s='';for(var i=0;i<u.length;i+=32768)s+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function utf8(s){if(window.TextEncoder)return new TextEncoder().encode(s);var b=unescape(encodeURIComponent(s)),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u}
+function enc(json){if(window.CompressionStream&&window.Response&&window.Blob)return new Response(new Blob([json]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer().then(function(b){return'z'+b64(new Uint8Array(b))},function(){return'b'+b64(utf8(json))});return Promise.resolve('b'+b64(utf8(json)))}
+function ios(){var u=navigator.userAgent||'';return/iPhone|iPad|iPod/.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)}
+function chunk(){var u=navigator.userAgent||'';return(!ios()&&/Chrome\/\d|Chromium\/\d|Firefox\/\d/.test(u))?600000:45000}
+function oops(t){busy=false;msg(t||'옮기지 못했어요. 잠시 뒤 다시 눌러 주세요.')}
+function frag(){clearTimeout(fb);if(busy)return;busy=true;msg('옮기는 중…');var json;
+  try{json=JSON.stringify(payload())}catch(e){oops();return}
+  enc(json).then(function(s){var CH=chunk(),n=Math.max(1,Math.ceil(s.length/CH)),id=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+    try{sessionStorage.setItem('bb_mig_buf',JSON.stringify({id:id,s:s,n:n,ch:CH,back:back()}))}catch(e){if(n>1){oops('이 브라우저에서는 옮기기 어려워요. 크롬이나 사파리에서 열어 주세요.');return}}
+    location.href=NEW+'/mig#c='+id+'.0.'+n+'.'+s.slice(0,CH)})['catch'](function(){oops()})}
+window.addEventListener('message',function(e){
+  if(e.origin!==NEW||!e.data||typeof e.data!=='object')return;
+  if(e.data.t==='mig-ready'&&w&&!sent){sent=true;clearTimeout(fb);try{w.postMessage({t:'mig-data',p:payload()},NEW)}catch(er){sent=false;frag()}}
+  else if(e.data.t==='mig-done'){clearTimeout(timer);finish()}
+  else if(e.data.t==='mig-fail'){clearTimeout(timer);sent=false;busy=false;msg(e.data.why==='quota'?'새 주소 저장 공간이 모자라요. 안 쓰는 커리어를 지우고 다시 눌러 주세요.':'새 주소에 저장하지 못했어요. 다시 눌러 주세요.')}});
+/* 뒤로 가기로 이 화면에 돌아오면(bfcache) 다시 확인 */
+window.addEventListener('pageshow',function(e){if(!e.persisted)return;var d0=false;try{d0=!!ls.getItem('bb_mig_com')}catch(x){}if(d0){location.replace(dest);return}busy=false;sent=false;msg('')});
+function start(){if(busy)return;msg('옮기는 중…');sent=false;
+  var u=navigator.userAgent||'',sa=false;try{sa=navigator.standalone===true||matchMedia('(display-mode: standalone)').matches}catch(e){}
+  var inApp=sa||/KAKAOTALK|NAVER\(|Instagram|FBAN|FBAV|Line\/|DaumApps|everytimeApp|; wv\)/i.test(u)||(ios()&&!/Safari\//.test(u));
+  if(inApp){frag();return}
+  try{w=window.open(NEW+'/mig','_blank')}catch(e){w=null}
+  if(!w){frag();return}
+  clearTimeout(fb);fb=setTimeout(function(){if(!sent){try{w.close()}catch(e){}frag()}},8000);
+  clearTimeout(timer);timer=setTimeout(function(){if(!busy)msg('잘 안 되면 한 번 더 눌러 주세요.')},20000)}
+function ui(){if(document.getElementById('migbox'))return;
+  var d=document.createElement('div');d.id='migbox';
+  d.setAttribute('style','position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483647;background:rgba(5,10,20,.92);display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box');
+  d.innerHTML='<div style="max-width:360px;width:100%;background:#121a2b;border:1px solid #2a3550;border-radius:18px;padding:22px;color:#e8eef8;text-align:center;line-height:1.6;font-family:Pretendard,system-ui,-apple-system,\'Apple SD Gothic Neo\',\'Malgun Gothic\',sans-serif">'
+    +'<div style="font-size:19px;font-weight:800;margin-bottom:8px">주소가 바뀌었어요</div>'
+    +'<div style="font-size:15px;color:#a9b6cc">이제 <b style="color:#fff">my-baseball-life.com</b>에서 해요.<br>버튼을 누르면 저장된 커리어도 그대로 옮겨져요.</div>'
+    +'<button id="migbtn" type="button" style="margin-top:16px;width:100%;padding:13px;border:0;border-radius:12px;background:#3182f6;color:#fff;font-size:16px;font-weight:700;cursor:pointer">커리어 옮기고 새 주소로 가기</button>'
+    +'<div id="migmsg" style="margin-top:10px;font-size:13px;color:#ffb4b4;min-height:18px"></div>'
+    +'<button id="migskip" type="button" style="margin-top:2px;background:none;border:0;color:#7f8ca3;font-size:13px;text-decoration:underline;cursor:pointer">지금은 여기서 계속할게요</button></div>';
+  document.body.appendChild(d);
+  document.getElementById('migbtn').onclick=start;
+  document.getElementById('migskip').onclick=function(){try{sessionStorage.setItem('bb_mig_skip','1')}catch(e){}d.parentNode.removeChild(d)}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ui);else ui();
+}catch(e){}})();</script>
 <title>포지션 가이드 - 포지션별 중요 능력치 | 나의 야구 인생</title><meta name="description" content="나의 야구 인생 포지션 가이드: 포수, 1루수, 2루수, 3루수, 유격수, 좌익수, 중견수, 우익수별로 중요한 능력치(컨택, 파워, 주력, 어깨, 타구처리, 수비범위) 순위와 투수 육성 포인트.">
-<link rel="canonical" href="https://my-baseball-life.com/guide/positions.html"><meta name="robots" content="index,follow">
+<link rel="canonical" href="https://my-baseball-life.com/guide/positions"><meta name="robots" content="index,follow">
 <meta property="og:title" content="포지션 가이드 - 포지션별 중요 능력치 | 나의 야구 인생"><meta property="og:description" content="나의 야구 인생 포지션 가이드: 포수, 1루수, 2루수, 3루수, 유격수, 좌익수, 중견수, 우익수별로 중요한 능력치(컨택, 파워, 주력, 어깨, 타구처리, 수비범위) 순위와 투수 육성 포인트.">
-<meta property="og:url" content="https://my-baseball-life.com/guide/positions.html"><meta property="og:type" content="article"><meta property="og:site_name" content="나의 야구 인생">
+<meta property="og:url" content="https://my-baseball-life.com/guide/positions"><meta property="og:type" content="article"><meta property="og:site_name" content="나의 야구 인생">
 <meta property="og:image" content="https://my-baseball-life.com/icons/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image"><meta property="og:locale" content="ko_KR">
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
@@ -20,11 +80,11 @@ p,li{color:var(--fg)}.mut{color:var(--mut)}a{color:var(--acc)}
 .card b{display:block;margin-bottom:2px}.rank{font-weight:600}
 .cta{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:10px;margin:18px 0}
 nav.g{display:flex;flex-wrap:wrap;gap:8px 16px;margin:12px 0;font-size:15px}
-footer{padding-block:32px;color:var(--mut);font-size:13px}</style><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "나의 야구 인생", "item": "https://my-baseball-life.com/"}, {"@type": "ListItem", "position": 2, "name": "포지션 가이드", "item": "https://my-baseball-life.com/guide/positions.html"}]}</script></head><body>
+footer{padding-block:32px;color:var(--mut);font-size:13px}</style><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "나의 야구 인생", "item": "https://my-baseball-life.com/"}, {"@type": "ListItem", "position": 2, "name": "포지션 가이드", "item": "https://my-baseball-life.com/guide/positions"}]}</script></head><body>
 <header><a href="/">⚾ 나의 야구 인생</a></header>
 <main><h1>포지션 가이드: 포지션별 중요 능력치 순위</h1>
 <p class="mut">나의 야구 인생에서 타자는 포지션마다 중요한 툴의 순서가 달라요. 앞쪽 툴일수록 그 포지션에서 더 크게 반영돼요.</p>
 <div class="card"><b>포수 (C)</b><div class="rank">타구처리 › 어깨 › 컨택 › 파워 › 주력</div><div class="mut">투수 리드와 도루 저지를 맡는 안방마님. 수비 부담이 가장 큰 대신 수비 가치도 가장 높아요.</div></div><div class="card"><b>1루수 (1B)</b><div class="rank">파워 › 컨택 › 타구처리 › 주력 › 어깨</div><div class="mut">수비 부담이 가장 적어서 방망이로 증명해야 하는 자리. 장타력이 핵심이에요.</div></div><div class="card"><b>2루수 (2B)</b><div class="rank">컨택 › 타구처리·수비범위 › 주력 › 파워 › 어깨</div><div class="mut">내야 수비와 컨택, 발을 고루 갖춘 테이블세터형 내야수.</div></div><div class="card"><b>3루수 (3B)</b><div class="rank">파워 › 어깨 › 타구처리·수비범위 › 컨택 › 주력</div><div class="mut">강한 타구가 가장 많이 오는 핫코너. 장타력과 강한 어깨가 필요해요.</div></div><div class="card"><b>유격수 (SS)</b><div class="rank">타구처리·수비범위 › 어깨 › 컨택 › 주력 › 파워</div><div class="mut">내야 수비의 사령관. 수비 범위와 타구 처리, 어깨가 우선이에요.</div></div><div class="card"><b>좌익수 (LF)</b><div class="rank">파워 › 컨택 › 수비범위 › 어깨 › 주력</div><div class="mut">외야 코너. 타격으로 팀에 기여하는 거포형 외야수가 많아요.</div></div><div class="card"><b>중견수 (CF)</b><div class="rank">수비범위 › 주력 › 컨택 › 어깨 › 파워</div><div class="mut">외야 수비의 중심. 넓은 수비 범위와 빠른 발이 가장 중요해요.</div></div><div class="card"><b>우익수 (RF)</b><div class="rank">파워 › 컨택 › 어깨 › 수비범위 › 주력</div><div class="mut">강견이 빛나는 외야 코너. 장타력과 어깨를 함께 갖추면 좋아요.</div></div>
-<h2>투수</h2><div class="card"><b>선발·불펜</b><div class="mut">구속, 제구, 변화구가 투구의 바탕이고, 선발은 긴 이닝을 버틸 체력과 시즌을 버틸 내구성이 중요해요. 불펜은 짧고 강하게 막는 능력이 필요해요.</div></div><a class="cta" href="/">지금 무료로 플레이 ›</a><nav class="g"><a href="/">게임 시작</a><a href="/guide/">게임 방법</a><a href="/guide/positions.html">포지션 가이드</a><a href="/guide/faq.html">자주 묻는 질문</a></nav></main>
+<h2>투수</h2><div class="card"><b>선발·불펜</b><div class="mut">구속, 제구, 변화구가 투구의 바탕이고, 선발은 긴 이닝을 버틸 체력과 시즌을 버틸 내구성이 중요해요. 불펜은 짧고 강하게 막는 능력이 필요해요.</div></div><a class="cta" href="/">지금 무료로 플레이 ›</a><nav class="g"><a href="/">게임 시작</a><a href="/guide/">게임 방법</a><a href="/guide/positions">포지션 가이드</a><a href="/guide/faq">자주 묻는 질문</a></nav></main>
 <footer>나의 야구 인생 · 무료 야구 커리어 웹게임 · 등장 인물과 기록은 모두 가상이에요.</footer>
 </body></html>
