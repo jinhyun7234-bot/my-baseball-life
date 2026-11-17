@@ -16203,3 +16203,13 @@ function hofBad857(r){try{return HG857.row(r)}catch(e){return''}}
 if(typeof window!=='undefined')window.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-hof="submit"]');if(!b||typeof ui==='undefined'||!ui||ui.hofBusy)return;let msg='';
   try{if(typeof ME!=='undefined'&&ME&&HG857.name(ME.name))msg='선수 이름에 쓸 수 없는 말이 들어 있어서 온라인 명예의 전당에는 올릴 수 없어요.';else if(HG857.name(ui.hofOwner))msg='닉네임에 쓸 수 없는 말이 들어 있어요. 닉네임을 바꿔서 다시 올려 주세요.'}catch(er){}
   if(!msg)return;e.stopImmediatePropagation();e.preventDefault();ui.hofErr=msg;try{render()}catch(er){}},true);
+
+/* v857u 계약서 서명: 짧게 써도 '서명하고 계약 완료' 버튼이 눌리게
+   예전엔 펜이 지나간 점이 13개를 넘어야 서명으로 쳐서, 짧게 쓱 그은 사인은 버튼이 안 켜졌음
+   → 이제 한 획이라도 그으면(펜이 조금이라도 움직이면) 서명된 걸로 침. 그냥 콕 찍기만 한 건 그어진 게 없어서 그대로 */
+if(typeof setupSig==='function'){const _ss857u=setupSig;setupSig=function(){_ss857u();try{
+  const cv=document.getElementById('sig'),q=nextQ();if(!cv||!q||q.type!=='contract')return;const c=q.c,up=cv.onpointerup;
+  const fin=function(e){if(up)up.call(this,e);
+    if(!c.signed&&Array.isArray(c.sig)&&c.sig.some(s=>s&&s.length>=2)){c.signed=true;try{AU.sfx('pen')}catch(x){}
+      const b=document.getElementById('abar');if(b)b.innerHTML=vBar();try{save()}catch(x){}}};
+  cv.onpointerup=cv.onpointercancel=fin}catch(e){}}}
