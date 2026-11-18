@@ -16592,3 +16592,17 @@ if (typeof vTitle === 'function') {
     return h;
   };
 }
+
+/* v858b PC에서 맨 아래 항목이 진행 버튼에 가려서 못 누르던 것 (유저 메일 제보 11/18: "컴퓨터로 하면 밑에 슈퍼스타?를 진행바 때문에 찍을수가 없습니다")
+   원인: v653 'PC 경기 화면 압축'이 화면 폭 900px 이상이면 모든 화면의 아래 여백을 56px로 줄여 버림
+        → 아래에 고정된 진행 버튼 줄 + 탭 줄(약 112px)보다 여백이 작아서, 목록 맨 끝(능력치 탭 특수능력 '슈퍼스타' 등)이 버튼 뒤에 숨고 스크롤해도 안 올라옴
+   수정: 압축은 경기 화면(필드가 있는 화면)에만 남기고, 나머지 화면은 PC에서도 폰과 같은 아래 여백(160px)으로 */
+(function () {
+  try {
+    if (typeof document === 'undefined') return;
+    const s = document.createElement('style');
+    s.id = 'pcBottomPad858';
+    s.textContent = '@media (min-width:900px){#app:not(:has(.fieldw)){padding-bottom:calc(160px + env(safe-area-inset-bottom,0px))!important}}';
+    document.head.appendChild(s);
+  } catch (e) {}
+})();
