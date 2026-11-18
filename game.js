@@ -16802,3 +16802,60 @@ if (typeof ggProb === 'function') {
     return (typeof p === 'number' && isFinite(p)) ? tail858(p) : p;
   };
 }
+
+/* v858g (11/19 02:41 유저 요청) "돈 조금 많이 써서 노화 살짝 억제해 주는 아이템 사게 해 줘 · 금액에 맞게"
+   · 상점 '장비 · 관리'에 [전담 바디케어 팀 (1년)] — 프로 28세부터 보임 · 1년 단위(다른 관리 서비스처럼 자동 갱신 가능)
+   · 값 = 그해 연봉의 10% (최소 1억) / 1년 — 고정 금액이면 MLB 스타한텐 껌값이고 연봉 낮은 선수한텐 못 사는 값이라, 누구한테나 '조금 많이 쓰는' 느낌이 나게 연봉에 맞춤
+     (연봉 5억 → 1억 · 20억 → 2억 · 30억 → 3억 · MLB 연봉 250억 → 25억 / 갱신할 때마다 그해 연봉으로 다시 계산)
+     참고: 같은 칸의 다른 관리 서비스 — 개인 트레이너 1,800만 · 퍼포먼스 연구소 7억 · 훈련 장비 5,000만
+   · 효과(살짝): 나이 들며 떨어지는 능력치 하락을 20% 덜 (모든 노화 하락 — 달마다 빠지는 능력치·구종 + 나이에 따라 내려가는 성장 한계)
+     하락이 커지는 나이일수록 지켜 주는 양도 자연스럽게 커짐(비율이라 계단 없음) · 30대 전에는 빠지는 게 거의 없어서 효과도 거의 없음 */
+const AGC858G = { id: 'agecare', rate: 0.10, min: 10000, keep: 0.2, from: 28 };
+function agcPrice858g() {
+  try {
+    const sal = S && S.pro && S.pro.salary > 0 ? S.pro.salary : 0;
+    return Math.max(AGC858G.min, Math.round(sal * AGC858G.rate / 1000) * 1000);
+  } catch (e) { return AGC858G.min; }
+}
+(function () {
+  try {
+    if (typeof ITEMS === 'undefined' || ITEMS.some(it => it.id === AGC858G.id)) return;
+    const it = { id: AGC858G.id, n: '전담 바디케어 팀 (1년)', _p0: AGC858G.min, t: 'A', yr: true,
+      d: '트레이너·물리치료사·영양사가 1년 내내 몸 관리 — 나이 들며 떨어지는 능력치 하락 −20% (30대부터 효과) · 값은 연봉의 10% (최소 1억)' };
+    Object.defineProperty(it, 'p', { configurable: true, enumerable: true, get() { return agcPrice858g(); }, set(v) {} });
+    Object.defineProperty(it, 'hide', {
+      configurable: true, enumerable: true,
+      get() { try { return !(S && S.stage === 'pro' && age() >= AGC858G.from); } catch (e) { return true; } },
+      set(v) {}
+    });
+    ITEMS.push(it);
+  } catch (e) {}
+})();
+const agcOn858g = () => { try { return !!(S && ME && S.me === ME && owned(AGC858G.id)); } catch (e) { return false; } };
+/* 달마다 노화 하락(모든 노화 패치를 거친 최종 하락)의 20%를 되돌림 */
+if (typeof agingTick === 'function') {
+  const _ag858g = agingTick;
+  agingTick = function () {
+    const on = agcOn858g();
+    const br = on && ME.r ? { ...ME.r } : null, bp = on && ME.pt ? { ...ME.pt } : null;
+    const out = _ag858g.apply(this, arguments);
+    try {
+      if (on) {
+        const back = (o, b) => { if (!o || !b) return; for (const k in b) { const v0 = b[k], v1 = o[k]; if (typeof v0 === 'number' && typeof v1 === 'number' && v1 < v0) o[k] = v1 + (v0 - v1) * AGC858G.keep; } };
+        back(ME.r, br); back(ME.pt, bp);
+      }
+    } catch (e) {}
+    return out;
+  };
+}
+/* 나이에 따라 내려가는 성장 한계도 20% 덜 내려감 */
+if (typeof ceilAt === 'function') {
+  const _ce858g = ceilAt;
+  ceilAt = function (k) {
+    const c = _ce858g.apply(this, arguments);
+    try {
+      if (agcOn858g() && typeof c === 'number') { const cap = capOf(k); if (c < cap) return cap - (cap - c) * (1 - AGC858G.keep); }
+    } catch (e) {}
+    return c;
+  };
+}
