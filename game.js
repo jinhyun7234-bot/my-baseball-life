@@ -16606,3 +16606,129 @@ if (typeof vTitle === 'function') {
     document.head.appendChild(s);
   } catch (e) {}
 })();
+
+/* v858c (11/18 18:45 · 18:48 유저 요청)
+   ① "피로도 살짝 더 낮추고" — 쌓이는 피로 전체 ×0.93 한 번 더 (v857w ×0.92와 합치면 ×0.856 · 경기 출전분 GLOADK 0.9는 그대로)
+   ② "스텟 95 이상인 거 있으면 반기별로 40퍼 확률로 +2, 26살에서 32살 사이에서만"
+      · 전반기·후반기가 끝날 때(phaseEnd 직후) 화면 기준 95 이상인 능력치마다 따로 40% 확률로 +2 (내부 값 +1.5)
+      · 기준은 장비 보너스를 뺀 순수 능력치 · 구종 완성도 포함 · 최대치(100, 한계 돌파 110)는 안 넘음
+      · 프로(군 복무 중 포함) · 나이 26~32세 (화면에 보이는 나이) · 비시즌(겨울) 턴은 해당 없음
+      · 화면 안내 없음 — 반기 리포트의 능력치 변화에만 그대로 찍힘
+   ③ "마지막에 자산 뜨는 거 지금까지 벌었던 돈 총합으로 해 줘" + "명예의 전당에도 그거 추가, 타자 투수 둘 다"
+      · 들어오는 돈(연봉 · 계약금 · 옵션 · 우승 보너스 · 상금 · 이벤트 수입 · 군 봉급)을 S.earned에 계속 더함 — 고교·대학 용돈은 뺌
+        (S.money가 늘어날 때마다 세는 방식이라 돈 들어오는 곳이 새로 생겨도 자동으로 잡힘)
+      · 은퇴 화면 위 선수 카드의 '자금' 자리 → '통산 수입'
+      · 온라인 명예의 전당 야수·투수 통산 순위에 '통산 수입' 항목 추가 (extra.st.earn · 서버 표 구조는 그대로)
+      · 업데이트 전에 이미 프로였던 커리어는 그 전 수입 기록이 없어서 예전처럼 '자금'으로 보이고 통산 수입 순위에도 안 올라감
+        (총합을 지어내지 않으려고) — 새 커리어 · 아직 고교·대학인 커리어부터 정확하게 집계 */
+
+/* ① 피로 */
+if (typeof fatMul === 'function') {
+  const _fm858c = fatMul;
+  fatMul = function () { return _fm858c.apply(this, arguments) * 0.93; };
+}
+
+/* ② 26~32세 · 95 이상 능력치 반기 보너스 */
+const EL858C = { th: 95, add: 1.5, p: 0.4, a0: 26, a1: 32 };
+function elite858c() {
+  if (!S || !ME || !ME.r) return;
+  if (S.phase !== 1 && S.phase !== 2) return;
+  if (S.stage !== 'pro' && S.stage !== 'mil') return;
+  const a = age();
+  if (!(a >= EL858C.a0 && a <= EL858C.a1)) return;
+  const one = (o, k) => {
+    const v = o[k];
+    if (typeof v !== 'number' || !(v > 0) || DV(v) < EL858C.th - 1e-9) return;
+    const c = capOf(k);
+    if (v >= c) return;
+    if (R() >= EL858C.p) return;
+    o[k] = Math.min(c, v + EL858C.add);
+  };
+  const keys = isP() ? PIT : ['con', 'pow', 'eye', 'vis', 'spd', 'rng', 'fld', 'arm'];
+  keys.forEach(k => { if (k in ME.r) one(ME.r, k); });
+  if (isP() && ME.pt) PITCHES.forEach(k => { if (ME.pt[k] > 0) one(ME.pt, k); });
+}
+if (typeof phaseEnd === 'function') {
+  const _pe858c = phaseEnd;
+  phaseEnd = function () {
+    const out = _pe858c.apply(this, arguments);
+    try { elite858c(); } catch (e) {}
+    return out;
+  };
+}
+
+/* ③ 통산 수입 */
+function earnInst858c() {
+  try {
+    if (!S || typeof S !== 'object') return;
+    const d = Object.getOwnPropertyDescriptor(S, 'money');
+    if (d && d.get && d.get.__e858c) return;
+    let m = d && 'value' in d ? d.value : S.money;
+    if (typeof m !== 'number' || !isFinite(m)) m = 0;
+    if (typeof S.earned !== 'number' || !isFinite(S.earned)) {
+      S.earned = 0;
+      S.earnV = (S.stage === 'hs' || S.stage === 'univ') ? 1 : 0;
+    }
+    const get = function () { return m; };
+    get.__e858c = 1;
+    Object.defineProperty(S, 'money', {
+      configurable: true, enumerable: true, get,
+      set: function (v) {
+        const dd = v - m;
+        m = v;
+        try { if (dd > 0 && isFinite(dd) && this.stage !== 'hs' && this.stage !== 'univ') this.earned = (this.earned || 0) + dd; } catch (e) {}
+      }
+    });
+  } catch (e) {}
+}
+const earnOk858c = () => !!(S && S.earnV === 1 && typeof S.earned === 'number' && isFinite(S.earned));
+if (typeof render === 'function') { const _r858c = render; render = function () { earnInst858c(); return _r858c.apply(this, arguments); }; }
+if (typeof monthStep === 'function') { const _ms858c = monthStep; monthStep = function () { earnInst858c(); return _ms858c.apply(this, arguments); }; }
+if (typeof choose === 'function') { const _ch858c = choose; choose = function () { earnInst858c(); return _ch858c.apply(this, arguments); }; }
+if (typeof income === 'function') { const _in858c = income; income = function () { earnInst858c(); return _in858c.apply(this, arguments); }; }
+
+/* 은퇴 화면 선수 카드: 자금 → 통산 수입 */
+if (typeof header === 'function') {
+  const _hd858c = header;
+  header = function () {
+    let h = _hd858c.apply(this, arguments);
+    try {
+      if (S && S.stage === 'ret' && earnOk858c()) {
+        const a = `<div class="k">${tipB('money', '자금')}</div><div class="v">${money(S.money)}</div>`;
+        if (h.indexOf(a) >= 0) h = h.replace(a, `<div class="k">통산 수입</div><div class="v">${money(S.earned)}</div>`);
+      }
+    } catch (e) {}
+    return h;
+  };
+}
+
+/* 온라인 명예의 전당: 야수·투수 통산 순위에 '통산 수입' */
+if (typeof HOF_CAT === 'object' && HOF_CAT) {
+  ['B', 'P'].forEach(k => { if (Array.isArray(HOF_CAT[k]) && !HOF_CAT[k].some(c => c[0] === 'earn')) HOF_CAT[k].push(['earn', '통산 수입', 0]); });
+}
+if (typeof HOF_XF === 'object' && HOF_XF) HOF_XF.earn = 1;
+if (typeof hofReq === 'function' && typeof HOF_COLS === 'string') {
+  const _hq858c = hofReq;
+  hofReq = function (path, opt) {
+    try {
+      const s = 'select=' + HOF_COLS;
+      if (typeof path === 'string' && path.indexOf(s) >= 0 && path.indexOf('earn:extra') < 0) path = path.replace(s, s + ',earn:extra->st->earn');
+    } catch (e) {}
+    return _hq858c.call(this, path, opt);
+  };
+}
+if (typeof hofFmt === 'function') {
+  const _hf858c = hofFmt;
+  hofFmt = function (r, col, d) {
+    if (String(col).split('@')[0] === 'earn') { const v = r && r.earn; return v == null || !isFinite(+v) ? '-' : money(+v); }
+    return _hf858c.apply(this, arguments);
+  };
+}
+if (typeof hofExtra === 'function') {
+  const _hx858c = hofExtra;
+  hofExtra = function () {
+    const x = _hx858c.apply(this, arguments);
+    try { if (x && earnOk858c()) { x.st = x.st || {}; x.st.earn = Math.round(S.earned); } } catch (e) {}
+    return x;
+  };
+}
