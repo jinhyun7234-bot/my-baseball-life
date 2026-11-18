@@ -3,10 +3,16 @@
   "short_name": "야구 인생",
   "lang": "ko",
   "description": "고교 야구부에서 드래프트, KBO, 메이저리그까지 — 야구 커리어 게임",
+  "id": "/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
+  "categories": [
+    "games",
+    "sports"
+  ],
+  "prefer_related_applications": false,
   "background_color": "#08111f",
   "theme_color": "#08111f",
   "icons": [

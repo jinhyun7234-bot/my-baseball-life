@@ -16544,3 +16544,51 @@ if (typeof recapSlides === 'function') {
     return sl;
   };
 }
+
+/* v858 앱(구글플레이) 준비 (11/18 "앱으로 만들 준비해줘")
+   ① 앱 안에서 열렸는지 판별: 앱(TWA)은 시작 주소를 /?src=twa 로 열고, 처음 열 때 referrer가 android-app:// 로 시작함
+      → 이번 접속 동안 sessionStorage에 기억 (앱은 크롬과 저장소를 같이 써서 localStorage에 두면 웹에서도 앱으로 착각함)
+   ② 앱에서만 '제작자 용돈 주기'(계좌 송금 안내)를 숨김 — 구글플레이 결제 정책상 앱 안에서 개발자 후원을 외부 송금으로 받으면 안 됨. 웹사이트는 그대로
+   ③ 설정·첫 화면 아래에 '개인정보처리방침' 링크 (스토어 등록 필수 · 앱 안에서도 볼 수 있어야 함) */
+const IS_APP858 = (() => {
+  try {
+    const q = /[?&]src=twa(?:&|$)/.test(location.search), r = String(document.referrer || '').indexOf('android-app://') === 0;
+    if (q || r) sessionStorage.setItem('bb_app', '1');
+    return sessionStorage.getItem('bb_app') === '1';
+  } catch (e) { return false; }
+})();
+if (IS_APP858) {
+  try {
+    document.documentElement.classList.add('is-app');
+    const st = document.createElement('style');
+    st.textContent = '.is-app .tip-bar,.is-app .tip-in{display:none!important}';
+    document.head.appendChild(st);
+  } catch (e) {}
+  if (typeof tipOpen === 'function') tipOpen = function () {};
+}
+const PRIVACY_URL858 = '/privacy.html';
+if (typeof vSettings === 'function') {
+  const _vs858 = vSettings;
+  vSettings = function () {
+    let h = _vs858.apply(this, arguments);
+    try {
+      if (h.indexOf('data-pv858') < 0) {
+        const row = `<a class="set-link" data-pv858="1" href="${PRIVACY_URL858}" target="_blank" rel="noopener"><span class="set-ic">🔒</span>개인정보처리방침<span class="set-go">›</span></a>`;
+        const i = h.indexOf('<div class="set-ver">');
+        h = i >= 0 ? h.slice(0, i) + row + h.slice(i) : h + row;
+      }
+    } catch (e) {}
+    return h;
+  };
+}
+if (typeof vTitle === 'function') {
+  const _vt858 = vTitle;
+  vTitle = function () {
+    let h = _vt858.apply(this, arguments);
+    try {
+      if (h.indexOf('data-pv858') < 0 && h.indexOf('<div class="lp-links">') >= 0)
+        h = h.replace('<div class="lp-links">', `<div class="lp-links"><a data-pv858="1" href="${PRIVACY_URL858}" target="_blank" rel="noopener">개인정보처리방침</a>`);
+    } catch (e) {}
+    return h;
+  };
+}
