@@ -603,7 +603,7 @@ function awards(rep){
   /* 개인 타이틀 1개당 MVP·골든글러브 확률 아주 살짝↑ (MVP: WAR +0.12 효과, 골글: WAR +0.08 효과 · 최소 WAR 조건은 그대로) */
   const _top=(c,pt)=>{try{if(S.pro.league!=='KBO')return false;const r=ranking(c,pt).list;return!!(r.length&&(r[0].me||r.some(x=>x.me&&x.v===r[0].v)))}catch(e){return false}};
   const tcnt=isP()?[_top('w',1)&&p.W>0,_top('era',1),_top('k',1)&&p.K>0,_top('sv',1)&&p.SV>0,_top('hld',1)&&p.HLD>0].filter(Boolean).length:[_top('avg',0),_top('hr',0)&&b.HR>0,_top('rbi',0)&&b.RBI>0,_top('sb',0)&&b.SB>0,_top('h',0)&&b.H>0,_top('r',0)&&b.R>0,_top('obp',0),_top('slg',0)].filter(Boolean).length;
-  const mvN=S.awards.filter(a=>a.n==='정규시즌 MVP').length,mvL=S.awards.some(a=>a.n==='정규시즌 MVP'&&a.y===S.y-1);if((isP()?(w+tcnt*.12>rn(6.5+(typeof KPMV853==='number'?KPMV853:0)+(mvL?.45:0)+1.6*(1-Math.exp(-mvN/5)),.7))/* v853: 투수 MVP 문턱(WAR 5.6 계단) 없앰 · 기준선은 KPMV853 */:(b.PA>=400&&mvpM(w,b,'KBO')+tcnt*.12>rn(8.23+(mvL?.45:0)+1.6*(1-Math.exp(-mvN/5)),.7)))){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
+  const mvN=S.awards.filter(a=>a.n==='정규시즌 MVP').length,mvL=S.awards.some(a=>a.n==='정규시즌 MVP'&&a.y===S.y-1);if((isP()?(w+tcnt*.12>rn(6.5+(typeof KPMV853==='number'?KPMV853:0)+(mvL?.45:0)+1.6*(1-Math.exp(-mvN/5)),.7))/* v853: 투수 MVP 문턱(WAR 5.6 계단) 없앰 · 기준선은 KPMV853 */:(b.PA>=400&&mvpM(w,b,'KBO')+tcnt*.12>rn(8.23+(mvL?.45:0)+1.6*(1-Math.exp(-mvN/5)),.7)))&&R()<(typeof mvpGate858==='function'?mvpGate858(isP()?w:mvpM(w,b,'KBO'),isP()):1)/* v858f: 최소 WAR 기준 곡선 */){give('정규시즌 MVP');S.ach.mvp=S.ach.mvp||S.y;S.rel.fame+=8}
   const prior=S.rows.filter(r=>r.lv==='KBO'&&r.y<S.y),priorPA=prior.reduce((s,r)=>s+r.b.PA,0),priorO=prior.reduce((s,r)=>s+r.p.outs,0);
   if(!S.ach.roy&&S.y-S.pro.debut<5&&priorPA<60&&priorO<90&&(b.PA>=150||p.outs>=120)&&w+((typeof ROY853==='object'&&ROY853[isP()?'P':ME.pos])||0)>rn(2.4,.8)){give('신인왕');S.ach.roy=S.y}
   /* v836: 불펜도 압도적인 시즌이면 투수 골든글러브 후보(드묾) · 지명타자로 전향한 해엔 지명타자 부문으로 */if(isP()){const rp=(p.GS||0)<(p.G||0)/2,eraR=p.outs?p.R*27/p.outs:99,prp=rp?.3*sg((w-2.3)/.35)*sg((1.9-eraR)/.2)*sg(((p.SV||0)+(p.HLD||0)*.6-30)/3):0;if((w+.75>3.7&&R()<ggProb(w+.75+tcnt*.08,'P'))||(prp>0&&R()<prp))give('골든글러브 (투수)')}else{const gp=(S.dhConv&&S.y>=S.dhConv)?'DH':ME.pos;if(b.G>=100&&w>(typeof ggLo825==='function'?ggLo825(gp):3.7)&&R()<ggProb(w+tcnt*.08,gp))give(`골든글러브 (${POS[gp]||'지명타자'})`)}
@@ -7636,7 +7636,7 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
   const w=rows.reduce((a,r)=>a+rowWAR(r),0),P=isP(),b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB()),lg=(()=>{try{return mlbSeed().lg==='NL'?'내셔널리그':'아메리칸리그'}catch(e){return'아메리칸리그'}})();
   if(!P&&b.G<100)return;if(S.awards.some(a=>a.y===S.y&&/리그 MVP|사이영/.test(a.n)))return;const got=[];
   const give=n=>{got.push(n);S.awards.push({y:S.y,n});S.rel.fame=cl(S.rel.fame+6,0,100);feat(`${S.y} ${n} 수상`,1)};
-  const pMVP=P||b.PA<450?0:.97/(1+Math.exp(-(mvpM(w,b,'MLB')-9.98)/.55));if(R()<pMVP){give(`${lg} MVP`);S.rel.fame=cl(S.rel.fame+6,0,100)}
+  const pMVP=P||b.PA<450?0:.97/(1+Math.exp(-(mvpM(w,b,'MLB')-9.98)/.55));if(R()<(typeof tail858==='function'?tail858(pMVP):pMVP)/* v858f */){give(`${lg} MVP`);S.rel.fame=cl(S.rel.fame+6,0,100)}
   if(P){const pt=rows.reduce((a,r)=>(addTo(a,r.p),a),blankP()),ip=pt.outs/3,era=pt.outs?Math.round(pt.R*27/pt.outs*100)/100:99,rel=(pt.GS||0)<(pt.G||0)/2;
    let pc=0;
    if(!rel)pc=.95*sg((w-(typeof CYW825==='number'?CYW825:8.25))/.55)*sg((ip-160)/6)*sg((2.9-era)/.15);else pc=.22*sg((w-2.8)/.3)*sg((ip-60)/4)*sg((1.7-era)/.12)*sg(((pt.SV||0)-38)/2); /* v836: 불펜 사이영상 — 압도적 마무리(세이브 45+·ERA 1점대 초반)면 가끔 */
@@ -8165,8 +8165,8 @@ if(typeof CRIT!=='undefined'){CRIT.add('mlbReMinor');CRIT.add('mlbIndy')}
   if(S.awards.some(a=>a.y===S.y&&/골드글러브|실버슬러거/.test(a.n)))return;const b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB());if(b.G<110)return;
   const sp=bWARsplit(b,'MLB'),lg=(()=>{try{return mlbSeed().lg==='NL'?'내셔널리그':'아메리칸리그'}catch(e){return'아메리칸리그'}})(),dh=ME.pos==='DH'||(S.dhConv&&S.y>=S.dhConv),pn=dh?'지명타자':(POS[ME.pos]||'지명타자'),got=[];
   const rel=(typeof fieldOld708==='function'?fieldOld708(b,'MLB'):sp.d-(PADJ[ME.pos]||0)*b.G/140/10*1.08)/({C:.65,'3B':.9,SS:1.3,'2B':1.3,CF:1.2}[ME.pos]||1),ggLo=(GGLO714[ME.pos]??.654),ggT=Math.min(1,Math.max(0,(rel-ggLo)/.3)),pg=dh?0:.9*ggT*ggT*(3-2*ggT),ssLo=SSLO714[dh?'DH':ME.pos]??.85,ssO=b.AB?(b.H+(b.BB||0))/(b.AB+(b.BB||0))+(b.H+(b.D||0)+2*(b.T||0)+3*(b.HR||0))/b.AB:0,ssT=Math.min(1,Math.max(0,(ssO-ssLo)/.12)),ps=b.PA<450?0:.95*ssT*ssT*(3-2*ssT);try{if(globalThis.__awHook)__awHook(ME.pos,rel,ssO,b.PA,dh)}catch(e){}
-  if(R()<pg){const n=`${lg} 골드글러브 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 골드글러브 수상`,1);if(S.celSeen)delete S.celSeen['골드글러브수상'];celebrate('feat','골드글러브 수상',`${S.y} ${lg} · ${pn} 최고의 수비`)}
-  if(R()<ps){const n=`${lg} 실버슬러거 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 실버슬러거 수상`,1);if(S.celSeen)delete S.celSeen['실버슬러거수상'];celebrate('feat','실버슬러거 수상',`${S.y} ${lg} · ${pn} 최고의 타격`)}
+  if(R()<(typeof tail858==='function'?tail858(pg):pg)/* v858f */){const n=`${lg} 골드글러브 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 골드글러브 수상`,1);if(S.celSeen)delete S.celSeen['골드글러브수상'];celebrate('feat','골드글러브 수상',`${S.y} ${lg} · ${pn} 최고의 수비`)}
+  if(R()<(typeof tail858==='function'?tail858(ps):ps)/* v858f */){const n=`${lg} 실버슬러거 (${pn})`;S.awards.push({y:S.y,n});got.push(n);feat(`${S.y} MLB 실버슬러거 수상`,1);if(S.celSeen)delete S.celSeen['실버슬러거수상'];celebrate('feat','실버슬러거 수상',`${S.y} ${lg} · ${pn} 최고의 타격`)}
   if(!got.length)return;S.rel.fame=cl(S.rel.fame+3*got.length,0,100);rep.lines.push(`${got.join(' · ')} 수상!`);news(`${ME.name}, ${got.join(' · ')} 수상.`);
   article(got.length===2?`${ME.name}, ${lg} 골드글러브·실버슬러거 동시 수상`:`${ME.name}, ${got.map(n=>n.replace(/ \(.+\)/,'')).join('·')} 수상`,`${jo(ME.name,'이','가')} ${got.length===2?'공수 겸장으로 인정받았다.':/골드/.test(got[0])?'메이저리그 최고 수준의 수비를 인정받았다.':'메이저리그 최고 수준의 타격을 인정받았다.'}`,'award')}catch(e){}}}
 /* 타이틀 개수 (개인 타이틀 + 골든글러브·골드글러브·실버슬러거) */
@@ -16761,24 +16761,40 @@ try {
   if (typeof TP835 === 'object' && TP835 && !TP835._858d) { TP835.r += 0.07; TP835.k *= 1.0014; TP835.w *= 1.005; TP835.sv *= 1.008; TP835.hld *= 1.007; TP835._858d = 1; }
 } catch (e) {}
 
-/* v858e (11/18 19:45 유저 요청) "mvp도 살짝 더 어렵게 해줘 war 기준" + "실버슬러거랑 골든글러브도 아주 살짝만 더"
-   크기는 v826('수상 기준 살짝 더 높게' — MVP·골든글러브 WAR +0.25~0.4 · 실버슬러거 OPS +.015 · 골드글러브 수비 +.03)을 기준으로 맞춤
-   ※ 19:49 "퍼센트 너무 낮춘 거 같으니 줄인 거의 반 정도만" → 아래 값 전부 처음 올린 폭의 절반으로 (MVP +0.25→+0.125 · 골든글러브 +0.12→+0.06 · 골드글러브 +.015→+.0075 · 실버슬러거 +.007→+.0035)
-   ① MVP(살짝): WAR 기준 +0.125
-      · KBO·MLB 타자: MVP 점수(mvpM)에서 0.125를 뺌 = 같은 시즌이면 WAR 0.125만큼 덜 친 것으로 봄
-      · KBO 투수: 투수 MVP 기준선(KPMV853) +0.125 · MLB 투수는 MVP 대신 사이영상이라 그대로
-   ② KBO 골든글러브(아주 살짝): WAR 기준 +0.06 — 최소 기준·중간 기준 같이, 투수 골든글러브 포함 (GGU827 .3 → .36)
-   ③ MLB 골드글러브(아주 살짝): 포지션별 수비 기준선 +.0075
-      MLB 실버슬러거(아주 살짝): 포지션별 OPS 기준선 +.0035
-   ※ 연속 수상 보정(v809: 같은 상을 여러 번 받으면 기준선이 더 올라가는 것)은 그대로 이 위에 얹힘 */
-if (typeof mvpM === 'function') {
-  const _mv858e = mvpM;
-  mvpM = function () {
-    const v = _mv858e.apply(this, arguments);
-    return (typeof v === 'number' && isFinite(v)) ? v - 0.125 : v;
+/* v858f (11/18 21:10 유저) "아니 확률보다 기준을 올리라는 건데 war 기준을 살짝쿵만"
+   ─ 이전 v858e(19:45 · 19:49)는 곡선 전체를 밀어서(MVP 점수 −0.25 → −0.125, 골든글러브·골드글러브·실버슬러거 기준선 이동) 잘한 시즌 확률까지 같이 내려갔음
+     → 전부 되돌림 (mvpM · KPMV853 · GGU827 · GGLO714 · SSLO714 원래 값)
+   ─ 대신 '받을 수 있는 최소선(기준)'만 살짝 올림 · 계단 말고 곡선으로:
+     원래 확률이 2% 밑이던 턱걸이 시즌 → 0 · 2~12%는 부드럽게 줄어듦 · 12% 넘는 시즌은 원래 확률 그대로
+     · MVP는 이 선을 WAR(기존 포지션 보정 포함)로만 잼 — 타이틀 보너스·연속 수상 보정은 원래 계산에 그대로 있고 최소선엔 안 섞음
+       KBO 타자(유격수 예): 최소 WAR 약 5.9 → 6.1 · WAR 6.7 이상은 원래 확률 / KBO 투수: 7.1 → 7.3 · 7.9 이상 그대로
+       MLB 타자(유격수 예): 5.8 → 6.1 · 7.2 이상 그대로
+     · KBO 골든글러브(투수 포함) · MLB 골드글러브 · MLB 실버슬러거도 같은 규칙
+   (훅 위치: v2_sim.js KBO MVP 조건 · v130_mlbstar.js MLB MVP / 골드글러브 / 실버슬러거 확률 — 'v858f' 주석) */
+function tailF858(p) {
+  if (!(p > 0)) return 0;
+  const t = Math.min(1, Math.max(0, (p - 0.02) / 0.10));
+  return t * t * (3 - 2 * t);
+}
+function tail858(p) { return (p > 0) ? p * tailF858(p) : 0; }
+function nd858(x) {
+  const t = 1 / (1 + 0.2316419 * Math.abs(x)), d = 0.3989423 * Math.exp(-x * x / 2);
+  const q = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  return x > 0 ? 1 - q : q;
+}
+/* KBO MVP: 처음 받는 시즌·타이틀 없음 기준 원래 확률로 최소선 곡선을 정함 (s = 타자는 MVP 점수, 투수는 WAR) */
+function mvpGate858(s, pitcher) {
+  try {
+    if (typeof s !== 'number' || !isFinite(s)) return 1;
+    const mid = pitcher ? 6.5 + (typeof KPMV853 === 'number' ? KPMV853 : 0) : 8.23;
+    return tailF858(nd858((s - mid) / 0.7));
+  } catch (e) { return 1; }
+}
+/* KBO 골든글러브: 확률 함수에 같은 최소선 곡선 */
+if (typeof ggProb === 'function') {
+  const _gg858f = ggProb;
+  ggProb = function () {
+    const p = _gg858f.apply(this, arguments);
+    return (typeof p === 'number' && isFinite(p)) ? tail858(p) : p;
   };
 }
-try { if (typeof KPMV853 === 'number') KPMV853 += 0.125; } catch (e) {}
-try { if (typeof GGU827 === 'number') GGU827 += 0.06; } catch (e) {}
-try { if (typeof GGLO714 === 'object' && GGLO714) for (const k in GGLO714) if (typeof GGLO714[k] === 'number') GGLO714[k] = +(GGLO714[k] + 0.0075).toFixed(5); } catch (e) {}
-try { if (typeof SSLO714 === 'object' && SSLO714) for (const k in SSLO714) if (typeof SSLO714[k] === 'number') SSLO714[k] = +(SSLO714[k] + 0.0035).toFixed(5); } catch (e) {}
