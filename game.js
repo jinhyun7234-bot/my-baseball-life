@@ -7636,7 +7636,7 @@ function nmFull(t){try{if(!t||!S||!ME||!ME.name||ME.name.length!==3)return t;con
   const w=rows.reduce((a,r)=>a+rowWAR(r),0),P=isP(),b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB()),lg=(()=>{try{return mlbSeed().lg==='NL'?'내셔널리그':'아메리칸리그'}catch(e){return'아메리칸리그'}})();
   if(!P&&b.G<100)return;if(S.awards.some(a=>a.y===S.y&&/리그 MVP|사이영/.test(a.n)))return;const got=[];
   const give=n=>{got.push(n);S.awards.push({y:S.y,n});S.rel.fame=cl(S.rel.fame+6,0,100);feat(`${S.y} ${n} 수상`,1)};
-  const pMVP=P||b.PA<450?0:.97/(1+Math.exp(-(mvpM(w,b,'MLB')-9.98)/.55));if(R()<(typeof tail858==='function'?tail858(pMVP):pMVP)/* v858f */){give(`${lg} MVP`);S.rel.fame=cl(S.rel.fame+6,0,100)}
+  const pMVP=P||b.PA<450?0:.97/(1+Math.exp(-(mvpM(w,b,'MLB')-9.98)/.55));if(R()<pMVP*(typeof mvpGate858==='function'?mvpGate858(mvpM(w,b,'MLB'),'MLB'):1)/* v858f: 최소 WAR 기준 곡선 */){give(`${lg} MVP`);S.rel.fame=cl(S.rel.fame+6,0,100)}
   if(P){const pt=rows.reduce((a,r)=>(addTo(a,r.p),a),blankP()),ip=pt.outs/3,era=pt.outs?Math.round(pt.R*27/pt.outs*100)/100:99,rel=(pt.GS||0)<(pt.G||0)/2;
    let pc=0;
    if(!rel)pc=.95*sg((w-(typeof CYW825==='number'?CYW825:8.25))/.55)*sg((ip-160)/6)*sg((2.9-era)/.15);else pc=.22*sg((w-2.8)/.3)*sg((ip-60)/4)*sg((1.7-era)/.12)*sg(((pt.SV||0)-38)/2); /* v836: 불펜 사이영상 — 압도적 마무리(세이브 45+·ERA 1점대 초반)면 가끔 */
@@ -16766,10 +16766,10 @@ try {
      → 전부 되돌림 (mvpM · KPMV853 · GGU827 · GGLO714 · SSLO714 원래 값)
    ─ 대신 '받을 수 있는 최소선(기준)'만 살짝 올림 · 계단 말고 곡선으로:
      원래 확률이 2% 밑이던 턱걸이 시즌 → 0 · 2~12%는 부드럽게 줄어듦 · 12% 넘는 시즌은 원래 확률 그대로
-     · MVP는 이 선을 WAR(기존 포지션 보정 포함)로만 잼 — 타이틀 보너스·연속 수상 보정은 원래 계산에 그대로 있고 최소선엔 안 섞음
-       KBO 타자(유격수 예): 최소 WAR 약 5.9 → 6.1 · WAR 6.7 이상은 원래 확률 / KBO 투수: 7.1 → 7.3 · 7.9 이상 그대로
-       MLB 타자(유격수 예): 5.8 → 6.1 · 7.2 이상 그대로
-     · KBO 골든글러브(투수 포함) · MLB 골드글러브 · MLB 실버슬러거도 같은 규칙
+     · MVP(살짝쿵)는 WAR로 잼(기존 포지션 보정 포함 · 타이틀 보너스·연속 수상 보정은 원래 계산에 그대로, 최소선엔 안 섞음):
+       원래 곡선에서 확률 0.5%가 되던 WAR + 0.2 아래는 0 → 거기서 WAR 0.6 구간 동안 부드럽게 원래 확률로 돌아감 → 그 위는 그대로
+       KBO 타자(유격수 예): WAR 5.9 밑 0 · 6.5 이상 그대로 / KBO 투수: 7.15 밑 0 · 7.75 이상 그대로 / MLB 타자(유격수 예): 5.6 밑 0 · 6.2 이상 그대로
+     · KBO 골든글러브(투수 포함) · MLB 골드글러브 · MLB 실버슬러거(아주 살짝): 원래 확률 2% 밑 0 · 2~12% 부드럽게 · 12% 넘으면 그대로
    (훅 위치: v2_sim.js KBO MVP 조건 · v130_mlbstar.js MLB MVP / 골드글러브 / 실버슬러거 확률 — 'v858f' 주석) */
 function tailF858(p) {
   if (!(p > 0)) return 0;
@@ -16782,12 +16782,16 @@ function nd858(x) {
   const q = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
   return x > 0 ? 1 - q : q;
 }
-/* KBO MVP: 처음 받는 시즌·타이틀 없음 기준 원래 확률로 최소선 곡선을 정함 (s = 타자는 MVP 점수, 투수는 WAR) */
-function mvpGate858(s, pitcher) {
+/* MVP 최소선 곡선 (s = 타자는 MVP 점수(WAR+포지션 보정), 투수는 WAR · kind: true=KBO 투수, false=KBO 타자, 'MLB'=MLB 타자)
+   z0 = 원래 곡선(처음 받는 시즌·타이틀 없음)에서 확률 0.5%가 되는 값 → z0+0.2 밑은 0, z0+0.8부터 원래 확률 */
+function mvpGate858(s, kind) {
   try {
     if (typeof s !== 'number' || !isFinite(s)) return 1;
-    const mid = pitcher ? 6.5 + (typeof KPMV853 === 'number' ? KPMV853 : 0) : 8.23;
-    return tailF858(nd858((s - mid) / 0.7));
+    let z0;
+    if (kind === 'MLB') z0 = 9.98 - 0.55 * Math.log(0.97 / 0.005 - 1);
+    else z0 = (kind === true ? 6.5 + (typeof KPMV853 === 'number' ? KPMV853 : 0) : 8.23) - 0.7 * 2.5758;
+    const t = Math.min(1, Math.max(0, (s - (z0 + 0.2)) / 0.6));
+    return t * t * (3 - 2 * t);
   } catch (e) { return 1; }
 }
 /* KBO 골든글러브: 확률 함수에 같은 최소선 곡선 */
