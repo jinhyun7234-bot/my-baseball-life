@@ -7917,17 +7917,18 @@ if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e
 {const _ly=lpYear;lpYear=function(){_ly();try{const P=S.lp.filter(p=>p.k!=='B'),B=S.lp.filter(p=>p.k==='B');const mean=(a,k)=>a.reduce((s,p)=>s+p[k],0)/Math.max(1,a.length);
   const mp=mean(P,'r');P.forEach(p=>{p.r=cl(p.r-(mp-56.6)*.85,40,70)});
   [['con',54.4],['pow',51.4],['eye',52.2]].forEach(([k,t])=>{const m=mean(B,k);B.forEach(p=>{p[k]=cl(p[k]-(m-t)*.85,28,79)})})}catch(e){}}}
+/* v858d: MLB 개인 타이틀 기준선 아주아주 살짝 더↑ (약 0.5% — 홈런 +0.25 · 타점 +0.6 · 도루 +0.25 · 안타 +1 · 득점 +0.6 · 타율·출루율 +.0005 · 장타율 +.003 / 승 +0.1 · ERA −0.01 · 탈삼진 +1.2 · 세이브·홀드 +0.2) — 타이틀 성장 포인트 +5로 올린 만큼 */
 /* v857v: MLB 개인 타이틀 기준선 아주 살짝 더↑ (평균 약 1% — 홈런 +0.5 · 타점 +1.2 · 도루 +0.5 · 안타 +1.9 · 득점 +1.3 · 타율 +.0015 · 출루율 +.0015 · 장타율 +.0025 / 승 +0.2 · ERA −0.02 · 탈삼진 +2.5 · 세이브 +0.5 · 홀드 +0.3) */
 /* MLB 개인 타이틀 (리그 1위 기준선과 비교) — v835: 기준선 살짝↑ (홈런 +1.5 · 타점 +2 · 도루 +1.5 · 안타 +1.5 · 득점 +1.5 · 타율·출루율 +.002 · 장타율 +.005 / 투수 승 +0.5 · ERA −0.05 · 탈삼진 +3 · 세이브·홀드 +1) */
 {const _aw=awards;awards=function(rep){_aw(rep);try{if(!(S.stage==='pro'&&S.pro&&S.pro.league==='MLB'))return;const rows=S.rows.filter(r=>r.y===S.y&&r.lv==='MLB');if(!rows.length)return;
   if(S.awards.some(a=>a.y===S.y&&/^MLB (다승|평균자책|탈삼진|세이브|홀드|홈런|타격|타점|도루|최다안타|득점|출루율|장타율)/.test(a.n)))return;const P=isP(),got=[];
   const give=n=>{got.push(n);S.awards.push({y:S.y,n:'MLB '+n});S.rel.fame=cl(S.rel.fame+3,0,100);feat(`${S.y} MLB ${n} 타이틀 획득`,1)};
   if(P){const p=rows.reduce((a,r)=>(addTo(a,r.p),a),blankP()),ip=p.outs/3,era=p.outs?p.R*27/p.outs:99;
-    const eP=typeof lgEnv==='function'?lgEnv('MLB'):0;if(p.W>=Math.round(rn(18.8,1.7)))give('다승왕');if(ip>=162&&era<=rn(2.40,.34)+eP*.18)give('평균자책점왕');if(p.K>=Math.round(rn(249.5,18)*(1-eP*.03)))give('탈삼진왕');const ML=(S.mlbLead=S.mlbLead||{})[S.y]||(S.mlbLead[S.y]={sv:Math.round(rn(44,4.5)),hd:Math.round(rn(32.8,4.5))});/* v857: 실제 MLB 리그 1위 분포(MLB 공식 기록) — 다승 18.6±1.7 · 평균자책(실점 기준) 2.42±.34 · 탈삼진 247±18(2021~2025) · 세이브 43.5±4.5 · 홀드 32.5±4.5 */if((p.SV||0)>=ML.sv)give('세이브왕');if((p.HLD||0)>=ML.hd)give('홀드왕')}
+    const eP=typeof lgEnv==='function'?lgEnv('MLB'):0;if(p.W>=Math.round(rn(18.9,1.7)))give('다승왕');if(ip>=162&&era<=rn(2.39,.34)+eP*.18)give('평균자책점왕');if(p.K>=Math.round(rn(250.7,18)*(1-eP*.03)))give('탈삼진왕');const ML=(S.mlbLead=S.mlbLead||{})[S.y]||(S.mlbLead[S.y]={sv:Math.round(rn(44.2,4.5)),hd:Math.round(rn(33,4.5))});/* v857: 실제 MLB 리그 1위 분포(MLB 공식 기록) — 다승 18.6±1.7 · 평균자책(실점 기준) 2.42±.34 · 탈삼진 247±18(2021~2025) · 세이브 43.5±4.5 · 홀드 32.5±4.5 */if((p.SV||0)>=ML.sv)give('세이브왕');if((p.HLD||0)>=ML.hd)give('홀드왕')}
   else{const b=rows.reduce((a,r)=>(addTo(a,r.b),a),blankB()),avg=b.AB?b.H/b.AB:0;
     const obp=b.PA?(b.H+b.BB)/b.PA:0,slg=b.AB?(b.H+(b.D||0)+2*(b.T||0)+3*b.HR)/b.AB:0,q=b.PA>=502;
-    const eV=typeof lgEnv==='function'?lgEnv('MLB'):0;if(q&&avg>=rn(.3325,.012)+eV*.008)give('타격왕');if(b.HR>=Math.round(rn(50.5,6.5)*(1+eV*.09)))give('홈런왕');if(b.RBI>=Math.round(rn(128.2,8.5)*(1+eV*.04)))give('타점왕');if(b.SB>=Math.round(rn(48.5,12)))give('도루왕');/* v857: 실제 MLB 리그 1위 분포 — 타율 .331±.012 · 홈런 50±6.5 · 타점 127±8.5 · 도루 48±12 · 안타 198.5±10.5 · 득점 128.5±9 · 출루율 .425±.022 · 장타율 .633±.034 */
-    if(b.H>=Math.round(rn(200.4,10.5)*(1+eV*.02)))give('최다안타');if(b.R>=Math.round(rn(129.8,9)*(1+eV*.04)))give('득점왕');if(q&&obp>=rn(.4265,.022)+eV*.008)give('출루율왕');if(q&&slg>=rn(.6355,.034)+eV*.02)give('장타율왕')}
+    const eV=typeof lgEnv==='function'?lgEnv('MLB'):0;if(q&&avg>=rn(.333,.012)+eV*.008)give('타격왕');if(b.HR>=Math.round(rn(50.75,6.5)*(1+eV*.09)))give('홈런왕');if(b.RBI>=Math.round(rn(128.8,8.5)*(1+eV*.04)))give('타점왕');if(b.SB>=Math.round(rn(48.75,12)))give('도루왕');/* v857: 실제 MLB 리그 1위 분포 — 타율 .331±.012 · 홈런 50±6.5 · 타점 127±8.5 · 도루 48±12 · 안타 198.5±10.5 · 득점 128.5±9 · 출루율 .425±.022 · 장타율 .633±.034 */
+    if(b.H>=Math.round(rn(201.4,10.5)*(1+eV*.02)))give('최다안타');if(b.R>=Math.round(rn(130.4,9)*(1+eV*.04)))give('득점왕');if(q&&obp>=rn(.427,.022)+eV*.008)give('출루율왕');if(q&&slg>=rn(.6385,.034)+eV*.02)give('장타율왕')}
   if(!got.length)return;rep.lines.push(`MLB ${got.join('·')} 타이틀 획득!`);{const ex=got.length>1?got.map(n=>'MLB '+n):[];ex._gx=4*got.length;celebrate('crown',got.length>1?`MLB ${got.length}관왕`:`MLB ${got[0]}`,`${S.y} 메이저리그 개인 타이틀${got.length>1?' · '+got.join('·'):''}`,ex)}news(`${ME.name}, ${S.y} 메이저리그 ${got.join('·')} 차지`);
   /* v673: 트리플 크라운 별도 축하 X — n관왕 화면으로 통일 */
   article(`${ME.name}, 메이저리그 ${got.join('·')} 등극`,`${jo(ME.name,'이','가')} 올 시즌 메이저리그 ${got.join(', ')} 타이틀을 거머쥐었다.`,'award')}catch(e){}}}
@@ -16732,3 +16733,30 @@ if (typeof hofExtra === 'function') {
     return x;
   };
 }
+
+/* v858d (11/18 19:39 · 19:40 유저 요청) "타이틀 받을 때 성장 포인트 +5로 하자" + "그만큼 타이틀 기준 아주아주 살짝만 올리고"
+   ① KBO·MLB 개인 타이틀 축하 화면의 성장 포인트: 타이틀 1개당 +5 (2관왕 +10 · 3관왕 +15)
+      예전엔 코드상 4였지만 성장 포인트 공통 배율(XPS ×0.8, 반올림)을 거쳐 실제로는 +3이었음 → 이번엔 화면에 찍히는 값이 정확히 5의 배수가 되게 맞춤
+   ② KBO 타이틀 기준 아주아주 살짝↑ — 타이틀은 NPC 리그 1위와 비교하니, 순위표와 어긋나지 않게 NPC 보정(v835 → v857v)을 한 번 더 조금 올림
+      v857v 한 단계('아주 살짝')의 70% 크기: 타자 컨택 +.07 · 파워 +.26 · 선구안 +.05 · 도루 ×1.008 / 투수 구위 +.07 · 탈삼진 ×1.0014 · 승 ×1.005 · 세이브 ×1.008 · 홀드 ×1.007
+      → 적용 후 값: 타자 컨택 +.47 · 파워 +1.73 · 선구안 +.32 · 도루 ×1.117 / 투수 구위 +.47 · 탈삼진 ×.993 · 승 ×1.230 · 세이브 ×1.056 · 홀드 ×.981
+        (도루·탈삼진·승·홀드 배율은 v168에서 실제 KBO 리그 1위 분포에 맞춰 둔 값 위에 곱해진 것)
+      (v835 측정값 비례로 1위 기록이 대략 타율 +.0005 · 홈런 +0.3 · 타점 +0.6 · 안타 +0.2 · 득점 +0.35 · 도루 +0.45 / ERA −0.005 · 탈삼진 +0.5 · 승 +0.1 · 세이브·홀드 +0.3 오르는 수준)
+      ※ 처음엔 값을 덮어써서 v857v가 올려 둔 것보다 오히려 낮아지는 실수가 있었음 → 지금처럼 '현재 값에 더하기'로 고침
+      MLB 타이틀 기준선은 v130_mlbstar.js 안의 값을 직접 약 0.5%씩 올림 (그 자리에 v858d 주석) */
+if (typeof celebrate === 'function') {
+  const _cel858d = celebrate;
+  celebrate = function (kind, title, sub, extra) {
+    try {
+      if (kind === 'crown' && extra && extra._gx != null && /타이틀/.test(String(sub || ''))) {
+        const n = Math.max(1, Math.round(extra._gx / 4));
+        extra._gx = Math.ceil((5 * n - 0.5) / 0.8);
+      }
+    } catch (e) {}
+    return _cel858d.apply(this, arguments);
+  };
+}
+try {
+  if (typeof TB835 === 'object' && TB835 && !TB835._858d) { TB835.con += 0.07; TB835.pow += 0.26; TB835.eye += 0.05; TB835.sb *= 1.008; TB835._858d = 1; }
+  if (typeof TP835 === 'object' && TP835 && !TP835._858d) { TP835.r += 0.07; TP835.k *= 1.0014; TP835.w *= 1.005; TP835.sv *= 1.008; TP835.hld *= 1.007; TP835._858d = 1; }
+} catch (e) {}
