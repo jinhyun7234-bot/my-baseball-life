@@ -16760,3 +16760,24 @@ try {
   if (typeof TB835 === 'object' && TB835 && !TB835._858d) { TB835.con += 0.07; TB835.pow += 0.26; TB835.eye += 0.05; TB835.sb *= 1.008; TB835._858d = 1; }
   if (typeof TP835 === 'object' && TP835 && !TP835._858d) { TP835.r += 0.07; TP835.k *= 1.0014; TP835.w *= 1.005; TP835.sv *= 1.008; TP835.hld *= 1.007; TP835._858d = 1; }
 } catch (e) {}
+
+/* v858e (11/18 19:45 유저 요청) "mvp도 살짝 더 어렵게 해줘 war 기준" + "실버슬러거랑 골든글러브도 아주 살짝만 더"
+   크기는 v826('수상 기준 살짝 더 높게' — MVP·골든글러브 WAR +0.25~0.4 · 실버슬러거 OPS +.015 · 골드글러브 수비 +.03)을 기준으로 맞춤
+   ① MVP(살짝): WAR 기준 +0.25
+      · KBO·MLB 타자: MVP 점수(mvpM)에서 0.25를 뺌 = 같은 시즌이면 WAR 0.25만큼 덜 친 것으로 봄
+      · KBO 투수: 투수 MVP 기준선(KPMV853) +0.25 · MLB 투수는 MVP 대신 사이영상이라 그대로
+   ② KBO 골든글러브(아주 살짝): WAR 기준 +0.12 (v826 '살짝'의 절반) — 최소 기준·중간 기준 같이, 투수 골든글러브 포함 (GGU827 .3 → .42)
+   ③ MLB 골드글러브(아주 살짝): 포지션별 수비 기준선 +.015 (v826 '살짝' +.03의 절반)
+      MLB 실버슬러거(아주 살짝): 포지션별 OPS 기준선 +.007 (v826 '살짝' +.015의 절반)
+   ※ 연속 수상 보정(v809: 같은 상을 여러 번 받으면 기준선이 더 올라가는 것)은 그대로 이 위에 얹힘 */
+if (typeof mvpM === 'function') {
+  const _mv858e = mvpM;
+  mvpM = function () {
+    const v = _mv858e.apply(this, arguments);
+    return (typeof v === 'number' && isFinite(v)) ? v - 0.25 : v;
+  };
+}
+try { if (typeof KPMV853 === 'number') KPMV853 += 0.25; } catch (e) {}
+try { if (typeof GGU827 === 'number') GGU827 += 0.12; } catch (e) {}
+try { if (typeof GGLO714 === 'object' && GGLO714) for (const k in GGLO714) if (typeof GGLO714[k] === 'number') GGLO714[k] = +(GGLO714[k] + 0.015).toFixed(4); } catch (e) {}
+try { if (typeof SSLO714 === 'object' && SSLO714) for (const k in SSLO714) if (typeof SSLO714[k] === 'number') SSLO714[k] = +(SSLO714[k] + 0.007).toFixed(4); } catch (e) {}
