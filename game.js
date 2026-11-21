@@ -16934,7 +16934,10 @@ if (typeof choose === 'function') {
     / 연애·결혼이 수동적 — 호감 쌓기 어렵게, 이벤트 더, 상점 '연인에게 선물하기', 연애·결혼 성장 포인트↑ / 결혼했는데 '여친 있냐' 댓글 어색"
    + 유저: "첨에 기본 스텟은 유지하되 10점 정돈 골라서 넣을 수 있게 · 안 고르고 넘어가면 안 되게 · 자동 배정도"
 
-   ① 선수 만들기: 굴린 기본 능력치(체형·포지션 보너스 포함)는 그대로 + 보너스 포인트 10점(표시 기준 1점 = 능력치 +1)을 직접 배분
+   ① 선수 만들기: 배분 가능 포인트 10점(표시 기준 1점 = 능력치 +1)을 직접 배분
+      · v858m (23:28 유저 "보너스 포인트 말고 배분 가능한 포인트 · 10점으로 · 저번 패치랑 총합 스탯 일정하게"):
+        시작 총합(표시 기준 타자 553 · 투수 425)은 그대로 — 랜덤으로 굴리는 몫을 10점 줄이고(543 · 415) 그 10점을 유저가 배분
+        포인트는 항상 10점 (은퇴 보너스는 시작 성장 포인트로만)
       · 능력치 8~7개 + 워크에식·멘탈·내구성에 넣을 수 있음 (구종 X) · 한 능력치 상한(생성 상한)까지
       · 다 나누기 전엔 시작 버튼이 안 눌림(안내 + 카드로 스크롤) · [자동 배정] = 포지션 요구 툴·체형 쪽으로 곡선 가중치(한 곳 몰빵 X) · [초기화]
       · 다시 굴리기 해도 배분은 유지 (상한을 넘게 되면 넘는 만큼 돌려받음)
@@ -16955,7 +16958,8 @@ function legGet858() { try { const v = JSON.parse(localStorage.getItem(LEG858K) 
 function legSet858(v) { try { if (v) localStorage.setItem(LEG858K, JSON.stringify(v)); else localStorage.removeItem(LEG858K); } catch (e) {} }
 function legCalc858(score) {
   const s = +score || 0;
-  return { pts: Math.round(knot(s, [30, 60, 90, 120, 160], [0, 1, 2, 4, 5])), xp: Math.round(knot(s, [30, 60, 90, 120, 160], [0, 3, 6, 10, 12])) };
+  /* v858m: 생성 포인트는 항상 10점 → 은퇴 보너스는 시작 성장 포인트로만 (예전 포인트 몫을 성장 포인트로 합침) */
+  return { pts: 0, xp: Math.round(knot(s, [30, 60, 90, 120, 160], [0, 5, 10, 18, 22])) };
 }
 if (typeof retire === 'function') {
   const _rt858k = retire;
@@ -16965,7 +16969,7 @@ if (typeof retire === 'function') {
       if (S && S.ended && !S.leg858) {
         const g = legCalc858(S.ended.score);
         S.leg858 = g;
-        legSet858(g.pts || g.xp ? { pts: g.pts, xp: g.xp, name: ME.name, score: S.ended.score, y: S.ended.y } : null);
+        legSet858(g.xp ? { pts: g.pts, xp: g.xp, name: ME.name, score: S.ended.score, y: S.ended.y } : null);
       }
     } catch (e) {}
     return out;
@@ -16978,15 +16982,17 @@ if (typeof vRetCard === 'function') {
     let h = _vr858k.apply(this, arguments);
     try {
       const g = S && S.leg858;
-      if (g) h += `<div class="card leg858"><span class="lbl">🎖️ 다음 선수 은퇴 보너스</span><div class="small">${g.pts || g.xp ? `새 선수를 만들 때 <b>보너스 포인트 +${g.pts}</b> · <b>시작 성장 포인트 +${g.xp}P</b>` : '이번 커리어는 보너스가 없어요. 다음 선수는 더 길게!'}</div></div>`;
+      if (g) h += `<div class="card leg858"><span class="lbl">🎖️ 다음 선수 은퇴 보너스</span><div class="small">${g.xp ? `새 선수를 만들면 <b>시작 성장 포인트 +${g.xp}P</b>` : '이번 커리어는 보너스가 없어요. 다음 선수는 더 길게!'}</div></div>`;
     } catch (e) {}
     return h;
   };
 }
 
-/* ---------- ① 선수 만들기: 보너스 포인트 배분 ---------- */
+/* ---------- ① 선수 만들기: 배분 가능 포인트 ---------- */
+/* v858m: 시작 총합 유지 — 랜덤 배분 몫에서 10점을 빼 두고(아래 buildMe 이전 단계 v851 총합) 유저가 그 10점을 배분 */
+try { if (typeof ST851 === 'object' && ST851 && !ST851._858m) { ST851.B.T -= 10; ST851.P.T -= 10; ST851._858m = 1; } } catch (e) {}
 const CR858K = { base: 10, perD: 0.75 }; /* 표시 1점 = 내부 0.75 */
-function crPool858(cr) { const L = legGet858(); return CR858K.base + (L && L.pts ? L.pts : 0); }
+function crPool858(cr) { return CR858K.base; }
 function crUsed858(cr) { const a = (cr && cr.al858) || {}; let s = 0; for (const k in a) s += a[k] || 0; return s; }
 function crLeft858(cr) { return Math.max(0, crPool858(cr) - crUsed858(cr)); }
 const crHi858 = (P, k) => (['we', 'men', 'dur'].includes(k) ? 80 : (P && k === 'velo') ? 52 : 60);
@@ -17059,10 +17065,10 @@ function crAuto858(cr) {
       const P = cr.type === 'P', me = ME, left = crLeft858(cr), pool = crPool858(cr), al = cr.al858, L = legGet858();
       const okKeys = [...Object.keys(me.r).filter(k => !(me.pt && k in me.pt)), 'we', 'men', 'dur'];
       /* 남은 포인트 + 버튼 */
-      const head = `<div class="crpt858${ui.crWarn858 && left > 0 ? ' hot' : ''}" id="crpt858"><div class="row"><span class="sp" style="white-space:nowrap">남은 포인트 <b class="num">${left}</b><span class="tiny muted"> / ${pool}</span></span>`
+      const head = `<div class="crpt858${ui.crWarn858 && left > 0 ? ' hot' : ''}" id="crpt858"><div class="row"><span class="sp" style="white-space:nowrap">배분 가능 포인트 <b class="num">${left}</b></span>`
         + `<button class="btn xs" data-c858="reset" ${crUsed858(cr) ? '' : 'disabled'}>초기화</button><button class="btn xs ${left ? 'pri' : ''}" data-c858="auto" ${left ? '' : 'disabled'}>자동 배정</button></div>`
         + `<div class="tiny muted">${left ? '원하는 능력치 옆 ＋를 눌러 나눠주세요. 다 나눠야 커리어를 시작할 수 있어요.' : '배분 완료! 바꾸고 싶으면 －로 빼서 다시 넣을 수 있어요.'}</div>`
-        + (L && (L.pts || L.xp) ? `<div class="tiny leg">🎖️ ${esc(L.name || '이전 선수')} 은퇴 보너스: 포인트 +${L.pts || 0} · 시작 성장 포인트 +${L.xp || 0}P</div>` : '') + `</div>`;
+        + (L && L.xp ? `<div class="tiny leg">🎖️ ${esc(L.name || '이전 선수')} 은퇴 보너스: 시작 성장 포인트 +${L.xp || 0}P</div>` : '') + `</div>`;
       h = h.replace(/(<button class="btn sm" data-act="reroll">[^<]*<\/button><\/div>)/, '$1' + head);
       /* 줄마다 ± 버튼 */
       for (const k of okKeys) {
@@ -17085,7 +17091,7 @@ function crAuto858(cr) {
   const _vb858k = vBar;
   vBar = function () {
     const h = _vb858k.apply(this, arguments);
-    try { if (!S && ui.cr && h.includes('data-act="start"')) { const left = crLeft858(ui.cr); if (left > 0) return h.replace(/(data-act="start"[^>]*>)[^<]*/, `$1보너스 포인트 ${left}점을 먼저 나눠주세요`); } } catch (e) {}
+    try { if (!S && ui.cr && h.includes('data-act="start"')) { const left = crLeft858(ui.cr); if (left > 0) return h.replace(/(data-act="start"[^>]*>)[^<]*/, `$1배분 가능 포인트 ${left}점을 먼저 나눠주세요`); } } catch (e) {}
     return h;
   };
 }
@@ -17099,7 +17105,7 @@ function crAuto858(cr) {
       if (L && S && ME) {
         if (L.xp) ME.xp += L.xp;
         S.legUsed858 = { pts: L.pts || 0, xp: L.xp || 0, name: L.name || '' };
-        if (L.xp || L.pts) news(`${L.name ? L.name + ' ' : '이전 선수 '}은퇴 보너스로 시작한다. (보너스 포인트 +${L.pts || 0} · 성장 포인트 +${L.xp || 0}P)`);
+        if (L.xp) news(`${L.name ? L.name + ' ' : '이전 선수 '}은퇴 보너스로 시작한다. (성장 포인트 +${L.xp || 0}P)`);
         legSet858(null);
       }
     } catch (e) {}
@@ -17115,7 +17121,7 @@ if (typeof document !== 'undefined') {
     if (left > 0) {
       e.stopPropagation(); e.preventDefault();
       ui.crWarn858 = true;
-      try { toast(`보너스 포인트 ${left}점이 남았어요! ＋로 나누거나 [자동 배정]을 눌러주세요.`); } catch (x) { render(); }
+      try { toast(`배분 가능 포인트 ${left}점이 남았어요! ＋로 나누거나 [자동 배정]을 눌러주세요.`); } catch (x) { render(); }
       setTimeout(() => { const w = document.getElementById('crpt858'); if (w) w.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 60);
     }
   }, true);
