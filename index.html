@@ -82,7 +82,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <meta name="keywords" content="야구 게임, 야구 커리어 게임, 야구 키우기, 선수 키우기, KBO 게임, 메이저리그 게임, 웹게임, 무료 야구 게임, 나의 야구 인생">
 <meta name="robots" content="index,follow">
 <meta name="google-adsense-account" content="ca-pub-3465691810518050">
-<script>/* v858h 애드센스: 웹에서만 불러옴 · 앱(TWA, ?src=twa 또는 android-app:// 로 열림)에선 안 불러옴 (구글은 앱 광고엔 AdMob 권장) */(function(){try{var a=/[?&]src=twa(&|$)/.test(location.search)||String(document.referrer||'').indexOf('android-app://')===0;if(a){try{sessionStorage.setItem('bb_app','1')}catch(e){}return}try{if(sessionStorage.getItem('bb_app')==='1')return}catch(e){}var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3465691810518050';document.head.appendChild(s)}catch(e){}})();</script>
+<script>/* v858h 애드센스: 웹에서만 불러옴 · 앱(TWA, ?src=twa 또는 android-app:// 로 열림)에선 안 불러옴 (구글은 앱 광고엔 AdMob 권장) */(function(){try{var a=/[?&]src=twa(&|$)/.test(location.search)||String(document.referrer||'').indexOf('android-app://')===0;if(a){try{sessionStorage.setItem('bb_app','1')}catch(e){}return}try{if(sessionStorage.getItem('bb_app')==='1')return}catch(e){}var s=document.createElement('script');s.async=true;s.crossOrigin='anonymous';s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3465691810518050';document.head.appendChild(s);window.__bbAds=1}catch(e){}})();</script>
 <meta name="naver-site-verification" content="437dbeb6d58a898d36e2c509c93a80c8e22dc04c" />
 <meta name="naver-site-verification" content="2368a17c8f6fab50a479f7f331d2f378169dfb0f" />
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "나의 야구 인생", "alternateName": ["나의야구인생", "야구 인생 게임"], "url": "https://my-baseball-life.com/", "inLanguage": "ko", "sameAs": ["https://www.instagram.com/my_baseball_life7234/"]}</script>
@@ -1313,5 +1313,57 @@ navigator.serviceWorker.addEventListener('controllerchange',function(){if(!had||
  try{var t=document.createElement('div');t.textContent='새 버전이 준비됐어요 · 다음에 열면 적용돼요';t.style.cssText='position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9999;background:rgba(17,24,39,.92);color:#fff;font-size:13px;padding:9px 14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.3);transition:opacity .4s';document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove()},500)},4000)}catch(e){}});
 })();
 </script>
+<script>/* v858i (11/21 22:01 유저) "내 웹사이트 오른쪽 왼쪽에 빈칸이 많아서 광고 배너 넣고 싶은디"
+   PC처럼 화면이 넓을 때만 게임 화면(가운데 최대 640px — 첫 화면 560 · 게임 안 640) 양옆 빈칸에 세로 배너 2개 (애드센스 광고 단위 '사이드배너 왼쪽/오른쪽')
+   · 화면 폭 1340px 이상이면 300×600, 1044px 이상이면 160×600, 그보다 좁으면(폰·태블릿 세로) 안 보임
+   · 세로 높이가 짧은 화면이면 높이를 줄임(최소 250) · 아래 고정 진행 버튼+탭 줄(약 110px)과 안 겹치게 그 위에서 가운데
+   · 게임 화면·버튼은 하나도 안 가림 (z-index 0 · 팝업/시트가 뜨면 그 아래로 깔림)
+   · 앱(TWA)에선 광고 스크립트 자체를 안 불러오니 여기서도 아무것도 안 함 (window.__bbAds 없음)
+   · 광고가 안 채워지면(승인 전·광고 없음) 빈 투명 칸이라 눈에 안 띔 */
+(function () {
+  var C = 'ca-pub-3465691810518050', SLOT = { L: '9876962697', R: '1212004613' }, MID = 320, GAP = 24, BAR = 110;
+  var made = null;
+  function size() {
+    var W = window.innerWidth, H = window.innerHeight, side = W / 2 - MID;
+    var w = side >= 300 + GAP + 16 ? 300 : side >= 160 + GAP + 8 ? 160 : 0;
+    var h = Math.min(600, H - BAR - 32);
+    if (h < 250) w = 0;
+    return { w: w, h: h, top: Math.max(16, Math.round((H - BAR - h) / 2)) };
+  }
+  function place() {
+    try {
+      var s = size();
+      if (!made) {
+        if (!s.w || !window.__bbAds) return;
+        var css = document.createElement('style');
+        css.textContent = '.bbrail{position:fixed;z-index:0;pointer-events:auto;overflow:hidden}.bbrail ins{display:block}';
+        document.head.appendChild(css);
+        made = { w: s.w, h: s.h, el: {} };
+        ['L', 'R'].forEach(function (k) {
+          var d = document.createElement('div');
+          d.className = 'bbrail bbrail-' + k;
+          d.setAttribute('aria-label', '광고');
+          var ins = document.createElement('ins');
+          ins.className = 'adsbygoogle';
+          ins.style.cssText = 'display:inline-block;width:' + s.w + 'px;height:' + s.h + 'px';
+          ins.setAttribute('data-ad-client', C);
+          ins.setAttribute('data-ad-slot', SLOT[k]);
+          d.appendChild(ins);
+          document.body.insertBefore(d, document.body.firstChild);
+          made.el[k] = d;
+          try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+        });
+      }
+      /* 이미 만든 배너 크기는 그대로 · 창을 줄여서 자리가 모자라면 숨김 */
+      var side = window.innerWidth / 2 - MID, ok = side >= made.w + GAP + 8 && window.innerHeight - BAR - 32 >= Math.min(made.h, 250);
+      var top = Math.max(16, Math.round((window.innerHeight - BAR - made.h) / 2));
+      made.el.L.style.cssText = 'display:' + (ok ? 'block' : 'none') + ';top:' + top + 'px;left:calc(50% - ' + (MID + GAP + made.w) + 'px);width:' + made.w + 'px;height:' + made.h + 'px';
+      made.el.R.style.cssText = 'display:' + (ok ? 'block' : 'none') + ';top:' + top + 'px;left:calc(50% + ' + (MID + GAP) + 'px);width:' + made.w + 'px;height:' + made.h + 'px';
+    } catch (e) {}
+  }
+  var t = 0;
+  window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(place, 200); });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', place); else place();
+})();</script>
 </body>
 </html>
