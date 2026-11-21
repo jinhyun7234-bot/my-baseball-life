@@ -1336,7 +1336,8 @@ navigator.serviceWorker.addEventListener('controllerchange',function(){if(!had||
       if (!made) {
         if (!s.w || !window.__bbAds) return;
         var css = document.createElement('style');
-        css.textContent = '.bbrail{position:fixed;z-index:0;pointer-events:auto;overflow:hidden}.bbrail ins{display:block}';
+        /* v858i2: 광고가 실제로 채워졌을 때만 보이게 — 승인 전·광고 없음(unfilled)일 땐 애드센스 빈 칸이 흰 박스로 보였음 */
+        css.textContent = '.bbrail{position:fixed;z-index:0;pointer-events:auto;overflow:hidden;visibility:hidden}.bbrail ins{display:block}.bbrail:has(ins[data-ad-status="filled"]){visibility:visible}';
         document.head.appendChild(css);
         made = { w: s.w, h: s.h, el: {} };
         ['L', 'R'].forEach(function (k) {
