@@ -1337,7 +1337,8 @@ navigator.serviceWorker.addEventListener('controllerchange',function(){if(!had||
         if (!s.w || !window.__bbAds) return;
         var css = document.createElement('style');
         /* v858i2: 광고가 실제로 채워졌을 때만 보이게 — 승인 전·광고 없음(unfilled)일 땐 애드센스 빈 칸이 흰 박스로 보였음 */
-        css.textContent = '.bbrail{position:fixed;z-index:0;pointer-events:auto;overflow:hidden;visibility:hidden}.bbrail ins{display:block}.bbrail:has(ins[data-ad-status="filled"]){visibility:visible}';
+        /* visibility:hidden은 애드센스 iframe이 visibility:visible로 덮어써서 안 먹힘 → opacity(자식이 못 덮음) + 안 채워지면 아예 display:none */
+        css.textContent = '.bbrail{position:fixed;z-index:0;overflow:hidden;opacity:0;pointer-events:none}.bbrail ins{display:block}.bbrail:has(ins[data-ad-status="filled"]){opacity:1;pointer-events:auto}.bbrail:has(ins[data-ad-status="unfilled"]){display:none!important}';
         document.head.appendChild(css);
         made = { w: s.w, h: s.h, el: {} };
         ['L', 'R'].forEach(function (k) {
