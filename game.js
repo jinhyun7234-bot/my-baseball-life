@@ -3651,7 +3651,7 @@ function lifeLines(tone){const gn=giv(ME.name),o=[],good=['hype','psHero','feat'
   /* v842s: 아빠·신혼 말은 아이 태어난 지 1년 안·결혼 2년 안일 때만 */const kid46=(S.children||[]).some(k=>k&&typeof k.by==='number'&&k.by>=S.y-1),mar46=S.married&&S.y-(S.married.y||0)<=2;
   if(kid46&&(good||bad))o.push(good?'아빠 되더니 책임감 생겼나 ㅋㅋ':'애 보느라 잠 못 잤나 보다',good?'분유 버프 미쳤다':'분유값 벌어야지 정신 차려라');/* v842s: 결산 같은 중립 기사엔 X (좋은 반기에 '분유값 벌어야지 정신 차려라' 나오던 것) */
   else if(mar46&&(good||bad))o.push(good?'결혼하고 안정감 생긴 듯':'신혼이라 정신 없나');
-  else if(typeof loveNews==='function'&&loveNews()&&good&&R()<.4)o.push('연애 버프 받았나 ㅋㅋ','여친 직관 온 날인가 봄');
+  else if(typeof loveNews==='function'&&loveNews()&&good&&R()<.4)o.push(...(S.married?['결혼 버프 받았나 ㅋㅋ','형수님 직관 온 날인가 봄']:['연애 버프 받았나 ㅋㅋ','여친 직관 온 날인가 봄']))/* v858k: 결혼했는데 '여친' 댓글 X */;
   const cars=(S.lux&&S.lux.car)||0;if(cars>=2)o.push(bad?`하이퍼카 ${cars}대 굴릴 시간에 스윙 연습 좀`:`차고에 하이퍼카 ${cars}대 ㅋㅋ 돈값 하네`);
   if(S.pro&&S.pro.salary>=150000&&bad)o.push('그 연봉 받고 이러면 곤란하지');
   return o.filter(t=>!(isP()&&/스윙/.test(t)))}
@@ -4906,7 +4906,7 @@ function clutchMoments(x){const out=[];(x.pl||[]).forEach(p=>{if(!p.r&&p.t!=='HR
   if(!/^(baby|wedding|love|scandal|injury|contract|salary|move|kmove|draft|milback|abroad|hs|legend)$/.test(tone||'')){const perf=(()=>{try{return perfGrade()}catch(e){return'mid'}})(),mlb=S.pro&&S.pro.league==='MLB',G=[];
     if(mlb&&!P&&(perf==='elite'||perf==='good'))G.push(['gat',pick([`눈치 보지 말고 게토레이 마셔라 ${gn} ㅋㅋ`,`${gn} 오늘은 게토레이 두 병 마셔도 됨`,`이렇게 치는데 게토레이 눈치 볼 필요 없다 ${gn} 벌컥벌컥 마셔라`,`덕아웃 게토레이 ${gn} 전용으로 박스째 갖다 놔라`]),['ㅋㅋㅋㅋ 게토레이 마실 자격 충분','오늘은 한 박스 마셔도 인정','게토레이 광고 들어오겠네']]);
     if(mlb&&(perf==='elite'||tone==='award'||tone==='psHero'||tone==='mlbBig')&&S.stage==='pro')G.push(['drunk',`이렇게 잘하는데 부상만 조심하자 ${gn}`,['ㄹㅇ 건강이 최고','몸 관리만 하면 레전드 확정']]);
-    if(typeof loveNews==='function'&&loveNews()&&perf==='bad')G.push(['love',`연애 기사 뜨면 맛탱이 간다더니 ${gn}도…`,['연애 버프가 아니라 연애 디버프 ㅋㅋ','여친 생기고 타율 실종']]);
+    if(typeof loveNews==='function'&&loveNews()&&perf==='bad')G.push(['love',`연애 기사 뜨면 맛탱이 간다더니 ${gn}도…`,(S.married?['결혼 버프가 아니라 결혼 디버프 ㅋㅋ','장가가고 타율 실종']:['연애 버프가 아니라 연애 디버프 ㅋㅋ','여친 생기고 타율 실종'])/* v858k */]);
     if(typeof loveNews==='function'&&loveNews()&&(perf==='elite'||perf==='good'))G.push(['love2',`연애하고 더 잘하는 거 보니 사랑의 힘인가 ${gn}`,['결혼까지 가자 ㅋㅋ',S.married?'형수님 감사합니다':'여자친구분 감사합니다 ㅋㅋ']]);
     if(x&&x.intl&&x.win)G.push(['kpop',pick(['국뽕 한 사발 들이켰다','태극마크 단 '+gn+' 멋있어 죽겠다','이 맛에 국대 경기 본다 국뽕 MAX']),['애국가 나올 때부터 울컥함','대한민국 화이팅']]);
     S.refCnt=S.refCnt||{};const C=G.filter(g=>!(S.cmX&&S.cmX['ref'+g[0]]===S.y));if(C.length&&R()<.55){C.sort((a,b)=>(S.refCnt[a[0]]||0)-(S.refCnt[b[0]]||0));const g=C[0];S.refCnt[g[0]]=(S.refCnt[g[0]]||0)+1;S.cmX=S.cmX||{};S.cmX['ref'+g[0]]=S.y;add.push(mkC(g[1],[pick(g[2])],{up:ri(400,2000)}))}}
@@ -10618,7 +10618,7 @@ function lastTitleGap(){try{const my=S.pro.team,BASE=[2025,2019,null,2022,2021,1
     else if(!ex&&rk===1&&g!=null&&(g==='never'||g>=5)&&!x.intl&&R()<.22){S._geuY=S.y;put(g==='never'?`드디어 창단 첫 "그거" 가능하냐?`:`드디어 ${g}년 만에 "그거" 가능하냐?`,re(['설레발 노노','쉿 그 얘기 하지 마라','아직 시즌 안 끝났다 설레발 금지','그거 얘기하면 부정 탄다 지워라','설레발 치다 망한 거 한두 번이냐'],2),ri(1000,4000))}}
   /* ⑥ 여자친구 잡담 + 마 갱기에 집중 안하나 */
   const m=/(\d+)차전/.exec(title),gno=m?+m[1]:0,wc=/와일드카드/.test(title);
-  if(ps&&gno===2&&!wc&&!/한국시리즈|월드시리즈/.test(title)&&!x.clinch&&!((serState(x)||{}).L>=3)&&R()<.35){put(`${ME.name} 여자친구 있을까???`,[gaengRe()],ri(300,1500))}
+  if(ps&&gno===2&&!wc&&!S.married&&!S.gf/* v858k: 결혼·연애 중인데 '여자친구 있을까???' 뜨던 것 */&&!/한국시리즈|월드시리즈/.test(title)&&!x.clinch&&!((serState(x)||{}).L>=3)&&R()<.35){put(`${ME.name} 여자친구 있을까???`,[gaengRe()],ri(300,1500))}
   out.forEach(c=>{if(c&&OFFTOPIC.test(String(c.t||''))&&!/여자친구 있을까/.test(String(c.t||''))&&R()<.25){c.re=Array.isArray(c.re)?c.re:[];if(!c.re.some(q=>/갱기|마갱집/.test(String(q&&q.t||''))))c.re.push(gaengRe())}});
  }catch(e){}return out}}
 
@@ -16928,3 +16928,484 @@ if (typeof choose === 'function') {
     return _cs858g.apply(this, arguments);
   };
 }
+
+/* v858k (11/21 23:04 유저 — 플레이어 피드백 반영)
+   "처음 선수 생성할 때 … 나머지는 FM처럼 포인트로 유저가 원하는 스탯을 올릴 수 있게 / 은퇴할 때 커리어에 맞게 다음 선수 초기 포인트·성장 포인트
+    / 연애·결혼이 수동적 — 호감 쌓기 어렵게, 이벤트 더, 상점 '연인에게 선물하기', 연애·결혼 성장 포인트↑ / 결혼했는데 '여친 있냐' 댓글 어색"
+   + 유저: "첨에 기본 스텟은 유지하되 10점 정돈 골라서 넣을 수 있게 · 안 고르고 넘어가면 안 되게 · 자동 배정도"
+
+   ① 선수 만들기: 굴린 기본 능력치(체형·포지션 보너스 포함)는 그대로 + 보너스 포인트 10점(표시 기준 1점 = 능력치 +1)을 직접 배분
+      · 능력치 8~7개 + 워크에식·멘탈·내구성에 넣을 수 있음 (구종 X) · 한 능력치 상한(생성 상한)까지
+      · 다 나누기 전엔 시작 버튼이 안 눌림(안내 + 카드로 스크롤) · [자동 배정] = 포지션 요구 툴·체형 쪽으로 곡선 가중치(한 곳 몰빵 X) · [초기화]
+      · 다시 굴리기 해도 배분은 유지 (상한을 넘게 되면 넘는 만큼 돌려받음)
+   ② 은퇴 보너스: 커리어 점수(명예의 전당 점수)로 다음 선수 보너스 — 곡선
+      · 생성 포인트 +0~5 (점수 30 → 0 · 60 → 1 · 90 → 2 · 120 → 4 · 160↑ → 5)
+      · 시작 성장 포인트 +0~12 (30 → 0 · 60 → 3 · 90 → 6 · 120 → 10 · 160↑ → 12)
+      · 가장 최근에 은퇴한 선수 것 하나만 (누적 X) · 다음 선수 '커리어 시작' 누를 때 사용됨
+   ③ 연애·결혼
+      · 호감 쌓기 어렵게: 오르는 양에 곡선 배율 (호감 30 → ×0.9 · 55 → ×0.75 · 75 → ×0.55 · 90↑ → ×0.4) — 내려가는 건 그대로
+      · 성장 포인트: 호감이 크게 오르는 선택(+8↑) 성장 포인트 +1, (+14↑) +2 · 연애 시작 +1 · 결혼 +5 · 출산 +3 (선택지에 표시)
+      · 새 이벤트 연애 8종 · 결혼 후 배우자 6종 (전부 장단점 있는 선택)
+      · 상점 '💝 선물하기' (연애·결혼 중에만): 꽃다발 10만 ~ 드림카 3억 · 같은 반기에 여러 번 주면 효과가 곡선으로 줄어듦
+   ④ 결혼·연애 중인데 '○○○ 여자친구 있을까???' / 결혼했는데 '여친 직관' '여친 생기고 타율 실종' 댓글 → 고침 (v134 · v46 · v80 'v858k' 주석) */
+
+/* ---------- ② 은퇴 보너스 저장소 (브라우저에만 · 커리어 슬롯과 별개) ---------- */
+const LEG858K = 'bb_legacy858';
+function legGet858() { try { const v = JSON.parse(localStorage.getItem(LEG858K) || 'null'); return v && typeof v === 'object' ? v : null; } catch (e) { return null; } }
+function legSet858(v) { try { if (v) localStorage.setItem(LEG858K, JSON.stringify(v)); else localStorage.removeItem(LEG858K); } catch (e) {} }
+function legCalc858(score) {
+  const s = +score || 0;
+  return { pts: Math.round(knot(s, [30, 60, 90, 120, 160], [0, 1, 2, 4, 5])), xp: Math.round(knot(s, [30, 60, 90, 120, 160], [0, 3, 6, 10, 12])) };
+}
+if (typeof retire === 'function') {
+  const _rt858k = retire;
+  retire = function () {
+    const out = _rt858k.apply(this, arguments);
+    try {
+      if (S && S.ended && !S.leg858) {
+        const g = legCalc858(S.ended.score);
+        S.leg858 = g;
+        legSet858(g.pts || g.xp ? { pts: g.pts, xp: g.xp, name: ME.name, score: S.ended.score, y: S.ended.y } : null);
+      }
+    } catch (e) {}
+    return out;
+  };
+}
+/* 은퇴 화면에 한 줄 */
+if (typeof vRetCard === 'function') {
+  const _vr858k = vRetCard;
+  vRetCard = function () {
+    let h = _vr858k.apply(this, arguments);
+    try {
+      const g = S && S.leg858;
+      if (g) h += `<div class="card leg858"><span class="lbl">🎖️ 다음 선수 은퇴 보너스</span><div class="small">${g.pts || g.xp ? `새 선수를 만들 때 <b>보너스 포인트 +${g.pts}</b> · <b>시작 성장 포인트 +${g.xp}P</b>` : '이번 커리어는 보너스가 없어요. 다음 선수는 더 길게!'}</div></div>`;
+    } catch (e) {}
+    return h;
+  };
+}
+
+/* ---------- ① 선수 만들기: 보너스 포인트 배분 ---------- */
+const CR858K = { base: 10, perD: 0.75 }; /* 표시 1점 = 내부 0.75 */
+function crPool858(cr) { const L = legGet858(); return CR858K.base + (L && L.pts ? L.pts : 0); }
+function crUsed858(cr) { const a = (cr && cr.al858) || {}; let s = 0; for (const k in a) s += a[k] || 0; return s; }
+function crLeft858(cr) { return Math.max(0, crPool858(cr) - crUsed858(cr)); }
+const crHi858 = (P, k) => (['we', 'men', 'dur'].includes(k) ? 80 : (P && k === 'velo') ? 52 : 60);
+{
+  const _bm858k = buildMe;
+  buildMe = function (cr) {
+    const me = _bm858k.apply(this, arguments);
+    try {
+      const al = cr && cr.al858;
+      if (al) {
+        const P = cr.type === 'P';
+        for (const k of Object.keys(al)) {
+          const n = al[k] | 0;
+          const inR = k in me.r && !(me.pt && k in me.pt), inH = ['we', 'men', 'dur'].includes(k);
+          if (!n || (!inR && !inH)) { delete al[k]; continue; }
+          const cur = inH ? me.hid[k] : me.r[k], hi = crHi858(P, k);
+          const fit = Math.max(0, Math.floor((hi - cur) / CR858K.perD + 1e-9));
+          const use = Math.min(n, fit);
+          if (use < n) { if (use > 0) al[k] = use; else delete al[k]; } /* 상한 넘는 만큼 돌려받음 */
+          if (use > 0) { if (inH) me.hid[k] = cur + use * CR858K.perD; else me.r[k] = cur + use * CR858K.perD; }
+        }
+      }
+    } catch (e) {}
+    return me;
+  };
+}
+/* 자동 배정: 포지션 요구 툴 순위 + 체형 쪽으로 가중치, 한 곳에 몰리지 않게 (같은 곳에 넣을수록 가중치가 곡선으로 줄어듦) */
+function crAuto858(cr) {
+  try {
+    const P = cr.type === 'P', me = buildMe(cr), keys = Object.keys(me.r).filter(k => !(me.pt && k in me.pt)), H = ['we', 'men', 'dur'];
+    const w = {};
+    keys.forEach(k => w[k] = 1);
+    H.forEach(k => w[k] = 0.7);
+    if (P) {
+      const pr = cr.pos === 'RP' ? ['velo', 'stf', 'ctl'] : ['sta', 'ctl', 'stf', 'velo'];
+      pr.forEach((k, i) => { if (k in w) w[k] += [2.6, 2, 1.5, 1.1][i]; });
+      const bb = { 거구: ['velo', 'stf'], 마른: ['ctl', 'sta'], 표준: ['stf', 'ctl'] }[cr.body] || [];
+      bb.forEach(k => { if (k in w) w[k] += 0.8; });
+    } else {
+      const L = (typeof POSPRIO !== 'undefined' && POSPRIO[cr.pos]) || [];
+      L.forEach((g, i) => (g || []).forEach(k => { if (k in w) w[k] += [2.6, 2, 1.5, 1.1, 0.8][i] || 0.5; }));
+      const bb = { 거구: ['pow', 'arm'], 마른: ['spd', 'rng'], 표준: ['con', 'eye'] }[cr.body] || [];
+      bb.forEach(k => { if (k in w) w[k] += 0.8; });
+    }
+    cr.al858 = cr.al858 || {};
+    let left = crLeft858(cr);
+    for (let g = 0; left > 0 && g < 200; g++) {
+      const m = buildMe(cr);
+      let best = null, bv = -1;
+      for (const k of Object.keys(w)) {
+        const cur = H.includes(k) ? m.hid[k] : m.r[k];
+        if (cur + CR858K.perD > crHi858(P, k) + 1e-9) continue;
+        const v = w[k] / Math.pow(1 + (cr.al858[k] || 0), 0.9) * (0.85 + R() * 0.3);
+        if (v > bv) { bv = v; best = k; }
+      }
+      if (!best) break;
+      cr.al858[best] = (cr.al858[best] || 0) + 1;
+      left--;
+    }
+  } catch (e) {}
+}
+{
+  const _vc858k = vCreate;
+  vCreate = function () {
+    const cr = ui.cr;
+    if (cr && !cr.al858) cr.al858 = {};
+    let h = _vc858k.apply(this, arguments);
+    try {
+      if (!cr || !/data-act="reroll"/.test(h)) return h; /* 외모 단계에선 X */
+      const P = cr.type === 'P', me = ME, left = crLeft858(cr), pool = crPool858(cr), al = cr.al858, L = legGet858();
+      const okKeys = [...Object.keys(me.r).filter(k => !(me.pt && k in me.pt)), 'we', 'men', 'dur'];
+      /* 남은 포인트 + 버튼 */
+      const head = `<div class="crpt858${ui.crWarn858 && left > 0 ? ' hot' : ''}" id="crpt858"><div class="row"><span class="sp" style="white-space:nowrap">남은 포인트 <b class="num">${left}</b><span class="tiny muted"> / ${pool}</span></span>`
+        + `<button class="btn xs" data-c858="reset" ${crUsed858(cr) ? '' : 'disabled'}>초기화</button><button class="btn xs ${left ? 'pri' : ''}" data-c858="auto" ${left ? '' : 'disabled'}>자동 배정</button></div>`
+        + `<div class="tiny muted">${left ? '원하는 능력치 옆 ＋를 눌러 나눠주세요. 다 나눠야 커리어를 시작할 수 있어요.' : '배분 완료! 바꾸고 싶으면 －로 빼서 다시 넣을 수 있어요.'}</div>`
+        + (L && (L.pts || L.xp) ? `<div class="tiny leg">🎖️ ${esc(L.name || '이전 선수')} 은퇴 보너스: 포인트 +${L.pts || 0} · 시작 성장 포인트 +${L.xp || 0}P</div>` : '') + `</div>`;
+      h = h.replace(/(<button class="btn sm" data-act="reroll">[^<]*<\/button><\/div>)/, '$1' + head);
+      /* 줄마다 ± 버튼 */
+      for (const k of okKeys) {
+        const lb = LBL[k]; if (!lb) continue;
+        const start = h.indexOf(`<div class="rt"><span>${lb}</span>`); if (start < 0) continue;
+        const endTok = '</span></span></div>', end = h.indexOf(endTok, start); if (end < 0) continue;
+        const cur = ['we', 'men', 'dur'].includes(k) ? me.hid[k] : me.r[k], a = al[k] || 0;
+        const canUp = left > 0 && cur + CR858K.perD <= crHi858(P, k) + 1e-9;
+        const btns = `<div class="row"><button class="btn xs" data-c858="dn" data-k="${k}" ${a ? '' : 'disabled'} aria-label="${lb} 빼기">－</button><button class="btn xs ${canUp ? 'pri' : ''}" data-c858="up" data-k="${k}" ${canUp ? '' : 'disabled'} aria-label="${lb} 올리기">＋</button></div>`;
+        let row = h.slice(start, end + endTok.length);
+        row = row.replace(`<span>${lb}</span>`, `<span>${lb}${a ? `<b class="al858">+${a}</b>` : ''}</span>`).replace(/<\/div>$/, btns + '</div>');
+        h = h.slice(0, start) + row + h.slice(end + endTok.length);
+      }
+    } catch (e) {}
+    return h;
+  };
+}
+/* 시작 버튼: 남은 포인트가 있으면 문구 바꿈 */
+{
+  const _vb858k = vBar;
+  vBar = function () {
+    const h = _vb858k.apply(this, arguments);
+    try { if (!S && ui.cr && h.includes('data-act="start"')) { const left = crLeft858(ui.cr); if (left > 0) return h.replace(/(data-act="start"[^>]*>)[^<]*/, `$1보너스 포인트 ${left}점을 먼저 나눠주세요`); } } catch (e) {}
+    return h;
+  };
+}
+/* 시작: 은퇴 보너스 성장 포인트 지급 + 사용 처리 */
+{
+  const _nc858k = newCareer;
+  newCareer = function (cr) {
+    const out = _nc858k.apply(this, arguments);
+    try {
+      const L = legGet858();
+      if (L && S && ME) {
+        if (L.xp) ME.xp += L.xp;
+        S.legUsed858 = { pts: L.pts || 0, xp: L.xp || 0, name: L.name || '' };
+        if (L.xp || L.pts) news(`${L.name ? L.name + ' ' : '이전 선수 '}은퇴 보너스로 시작한다. (보너스 포인트 +${L.pts || 0} · 성장 포인트 +${L.xp || 0}P)`);
+        legSet858(null);
+      }
+    } catch (e) {}
+    return out;
+  };
+}
+if (typeof document !== 'undefined') {
+  /* 시작 막기 (다 안 나눴으면) */
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('[data-act="start"]');
+    if (!b || S || !ui.cr) return;
+    const left = crLeft858(ui.cr);
+    if (left > 0) {
+      e.stopPropagation(); e.preventDefault();
+      ui.crWarn858 = true;
+      try { toast(`보너스 포인트 ${left}점이 남았어요! ＋로 나누거나 [자동 배정]을 눌러주세요.`); } catch (x) { render(); }
+      setTimeout(() => { const w = document.getElementById('crpt858'); if (w) w.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 60);
+    }
+  }, true);
+  /* ± · 자동 · 초기화 */
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('[data-c858]');
+    if (!b || !ui.cr) return;
+    e.stopPropagation(); e.preventDefault();
+    if (b.disabled) return;
+    const cr = ui.cr, k = b.getAttribute('data-k'), c = b.getAttribute('data-c858');
+    try { const nm = document.getElementById('crname'); if (nm && nm.value.trim()) cr.name = nm.value.trim().slice(0, 8); const sc = document.getElementById('crschool'); if (sc) cr.school = +sc.value; } catch (x) {}
+    cr.al858 = cr.al858 || {};
+    if (c === 'up' && crLeft858(cr) > 0) cr.al858[k] = (cr.al858[k] || 0) + 1;
+    else if (c === 'dn' && cr.al858[k] > 0) { cr.al858[k]--; if (!cr.al858[k]) delete cr.al858[k]; }
+    else if (c === 'auto') crAuto858(cr);
+    else if (c === 'reset') cr.al858 = {};
+    if (!crLeft858(cr)) ui.crWarn858 = false;
+    ui.anim = false;
+    try { AU.sfx('tap'); } catch (x) {}
+    const y = window.scrollY; render(); try { window.scrollTo(0, y); } catch (x) {}
+  }, true);
+  try {
+    const st = document.createElement('style');
+    st.textContent = '.crpt858{margin:6px 0 4px;padding:10px 12px;border-radius:12px;background:rgba(59,130,246,.10);border:1px solid rgba(59,130,246,.35);display:flex;flex-direction:column;gap:4px}'
+      + '.crpt858 .row{gap:6px;align-items:center}.crpt858 b.num{font-size:1.1rem;color:#60a5fa}.crpt858.hot{border-color:#f59e0b;background:rgba(245,158,11,.14);animation:crpt858 1s ease 2}'
+      + '.crpt858 .leg{color:#d4a017}.al858{margin-left:3px;font-size:.72rem;color:#34d399;font-weight:800}'
+      + '@keyframes crpt858{50%{transform:scale(1.02)}}';
+    (document.head || document.documentElement).appendChild(st);
+  } catch (e) {}
+}
+
+/* ---------- ③ 연애·결혼 ---------- */
+const LOVE858K = { hard: [[30, 55, 75, 90], [0.9, 0.75, 0.55, 0.4]] };
+const loveHard858 = a => knot(a, LOVE858K.hard[0], LOVE858K.hard[1]);
+const loveXp858 = d => (d >= 14 ? 2 : d >= 8 ? 1 : 0);
+/* 호감 오르는 양 곡선으로 줄이기 + 크게 오른 선택은 성장 포인트 */
+['lv', 'gift', 'gfaff'].forEach(n => {
+  const _f = ACT[n]; if (!_f) return;
+  ACT[n] = function (a) {
+    const g0 = S.gf, b = g0 ? g0.aff : 0;
+    let r = _f.apply(this, arguments);
+    try {
+      const g = S.gf;
+      if (g && g === g0) {
+        const d = g.aff - b;
+        if (d > 0) {
+          g.aff = cl(b + d * loveHard858(b), 0, 100);
+          const nom = n === 'gift' ? (a && a.d) || 0 : (a && a.d) || 0, x = loveXp858(nom);
+          if (x) { ME.xp += x; if (typeof r === 'string') r += ` (성장 포인트 +${x})`; }
+        }
+      }
+    } catch (e) {}
+    return r;
+  };
+});
+/* lv2는 lv를 부르고 메시지만 바꿈 → 성장 포인트 문구 다시 붙이기 */
+{
+  const _l2 = ACT.lv2;
+  if (_l2) ACT.lv2 = function (a) {
+    const x0 = ME.xp; const r = _l2.apply(this, arguments);
+    try { const x = ME.xp - x0; if (x > 0 && typeof r === 'string' && !/성장 포인트/.test(r)) return r + ` (성장 포인트 +${Math.round(x)})`; } catch (e) {}
+    return r;
+  };
+}
+/* 연애 시작 +1 · 결혼 +5 · 출산 +3 */
+{
+  const _gs = ACT.gfstart;
+  if (_gs) ACT.gfstart = function (a) { const had = !!S.gf; const r = _gs.apply(this, arguments); try { if (!had && S.gf) { ME.xp += 1; return (r || '') + ' (성장 포인트 +1)'; } } catch (e) {} return r; };
+  const _mr = ACT.marry;
+  if (_mr) ACT.marry = function (a) { const m0 = S.married; const r = _mr.apply(this, arguments); try { if (S.married && S.married !== m0) { ME.xp += 5; return (r || '') + ' (성장 포인트 +5)'; } } catch (e) {} return r; };
+  const _nk = ACT.nameKid;
+  if (_nk) ACT.nameKid = function () { const n0 = (S.children || []).length; const r = _nk.apply(this, arguments); try { if ((S.children || []).length > n0) { ME.xp += 3; return (r || '') + ' (성장 포인트 +3)'; } } catch (e) {} return r; };
+}
+/* 배우자 이벤트용 */
+ACT.sp858 = function (a) {
+  const m = S.married; if (!m) return '';
+  if (a.c) { if (S.money < a.c) return '돈이 부족해서 못 했다…'; S.money -= a.c; }
+  const b = m.aff ?? 70;
+  let d = a.d || 0; if (d > 0) d *= loveHard858(b);
+  m.aff = cl(b + d, 0, 100);
+  if (a.f) ME.fat = cl(ME.fat + a.f, 0, 100);
+  if (a.m) ME.hid.men = cl(ME.hid.men + a.m, 20, 80);
+  if (a.fm) ME.form = cl(ME.form + a.fm, -6, 6);
+  if (a.fame) S.rel.fame = cl(S.rel.fame + a.fame, 0, 100);
+  if (a.coach) S.rel.coach = cl(S.rel.coach + a.coach, 0, 100);
+  if (a.chem) S.rel.chem = cl(S.rel.chem + a.chem, 0, 100);
+  let r = a.r || ((a.d || 0) > 0 ? '좋은 시간을 보냈다.' : '분위기가 싸늘해졌다…');
+  const x = (a.d || 0) > 0 ? loveXp858(a.d) : 0;
+  if (x) { ME.xp += x; r += ` (성장 포인트 +${x})`; }
+  return r;
+};
+/* 연애 새 이벤트 8종 */
+function loveMore858() {
+  const g = S.gf, nm = jo(g.n, '이', '가'), wa = jo(g.n, '과', '와'), sal = (S.pro && S.pro.salary) || 3000;
+  const sm = Math.min(300, Math.max(20, Math.round(sal * .004 / 10) * 10)), md = Math.min(2000, Math.max(80, Math.round(sal * .012 / 10) * 10));
+  const L = [];
+  L.push({ title: '🎂 그녀의 생일', text: `내일이 ${g.n}의 생일이다. 마침 원정 일정과 겹친다.`, ch: [
+    { t: '경기 끝나고 KTX 타고 깜짝 방문', s: `−${money(sm)} · 호감↑↑ · 피로↑↑`, act: 'lv2', arg: { d: 14, f: 7, c: sm, r: '자정 1분 전, 케이크를 들고 문 앞에 섰다. 눈물이 그렁그렁했다.' } },
+    { t: '영상통화로 생일 노래', s: '호감 조금↑', act: 'lv2', arg: { d: 4, r: '"내년엔 꼭 같이 보내자" 웃으며 말했지만 조금 서운한 눈치다.' } },
+    { t: '선물만 택배로', s: `−${money(sm)} · 호감↑ · 피로 없음`, act: 'lv2', arg: { d: 6, c: sm, r: '"선물 고마워. 근데 보고 싶다…"' } }] });
+  L.push({ title: '📷 데이트 사진 유출', text: `팬이 찍은 ${wa}의 데이트 사진이 커뮤니티에 올라왔다. 댓글이 수백 개다.`, ch: [
+    { t: '"제 여자친구 맞습니다" 정면 돌파', s: '호감↑↑ · 인기 조금↑ · 감독 신뢰 조금↓', act: 'lv2', arg: { d: 10, r: '당당한 모습에 팬들도 "멋있다"는 반응. 감독은 "야구나 잘해" 한마디.' }, },
+    { t: '"지인입니다" 얼버무린다', s: '호감↓↓ · 구설 없이 지나감 (멘탈↑)', act: 'lv2', arg: { d: -12, m: 1, r: `${nm} 기사를 보고 한참 연락이 없었다.` } }] });
+  L.push({ title: '🍳 쿠킹 클래스', text: `${nm} 커플 쿠킹 클래스를 예약했다고 한다. 하필 개인 훈련 시간이다.`, ch: [
+    { t: '훈련 미루고 같이 간다', s: '호감↑ · 훈련 공백 (컨디션 조금↓)', act: 'lv2', arg: { d: 9, fm: -0.5, r: '파스타 면이 다 퍼졌지만 둘 다 배꼽 잡고 웃었다.' } },
+    { t: '"다음에 꼭 가자" 훈련 먼저', s: '호감↓ · 훈련 집중 (컨디션↑)', act: 'lv2', arg: { d: -6, fm: 1, r: '"다음이 언제야?" 문자 끝에 마침표가 찍혀 있었다.' } }] });
+  L.push({ title: '💌 원정 숙소의 손편지', text: '긴 원정길. 숙소 책상에 앉으니 문득 손편지를 쓰고 싶어졌다.', ch: [
+    { t: '세 장 꽉 채워 쓴다', s: '호감↑ · 피로 조금↑', act: 'lv2', arg: { d: 8, f: 2, r: `며칠 뒤 ${nm} 편지 사진과 함께 "평생 간직할게"라고 보냈다.` } },
+    { t: '그냥 일찍 잔다', s: '피로↓ · 호감 조금↓', act: 'lv2', arg: { d: -3, f: -3, r: '푹 잤다. 아침에 "잘 잤어?" 문자가 와 있었다.' } }] });
+  L.push({ title: '🐶 유기견 봉사', text: `${nm} 주말에 유기견 보호소 봉사를 같이 가자고 한다.`, ch: [
+    { t: '같이 간다', s: '호감↑ · 인기↑ · 피로↑', act: 'lv2', arg: { d: 9, f: 3, r: '산책시킨 강아지가 끝까지 따라왔다. 사진이 조용히 퍼졌다.' } },
+    { t: '"이번 주는 쉬고 싶어"', s: '호감↓ · 피로↓', act: 'lv2', arg: { d: -5, f: -4, r: '혼자 다녀온 사진을 보니 마음이 조금 쓰였다.' } }] });
+  L.push({ title: '📞 옛 연인의 연락', text: '오랜만에 전 연인에게서 "잘 지내? 경기 잘 보고 있어" 문자가 왔다.', ch: [
+    { t: `${g.n}에게 먼저 말하고 차단`, s: '호감↑ · 멘탈 조금↑', act: 'lv2', arg: { d: 8, m: 1, r: `"말해줘서 고마워." ${nm} 손을 꼭 잡았다.` } },
+    { t: '답장하고 아무 말 안 한다', s: '호감↓↓ (들키면) · 별일 없으면 그대로', act: 'love858', arg: { p: .5, d: -16, r1: `휴대폰 알림을 ${nm} 먼저 봤다. 그날 밤 대화는 길고 차가웠다.`, r0: '별일 없이 지나갔다. 그래도 마음 한구석이 찜찜하다.' } }] });
+  if (g.aff >= 60 && S.stage === 'pro') L.push({ title: '🏠 같이 살까?', text: `${nm} 조심스럽게 말한다. "우리… 같이 살아볼까?"`, ch: [
+    { t: '집을 합친다', s: `−${money(md)} (이사·살림) · 호감↑↑ · 피로↓`, act: 'lv2', arg: { d: 14, f: -4, c: md, r: '퇴근하면 불 켜진 집이 기다린다. 이상하게 경기가 잘 풀린다.' } },
+    { t: '"결혼하고 같이 살자"', s: '호감↓ · 돈 아낌', act: 'lv2', arg: { d: -6, r: '"그 말 꼭 지켜." 반쯤 웃고 반쯤 서운한 얼굴이었다.' } }] });
+  if (S.stage === 'pro') L.push({ title: '🎤 시구 초대', text: `구단에서 "연인 시구 이벤트"를 제안했다. ${nm} 떨린다면서도 하고 싶어 한다.`, ch: [
+    { t: '공 던지는 법 특훈시켜 준다', s: '호감↑↑ · 인기↑ · 피로↑', act: 'lv2', arg: { d: 12, f: 3, r: '노바운드 스트라이크! 관중석이 들썩였고 하이라이트에 잡혔다.' } },
+    { t: '"부담되면 하지 마"', s: '호감 조금↓ · 구설 없음', act: 'lv2', arg: { d: -3, r: '"나 진짜 하고 싶었는데…" 작게 중얼거렸다.' } }] });
+  return L;
+}
+ACT.love858 = function (a) {
+  if (R() < (a.p || .5)) { const g = S.gf; if (g) g.aff = cl(g.aff + (a.d || 0), 0, 100); return a.r1 || ''; }
+  return a.r0 || '';
+};
+/* 결혼 후 배우자 이벤트 6종 */
+function spouseMore858() {
+  const m = S.married, nm = jo(m.n, '이', '가'), sal = (S.pro && S.pro.salary) || 5000;
+  const md = Math.min(3000, Math.max(100, Math.round(sal * .015 / 10) * 10)), bg = Math.min(20000, Math.max(500, Math.round(sal * .06 / 100) * 100));
+  const L = [];
+  L.push({ title: '💑 결혼기념일', text: `오늘은 결혼 ${Math.max(1, S.y - m.y)}주년. 저녁에 경기가 있다.`, ch: [
+    { t: '경기 끝나고 호텔 레스토랑', s: `−${money(md)} · 배우자 호감↑↑ · 피로↑`, act: 'sp858', arg: { d: 12, f: 3, c: md, r: '야경 앞에서 처음 만난 날 얘기를 했다.' } },
+    { t: '집에서 둘이 케이크', s: '배우자 호감↑', act: 'sp858', arg: { d: 6, r: '소박했지만 따뜻한 밤이었다.' } },
+    { t: '깜빡했다…', s: '배우자 호감 크게↓ · 푹 잔다 (피로↓)', act: 'sp858', arg: { d: -15, f: -3, r: `다음 날 아침, 식탁 위에 ${m.n} 준비한 선물이 그대로 있었다.` } }] });
+  L.push({ title: '🏖️ 비시즌 가족 여행', text: `${nm} 비시즌에 여행을 가자고 한다. 개인 훈련 일정이 빠듯하다.`, ch: [
+    { t: '해외로 2주', s: `−${money(bg)} · 배우자 호감↑↑ · 피로↓↓ · 훈련 공백 (감독 신뢰 조금↓)`, act: 'sp858', arg: { d: 14, f: -8, c: bg, coach: -1, r: '바다 앞에서 야구 생각을 완전히 잊었다.' } },
+    { t: '국내 2박 3일', s: `−${money(Math.round(bg / 6))} · 배우자 호감↑ · 피로↓`, act: 'sp858', arg: { d: 7, f: -4, c: Math.round(bg / 6), r: '짧았지만 충분했다.' } },
+    { t: '훈련이 먼저다', s: '배우자 호감↓ · 감독 신뢰↑', act: 'sp858', arg: { d: -7, coach: 2, r: '"그래, 야구선수 아내가 어디 쉽나." 말끝이 길었다.' } }] });
+  L.push({ title: '🍲 내조의 여왕', text: `${nm} 영양사 자격증 공부를 시작했다며 식단을 짜 주겠다고 한다.`, ch: [
+    { t: '고맙게 받는다', s: '배우자 호감↑ · 피로 회복↑', act: 'sp858', arg: { d: 8, f: -5, r: '닭가슴살이 이렇게 맛있을 수 있다니.' } },
+    { t: '"구단 영양사가 있어서 괜찮아"', s: '배우자 호감↓', act: 'sp858', arg: { d: -6, r: '책이 조용히 책장에 꽂혔다.' } }] });
+  L.push({ title: '📺 아내의 방송 출연 제의', text: `예능 프로그램에서 부부 동반 출연 제의가 왔다. ${nm} 은근히 기대하는 눈치다.`, ch: [
+    { t: '출연한다', s: '배우자 호감↑ · 인기↑↑ · 피로↑ · 팀 분위기 조금↓', act: 'sp858', arg: { d: 9, fame: 5, f: 3, chem: -1, r: '방송 후 "사랑꾼"이라는 별명이 생겼다.' } },
+    { t: '시즌 중이라 거절', s: '배우자 호감 조금↓ · 팀 분위기↑', act: 'sp858', arg: { d: -4, chem: 1, r: '"그래, 시즌 끝나고 생각하자."' } }] });
+  L.push({ title: '😮‍💨 쌓인 서운함', text: `${nm} 말한다. "요즘 집에 와도 휴대폰만 보잖아."`, ch: [
+    { t: '휴대폰 끄고 산책', s: '배우자 호감↑ · 피로 조금↑', act: 'sp858', arg: { d: 8, f: 1, r: '한강을 한 바퀴 돌며 오랜만에 많이 웃었다.' } },
+    { t: '"경기 분석 중이었어"', s: '배우자 호감↓ · 분석은 계속 (컨디션 조금↑)', act: 'sp858', arg: { d: -8, fm: .5, r: '말없이 방으로 들어갔다.' } }] });
+  if (S.stage === 'pro') L.push({ title: '🎁 깜짝 직관', text: `${nm} 몰래 원정 경기장까지 응원을 왔다. 관중석에서 손을 흔든다.`, ch: [
+    { t: '경기 후 하트 세리머니', s: '배우자 호감↑↑ · 인기↑ · 동료 놀림 (팀 분위기 조금↓)', act: 'sp858', arg: { d: 12, fame: 2, chem: -1, r: '"사랑꾼 납셨네" 라커룸이 한동안 시끄러웠다.' } },
+    { t: '조용히 눈인사만', s: '배우자 호감 조금↑', act: 'sp858', arg: { d: 4, r: '그래도 경기 내내 든든했다.' } }] });
+  return L;
+}
+const LOVETTL858 = /생일|사진 유출|쿠킹|손편지|유기견|옛 연인|같이 살까|시구 초대|결혼기념일|가족 여행|내조|방송 출연|서운함|깜짝 직관/;
+{
+  const _le858k = lifeEvents;
+  lifeEvents = function () {
+    let out = _le858k.apply(this, arguments);
+    try {
+      if (S.stage === 'ret' || out.length) return addXpTags858(out);
+      S.evY = S.evY || {};
+      const fresh = e => !(S.evY[e.title] >= S.y - 1);
+      let pool = [];
+      if (S.gf && !S.married && S.gf.aff >= 20 && R() < .4) pool = loveMore858().filter(fresh);
+      else if (S.married && R() < .28) pool = spouseMore858().filter(fresh);
+      if (pool.length) { const e = pick(pool); S.evY[e.title] = S.y; out.push(e); }
+    } catch (e) {}
+    return addXpTags858(out);
+  };
+}
+/* 선택지 설명에 성장 포인트 표시 (호감 크게 오르는 선택 · 연애 시작 · 결혼) */
+function addXpTags858(out) {
+  try {
+    out.forEach(q => (q.ch || []).forEach(c => {
+      if (!c || /성장 포인트/.test(c.s || '')) return;
+      const a = c.arg || {};
+      let x = 0;
+      if (['lv', 'lv2', 'gift', 'sp858'].includes(c.act) && (a.d || 0) > 0) x = loveXp858(a.d);
+      else if (c.act === 'gfstart') x = 1;
+      else if (c.act === 'marry') x = 5;
+      else if (c.act === 'prop') { c.s = (c.s || '') + ' · 결혼하면 성장 포인트 +5'; return; }
+      if (x) c.s = (c.s || '') + ` · 성장 포인트 +${x}`;
+    }));
+  } catch (e) {}
+  return out;
+}
+
+/* 상점: 💝 선물하기 (연애·결혼 중에만) */
+const GIFT858 = [
+  { id: 'flower', n: '🌹 꽃다발', p: 10, d: 3 },
+  { id: 'perfume', n: '🧴 향수', p: 40, d: 5 },
+  { id: 'bag', n: '👜 명품 가방', p: 600, d: 9 },
+  { id: 'neck', n: '💎 다이아 목걸이', p: 3000, d: 13 },
+  { id: 'car', n: '🚗 드림카', p: 30000, d: 18 },
+];
+const giftDim858 = n => knot(n, [0, 1, 2, 3, 5], [1, .65, .4, .25, .1]); /* 같은 반기에 n번째 선물 */
+function giftTarget858() { if (S.married) return { n: S.married.n, sp: true }; if (S.gf) return { n: S.gf.n, sp: false }; return null; }
+{
+  const _vs858k = vShop;
+  vShop = function () {
+    let h = _vs858k.apply(this, arguments);
+    try {
+      const t = giftTarget858(); if (!t || S.stage === 'ret') return h;
+      const card = `<div class="card" style="gap:0"><div class="row" style="padding-bottom:6px"><span class="lbl sp">💝 ${esc(t.n)}에게 선물하기</span><span class="tiny" style="color:#e2557a">${t.sp ? '배우자' : '연인'}</span></div>`
+        + `<div class="tiny muted" style="padding-bottom:6px">마음을 전해 보세요.</div>`
+        + GIFT858.map(it => { const can = S.money >= it.p; return `<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="sp"><div style="font-weight:700;font-size:.9rem">${it.n}</div><div class="tiny muted">${t.sp ? '배우자' : '연인'} 호감↑${it.d >= 13 ? '↑↑' : it.d >= 9 ? '↑' : ''}</div></div><button class="btn sm ${can ? 'pri' : ''}" data-g858="${it.id}" ${can ? '' : 'disabled'}>${money(it.p)}</button></div>`; }).join('') + `</div>`;
+      const mk = '<span class="lbl" style="padding-bottom:6px">🏏';
+      const i = h.indexOf(mk);
+      if (i >= 0) { const j = h.lastIndexOf('<div class="card"', i); h = j >= 0 ? h.slice(0, j) + card + h.slice(j) : h + card; } else h += card;
+    } catch (e) {}
+    return h;
+  };
+}
+function giveGift858(id) {
+  const it = GIFT858.find(x => x.id === id), t = giftTarget858();
+  if (!it || !t || S.money < it.p) return '';
+  S.money -= it.p; if (S.led && S.led.y === S.y) S.led.exp += it.p;
+  S.gift858 = S.gift858 && S.gift858.t === S.turn ? S.gift858 : { t: S.turn, n: 0 };
+  const dim = giftDim858(S.gift858.n); S.gift858.n++;
+  const tgt = t.sp ? S.married : S.gf, b = tgt.aff ?? 70;
+  const d = it.d * dim * loveHard858(b);
+  tgt.aff = cl(b + d, 0, 100);
+  try { news(`${t.n} 씨에게 ${it.n.replace(/^\S+\s/, '')} 선물 (−${money(it.p)})`); } catch (e) {}
+  const nm = jo(t.n, '이', '가');
+  return dim >= .9 ? (it.d >= 13 ? `${nm} 말을 잇지 못했다. 정말 감동한 얼굴이다.` : `${nm} 활짝 웃었다.`) : dim >= .5 ? `${nm} 고마워했다. 그런데 "또?" 하는 눈치다.` : `${nm} "이제 선물 그만해도 돼…" 하며 웃었다.`;
+}
+if (typeof document !== 'undefined') document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-g858]');
+  if (!b || !S) return;
+  e.stopPropagation(); e.preventDefault();
+  if (b.disabled) return;
+  const m = giveGift858(b.getAttribute('data-g858'));
+  try { save(); } catch (x) {}
+  try { AU.sfx('tap'); } catch (x) {}
+  if (m) { try { toast(m); } catch (x) { render(); } } else render();
+}, true);
+
+/* v858l (11/21 23:16 유저) "훈련 세션일 때 가끔 광고 보고 스탯 올리기? 그런 버튼 뜨게 하자"
+   · 훈련 탭을 열면 반기마다 40% 확률로 '📺 광고 보고 성장 포인트 +2' 카드 (보상형 광고 · 반기에 한 번)
+   · 구글 H5 게임 광고(Ad Placement API, adBreak type 'reward')를 씀 — 웹에서만 (앱은 광고 스크립트 자체가 없음 → adBreak 없음 → 카드 안 뜸)
+   · 광고가 실제로 준비됐을 때만(beforeReward 호출) 카드가 뜸 → 애드센스 승인 + H5 게임 광고 사용 설정 전엔 아무것도 안 보임
+   · 끝까지 봐야(adViewed) 지급 · 중간에 닫으면 지급 X · 광고 나오는 동안 게임 소리 멈춤
+   · 정책: 보상은 게임 안 성장 포인트(현실 가치 X) · 광고 클릭 유도 문구 X */
+const RW858L = { xp: 2, chance: 0.4 };
+function rwAvail858() { try { return typeof window !== 'undefined' && window.__bbAds && typeof window.adBreak === 'function'; } catch (e) { return false; } }
+function rwAsk858() {
+  try {
+    if (!rwAvail858() || !S || S.stage === 'ret' || S.rwUsed858 === S.turn) return;
+    if (ui.rwAsk858 === S.turn) return;
+    ui.rwAsk858 = S.turn;
+    if (!S.rwRoll858 || S.rwRoll858.t !== S.turn) S.rwRoll858 = { t: S.turn, ok: R() < RW858L.chance };
+    if (!S.rwRoll858.ok) return;
+    const t = S.turn;
+    window.adBreak({
+      type: 'reward',
+      name: 'train_xp',
+      beforeAd() { try { if (AU.ctx) AU.ctx.suspend(); } catch (e) {} },
+      afterAd() { try { if (AU.ctx) AU.ctx.resume(); } catch (e) {} },
+      beforeReward(show) { ui.rw858 = { show, t }; try { render(); } catch (e) {} },
+      adDismissed() { ui.rw858 = null; try { toast('광고를 끝까지 봐야 받을 수 있어요.'); } catch (e) {} },
+      adViewed() {
+        try {
+          if (S && S.turn === t && S.rwUsed858 !== t) { ME.xp += RW858L.xp; S.rwUsed858 = t; news(`광고 보상으로 성장 포인트 +${RW858L.xp}`); save(); }
+          ui.rw858 = null; toast(`성장 포인트 +${RW858L.xp}!`);
+        } catch (e) {}
+      },
+      adBreakDone() { if (ui.rw858 && ui.rw858.t !== (S && S.turn)) ui.rw858 = null; },
+    });
+  } catch (e) {}
+}
+if (typeof vTrainTab === 'function') {
+  const _vt858l = vTrainTab;
+  vTrainTab = function () {
+    let h = _vt858l.apply(this, arguments);
+    try {
+      if (S && S.stage !== 'ret') {
+        if (ui.rw858 && ui.rw858.t === S.turn && S.rwUsed858 !== S.turn) {
+          const card = `<div class="card rw858"><div class="row"><div class="sp"><div style="font-weight:800">📺 보너스 훈련 영상</div><div class="tiny muted">짧은 광고를 보면 성장 포인트 +${RW858L.xp} · 이번 반기 한 번</div></div><button class="btn sm pri" data-rw858="1">보고 받기</button></div></div>`;
+          const i = h.indexOf('<div class="card');
+          h = i >= 0 ? h.slice(0, i) + card + h.slice(i) : card + h;
+        } else if (rwAvail858() && ui.rwAsk858 !== S.turn) setTimeout(rwAsk858, 0);
+      }
+    } catch (e) {}
+    return h;
+  };
+}
+if (typeof document !== 'undefined') document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-rw858]');
+  if (!b) return;
+  e.stopPropagation(); e.preventDefault();
+  try { const r = ui.rw858; if (r && typeof r.show === 'function' && S && r.t === S.turn) r.show(); else { ui.rw858 = null; render(); } } catch (x) {}
+}, true);
