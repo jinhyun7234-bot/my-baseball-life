@@ -4800,11 +4800,11 @@ const TRAIN_EV=/특타|새 구종|새 타격 이론|데이터 분석|특별 훈�
 /* ---------- 연애 레퍼토리 확장 ---------- */
 ACT.lv2=function(a){const r=ACT.lv(a);return(typeof r==='string'&&/부족/.test(r))?r:(a.r||r||'')};
 function gfExtra(){const g=S.gf,nm=jo(g.n,'이','가'),wa=jo(g.n,'과','와'),big=Math.min(3000,Math.max(100,Math.round(((S.pro&&S.pro.salary)||3000)*.015/10)*10)),L=[];
-  L.push({title:'📸 커플 사진 공개?',text:`${nm} 묻는다. "우리 사진 SNS에 올려도 돼?"`,ch:[{t:'"당연하지!" 공개 연애',s:'호감↑↑ · 인기↑ · 열애설 기사',act:'lv2',arg:{d:12,r:'댓글창이 축하 반 질투 반으로 불탔다.'}},{t:'"시즌 끝나고 하자"',s:'호감 조금↓ · 구설 없이 야구에 집중 (컨디션↑)',act:'lv2',arg:{d:-4,fm:1,r:'살짝 서운한 눈치였다.'}}]});
+  L.push({title:'📸 커플 사진 공개?',text:`${nm} 묻는다. "우리 사진 SNS에 올려도 돼?"`,ch:[{t:'"당연하지!" 공개 연애',s:'호감↑↑ · 인기↑ · 열애설 기사',act:'lv2',arg:{d:12,fame:2,art:1,r:'댓글창이 축하 반 질투 반으로 불탔다.'}/* v858n: 설명의 인기↑·열애설 기사 실제 반영 */},{t:'"시즌 끝나고 하자"',s:'호감 조금↓ · 구설 없이 야구에 집중 (컨디션↑)',act:'lv2',arg:{d:-4,fm:1,r:'살짝 서운한 눈치였다.'}}]});
   L.push({title:'👭 여자친구 친구들 모임',text:`${nm} 친구들한테 소개해주고 싶다고 한다. 다들 야구를 1도 모른다.`,ch:[{t:'야구 규칙 강의까지 해준다',s:'호감↑ · 피로↑',act:'lv2',arg:{d:9,f:2,r:'"그래서 파울이 뭐라고요?" 세 번째 설명 중이다.'}},{t:'맛있는 거 사고 조용히 웃기',s:`−${money(Math.min(200,Math.max(20,Math.round(big/10))))} · 호감↑`,act:'lv2',arg:{d:7,c:Math.min(200,Math.max(20,Math.round(big/10))),r:'"남자친구 진짜 착하다" 소리를 들었다.'}}]});
-  L.push({title:'🍱 깜짝 도시락',text:`훈련장 앞에 ${nm} 도시락을 들고 서 있다. 동료들이 휘파람을 분다.`,ch:[{t:'동료들 앞에서 당당히 먹는다',s:'호감↑ · 팀 분위기↑',act:'lv2',arg:{d:8,r:'"부럽다…" 노총각 선배가 한숨을 쉬었다.'}},{t:'부끄러워서 차에서 몰래',s:'호감 조금↑',act:'lv2',arg:{d:3,r:'그래도 맛은 최고였다.'}}]});
+  L.push({title:'🍱 깜짝 도시락',text:`훈련장 앞에 ${nm} 도시락을 들고 서 있다. 동료들이 휘파람을 분다.`,ch:[{t:'동료들 앞에서 당당히 먹는다',s:'호감↑ · 팀 분위기↑',act:'lv2',arg:{d:8,chem:1,r:'"부럽다…" 노총각 선배가 한숨을 쉬었다.'}},{t:'부끄러워서 차에서 몰래',s:'호감 조금↑',act:'lv2',arg:{d:3,r:'그래도 맛은 최고였다.'}}]});
   L.push({title:'🎢 놀이공원 데이트',text:`쉬는 날, ${nm} 놀이공원 가자고 조른다. 사람들이 알아볼 텐데…`,ch:[{t:'모자 푹 쓰고 간다',s:'호감↑↑ · 피로↑',act:'lv2',arg:{d:11,f:3,fm:1,r:'롤러코스터에서 소리 지르다 팬한테 들켰다. 사진 요청 10번.'}},{t:'"한적한 데로 가자"',s:'호감↑',act:'lv2',arg:{d:5,r:'교외 카페에서 조용히 데이트했다.'}}]});
-  L.push({title:'📰 열애설 기사',text:`"${ME.name}, ${g.n} 씨와 열애 중" 기사가 떴다. 기자들이 확인을 요청한다.`,ch:[{t:'"예쁘게 만나고 있습니다"',s:'호감↑↑ · 인기↑',act:'lv2',arg:{d:12,r:`${nm} 기사를 캡처해서 보냈다. "멋있다 ㅎㅎ"`}},{t:'"사생활이라…" 노코멘트',s:'호감↓ · 사생활은 지킨다 (멘탈↑)',act:'lv2',arg:{d:-8,m:1,r:'"우리 숨겨야 돼?" 서운한 문자가 왔다.'}}]});
+  L.push({title:'📰 열애설 기사',text:`"${ME.name}, ${g.n} 씨와 열애 중" 기사가 떴다. 기자들이 확인을 요청한다.`,ch:[{t:'"예쁘게 만나고 있습니다"',s:'호감↑↑ · 인기↑',act:'lv2',arg:{d:12,fame:2,r:`${nm} 기사를 캡처해서 보냈다. "멋있다 ㅎㅎ"`}},{t:'"사생활이라…" 노코멘트',s:'호감↓ · 사생활은 지킨다 (멘탈↑)',act:'lv2',arg:{d:-8,m:1,r:'"우리 숨겨야 돼?" 서운한 문자가 왔다.'}}]});
   L.push({title:'🤒 그녀가 아프다',text:`${nm} 감기 몸살로 앓아누웠다. 내일은 경기가 있다.`,ch:[{t:'죽 사 들고 밤새 간호',s:'호감↑↑ · 피로↑↑',act:'lv2',arg:{d:14,f:6,r:'잠든 얼굴을 보며 생각했다. 이 사람이다.'}},{t:'약이랑 과일 배달',s:`−${money(Math.min(30,Math.max(5,Math.round(big/50))))} · 호감↑`,act:'lv2',arg:{d:6,c:Math.min(30,Math.max(5,Math.round(big/50))),r:'"고마워… 경기 잘해." 목소리가 잠겨 있었다.'}}]});
   L.push({title:'🏕️ 캠핑 가자',text:`${nm} 캠핑 장비를 잔뜩 사 왔다. "이번 주말 어때?"`,ch:[{t:'불멍하러 간다',s:'호감↑ · 피로↓ · 멘탈↑',act:'lv2',arg:{d:9,f:-4,m:1,r:'모닥불 앞에서 야구 얘기 대신 미래 얘기를 했다.'}},{t:'"원정 끝나고 가자"',s:'호감 조금↓ · 푹 쉰다 (피로↓)',act:'lv2',arg:{d:-3,f:-3,r:'장비가 베란다에 그대로 쌓여 있다.'}}]});
   L.push({title:'💍 커플링',text:`${nm} 반지 매장 앞에서 걸음을 멈췄다.`,ch:[{t:'그 자리에서 맞춘다',s:`−${money(big)} · 호감↑↑`,act:'lv2',arg:{d:14,c:big,r:'경기 중에도 반지를 목걸이로 걸고 뛰었다.'}},{t:'"다음에 더 좋은 걸로"',s:'호감↓ · 돈 아낌',act:'lv2',arg:{d:-5,r:'"다음 언제?" 표정이 말해주고 있었다.'}}]});
@@ -16937,11 +16937,11 @@ if (typeof choose === 'function') {
    ① 선수 만들기: 배분 가능 포인트 10점(표시 기준 1점 = 능력치 +1)을 직접 배분
       · v858m (23:28 유저 "보너스 포인트 말고 배분 가능한 포인트 · 10점으로 · 저번 패치랑 총합 스탯 일정하게"):
         시작 총합(표시 기준 타자 553 · 투수 425)은 그대로 — 랜덤으로 굴리는 몫을 10점 줄이고(543 · 415) 그 10점을 유저가 배분
-        포인트는 항상 10점 (은퇴 보너스는 시작 성장 포인트로만)
+        포인트는 항상 10점
       · 능력치 8~7개 + 워크에식·멘탈·내구성에 넣을 수 있음 (구종 X) · 한 능력치 상한(생성 상한)까지
       · 다 나누기 전엔 시작 버튼이 안 눌림(안내 + 카드로 스크롤) · [자동 배정] = 포지션 요구 툴·체형 쪽으로 곡선 가중치(한 곳 몰빵 X) · [초기화]
       · 다시 굴리기 해도 배분은 유지 (상한을 넘게 되면 넘는 만큼 돌려받음)
-   ② 은퇴 보너스: 커리어 점수(명예의 전당 점수)로 다음 선수 보너스 — 곡선
+   ② 은퇴 보너스 — v858o 유저 요청으로 제거됨 (아래 설명은 예전 기록)
       · 생성 포인트 +0~5 (점수 30 → 0 · 60 → 1 · 90 → 2 · 120 → 4 · 160↑ → 5)
       · 시작 성장 포인트 +0~12 (30 → 0 · 60 → 3 · 90 → 6 · 120 → 10 · 160↑ → 12)
       · 가장 최근에 은퇴한 선수 것 하나만 (누적 X) · 다음 선수 '커리어 시작' 누를 때 사용됨
@@ -16961,32 +16961,8 @@ function legCalc858(score) {
   /* v858m: 생성 포인트는 항상 10점 → 은퇴 보너스는 시작 성장 포인트로만 (예전 포인트 몫을 성장 포인트로 합침) */
   return { pts: 0, xp: Math.round(knot(s, [30, 60, 90, 120, 160], [0, 5, 10, 18, 22])) };
 }
-if (typeof retire === 'function') {
-  const _rt858k = retire;
-  retire = function () {
-    const out = _rt858k.apply(this, arguments);
-    try {
-      if (S && S.ended && !S.leg858) {
-        const g = legCalc858(S.ended.score);
-        S.leg858 = g;
-        legSet858(g.xp ? { pts: g.pts, xp: g.xp, name: ME.name, score: S.ended.score, y: S.ended.y } : null);
-      }
-    } catch (e) {}
-    return out;
-  };
-}
-/* 은퇴 화면에 한 줄 */
-if (typeof vRetCard === 'function') {
-  const _vr858k = vRetCard;
-  vRetCard = function () {
-    let h = _vr858k.apply(this, arguments);
-    try {
-      const g = S && S.leg858;
-      if (g) h += `<div class="card leg858"><span class="lbl">🎖️ 다음 선수 은퇴 보너스</span><div class="small">${g.xp ? `새 선수를 만들면 <b>시작 성장 포인트 +${g.xp}P</b>` : '이번 커리어는 보너스가 없어요. 다음 선수는 더 길게!'}</div></div>`;
-    } catch (e) {}
-    return h;
-  };
-}
+/* v858o (23:41 유저 "은퇴 보너스 없애자"): 은퇴 보너스 전부 제거 — 저장은 안 하고, 예전에 저장된 값은 지움 */
+legSet858(null);
 
 /* ---------- ① 선수 만들기: 배분 가능 포인트 ---------- */
 /* v858m: 시작 총합 유지 — 랜덤 배분 몫에서 10점을 빼 두고(아래 buildMe 이전 단계 v851 총합) 유저가 그 10점을 배분 */
@@ -17062,13 +17038,12 @@ function crAuto858(cr) {
     let h = _vc858k.apply(this, arguments);
     try {
       if (!cr || !/data-act="reroll"/.test(h)) return h; /* 외모 단계에선 X */
-      const P = cr.type === 'P', me = ME, left = crLeft858(cr), pool = crPool858(cr), al = cr.al858, L = legGet858();
+      const P = cr.type === 'P', me = ME, left = crLeft858(cr), pool = crPool858(cr), al = cr.al858;
       const okKeys = [...Object.keys(me.r).filter(k => !(me.pt && k in me.pt)), 'we', 'men', 'dur'];
       /* 남은 포인트 + 버튼 */
       /* v858m2 (23:31 유저 "박스로 하지 말고 깔끔하게"): 박스·설명 문구 없이 한 줄 */
       const head = `<div class="crpt858${ui.crWarn858 && left > 0 ? ' hot' : ''}" id="crpt858"><span class="sp">배분 가능 포인트 <b class="num">${left}</b></span>`
-        + `<button class="lnk858" data-c858="reset" ${crUsed858(cr) ? '' : 'disabled'}>초기화</button><button class="btn xs ${left ? 'pri' : ''}" data-c858="auto" ${left ? '' : 'disabled'}>자동 배정</button></div>`
-        + (L && L.xp ? `<div class="tiny leg858">🎖️ ${esc(L.name || '이전 선수')} 은퇴 보너스 · 시작 성장 포인트 +${L.xp || 0}P</div>` : '');
+        + `<button class="lnk858" data-c858="reset" ${crUsed858(cr) ? '' : 'disabled'}>초기화</button><button class="btn xs ${left ? 'pri' : ''}" data-c858="auto" ${left ? '' : 'disabled'}>자동 배정</button></div>`;
       h = h.replace(/(<button class="btn sm" data-act="reroll">[^<]*<\/button><\/div>)/, '$1' + head);
       /* 줄마다 ± 버튼 */
       for (const k of okKeys) {
@@ -17093,23 +17068,6 @@ function crAuto858(cr) {
     const h = _vb858k.apply(this, arguments);
     try { if (!S && ui.cr && h.includes('data-act="start"')) { const left = crLeft858(ui.cr); if (left > 0) return h.replace(/(data-act="start"[^>]*>)[^<]*/, `$1배분 가능 포인트 ${left}점을 먼저 나눠주세요`); } } catch (e) {}
     return h;
-  };
-}
-/* 시작: 은퇴 보너스 성장 포인트 지급 + 사용 처리 */
-{
-  const _nc858k = newCareer;
-  newCareer = function (cr) {
-    const out = _nc858k.apply(this, arguments);
-    try {
-      const L = legGet858();
-      if (L && S && ME) {
-        if (L.xp) ME.xp += L.xp;
-        S.legUsed858 = { pts: L.pts || 0, xp: L.xp || 0, name: L.name || '' };
-        if (L.xp) news(`${L.name ? L.name + ' ' : '이전 선수 '}은퇴 보너스로 시작한다. (성장 포인트 +${L.xp || 0}P)`);
-        legSet858(null);
-      }
-    } catch (e) {}
-    return out;
   };
 }
 if (typeof document !== 'undefined') {
@@ -17184,7 +17142,12 @@ const loveXp858 = d => (d >= 14 ? 2 : d >= 8 ? 1 : 0);
   const _l2 = ACT.lv2;
   if (_l2) ACT.lv2 = function (a) {
     const x0 = ME.xp; const r = _l2.apply(this, arguments);
-    try { const x = ME.xp - x0; if (x > 0 && typeof r === 'string' && !/성장 포인트/.test(r)) return r + ` (성장 포인트 +${Math.round(x)})`; } catch (e) {}
+    try {
+      /* v858n: 설명에 적힌 인기·감독 신뢰·팀 분위기 변화도 실제로 반영 (돈이 모자라 못 했으면 X) */
+      if (a && !(typeof r === 'string' && /부족/.test(r))) { if (a.fame) S.rel.fame = cl(S.rel.fame + a.fame, 0, 100); if (a.coach) S.rel.coach = cl(S.rel.coach + a.coach, 0, 100); if (a.chem) S.rel.chem = cl(S.rel.chem + a.chem, 0, 100);
+        if (a.art && S.stage === 'pro' && S.gf && typeof article === 'function') { try { article(`${ME.name}, ${S.gf.n} 씨와 공개 열애`, `${shortTeam()} ${jo(ME.name, '이', '가')} SNS에 연인과의 사진을 올리며 열애를 공개했다.`, 'love'); } catch (e) {} } }
+      const x = ME.xp - x0; if (x > 0 && typeof r === 'string' && !/성장 포인트/.test(r)) return r + ` (성장 포인트 +${Math.round(x)})`;
+    } catch (e) {}
     return r;
   };
 }
@@ -17220,30 +17183,32 @@ function loveMore858() {
   const g = S.gf, nm = jo(g.n, '이', '가'), wa = jo(g.n, '과', '와'), sal = (S.pro && S.pro.salary) || 3000;
   const sm = Math.min(300, Math.max(20, Math.round(sal * .004 / 10) * 10)), md = Math.min(2000, Math.max(80, Math.round(sal * .012 / 10) * 10));
   const L = [];
-  L.push({ title: '🎂 그녀의 생일', text: `내일이 ${g.n}의 생일이다. 마침 원정 일정과 겹친다.`, ch: [
+  /* v858n 점검: 상황 안 맞는 이벤트 거르기 (비시즌에 '원정' · MLB에서 KTX · 대학생에게 팬 사진 유출 등) */
+  const pro = S.stage === 'pro', kbo = pro && S.pro && S.pro.league === 'KBO', season = S.phase > 0;
+  if (kbo && season) L.push({ title: '🎂 그녀의 생일', text: `내일이 ${g.n}의 생일이다. 마침 원정 일정과 겹친다.`, ch: [
     { t: '경기 끝나고 KTX 타고 깜짝 방문', s: `−${money(sm)} · 호감↑↑ · 피로↑↑`, act: 'lv2', arg: { d: 14, f: 7, c: sm, r: '자정 1분 전, 케이크를 들고 문 앞에 섰다. 눈물이 그렁그렁했다.' } },
     { t: '영상통화로 생일 노래', s: '호감 조금↑', act: 'lv2', arg: { d: 4, r: '"내년엔 꼭 같이 보내자" 웃으며 말했지만 조금 서운한 눈치다.' } },
     { t: '선물만 택배로', s: `−${money(sm)} · 호감↑ · 피로 없음`, act: 'lv2', arg: { d: 6, c: sm, r: '"선물 고마워. 근데 보고 싶다…"' } }] });
-  L.push({ title: '📷 데이트 사진 유출', text: `팬이 찍은 ${wa}의 데이트 사진이 커뮤니티에 올라왔다. 댓글이 수백 개다.`, ch: [
-    { t: '"제 여자친구 맞습니다" 정면 돌파', s: '호감↑↑ · 인기 조금↑ · 감독 신뢰 조금↓', act: 'lv2', arg: { d: 10, r: '당당한 모습에 팬들도 "멋있다"는 반응. 감독은 "야구나 잘해" 한마디.' }, },
+  if (pro && S.rel.fame >= 15) L.push({ title: '📷 데이트 사진 유출', text: `팬이 찍은 ${wa}의 데이트 사진이 커뮤니티에 올라왔다. 댓글이 수백 개다.`, ch: [
+    { t: '"제 여자친구 맞습니다" 정면 돌파', s: '호감↑↑ · 인기 조금↑ · 감독 신뢰 조금↓', act: 'lv2', arg: { d: 10, fame: 2, coach: -2, r: '당당한 모습에 팬들도 "멋있다"는 반응. 감독은 "야구나 잘해" 한마디.' }, },
     { t: '"지인입니다" 얼버무린다', s: '호감↓↓ · 구설 없이 지나감 (멘탈↑)', act: 'lv2', arg: { d: -12, m: 1, r: `${nm} 기사를 보고 한참 연락이 없었다.` } }] });
   L.push({ title: '🍳 쿠킹 클래스', text: `${nm} 커플 쿠킹 클래스를 예약했다고 한다. 하필 개인 훈련 시간이다.`, ch: [
     { t: '훈련 미루고 같이 간다', s: '호감↑ · 훈련 공백 (컨디션 조금↓)', act: 'lv2', arg: { d: 9, fm: -0.5, r: '파스타 면이 다 퍼졌지만 둘 다 배꼽 잡고 웃었다.' } },
     { t: '"다음에 꼭 가자" 훈련 먼저', s: '호감↓ · 훈련 집중 (컨디션↑)', act: 'lv2', arg: { d: -6, fm: 1, r: '"다음이 언제야?" 문자 끝에 마침표가 찍혀 있었다.' } }] });
-  L.push({ title: '💌 원정 숙소의 손편지', text: '긴 원정길. 숙소 책상에 앉으니 문득 손편지를 쓰고 싶어졌다.', ch: [
+  if (pro && season) L.push({ title: '💌 원정 숙소의 손편지', text: '긴 원정길. 숙소 책상에 앉으니 문득 손편지를 쓰고 싶어졌다.', ch: [
     { t: '세 장 꽉 채워 쓴다', s: '호감↑ · 피로 조금↑', act: 'lv2', arg: { d: 8, f: 2, r: `며칠 뒤 ${nm} 편지 사진과 함께 "평생 간직할게"라고 보냈다.` } },
     { t: '그냥 일찍 잔다', s: '피로↓ · 호감 조금↓', act: 'lv2', arg: { d: -3, f: -3, r: '푹 잤다. 아침에 "잘 잤어?" 문자가 와 있었다.' } }] });
   L.push({ title: '🐶 유기견 봉사', text: `${nm} 주말에 유기견 보호소 봉사를 같이 가자고 한다.`, ch: [
-    { t: '같이 간다', s: '호감↑ · 인기↑ · 피로↑', act: 'lv2', arg: { d: 9, f: 3, r: '산책시킨 강아지가 끝까지 따라왔다. 사진이 조용히 퍼졌다.' } },
+    { t: '같이 간다', s: '호감↑ · 인기↑ · 피로↑', act: 'lv2', arg: { d: 9, f: 3, fame: 2, r: '산책시킨 강아지가 끝까지 따라왔다. 사진이 조용히 퍼졌다.' } },
     { t: '"이번 주는 쉬고 싶어"', s: '호감↓ · 피로↓', act: 'lv2', arg: { d: -5, f: -4, r: '혼자 다녀온 사진을 보니 마음이 조금 쓰였다.' } }] });
   L.push({ title: '📞 옛 연인의 연락', text: '오랜만에 전 연인에게서 "잘 지내? 경기 잘 보고 있어" 문자가 왔다.', ch: [
     { t: `${g.n}에게 먼저 말하고 차단`, s: '호감↑ · 멘탈 조금↑', act: 'lv2', arg: { d: 8, m: 1, r: `"말해줘서 고마워." ${nm} 손을 꼭 잡았다.` } },
     { t: '답장하고 아무 말 안 한다', s: '호감↓↓ (들키면) · 별일 없으면 그대로', act: 'love858', arg: { p: .5, d: -16, r1: `휴대폰 알림을 ${nm} 먼저 봤다. 그날 밤 대화는 길고 차가웠다.`, r0: '별일 없이 지나갔다. 그래도 마음 한구석이 찜찜하다.' } }] });
-  if (g.aff >= 60 && S.stage === 'pro') L.push({ title: '🏠 같이 살까?', text: `${nm} 조심스럽게 말한다. "우리… 같이 살아볼까?"`, ch: [
+  if (g.aff >= 60 && kbo) L.push({ title: '🏠 같이 살까?', text: `${nm} 조심스럽게 말한다. "우리… 같이 살아볼까?"`, ch: [
     { t: '집을 합친다', s: `−${money(md)} (이사·살림) · 호감↑↑ · 피로↓`, act: 'lv2', arg: { d: 14, f: -4, c: md, r: '퇴근하면 불 켜진 집이 기다린다. 이상하게 경기가 잘 풀린다.' } },
     { t: '"결혼하고 같이 살자"', s: '호감↓ · 돈 아낌', act: 'lv2', arg: { d: -6, r: '"그 말 꼭 지켜." 반쯤 웃고 반쯤 서운한 얼굴이었다.' } }] });
-  if (S.stage === 'pro') L.push({ title: '🎤 시구 초대', text: `구단에서 "연인 시구 이벤트"를 제안했다. ${nm} 떨린다면서도 하고 싶어 한다.`, ch: [
-    { t: '공 던지는 법 특훈시켜 준다', s: '호감↑↑ · 인기↑ · 피로↑', act: 'lv2', arg: { d: 12, f: 3, r: '노바운드 스트라이크! 관중석이 들썩였고 하이라이트에 잡혔다.' } },
+  if (kbo && season) L.push({ title: '🎤 시구 초대', text: `구단에서 "연인 시구 이벤트"를 제안했다. ${nm} 떨린다면서도 하고 싶어 한다.`, ch: [
+    { t: '공 던지는 법 특훈시켜 준다', s: '호감↑↑ · 인기↑ · 피로↑', act: 'lv2', arg: { d: 12, f: 3, fame: 3, r: '노바운드 스트라이크! 관중석이 들썩였고 하이라이트에 잡혔다.' } },
     { t: '"부담되면 하지 마"', s: '호감 조금↓ · 구설 없음', act: 'lv2', arg: { d: -3, r: '"나 진짜 하고 싶었는데…" 작게 중얼거렸다.' } }] });
   return L;
 }
@@ -17256,24 +17221,25 @@ function spouseMore858() {
   const m = S.married, nm = jo(m.n, '이', '가'), sal = (S.pro && S.pro.salary) || 5000;
   const md = Math.min(3000, Math.max(100, Math.round(sal * .015 / 10) * 10)), bg = Math.min(20000, Math.max(500, Math.round(sal * .06 / 100) * 100));
   const L = [];
-  L.push({ title: '💑 결혼기념일', text: `오늘은 결혼 ${Math.max(1, S.y - m.y)}주년. 저녁에 경기가 있다.`, ch: [
+  const season = S.phase > 0;
+  if (season) L.push({ title: '💑 결혼기념일', text: `오늘은 결혼 ${Math.max(1, S.y - m.y)}주년. 저녁에 경기가 있다.`, ch: [
     { t: '경기 끝나고 호텔 레스토랑', s: `−${money(md)} · 배우자 호감↑↑ · 피로↑`, act: 'sp858', arg: { d: 12, f: 3, c: md, r: '야경 앞에서 처음 만난 날 얘기를 했다.' } },
     { t: '집에서 둘이 케이크', s: '배우자 호감↑', act: 'sp858', arg: { d: 6, r: '소박했지만 따뜻한 밤이었다.' } },
     { t: '깜빡했다…', s: '배우자 호감 크게↓ · 푹 잔다 (피로↓)', act: 'sp858', arg: { d: -15, f: -3, r: `다음 날 아침, 식탁 위에 ${m.n} 준비한 선물이 그대로 있었다.` } }] });
-  L.push({ title: '🏖️ 비시즌 가족 여행', text: `${nm} 비시즌에 여행을 가자고 한다. 개인 훈련 일정이 빠듯하다.`, ch: [
+  if (!season) L.push({ title: '🏖️ 비시즌 가족 여행', text: `${nm} 비시즌에 여행을 가자고 한다. 개인 훈련 일정이 빠듯하다.`, ch: [
     { t: '해외로 2주', s: `−${money(bg)} · 배우자 호감↑↑ · 피로↓↓ · 훈련 공백 (감독 신뢰 조금↓)`, act: 'sp858', arg: { d: 14, f: -8, c: bg, coach: -1, r: '바다 앞에서 야구 생각을 완전히 잊었다.' } },
     { t: '국내 2박 3일', s: `−${money(Math.round(bg / 6))} · 배우자 호감↑ · 피로↓`, act: 'sp858', arg: { d: 7, f: -4, c: Math.round(bg / 6), r: '짧았지만 충분했다.' } },
     { t: '훈련이 먼저다', s: '배우자 호감↓ · 감독 신뢰↑', act: 'sp858', arg: { d: -7, coach: 2, r: '"그래, 야구선수 아내가 어디 쉽나." 말끝이 길었다.' } }] });
   L.push({ title: '🍲 내조의 여왕', text: `${nm} 영양사 자격증 공부를 시작했다며 식단을 짜 주겠다고 한다.`, ch: [
     { t: '고맙게 받는다', s: '배우자 호감↑ · 피로 회복↑', act: 'sp858', arg: { d: 8, f: -5, r: '닭가슴살이 이렇게 맛있을 수 있다니.' } },
     { t: '"구단 영양사가 있어서 괜찮아"', s: '배우자 호감↓', act: 'sp858', arg: { d: -6, r: '책이 조용히 책장에 꽂혔다.' } }] });
-  L.push({ title: '📺 아내의 방송 출연 제의', text: `예능 프로그램에서 부부 동반 출연 제의가 왔다. ${nm} 은근히 기대하는 눈치다.`, ch: [
+  if (season) L.push({ title: '📺 아내의 방송 출연 제의', text: `예능 프로그램에서 부부 동반 출연 제의가 왔다. ${nm} 은근히 기대하는 눈치다.`, ch: [
     { t: '출연한다', s: '배우자 호감↑ · 인기↑↑ · 피로↑ · 팀 분위기 조금↓', act: 'sp858', arg: { d: 9, fame: 5, f: 3, chem: -1, r: '방송 후 "사랑꾼"이라는 별명이 생겼다.' } },
     { t: '시즌 중이라 거절', s: '배우자 호감 조금↓ · 팀 분위기↑', act: 'sp858', arg: { d: -4, chem: 1, r: '"그래, 시즌 끝나고 생각하자."' } }] });
   L.push({ title: '😮‍💨 쌓인 서운함', text: `${nm} 말한다. "요즘 집에 와도 휴대폰만 보잖아."`, ch: [
     { t: '휴대폰 끄고 산책', s: '배우자 호감↑ · 피로 조금↑', act: 'sp858', arg: { d: 8, f: 1, r: '한강을 한 바퀴 돌며 오랜만에 많이 웃었다.' } },
     { t: '"경기 분석 중이었어"', s: '배우자 호감↓ · 분석은 계속 (컨디션 조금↑)', act: 'sp858', arg: { d: -8, fm: .5, r: '말없이 방으로 들어갔다.' } }] });
-  if (S.stage === 'pro') L.push({ title: '🎁 깜짝 직관', text: `${nm} 몰래 원정 경기장까지 응원을 왔다. 관중석에서 손을 흔든다.`, ch: [
+  if (season) L.push({ title: '🎁 깜짝 직관', text: `${nm} 몰래 원정 경기장까지 응원을 왔다. 관중석에서 손을 흔든다.`, ch: [
     { t: '경기 후 하트 세리머니', s: '배우자 호감↑↑ · 인기↑ · 동료 놀림 (팀 분위기 조금↓)', act: 'sp858', arg: { d: 12, fame: 2, chem: -1, r: '"사랑꾼 납셨네" 라커룸이 한동안 시끄러웠다.' } },
     { t: '조용히 눈인사만', s: '배우자 호감 조금↑', act: 'sp858', arg: { d: 4, r: '그래도 경기 내내 든든했다.' } }] });
   return L;
@@ -17289,7 +17255,7 @@ const LOVETTL858 = /생일|사진 유출|쿠킹|손편지|유기견|옛 연인|�
       const fresh = e => !(S.evY[e.title] >= S.y - 1);
       let pool = [];
       if (S.gf && !S.married && S.gf.aff >= 20 && R() < .4) pool = loveMore858().filter(fresh);
-      else if (S.married && R() < .28) pool = spouseMore858().filter(fresh);
+      else if (S.married && S.stage === 'pro' && R() < .28) pool = spouseMore858().filter(fresh); /* 배우자 이벤트는 프로 때만 (경기·구단 얘기) */
       if (pool.length) { const e = pick(pool); S.evY[e.title] = S.y; out.push(e); }
     } catch (e) {}
     return addXpTags858(out);
