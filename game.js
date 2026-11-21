@@ -17065,10 +17065,10 @@ function crAuto858(cr) {
       const P = cr.type === 'P', me = ME, left = crLeft858(cr), pool = crPool858(cr), al = cr.al858, L = legGet858();
       const okKeys = [...Object.keys(me.r).filter(k => !(me.pt && k in me.pt)), 'we', 'men', 'dur'];
       /* 남은 포인트 + 버튼 */
-      const head = `<div class="crpt858${ui.crWarn858 && left > 0 ? ' hot' : ''}" id="crpt858"><div class="row"><span class="sp" style="white-space:nowrap">배분 가능 포인트 <b class="num">${left}</b></span>`
-        + `<button class="btn xs" data-c858="reset" ${crUsed858(cr) ? '' : 'disabled'}>초기화</button><button class="btn xs ${left ? 'pri' : ''}" data-c858="auto" ${left ? '' : 'disabled'}>자동 배정</button></div>`
-        + `<div class="tiny muted">${left ? '원하는 능력치 옆 ＋를 눌러 나눠주세요. 다 나눠야 커리어를 시작할 수 있어요.' : '배분 완료! 바꾸고 싶으면 －로 빼서 다시 넣을 수 있어요.'}</div>`
-        + (L && L.xp ? `<div class="tiny leg">🎖️ ${esc(L.name || '이전 선수')} 은퇴 보너스: 시작 성장 포인트 +${L.xp || 0}P</div>` : '') + `</div>`;
+      /* v858m2 (23:31 유저 "박스로 하지 말고 깔끔하게"): 박스·설명 문구 없이 한 줄 */
+      const head = `<div class="crpt858${ui.crWarn858 && left > 0 ? ' hot' : ''}" id="crpt858"><span class="sp">배분 가능 포인트 <b class="num">${left}</b></span>`
+        + `<button class="lnk858" data-c858="reset" ${crUsed858(cr) ? '' : 'disabled'}>초기화</button><button class="btn xs ${left ? 'pri' : ''}" data-c858="auto" ${left ? '' : 'disabled'}>자동 배정</button></div>`
+        + (L && L.xp ? `<div class="tiny leg858">🎖️ ${esc(L.name || '이전 선수')} 은퇴 보너스 · 시작 성장 포인트 +${L.xp || 0}P</div>` : '');
       h = h.replace(/(<button class="btn sm" data-act="reroll">[^<]*<\/button><\/div>)/, '$1' + head);
       /* 줄마다 ± 버튼 */
       for (const k of okKeys) {
@@ -17077,7 +17077,7 @@ function crAuto858(cr) {
         const endTok = '</span></span></div>', end = h.indexOf(endTok, start); if (end < 0) continue;
         const cur = ['we', 'men', 'dur'].includes(k) ? me.hid[k] : me.r[k], a = al[k] || 0;
         const canUp = left > 0 && cur + CR858K.perD <= crHi858(P, k) + 1e-9;
-        const btns = `<div class="row"><button class="btn xs" data-c858="dn" data-k="${k}" ${a ? '' : 'disabled'} aria-label="${lb} 빼기">－</button><button class="btn xs ${canUp ? 'pri' : ''}" data-c858="up" data-k="${k}" ${canUp ? '' : 'disabled'} aria-label="${lb} 올리기">＋</button></div>`;
+        const btns = `<div class="row"><button class="btn xs" data-c858="dn" data-k="${k}" ${a ? '' : 'disabled'} aria-label="${lb} 빼기">－</button><button class="btn xs" data-c858="up" data-k="${k}" ${canUp ? '' : 'disabled'} aria-label="${lb} 올리기">＋</button></div>`;
         let row = h.slice(start, end + endTok.length);
         row = row.replace(`<span>${lb}</span>`, `<span>${lb}${a ? `<b class="al858">+${a}</b>` : ''}</span>`).replace(/<\/div>$/, btns + '</div>');
         h = h.slice(0, start) + row + h.slice(end + endTok.length);
@@ -17145,10 +17145,12 @@ if (typeof document !== 'undefined') {
   }, true);
   try {
     const st = document.createElement('style');
-    st.textContent = '.crpt858{margin:6px 0 4px;padding:10px 12px;border-radius:12px;background:rgba(59,130,246,.10);border:1px solid rgba(59,130,246,.35);display:flex;flex-direction:column;gap:4px}'
-      + '.crpt858 .row{gap:6px;align-items:center}.crpt858 b.num{font-size:1.1rem;color:#60a5fa}.crpt858.hot{border-color:#f59e0b;background:rgba(245,158,11,.14);animation:crpt858 1s ease 2}'
-      + '.crpt858 .leg{color:#d4a017}.al858{margin-left:3px;font-size:.72rem;color:#34d399;font-weight:800}'
-      + '@keyframes crpt858{50%{transform:scale(1.02)}}';
+    st.textContent = '.crpt858{display:flex;align-items:center;gap:10px;padding:6px 0 8px;border-bottom:1px solid var(--line)}'
+      + '.crpt858 .sp{font-size:.88rem;color:var(--sub,#9aa4b2)}.crpt858 b.num{font-size:1.05rem;color:var(--ink,#fff);margin-left:4px;font-variant-numeric:tabular-nums}'
+      + '.crpt858.hot b.num{color:#f59e0b}.crpt858.hot{animation:crpt858 .5s ease 2}'
+      + '.lnk858{background:none;border:0;color:var(--sub,#9aa4b2);font-size:.8rem;padding:4px 2px;cursor:pointer}.lnk858:disabled{opacity:.35;cursor:default}'
+      + '.leg858{color:#d4a017;margin-top:-2px}.al858{margin-left:3px;font-size:.72rem;color:#34d399;font-weight:800}'
+      + '@keyframes crpt858{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}';
     (document.head || document.documentElement).appendChild(st);
   } catch (e) {}
 }
@@ -17361,12 +17363,14 @@ if (typeof document !== 'undefined') document.addEventListener('click', e => {
 }, true);
 
 /* v858l (11/21 23:16 유저) "훈련 세션일 때 가끔 광고 보고 스탯 올리기? 그런 버튼 뜨게 하자"
-   · 훈련 탭을 열면 반기마다 40% 확률로 '📺 광고 보고 성장 포인트 +2' 카드 (보상형 광고 · 반기에 한 번)
+   · 훈련 탭을 열면 반기마다 40% 확률로 '📺 보너스 훈련 영상' 카드 (보상형 광고 · 반기에 한 번)
+   · v858m (23:31 유저 "훈련 효율을 올려 주는 식으로 하자 광고를 보면"): 보상 = 그 반기 훈련 효과 +15% (성장 포인트 X)
+     (훈련 효율 배수 itemSum('eff')에 더함 = '야구 퍼포먼스 연구소' 1년 효과를 한 반기만 · 훈련 화면 '훈련 효율 ×' 숫자에도 바로 반영)
    · 구글 H5 게임 광고(Ad Placement API, adBreak type 'reward')를 씀 — 웹에서만 (앱은 광고 스크립트 자체가 없음 → adBreak 없음 → 카드 안 뜸)
    · 광고가 실제로 준비됐을 때만(beforeReward 호출) 카드가 뜸 → 애드센스 승인 + H5 게임 광고 사용 설정 전엔 아무것도 안 보임
    · 끝까지 봐야(adViewed) 지급 · 중간에 닫으면 지급 X · 광고 나오는 동안 게임 소리 멈춤
-   · 정책: 보상은 게임 안 성장 포인트(현실 가치 X) · 광고 클릭 유도 문구 X */
-const RW858L = { xp: 2, chance: 0.4 };
+   · 정책: 보상은 게임 안 훈련 효과(현실 가치 X) · 광고 클릭 유도 문구 X */
+const RW858L = { eff: 0.15, chance: 0.4 };
 function rwAvail858() { try { return typeof window !== 'undefined' && window.__bbAds && typeof window.adBreak === 'function'; } catch (e) { return false; } }
 function rwAsk858() {
   try {
@@ -17385,8 +17389,8 @@ function rwAsk858() {
       adDismissed() { ui.rw858 = null; try { toast('광고를 끝까지 봐야 받을 수 있어요.'); } catch (e) {} },
       adViewed() {
         try {
-          if (S && S.turn === t && S.rwUsed858 !== t) { ME.xp += RW858L.xp; S.rwUsed858 = t; news(`광고 보상으로 성장 포인트 +${RW858L.xp}`); save(); }
-          ui.rw858 = null; toast(`성장 포인트 +${RW858L.xp}!`);
+          if (S && S.turn === t && S.rwUsed858 !== t) { S.rwUsed858 = t; S.rwEff858 = t; save(); }
+          ui.rw858 = null; toast(`이번 반기 훈련 효과 +${Math.round(RW858L.eff * 100)}%!`);
         } catch (e) {}
       },
       adBreakDone() { if (ui.rw858 && ui.rw858.t !== (S && S.turn)) ui.rw858 = null; },
@@ -17400,7 +17404,11 @@ if (typeof vTrainTab === 'function') {
     try {
       if (S && S.stage !== 'ret') {
         if (ui.rw858 && ui.rw858.t === S.turn && S.rwUsed858 !== S.turn) {
-          const card = `<div class="card rw858"><div class="row"><div class="sp"><div style="font-weight:800">📺 보너스 훈련 영상</div><div class="tiny muted">짧은 광고를 보면 성장 포인트 +${RW858L.xp} · 이번 반기 한 번</div></div><button class="btn sm pri" data-rw858="1">보고 받기</button></div></div>`;
+          const card = `<div class="card rw858"><div class="row"><div class="sp"><div style="font-weight:800">📺 보너스 훈련 영상</div><div class="tiny muted">짧은 광고를 보면 이번 반기 훈련 효과 +${Math.round(RW858L.eff * 100)}%</div></div><button class="btn sm pri" data-rw858="1">보고 받기</button></div></div>`;
+          const i = h.indexOf('<div class="card');
+          h = i >= 0 ? h.slice(0, i) + card + h.slice(i) : card + h;
+        } else if (S.rwEff858 === S.turn) {
+          const card = `<div class="card rw858 on"><div class="row"><div class="sp"><div style="font-weight:800">📺 보너스 훈련 적용 중</div><div class="tiny muted">이번 반기 훈련 효과 +${Math.round(RW858L.eff * 100)}%</div></div><span class="chip up">적용 중</span></div></div>`;
           const i = h.indexOf('<div class="card');
           h = i >= 0 ? h.slice(0, i) + card + h.slice(i) : card + h;
         } else if (rwAvail858() && ui.rwAsk858 !== S.turn) setTimeout(rwAsk858, 0);
@@ -17415,3 +17423,13 @@ if (typeof document !== 'undefined') document.addEventListener('click', e => {
   e.stopPropagation(); e.preventDefault();
   try { const r = ui.rw858; if (r && typeof r.show === 'function' && S && r.t === S.turn) r.show(); else { ui.rw858 = null; render(); } } catch (x) {}
 }, true);
+
+/* 훈련 효과: 광고 본 반기에만 +15% (훈련 효율 배수에 더해짐) */
+if (typeof itemSum === 'function') {
+  const _is858m = itemSum;
+  itemSum = function (k) {
+    const v = _is858m.apply(this, arguments);
+    try { if (k === 'eff' && S && S.me === ME && S.rwEff858 != null && S.rwEff858 === S.turn) return v + RW858L.eff; } catch (e) {}
+    return v;
+  };
+}
