@@ -17431,10 +17431,11 @@ function inv858() {
   if (!S.inv858) {
     const px = {}, hist = {};
     STK858.forEach(s => { px[s.id] = s.p0; hist[s.id] = [s.p0]; });
-    S.inv858 = { px, hist, sh: {}, cost: {}, re: {}, reV: {}, lastR: 0, t: S.turn, mv: {} };
+    S.inv858 = { px, hist, sh: {}, cost: {}, re: {}, reV: {}, lastR: 0, t: S.turn, mv: {}, cash: 0 };
     // 기존에 생활 탭에서 산 집은 산 값 그대로 부동산 보유로 옮김
     RE858.forEach(id => { const it = ITEMS.find(x => x.id === id); if (it) S.inv858.reV[id] = it.p; if (it && owned(id)) S.inv858.re[id] = { cost: it.p }; });
   }
+  if (typeof S.inv858.cash !== 'number' || !isFinite(S.inv858.cash)) S.inv858.cash = 0;
   return S.inv858;
 }
 function stkPV858(v) { v = v || inv858(); return STK858.reduce((a, s) => a + (v.sh[s.id] || 0) * v.px[s.id], 0); }
@@ -17500,10 +17501,20 @@ if (typeof retire === 'function') { const _rt = retire; retire = function () { t
 function stkTrade858(id, q) {
   const v = inv858(), s = STK858.find(x => x.id === id); if (!v || !s) return '';
   const p = v.px[id], have = v.sh[id] || 0;
-  if (q === 'max') q = Math.floor(S.money / p);
+  if (q === 'max') q = Math.floor(v.cash / p);
   if (q === 'all') q = -have; if (q === 'half') q = -Math.ceil(have / 2);
-  if (q > 0) { q = Math.min(q, Math.floor(S.money / p)); if (q <= 0) return '자금이 부족해요.'; S.money -= q * p; v.cost[id] = ((v.cost[id] || 0) * have + q * p) / (have + q); v.sh[id] = have + q; return `${s.n} ${q.toLocaleString()}주 매수 (−${money(q * p)})`; }
-  if (q < 0) { q = Math.min(-q, have); if (!q) return ''; S.money += q * p; earnAdj858(-q * (v.cost[id] || p)); v.sh[id] = have - q; if (!v.sh[id]) delete v.cost[id]; return `${s.n} ${q.toLocaleString()}주 매도 (+${money(q * p)})`; }
+  if (q > 0) { q = Math.min(q, Math.floor(v.cash / p)); if (q <= 0) return '계좌 잔액이 부족해요. 먼저 입금해 주세요.'; v.cash -= q * p; v.cost[id] = ((v.cost[id] || 0) * have + q * p) / (have + q); v.sh[id] = have + q; return `${s.n} ${q.toLocaleString()}주 매수 (−${money(q * p)})`; }
+  if (q < 0) { q = Math.min(-q, have); if (!q) return ''; v.cash += q * p; earnAdj858(q * (p - (v.cost[id] || p))); v.sh[id] = have - q; if (!v.sh[id]) delete v.cost[id]; return `${s.n} ${q.toLocaleString()}주 매도 (+${money(q * p)})`; }
+  return '';
+}
+/* 증권 계좌 입출금 (11/23 유저 "증권계좌처럼 돈을 넣을 수 있게 · 실수로 다 구매할 수도 있잖아")
+   · 주식은 계좌에 넣어 둔 돈으로만 사고, 판 돈도 계좌로 들어옴 → '최대'를 눌러도 계좌 안에서만
+   · 출금은 보유 자금으로 옮기는 것뿐이라 통산 수입에는 안 잡힘 (손익은 팔 때 이미 반영) */
+function cashMove858(d) {
+  const v = inv858(); if (!v) return '';
+  d = Math.round(d);
+  if (d > 0) { if (S.money < d) return '보유 자금이 부족해요.'; S.money -= d; v.cash += d; return `증권 계좌로 ${money(d)} 입금`; }
+  if (d < 0) { d = Math.min(-d, Math.floor(v.cash)); if (d <= 0) return '계좌 잔액이 없어요.'; v.cash -= d; S.money += d; earnAdj858(-d); return `보유 자금으로 ${money(d)} 출금`; }
   return '';
 }
 function reTrade858(id) {
@@ -17532,12 +17543,13 @@ function vInvest858() {
   h += `<div class="ivsum"><div><span>주식 평가액</span><b>${money(sv)}</b>${costAll ? `<i class="${pl >= 0 ? 'up' : 'dn'}">${pl >= 0 ? '+' : '−'}${money(Math.abs(pl))}</i>` : ''}</div><div><span>부동산</span><b>${money(rv)}</b></div></div>`;
   h += `<div class="seg" style="margin:8px 0 2px"><button class="${tab === 'stk' ? 'on' : ''}" data-iv858="tab" data-v="stk">주식</button><button class="${tab === 're' ? 'on' : ''}" data-iv858="tab" data-v="re">부동산</button></div>`;
   if (tab === 'stk') {
+    h += `<div class="ivacct"><div class="row"><span class="sp"><span class="tiny muted">증권 계좌 잔액</span><b>${money(v.cash)}</b></span><span class="tiny muted" style="text-align:right">보유 자금<br><b style="color:inherit">${money(S.money)}</b></span></div><div class="ivin"><input type="number" inputmode="numeric" min="1" step="1" placeholder="금액 (만원)" class="ivcash"><button class="btn sm pri" data-iv858="dep">입금</button><button class="btn sm" data-iv858="wd">출금</button></div><div class="ivbtns"><button class="btn sm" data-iv858="depq" data-v="1000">+1천만</button><button class="btn sm" data-iv858="depq" data-v="10000">+1억</button><button class="btn sm" data-iv858="depq" data-v="100000">+10억</button><button class="btn sm" data-iv858="wdall" ${v.cash >= 1 ? '' : 'disabled'}>전액 출금</button></div></div>`;
     h += STK858.map(s => {
       const hs = v.hist[s.id] || [], p = v.px[s.id], prev = hs.length > 1 ? hs[hs.length - 2] : p, ch = p / prev - 1, own = v.sh[s.id] || 0, open = ui.inv858o === s.id;
       const opl = own ? (p / (v.cost[s.id] || p) - 1) : 0;
       let r = `<div class="ivrow${open ? ' open' : ''}" data-iv858="open" data-k="${s.id}"><div class="sp"><div class="ivn">${s.n}${v.mv[s.id] ? `<span class="ivtag ${v.mv[s.id]}">${v.mv[s.id] === 'up' ? '급등' : '급락'}</span>` : ''}</div><div class="tiny muted">${s.sec}${own ? ` · ${own.toLocaleString()}주 <span class="${opl >= 0 ? 'up' : 'dn'}">${opl >= 0 ? '+' : ''}${(opl * 100).toFixed(1)}%</span>` : ''}</div></div>${spark858(hs, ch >= 0)}<div class="ivp"><b>${won858(p)}</b><span class="${ch >= 0 ? 'up' : 'dn'}">${pct858(ch)}</span></div></div>`;
       if (open) {
-        const mx = Math.floor(S.money / p);
+        const mx = Math.floor(v.cash / p);
         r += `<div class="ivact"><div class="tiny muted">살 수 있는 수량 ${mx.toLocaleString()}주${own ? ` · 보유 ${own.toLocaleString()}주` : ''}</div><div class="ivin"><input type="number" inputmode="numeric" min="1" step="1" placeholder="수량 직접 입력" class="ivq" data-k="${s.id}"><span>주</span><button class="btn sm pri" data-iv858="bin" data-k="${s.id}">매수</button>${own ? `<button class="btn sm" data-iv858="sin" data-k="${s.id}">매도</button>` : ''}</div><div class="ivbtns"><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="1" ${mx >= 1 ? '' : 'disabled'}>1주</button><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="10" ${mx >= 10 ? '' : 'disabled'}>10주</button><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="100" ${mx >= 100 ? '' : 'disabled'}>100주</button><button class="btn sm pri" data-iv858="b" data-k="${s.id}" data-q="max" ${mx >= 1 ? '' : 'disabled'}>최대</button></div>`
           + (own ? `<div class="ivbtns"><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="half">절반 매도</button><button class="btn sm dng" data-iv858="b" data-k="${s.id}" data-q="all">전량 매도 ${money(own * p)}</button></div>` : '') + `</div>`;
       }
@@ -17554,7 +17566,7 @@ function vInvest858() {
 }
 const INV858CSS = `<style>.inv858 .ivsum{display:grid;grid-template-columns:1fr 1fr;gap:8px}.inv858 .ivsum>div{background:var(--bg2,rgba(127,127,127,.08));border-radius:10px;padding:8px 10px;display:flex;flex-direction:column}.inv858 .ivsum span{font-size:.72rem;opacity:.7}.inv858 .ivsum b{font-size:1rem}.inv858 .ivsum i{font-style:normal;font-size:.75rem}
 .inv858 .up{color:#e5484d}.inv858 .dn{color:#3e7bfa}.inv858 .ivrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}.inv858 .ivrow.open{border-bottom:0}.inv858 .ivn{font-weight:700;font-size:.9rem}.inv858 .ivp{display:flex;flex-direction:column;align-items:flex-end;min-width:78px}.inv858 .ivp b{font-size:.88rem}.inv858 .ivp span{font-size:.72rem}
-.inv858 .ivtag{font-size:.62rem;margin-left:6px;padding:1px 5px;border-radius:6px;color:#fff;vertical-align:2px}.inv858 .ivtag.up{background:#e5484d;color:#fff}.inv858 .ivtag.dn{background:#3e7bfa;color:#fff}.inv858 .ivact{padding:4px 0 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}.inv858 .ivbtns{display:flex;gap:6px;flex-wrap:wrap}.inv858 .ivbtns .btn{flex:1}.inv858 .btn.dng{color:#3e7bfa}.inv858 .ivin{display:flex;gap:6px;align-items:center}.inv858 .ivin input{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg2,rgba(127,127,127,.08));color:inherit}.inv858 .ivin span{font-size:.85rem;opacity:.7}
+.inv858 .ivtag{font-size:.62rem;margin-left:6px;padding:1px 5px;border-radius:6px;color:#fff;vertical-align:2px}.inv858 .ivtag.up{background:#e5484d;color:#fff}.inv858 .ivtag.dn{background:#3e7bfa;color:#fff}.inv858 .ivact{padding:4px 0 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}.inv858 .ivbtns{display:flex;gap:6px;flex-wrap:wrap}.inv858 .ivbtns .btn{flex:1}.inv858 .btn.dng{color:#3e7bfa}.inv858 .ivin{display:flex;gap:6px;align-items:center}.inv858 .ivin input{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg2,rgba(127,127,127,.08));color:inherit}.inv858 .ivin span{font-size:.85rem;opacity:.7}.inv858 .ivacct{display:flex;flex-direction:column;gap:8px;padding:10px 12px;margin:8px 0 4px;border-radius:12px;background:var(--bg2,rgba(127,127,127,.08))}.inv858 .ivacct .sp{display:flex;flex-direction:column}.inv858 .ivbtns .btn{white-space:nowrap;padding-left:4px;padding-right:4px}.ivpanel858 .inv858>.row:first-child{display:none}.inv858 .ivacct b{font-size:1.05rem}
 .ivbtn858{display:flex!important;flex-direction:row!important;align-items:center;gap:12px;width:100%;cursor:pointer;font:inherit;color:inherit;text-align:left}.ivbtn858 .sp{display:flex;flex-direction:column;gap:2px}.ivbtn858 b{font-size:.98rem}.ivbtn858 .ivbi{font-size:1.5rem}.ivbtn858 .ivgo{font-size:1.4rem;opacity:.5}.ivbtn858 i{font-style:normal}.ivbtn858 .up{color:#e5484d}.ivbtn858 .dn{color:#3e7bfa}
 .ivpanel858{position:fixed;inset:0;z-index:60;background:var(--bg,#111);display:flex;flex-direction:column;animation:ivup858 .22s ease-out}.ivpanel858.noanim{animation:none}@keyframes ivup858{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
 .ivpanel858 .ivhead{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px;border-bottom:1px solid var(--line)}.ivpanel858 .ivhead b{font-size:1.05rem}.ivpanel858 .ivhead .tiny{margin-left:auto}.ivpanel858 .ivx{font-size:1.6rem;line-height:1;background:none;border:0;color:inherit;padding:0 6px;cursor:pointer}
@@ -17575,7 +17587,7 @@ if (typeof vShop === 'function') {
         const v = inv858(), sv = stkPV858(v), rv = rePV858(v);
         const lastR = v.lastR || 0;
         const card = INV858CSS + `<button class="card ivbtn858" data-iv858="show"><span class="ivbi">💹</span><span class="sp" style="text-align:left"><b>재테크</b><span class="tiny muted">주식 ${money(sv)}${sv && lastR ? ` <i class="${lastR >= 0 ? 'up' : 'dn'}">${pct858(lastR)}</i>` : ''} · 부동산 ${money(rv)}</span></span><span class="ivgo">›</span></button>`
-          + (ui.inv858show ? `<div class="ivpanel858${ui.inv858anim ? '' : ' noanim'}"><div class="ivhead"><button class="ivx" data-iv858="hide" aria-label="닫기">‹</button><b>재테크</b><span class="tiny muted">보유 자금 ${money(S.money)}</span></div><div class="ivbody">${vInvest858()}</div></div>` : '');
+          + (ui.inv858show ? `<div class="ivpanel858${ui.inv858anim ? '' : ' noanim'}"><div class="ivhead"><button class="ivx" data-iv858="hide" aria-label="닫기">‹</button><b>재테크</b><span class="tiny muted">계좌 ${money(v.cash)} · 보유 ${money(S.money)}</span></div><div class="ivbody">${vInvest858()}</div></div>` : '');
         const mk = '🏠 생활'; const i = h.indexOf(mk);
         const j = i >= 0 ? h.lastIndexOf('<div class="card"', i) : -1;
         h = j >= 0 ? h.slice(0, j) + card + h.slice(j) : h + card;
@@ -17595,10 +17607,13 @@ if (typeof document !== 'undefined') document.addEventListener('click', e => {
   else if (a === 'tab') ui.inv858 = b.getAttribute('data-v');
   else if (a === 'open') ui.inv858o = ui.inv858o === k ? null : k;
   else if (a === 'b') { const q = b.getAttribute('data-q'); m = stkTrade858(k, isNaN(+q) ? q : +q); }
+  else if (a === 'dep' || a === 'wd') { const inp = document.querySelector('.ivcash'), n = Math.floor(+(inp && inp.value) || 0); m = n <= 0 ? '금액을 만원 단위로 입력해 주세요.' : cashMove858(a === 'dep' ? n : -n); }
+  else if (a === 'depq') m = cashMove858(+b.getAttribute('data-v'));
+  else if (a === 'wdall') m = cashMove858(-inv858().cash);
   else if (a === 'bin' || a === 'sin') {
     const inp = document.querySelector(`.ivq[data-k="${k}"]`), n = Math.floor(+(inp && inp.value) || 0);
     if (n <= 0) m = '수량을 입력해 주세요.';
-    else if (a === 'bin') { const mx = Math.floor(S.money / inv858().px[k]); m = n > mx ? `자금이 부족해요. 최대 ${mx.toLocaleString()}주까지 살 수 있어요.` : stkTrade858(k, n); }
+    else if (a === 'bin') { const mx = Math.floor(inv858().cash / inv858().px[k]); m = n > mx ? (mx ? `계좌 잔액이 부족해요. 최대 ${mx.toLocaleString()}주까지 살 수 있어요.` : '계좌 잔액이 부족해요. 먼저 입금해 주세요.') : stkTrade858(k, n); }
     else { const own = inv858().sh[k] || 0; m = n > own ? `보유 수량(${own.toLocaleString()}주)보다 많이 팔 수 없어요.` : stkTrade858(k, -n); }
   }
   else if (a === 're') m = reTrade858(k);
@@ -17618,13 +17633,13 @@ const EV858S = { tipP: .12, fixP: .05, gap: 2 };
 function tipEvent858() {
   const v = inv858(); if (!v) return null;
   const s = pick(STK858), sal = (S.pro && S.pro.salary) || 3000;
-  const big = Math.max(s.p0, Math.min(S.money * .3, sal * .2)), small = Math.max(s.p0, big / 4);
+  const pool = S.money + v.cash, big = Math.max(s.p0, Math.min(pool * .3, sal * .2)), small = Math.max(s.p0, big / 4);
   const qb = Math.floor(big / v.px[s.id]), qs = Math.max(1, Math.floor(small / v.px[s.id]));
-  if (qb < 1 || S.money < v.px[s.id] * qs) return null;
+  if (qb < 1 || pool < v.px[s.id] * qs) return null;
   const who = pick(S.pro && S.pro.league === 'MLB' ? ['같은 팀 한국인 동료', '불펜 동료', '룸메이트'] : ['고참 선배', '동기', '주장', '룸메이트 선배', '친한 후배']);
   return { title: '📈 동료의 주식 추천', opt: 4, text: `원정 버스 안. ${jo(who, '이', '가')} 휴대폰을 내민다.\n"${s.n} 이거 진짜 간다. 나도 꽤 넣었어. 같이 하자."\n지금 ${s.n} 한 주에 ${won858(v.px[s.id])}.`, ch: [
-    { t: `${qb.toLocaleString()}주 산다`, s: `−${money(qb * v.px[s.id])} · 팀 분위기↑ · 주가는 장담 못 함`, act: 'tip858', arg: { k: s.id, q: qb, chem: 3 } },
-    { t: `${qs.toLocaleString()}주만 산다`, s: `−${money(qs * v.px[s.id])} · 팀 분위기 조금↑`, act: 'tip858', arg: { k: s.id, q: qs, chem: 1 } },
+    { t: `${qb.toLocaleString()}주 산다`, s: `${money(qb * v.px[s.id])}어치 (계좌가 모자라면 보유 자금에서 이체) · 팀 분위기↑ · 주가는 장담 못 함`, act: 'tip858', arg: { k: s.id, q: qb, chem: 3 } },
+    { t: `${qs.toLocaleString()}주만 산다`, s: `${money(qs * v.px[s.id])}어치 · 팀 분위기 조금↑`, act: 'tip858', arg: { k: s.id, q: qs, chem: 1 } },
     { t: '"난 주식 안 해"', s: '돈은 지킨다 · 팀 분위기 조금↓', act: 'tip858', arg: { q: 0, chem: -1 } }] };
 }
 function fixEvent858() {
@@ -17638,6 +17653,7 @@ Object.assign(ACT, {
   tip858(a) {
     S.rel.chem = cl(S.rel.chem + (a.chem || 0), 0, 100);
     if (!a.q) return '"그래, 안 하는 게 맞을 수도 있지." 선배가 머쓱하게 웃었다.';
+    const need = a.q * inv858().px[a.k] - inv858().cash; if (need > 0) cashMove858(Math.ceil(need));
     const m = stkTrade858(a.k, a.q);
     if (/부족/.test(m)) { S.rel.chem = cl(S.rel.chem - (a.chem || 0), 0, 100); return m; }
     return `${m}\n"오 같이 가는 거지?" 버스 뒷자리가 한결 시끌벅적해졌다.`;
