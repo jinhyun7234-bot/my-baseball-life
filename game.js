@@ -1507,7 +1507,7 @@ function newCard(){const p=S.plan;p.useCard=false;p.card=null;if(S.stage==='ret'
   if(S.phase===0){const opts=shuffle(C.slice()).slice(0,3);S.queue.push({title:'🏕️ 캠프 개인 훈련',text:`${S.y} 스프링캠프. 오전 팀 훈련이 끝나고 개인 시간이 생겼다.\n코치진이 몇 가지 특별 훈련을 제안했다. 어떻게 할까?`,ch:[...opts.map((c,i)=>({t:c.n,s:c.d+' · 성장 포인트',act:'tcard',arg:{i:C.indexOf(c)}})),{t:'오늘은 쉰다',s:'피로↓ · 특별 훈련 없음',act:'tskip'}]})}
   else if(R()<.225){const c=pick(C);S.queue.push({title:'⭐ 특별 훈련 제안',text:`${PHASE[S.phase]}를 앞두고 제안이 들어왔다.\n「${c.n}」 — ${c.d}`,ch:[{t:'참여한다',s:c.d+' · 성장 포인트',act:'tcard',arg:{i:C.indexOf(c)}},{t:'정중히 사양한다',s:'평소 훈련에 집중',act:'tskip'}]})}}
 function gambleEvent(){const old840=age()>=33,a=pick(S.pro&&S.pro.league==='MLB'?['같은 팀 동료','마이너 시절 동기','불펜 동료']:old840?['동기','친한 후배','룸메이트 후배','다른 팀에서 온 동갑내기']:['고참 선배','동기','룸메이트 선배','불펜 투수 형']),jr840=/후배/.test(a);
-  return{title:'🎲 수상한 제안',text:`캠프 숙소, 밤 11시. ${jo(a,'이','가')} 슬쩍 휴대폰 화면을 보여준다.\n${jr840?'"요즘 다들 이거 해요. 해외 사이트라 절대 안 걸려요. 선배님도 한 판 해보실래요?"':'"요즘 다들 이거 해. 해외 사이트라 절대 안 걸려. 너도 한 판 해볼래?"'}\n\n불법 스포츠 도박이다.`,ch:[{t:'"딱 한 번만…" 같이 한다',s:'들키지 않으면 돈과 친분, 걸리면…',act:'gamble',arg:{j:1}},{t:jr840?'"난 빠질게. 너도 하지 마" 거절한다':'"저는 빠질게요" 거절한다',s:'분위기가 조금 어색해질 수 있다',act:'gamble',arg:{j:0}},{t:'구단에 조용히 알린다',s:'감독 신뢰↑ · 동료들과 관계↓',act:'gamble',arg:{j:2}}]}}
+  return{title:'🎲 수상한 제안',text:`캠프 숙소, 밤 11시. ${jo(a,'이','가')} 슬쩍 휴대폰 화면을 보여준다.\n${jr840?'"요즘 다들 이거 해요. 해외 사이트라 절대 안 걸려요. 선배님도 한 판 해보실래요?"':'"요즘 다들 이거 해. 해외 사이트라 절대 안 걸려. 너도 한 판 해볼래?"'}\n\n불법 스포츠 도박이다.`,ch:[{t:'"딱 한 번만…" 같이 한다',s:'들키지 않으면 돈과 친분, 걸리면…',act:'gamble',arg:{j:1}},{t:jr840?'"난 빠질게. 너도 하지 마" 거절한다':'"저는 빠질게요" 거절한다',s:'마음은 편하다 · 멘탈 조금↑',act:'gamble',arg:{j:0}},{t:'구단에 조용히 알린다',s:'감독 신뢰↑ · 동료들과 관계↓',act:'gamble',arg:{j:2}}]}}
 Object.assign(ACT,{
   tcard(a){const C=isP()?CARDS_P:CARDS_B;S.plan.card={...C[a.i]};S.plan.useCard=true;ensurePlan();return`「${S.plan.card.n}」에 참여하기로 했다. 훈련 화면에 반영됐다.`},
   tskip(){S.plan.card=null;S.plan.useCard=false;ME.fat=cl(ME.fat-4,0,100);ensurePlan();return'평소 훈련에 집중하기로 했다.'},
@@ -1518,7 +1518,7 @@ Object.assign(ACT,{
         return`발각됐다. ${mlbG?'MLB 사무국이':'KBO 상벌위원회가'} 30경기 출전 정지와 제재금 ${money(fine)}을 내렸다. 감독은 말없이 등을 돌렸다.`}
       const win=Math.round(ri(5,30)*100);S.money+=win;S.rel.chem=cl(S.rel.chem+8,0,100);if(isP())ME.r.pcl=cl((ME.r.pcl||45)+3,20,capOf('pcl'));else ME.r.eye=cl(ME.r.eye+4,20,capOf('eye'));return`아무도 모르게 지나갔다. ${S.pro&&S.pro.league==='MLB'?'동료들과':'선배들과'} 부쩍 가까워졌다. (+${money(win)})\n이상하게도 판을 읽는 눈이 트였다. (${isP()?'볼배합 +3':'선구안 +4'})\n…하지만 찜찜한 기분은 지워지지 않는다.`}
     if(a.j===2){S.rel.coach=cl(S.rel.coach+8,0,100);S.rel.chem=cl(S.rel.chem-10,0,100);news('캠프 내 불법 도박 정황을 구단에 알림.');return'구단이 조용히 사안을 정리했다. 감독은 고맙다고 했지만, 라커룸 분위기는 싸늘해졌다.'}
-    S.rel.chem=cl(S.rel.chem-3,0,100);ME.hid.men=cl(ME.hid.men+1,20,80);return'정중히 거절했다. 잠깐 어색했지만 마음은 편하다. (멘탈 +1)'}});
+    ME.hid.men=cl(ME.hid.men+1,20,80);return'정중히 거절했다. 마음은 편하다. (멘탈 +1)'}});/* v858t 유저: 거절하면 팀 분위기 떨어지는 건 X */
 CM.scandal=['실망이다 진짜','도박이라니 선 넘었다','팬 기만 그 자체','30경기면 솜방망이 아님?','유니폼 마킹 지웁니다','연봉 그렇게 받고 돈이 부족했냐','이래서 사생활 관리가 중요함','구단은 그동안 뭐 했냐','복귀해도 박수는 못 칠 듯','어린 애들 보는데 이게 뭐냐','이 정도면 영구제명 감인데','다른 선수들도 조사해라','응원한 내가 바보지','진심으로 반성하면 한 번은 기회 줘야 함','징계 끝나면 실력으로 증명해라','기사 보고 손 떨림 ㄹㅇ','이게 무슨 날벼락이냐','팀 분위기 박살 났겠다'];
 {const _dr=decideRole;decideRole=function(){if(S.susp>0&&S.stage==='pro'&&S.m>=3&&S.m<=9)return'susp';return _dr()}}
 {const _pm=playMonth;playMonth=function(role){if(role==='susp'){S.susp=Math.max(0,S.susp-((GM.KBO||{})[S.m]||0));if(!S.susp)news('출전 정지 징계가 끝났다.');return null}return _pm(role)}}
@@ -17627,9 +17627,9 @@ if (typeof document !== 'undefined') document.addEventListener('click', e => {
 /* ===== 이벤트 (11/23 유저) =====
    ① 동료의 주식 추천 — 사면 팀 분위기↑ (종목은 이후 시세대로 오르거나 내림 = 플러스·마이너스)
    ② 승부조작 브로커 — 수락 시 80% 성공(돈·멘탈↑) / 20% 실패(벌금·워크에식·인기↓) · 거절 · 신고
-   · 둘 다 프로 시즌 중에만 · 같은 이벤트는 최소 2년 간격 · 한 턴에 둘 중 하나만 · 승부조작은 커리어 최대 2번
+   · 둘 다 프로 시즌 중에만 · 같은 이벤트는 최소 3년 간격 · 한 턴에 둘 중 하나만 · 승부조작은 커리어 최대 2번
    · 기존 '수상한 제안'(도박)처럼 선택 이벤트 우선순위 대열에 들어가서 다른 이벤트를 밀어내지 않게(opt) */
-const EV858S = { tipP: .12, fixP: .05, gap: 2 };
+const EV858S = { tipP: .06, fixP: .05, gap: 3 };
 function tipEvent858() {
   const v = inv858(); if (!v) return null;
   const s = pick(STK858), sal = (S.pro && S.pro.salary) || 3000;
@@ -17640,11 +17640,16 @@ function tipEvent858() {
   return { title: '📈 동료의 주식 추천', opt: 4, text: `원정 버스 안. ${jo(who, '이', '가')} 휴대폰을 내민다.\n"${s.n} 이거 진짜 간다. 나도 꽤 넣었어. 같이 하자."\n지금 ${s.n} 한 주에 ${won858(v.px[s.id])}.`, ch: [
     { t: `${qb.toLocaleString()}주 산다`, s: `${money(qb * v.px[s.id])}어치 (계좌가 모자라면 보유 자금에서 이체) · 팀 분위기↑ · 주가는 장담 못 함`, act: 'tip858', arg: { k: s.id, q: qb, chem: 3 } },
     { t: `${qs.toLocaleString()}주만 산다`, s: `${money(qs * v.px[s.id])}어치 · 팀 분위기 조금↑`, act: 'tip858', arg: { k: s.id, q: qs, chem: 1 } },
-    { t: '"난 주식 안 해"', s: '돈은 지킨다 · 팀 분위기 조금↓', act: 'tip858', arg: { q: 0, chem: -1 } }] };
+    { t: '"난 주식 안 해"', s: '돈은 지킨다', act: 'tip858', arg: { q: 0, chem: 0 } }] };
+}
+/* 타자·투수(선발·불펜)별로 요구하는 내용이 헷갈리지 않게 */
+function fixAsk858() {
+  /* 선발·불펜이 시즌 중 바뀔 수 있어서 투수는 둘 다 맞는 표현으로 (선발 '1회' X) */
+  return isP() ? '다음 등판 때 첫 타자한테 볼넷 하나만 내주시면' : '다음 경기 첫 타석에서 삼진 하나만 당해 주시면';
 }
 function fixEvent858() {
   const sal = (S.pro && S.pro.salary) || 3000, pay = Math.min(30000, Math.max(1000, Math.round(sal * .25 / 100) * 100));
-  return { title: '🕶️ 낯선 남자의 제안', opt: 1, text: `원정 숙소 앞. 처음 보는 남자가 다가와 명함도 없이 말을 건다.\n"다음 경기 1회에 ${isP() ? '볼넷 하나만 주시면' : '삼진 하나만 당해 주시면'} ${money(pay)} 드립니다. 아무도 몰라요."\n\n승부조작 브로커다.`, ch: [
+  return { title: '🕶️ 낯선 남자의 제안', opt: 1, text: `원정 숙소 앞. 처음 보는 남자가 다가와 명함도 없이 말을 건다.\n"${fixAsk858()} ${money(pay)} 드립니다. 아무도 몰라요."\n\n승부조작 브로커다.`, ch: [
     { t: '"…딱 한 번만."', s: '성공하면 돈과 배짱, 걸리면…', act: 'fix858', arg: { j: 1, pay } },
     { t: '못 들은 걸로 한다', s: '마음은 편하다 · 찜찜해서 컨디션 조금↓', act: 'fix858', arg: { j: 0 } },
     { t: '구단에 신고한다', s: '감독 신뢰↑ · 인기↑ · 라커룸이 뒤숭숭해짐 (팀 분위기↓)', act: 'fix858', arg: { j: 2 } }] };
@@ -17661,10 +17666,10 @@ Object.assign(ACT, {
   fix858(a) {
     S.fixN858 = (S.fixN858 || 0) + (a.j === 1 ? 1 : 0);
     if (a.j === 1) {
-      if (R() < .8) { S.money += a.pay; ME.hid.men = cl(ME.hid.men + 3, 20, 80); return `아무 일도 없었다. 통장에 ${money(a.pay)}이 들어왔다. (멘탈 +3)\n…다음 날 그 남자에게서 또 문자가 왔다.`; }
+      if (R() < .8) { S.money += a.pay; ME.hid.men = cl(ME.hid.men + 3, 20, 80); return `${isP() ? '볼넷 하나는 아무도 이상하게 보지 않았다.' : '삼진 하나는 아무도 이상하게 보지 않았다.'} 통장에 ${money(a.pay)}이 들어왔다. (멘탈 +3)\n…다음 날 그 남자에게서 또 문자가 왔다.`; }
       const fine = Math.min(50000, Math.max(2000, Math.round(((S.pro && S.pro.salary) || 3000) * .5 / 100) * 100));
       S.money = Math.max(0, S.money - fine); ME.hid.we = cl(ME.hid.we - 8, 20, 80); S.rel.fame = cl(S.rel.fame - 15, 0, 100);
-      try { news(`승부조작 가담 적발 — 제재금 ${money(fine)}.`); article(`[단독] ${ME.name}, 승부조작 브로커와 접촉… 제재금 ${money(fine)}`, `${ME.name}이 승부조작 브로커에게 돈을 받은 사실이 드러났다. 리그는 제재금 ${money(fine)}을 부과했다. 팬들의 실망이 크다.`, 'scandal'); } catch (e) {}
+      try { news(`승부조작 가담 적발 — 제재금 ${money(fine)}.`); article(`[단독] ${ME.name}, 승부조작 브로커와 접촉… 제재금 ${money(fine)}`, `${jo(ME.name, '이', '가')} 브로커에게 돈을 받고 ${isP() ? '고의로 볼넷을 내준' : '고의로 삼진을 당한'} 사실이 드러났다. 리그는 제재금 ${money(fine)}을 부과했다. 팬들의 실망이 크다.`, 'scandal'); } catch (e) {}
       return `들켰다. 제재금 ${money(fine)}. 기사가 쏟아졌다. (워크에식 −8 · 인기 크게↓)`;
     }
     if (a.j === 2) { S.rel.coach = cl(S.rel.coach + 6, 0, 100); S.rel.fame = cl(S.rel.fame + 4, 0, 100); S.rel.chem = cl(S.rel.chem - 4, 0, 100); try { news('승부조작 제안을 구단에 신고.'); } catch (e) {} return '구단과 리그가 조사에 나섰다. "용기 있는 신고"라는 기사가 났지만, 라커룸에는 누가 또 연락받았나 서로 눈치를 보는 공기가 흘렀다.'; }
@@ -17686,5 +17691,22 @@ if (typeof newCard === 'function') {
       if (c.length) { const e = pick(c)(); if (e) { S.evY[e.title] = S.y; S.queue.push(e); } }
     } catch (e) {}
     return r;
+  };
+}
+
+/* 이벤트 골고루 (11/23 유저 "이벤트 골고루 뜨게") — 시뮬 60커리어에서 한 커리어에 프러포즈 9번·새 인연 6번 반복된 것 정리
+   · 💍 프러포즈: 한 번 뜨면 2년 동안 다시 안 뜸 (거절해도 매 턴 다시 묻던 것)
+   · 💘 새로운 인연: 같은 해에 두 번 안 뜸 */
+if (typeof lifeEvents === 'function') {
+  const _le = lifeEvents;
+  lifeEvents = function () {
+    let out = _le.apply(this, arguments);
+    try {
+      /* S.evY는 안쪽 래퍼(v77)가 모든 이벤트에 올해를 먼저 찍어서 못 씀 → 따로 저장 */
+      const Y = S.evCD858 = S.evCD858 || {};
+      const cd = { '💍 프러포즈': 2, '💘 새로운 인연': 1 };
+      out = out.filter(e => { const k = Object.keys(cd).find(t => (e.title || '').indexOf(t) === 0); if (!k) return true; if (Y[k] != null && S.y - Y[k] < cd[k]) return false; Y[k] = S.y; return true; });
+    } catch (e) {}
+    return out;
   };
 }
