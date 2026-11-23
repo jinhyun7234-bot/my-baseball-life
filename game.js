@@ -17412,16 +17412,16 @@ if (typeof itemSum === 'function') {
    · 컨디션: 직전 시세 변동에서 내 주식 평가액이 오르면 컨디션 상승 확률↑, 내리면↓
      효과 = 0.6·tanh(3·수익률) × 비중곡선(1−e^(−평가액/연봉)) → 소액이면 거의 영향 X, 연봉만큼 넣으면 체감 */
 const STK858 = [
-  { id: 'kal', n: '대한황공', p0: 2.4, vol: .11, sec: '항공' },
-  { id: 'cpg', n: '쿠빵', p0: 3.6, vol: .13, sec: '유통' },
-  { id: 'kko', n: '카카우', p0: 5, vol: .10, sec: 'IT' },
-  { id: 'sse', n: '삼숭전자', p0: 8, vol: .07, sec: '반도체' },
-  { id: 'nvr', n: '네이봐', p0: 21, vol: .09, sec: 'IT' },
-  { id: 'hdc', n: '현디차', p0: 25, vol: .07, sec: '자동차' },
-  { id: 'nvd', n: '엔비디야', p0: 28, vol: .12, sec: '반도체' },
-  { id: 'skh', n: 'SK하이닉쓰', p0: 34, vol: .10, sec: '반도체' },
-  { id: 'tsl', n: '테슬러', p0: 52, vol: .14, sec: '자동차' },
-  { id: 'sbl', n: '삼숭바이오', p0: 105, vol: .08, sec: '바이오' },
+  { id: 'kal', n: '대한날개', p0: 2.4, vol: .11, sec: '항공' },
+  { id: 'cpg', n: '쿠당탕', p0: 3.6, vol: .13, sec: '유통' },
+  { id: 'kko', n: '초코톡', p0: 5, vol: .10, sec: 'IT' },
+  { id: 'sse', n: '셋별전자', p0: 8, vol: .07, sec: '반도체' },
+  { id: 'nvr', n: '녹색창', p0: 21, vol: .09, sec: 'IT' },
+  { id: 'hdc', n: '요즘모터스', p0: 25, vol: .07, sec: '자동차' },
+  { id: 'nvd', n: '가죽잠바칩스', p0: 28, vol: .12, sec: '반도체' },
+  { id: 'skh', n: '로우닉스', p0: 34, vol: .10, sec: '반도체' },
+  { id: 'tsl', n: '테스형모터스', p0: 52, vol: .14, sec: '자동차' },
+  { id: 'sbl', n: '셋별바이오', p0: 105, vol: .08, sec: '바이오' },
 ];
 const RE858 = ['home1', 'home2', 'home3', 'home4', 'lx_hw', 'lx_bh', 'lx_ny', 'lx_island'];
 const INV858 = { drift: .15, jump: .04, reVol: .04, reDrift: .5, reFee: .03, fmMax: .6 };
@@ -17449,7 +17449,7 @@ function invStep858() {
     let r = rn(INV858.drift * s.vol, s.vol);
     if (R() < INV858.jump) { const up = R() < .55; r += (up ? 1 : -1) * (.15 + R() * .15); v.mv[s.id] = up ? 'up' : 'dn'; }
     const p = Math.max(.1, Math.round(v.px[s.id] * Math.exp(r) * 100) / 100);
-    v.px[s.id] = p; (v.hist[s.id] = v.hist[s.id] || []).push(p); if (v.hist[s.id].length > 13) v.hist[s.id].shift();
+    v.px[s.id] = p; (v.hist[s.id] = v.hist[s.id] || []).push(p); if (v.hist[s.id].length > 31) v.hist[s.id].shift();
     pv1 += (v.sh[s.id] || 0) * p;
   });
   v.lastR = pv0 > 0 ? pv1 / pv0 - 1 : 0;
@@ -17497,13 +17497,14 @@ function invUnreal858() {
 }
 if (typeof retire === 'function') { const _rt = retire; retire = function () { try { if (S && S.inv858 && !S.inv858.done) { earnAdj858(invUnreal858()); S.inv858.done = 1; } } catch (e) {} return _rt.apply(this, arguments); }; }
 
+/* 종목 이름 (11/24 유저 "조금만 더 비틀어줘 센스있게 · 너무 위험한듯") — 실제 회사명과 거리를 더 둠. id는 그대로라 저장 데이터 호환 */
 /* 매매 */
 function stkTrade858(id, q) {
   const v = inv858(), s = STK858.find(x => x.id === id); if (!v || !s) return '';
   const p = v.px[id], have = v.sh[id] || 0;
   if (q === 'max') q = Math.floor(v.cash / p);
   if (q === 'all') q = -have; if (q === 'half') q = -Math.ceil(have / 2);
-  if (q > 0) { q = Math.min(q, Math.floor(v.cash / p)); if (q <= 0) return '계좌 잔액이 부족해요. 먼저 입금해 주세요.'; v.cash -= q * p; v.cost[id] = ((v.cost[id] || 0) * have + q * p) / (have + q); v.sh[id] = have + q; return `${s.n} ${q.toLocaleString()}주 매수 (−${money(q * p)})`; }
+  if (q > 0) { q = Math.min(q, Math.floor(v.cash / p)); if (q <= 0) return '투자용 현금이 부족해요. 먼저 입금해 주세요.'; v.cash -= q * p; v.cost[id] = ((v.cost[id] || 0) * have + q * p) / (have + q); v.sh[id] = have + q; return `${s.n} ${q.toLocaleString()}주 매수 (−${money(q * p)})`; }
   if (q < 0) { q = Math.min(-q, have); if (!q) return ''; v.cash += q * p; earnAdj858(q * (p - (v.cost[id] || p))); v.sh[id] = have - q; if (!v.sh[id]) delete v.cost[id]; return `${s.n} ${q.toLocaleString()}주 매도 (+${money(q * p)})`; }
   return '';
 }
@@ -17513,8 +17514,8 @@ function stkTrade858(id, q) {
 function cashMove858(d) {
   const v = inv858(); if (!v) return '';
   d = Math.round(d);
-  if (d > 0) { if (S.money < d) return '보유 자금이 부족해요.'; S.money -= d; v.cash += d; return `증권 계좌로 ${money(d)} 입금`; }
-  if (d < 0) { d = Math.min(-d, Math.floor(v.cash)); if (d <= 0) return '계좌 잔액이 없어요.'; v.cash -= d; S.money += d; earnAdj858(-d); return `보유 자금으로 ${money(d)} 출금`; }
+  if (d > 0) { if (S.money < d) return '보유 자금이 부족해요.'; S.money -= d; v.cash += d; return `투자용 현금으로 ${money(d)} 입금`; }
+  if (d < 0) { d = Math.min(-d, Math.floor(v.cash)); if (d <= 0) return '투자용 현금이 없어요.'; v.cash -= d; S.money += d; earnAdj858(-d); return `보유 자금으로 ${money(d)} 출금`; }
   return '';
 }
 function reTrade858(id) {
@@ -17525,52 +17526,195 @@ function reTrade858(id) {
   S.money -= val; v.re[id] = { cost: val }; S.me.items[id] = true; return `${it.n} 매입 (−${money(val)})`;
 }
 
-/* 화면 */
-function spark858(arr, up) {
+/* 화면 (11/24 유저 "주식 지금 너무 이상하고 직관적이지가 않아 · 깔끔하고 알아먹기 편하게")
+   · 맨 위에 '내 투자 자산' 하나로 합쳐 보여줌 (투자용 현금 + 주식 + 부동산) + 보유 중 손익
+   · 주식 탭: 투자용 현금 → 내 주식 → 전체 종목 순서
+   · 종목을 누르면 아래에서 주문창이 올라옴: 차트 · 보유/평균 단가/손익 · 사기/팔기 · 수량 ± · 주문 금액 미리보기
+   · 입금·출금도 작은 창에서 금액 버튼으로 (이전: 입력칸+버튼 8개가 한 줄에 몰려 있었음) */
+function spark858(arr, up, W, H, area) {
   if (!arr || arr.length < 2) return '';
-  const mn = Math.min(...arr), mx = Math.max(...arr), W = 64, H = 22, k = mx - mn || 1;
-  const pts = arr.map((p, i) => `${(i / (arr.length - 1) * W).toFixed(1)},${(H - 2 - (p - mn) / k * (H - 4)).toFixed(1)}`).join(' ');
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block"><polyline points="${pts}" fill="none" stroke="${up ? '#e5484d' : '#3e7bfa'}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+  W = W || 64; H = H || 22;
+  const mn = Math.min(...arr), mx = Math.max(...arr), k = mx - mn || 1, c = up ? '#e5484d' : '#3e7bfa';
+  const xy = arr.map((p, i) => [(i / (arr.length - 1) * W), (H - 3 - (p - mn) / k * (H - 6))]);
+  const pts = xy.map(q => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' ');
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block;max-width:100%">${area ? `<polygon points="0,${H} ${pts} ${W},${H}" fill="${c}" opacity=".12"/>` : ''}<polyline points="${pts}" fill="none" stroke="${c}" stroke-width="${area ? 2.2 : 1.6}" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 }
 const pct858 = x => `${x >= 0 ? '▲' : '▼'} ${Math.abs(x * 100).toFixed(1)}%`;
-const won858 = p => p < 1 ? `${Math.round(p * 10000).toLocaleString()}원` : `${(Math.round(p * 10000)).toLocaleString()}원`;
+const pctS858 = x => `${x >= 0 ? '+' : '−'}${Math.abs(x * 100).toFixed(1)}%`;
+const won858 = p => `${Math.round(p * 10000).toLocaleString()}원`;
+const amt858 = x => (Math.abs(x) < 100 ? won858(Math.abs(x)) : money(Math.abs(Math.round(x))));   // 100만원 미만은 원 단위까지 (2.4만원이 '2만원'으로 뭉개지지 않게)
+const sAmt858 = x => `${x >= 0 ? '+' : '−'}${amt858(x)}`;
+const cls858 = x => (Math.abs(x) < .005 ? '' : x > 0 ? 'up' : 'dn');   // 손익 0이면 빨강·파랑 대신 기본색
+function invTot858(v) {
+  v = v || inv858();
+  const sv = stkPV858(v), sc = STK858.reduce((a, s) => a + (v.sh[s.id] || 0) * (v.cost[s.id] || 0), 0);
+  const rv = rePV858(v), rc = Object.keys(v.re).reduce((a, id) => a + (v.re[id].cost || 0), 0);
+  const cost = sc + rc, pl = (sv - sc) + (rv - rc);
+  return { cash: v.cash, sv, sc, rv, rc, total: v.cash + sv + rv, pl, plPct: cost > 0 ? pl / cost : 0, cost };
+}
 function vInvest858() {
   const v = inv858(); if (!v) return '';
-  const tab = ui.inv858 || 'stk', sv = stkPV858(v), rv = rePV858(v);
-  const costAll = STK858.reduce((a, s) => a + (v.sh[s.id] || 0) * (v.cost[s.id] || 0), 0);
-  const pl = sv - costAll;
-  let h = `<div class="card inv858" style="gap:0"><div class="row" style="padding-bottom:6px"><span class="lbl sp">💹 재테크</span><span class="tiny muted">시세는 매 턴 바뀌어요</span></div>`;
-  h += `<div class="ivsum"><div><span>주식 평가액</span><b>${money(sv)}</b>${costAll ? `<i class="${pl >= 0 ? 'up' : 'dn'}">${pl >= 0 ? '+' : '−'}${money(Math.abs(pl))}</i>` : ''}</div><div><span>부동산</span><b>${money(rv)}</b></div></div>`;
-  h += `<div class="seg" style="margin:8px 0 2px"><button class="${tab === 'stk' ? 'on' : ''}" data-iv858="tab" data-v="stk">주식</button><button class="${tab === 're' ? 'on' : ''}" data-iv858="tab" data-v="re">부동산</button></div>`;
+  const t = invTot858(v), tab = ui.inv858 || 'stk';
+  const pulseC = ui.iv858pc != null && Math.round(ui.iv858pc) !== Math.round(v.cash);
+  let h = `<div class="inv858">`;
+  h += `<div class="ivhero"><span class="ivcap">내 투자 자산</span><b class="ivbig${ui.iv858pt != null && Math.round(ui.iv858pt) !== Math.round(t.total) ? ' pulse' : ''}">${money(t.total)}</b>`
+    + (t.cost > 0 ? `<span class="ivpl ${cls858(t.pl)}">보유 중 손익 ${sAmt858(t.pl)} (${pctS858(t.plPct)})</span>` : `<span class="ivpl muted">아직 투자한 게 없어요</span>`)
+    + `<div class="ivmini"><div><span>투자용 현금</span><b>${money(t.cash)}</b></div><div><span>주식</span><b>${money(t.sv)}</b></div><div><span>부동산</span><b>${money(t.rv)}</b></div></div></div>`;
+  h += `<div class="seg ivseg"><button class="${tab === 'stk' ? 'on' : ''}" data-iv858="tab" data-v="stk">주식</button><button class="${tab === 're' ? 'on' : ''}" data-iv858="tab" data-v="re">부동산</button></div>`;
   if (tab === 'stk') {
-    h += `<div class="ivacct"><div class="row"><span class="sp"><span class="tiny muted">증권 계좌 잔액</span><b>${money(v.cash)}</b></span><span class="tiny muted" style="text-align:right">보유 자금<br><b style="color:inherit">${money(S.money)}</b></span></div><div class="ivin"><input type="number" inputmode="numeric" min="1" step="1" placeholder="금액 (만원)" class="ivcash"><button class="btn sm pri" data-iv858="dep">입금</button><button class="btn sm" data-iv858="wd">출금</button></div><div class="ivbtns"><button class="btn sm" data-iv858="depq" data-v="1000">+1천만</button><button class="btn sm" data-iv858="depq" data-v="10000">+1억</button><button class="btn sm" data-iv858="depq" data-v="100000">+10억</button><button class="btn sm" data-iv858="wdall" ${v.cash >= 1 ? '' : 'disabled'}>전액 출금</button></div></div>`;
+    h += `<div class="ivcashbar"><div class="sp"><span class="ivcap">투자용 현금</span><b class="${pulseC ? 'pulse' : ''}">${money(v.cash)}</b></div><div class="ivcb"><button class="btn sm pri" data-iv858="csheet" data-v="dep">입금</button><button class="btn sm" data-iv858="csheet" data-v="wd" ${v.cash >= 1 ? '' : 'disabled'}>출금</button></div></div>`;
+    const mine = STK858.filter(s => v.sh[s.id]);
+    if (mine.length) {
+      h += `<div class="ivsec">내 주식 <span>${mine.length}종목</span></div>`;
+      h += mine.map(s => {
+        const p = v.px[s.id], q = v.sh[s.id], c = v.cost[s.id] || p, pl = q * (p - c), r = p / c - 1;
+        return `<div class="ivrow" data-iv858="stk" data-k="${s.id}"><div class="sp"><div class="ivn">${s.n}</div><div class="tiny muted">${q.toLocaleString()}주 · 평균 ${won858(c)}</div></div><div class="ivp"><b>${amt858(q * p)}</b><span class="${cls858(pl)}">${sAmt858(pl)} (${pctS858(r)})</span></div></div>`;
+      }).join('');
+    }
+    h += `<div class="ivsec">전체 종목 <span>지난 턴 대비</span></div>`;
     h += STK858.map(s => {
-      const hs = v.hist[s.id] || [], p = v.px[s.id], prev = hs.length > 1 ? hs[hs.length - 2] : p, ch = p / prev - 1, own = v.sh[s.id] || 0, open = ui.inv858o === s.id;
-      const opl = own ? (p / (v.cost[s.id] || p) - 1) : 0;
-      let r = `<div class="ivrow${open ? ' open' : ''}" data-iv858="open" data-k="${s.id}"><div class="sp"><div class="ivn">${s.n}${v.mv[s.id] ? `<span class="ivtag ${v.mv[s.id]}">${v.mv[s.id] === 'up' ? '급등' : '급락'}</span>` : ''}</div><div class="tiny muted">${s.sec}${own ? ` · ${own.toLocaleString()}주 <span class="${opl >= 0 ? 'up' : 'dn'}">${opl >= 0 ? '+' : ''}${(opl * 100).toFixed(1)}%</span>` : ''}</div></div>${spark858(hs, ch >= 0)}<div class="ivp"><b>${won858(p)}</b><span class="${ch >= 0 ? 'up' : 'dn'}">${pct858(ch)}</span></div></div>`;
-      if (open) {
-        const mx = Math.floor(v.cash / p);
-        r += `<div class="ivact"><div class="tiny muted">살 수 있는 수량 ${mx.toLocaleString()}주${own ? ` · 보유 ${own.toLocaleString()}주` : ''}</div><div class="ivin"><input type="number" inputmode="numeric" min="1" step="1" placeholder="수량 직접 입력" class="ivq" data-k="${s.id}"><span>주</span><button class="btn sm pri" data-iv858="bin" data-k="${s.id}">매수</button>${own ? `<button class="btn sm" data-iv858="sin" data-k="${s.id}">매도</button>` : ''}</div><div class="ivbtns"><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="1" ${mx >= 1 ? '' : 'disabled'}>1주</button><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="10" ${mx >= 10 ? '' : 'disabled'}>10주</button><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="100" ${mx >= 100 ? '' : 'disabled'}>100주</button><button class="btn sm pri" data-iv858="b" data-k="${s.id}" data-q="max" ${mx >= 1 ? '' : 'disabled'}>최대</button></div>`
-          + (own ? `<div class="ivbtns"><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="half">절반 매도</button><button class="btn sm dng" data-iv858="b" data-k="${s.id}" data-q="all">전량 매도 ${money(own * p)}</button></div>` : '') + `</div>`;
-      }
-      return r;
+      const hs = v.hist[s.id] || [], p = v.px[s.id], prev = hs.length > 1 ? hs[hs.length - 2] : p, ch = p / prev - 1;
+      return `<div class="ivrow" data-iv858="stk" data-k="${s.id}"><div class="sp"><div class="ivn">${s.n}${v.mv[s.id] ? `<span class="ivtag ${v.mv[s.id]}">${v.mv[s.id] === 'up' ? '급등' : '급락'}</span>` : ''}${v.sh[s.id] ? '<span class="ivown">보유</span>' : ''}</div><div class="tiny muted">${s.sec}</div></div>${spark858(hs.slice(-13), ch >= 0)}<div class="ivp"><b>${won858(p)}</b><span class="${ch >= 0 ? 'up' : 'dn'}">${pct858(ch)}</span></div></div>`;
     }).join('');
   } else {
+    const best = bestHome858();
+    h += `<div class="ivnote" style="margin-top:4px">보유 자금으로 구매 · 팔 때 수수료 3%</div>`;
     h += RE858.map(id => {
       const it = ITEMS.find(x => x.id === id); if (!it) return '';
-      const val = v.reV[id] || it.p, has = !!v.re[id], g = has ? val / v.re[id].cost - 1 : 0, can = S.money >= val;
-      return `<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="sp"><div class="ivn">${it.n}</div><div class="tiny muted">${it.d.replace(/\s*\(.*?대체\)/, '')}${has ? ` · <span class="${g >= 0 ? 'up' : 'dn'}">산 값 대비 ${g >= 0 ? '+' : ''}${(g * 100).toFixed(1)}%</span>` : ''}</div></div>${has ? `<button class="btn sm" data-iv858="re" data-k="${id}">팔기 ${money(Math.round(val * (1 - INV858.reFee)))}</button>` : `<button class="btn sm ${can ? 'pri' : ''}" data-iv858="re" data-k="${id}" ${can ? '' : 'disabled'}>${money(val)}</button>`}</div>`;
-    }).join('') + `<div class="tiny muted" style="padding-top:8px">팔 때 수수료 3% · 여러 채를 가져도 생활 효과는 가장 좋은 집 하나만</div>`;
+      const val = v.reV[id] || it.p, has = !!v.re[id], cost = has ? v.re[id].cost : 0, pl = val - cost, can = S.money >= val;
+      return `<div class="ivre${has ? ' has' : ''}"><div class="sp"><div class="ivn">${it.n}${has && best === it ? '<span class="ivown">지금 사는 집</span>' : has ? '<span class="ivown off">보유</span>' : ''}</div><div class="tiny muted">${it.d.replace(/\s*\(.*?대체\)/, '')}</div>`
+        + `<div class="ivrev"><span>시세 <b>${money(val)}</b></span>${has ? `<span>산 값 ${money(cost)} · <i class="${pl >= 0 ? 'up' : 'dn'}">${sAmt858(pl)}</i></span>` : ''}</div></div>`
+        + (has ? `<button class="btn sm" data-iv858="re" data-k="${id}">팔기<br><small>${money(Math.round(val * (1 - INV858.reFee)))} 받음</small></button>` : `<button class="btn sm ${can ? 'pri' : ''}" data-iv858="re" data-k="${id}" ${can ? '' : 'disabled'}>사기${can ? '' : '<br><small>자금 부족</small>'}</button>`) + `</div>`;
+    }).join('');
   }
+  ui.iv858pt = t.total; ui.iv858pc = v.cash;
   return h + `</div>`;
 }
-const INV858CSS = `<style>.inv858 .ivsum{display:grid;grid-template-columns:1fr 1fr;gap:8px}.inv858 .ivsum>div{background:var(--bg2,rgba(127,127,127,.08));border-radius:10px;padding:8px 10px;display:flex;flex-direction:column}.inv858 .ivsum span{font-size:.72rem;opacity:.7}.inv858 .ivsum b{font-size:1rem}.inv858 .ivsum i{font-style:normal;font-size:.75rem}
-.inv858 .up{color:#e5484d}.inv858 .dn{color:#3e7bfa}.inv858 .ivrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}.inv858 .ivrow.open{border-bottom:0}.inv858 .ivn{font-weight:700;font-size:.9rem}.inv858 .ivp{display:flex;flex-direction:column;align-items:flex-end;min-width:78px}.inv858 .ivp b{font-size:.88rem}.inv858 .ivp span{font-size:.72rem}
-.inv858 .ivtag{font-size:.62rem;margin-left:6px;padding:1px 5px;border-radius:6px;color:#fff;vertical-align:2px}.inv858 .ivtag.up{background:#e5484d;color:#fff}.inv858 .ivtag.dn{background:#3e7bfa;color:#fff}.inv858 .ivact{padding:4px 0 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}.inv858 .ivbtns{display:flex;gap:6px;flex-wrap:wrap}.inv858 .ivbtns .btn{flex:1}.inv858 .btn.dng{color:#3e7bfa}.inv858 .ivin{display:flex;gap:6px;align-items:center}.inv858 .ivin input{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg2,rgba(127,127,127,.08));color:inherit}.inv858 .ivin span{font-size:.85rem;opacity:.7}.inv858 .ivacct{display:flex;flex-direction:column;gap:8px;padding:10px 12px;margin:8px 0 4px;border-radius:12px;background:var(--bg2,rgba(127,127,127,.08))}.inv858 .ivacct .sp{display:flex;flex-direction:column}.inv858 .ivbtns .btn{white-space:nowrap;padding-left:4px;padding-right:4px}.ivpanel858 .inv858>.row:first-child{display:none}.inv858 .ivacct b{font-size:1.05rem}
-.ivbtn858{display:flex!important;flex-direction:row!important;align-items:center;gap:12px;width:100%;cursor:pointer;font:inherit;color:inherit;text-align:left}.ivbtn858 .sp{display:flex;flex-direction:column;gap:2px}.ivbtn858 b{font-size:.98rem}.ivbtn858 .ivbi{font-size:1.5rem}.ivbtn858 .ivgo{font-size:1.4rem;opacity:.5}.ivbtn858 i{font-style:normal}.ivbtn858 .up{color:#e5484d}.ivbtn858 .dn{color:#3e7bfa}
+/* 주문창 차트 (11/24 유저 "그래프도 더 구체적으로") — 가격 눈금 · 내 평균 단가 점선 · 손가락으로 훑으면 그 턴 시세 표시 */
+function chart858(all, cost, rg) {
+  const hs = rg === '1y' ? all.slice(-4) : rg === '3y' ? all.slice(-10) : all.slice();
+  if (hs.length < 2) return '<div class="ivnochart">아직 시세 기록이 부족해요 · 턴이 지나면 그려져요</div>';
+  const W = 320, H = 150, PR = 58, PT = 12, PB = 12, w = W - PR;
+  let mn = Math.min(...hs), mx = Math.max(...hs); if (cost) { mn = Math.min(mn, cost); mx = Math.max(mx, cost); }
+  const pad = (mx - mn) * .1 || mx * .05; mn -= pad; mx += pad;
+  const y = q => PT + (1 - (q - mn) / (mx - mn)) * (H - PT - PB), x = i => i / (hs.length - 1) * w;
+  const up = hs[hs.length - 1] >= hs[0], col = up ? '#e5484d' : '#3e7bfa';
+  const pts = hs.map((q, i) => x(i).toFixed(1) + ',' + y(q).toFixed(1)).join(' ');
+  const hi = Math.max(...hs), lo = Math.min(...hs), hiI = hs.indexOf(hi), loI = hs.indexOf(lo);
+  let g = '';
+  [0, .5, 1].forEach(f => { const q = mn + pad + (mx - mn - 2 * pad) * (1 - f), yy = y(q); if (cost && Math.abs(yy - y(cost)) < 12) return; g += `<line x1="0" x2="${w}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}" stroke="currentColor" stroke-opacity=".1"/><text x="${w + 6}" y="${(yy + 3.5).toFixed(1)}" font-size="10" fill="currentColor" fill-opacity=".55">${won858(q)}</text>`; });
+  if (cost) { const yy = y(cost); g += `<line x1="0" x2="${w}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}" stroke="currentColor" stroke-opacity=".55" stroke-dasharray="3 3"/><text x="${w + 6}" y="${(yy + 3.5).toFixed(1)}" font-size="10" font-weight="700" fill="currentColor">내 평균</text>`; }
+  const lx = x(hs.length - 1), ly = y(hs[hs.length - 1]);
+  return `<svg class="ivsvg" viewBox="0 0 ${W} ${H}" data-p="${hs.join(',')}" data-w="${w}" data-vw="${W}" data-mn="${mn}" data-mx="${mx}" data-pt="${PT}" data-pb="${PB}" data-h="${H}">${g}`
+    + `<polygon points="0,${H - PB} ${pts} ${w},${H - PB}" fill="${col}" opacity=".1"/><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`
+    + `<text x="${Math.min(Math.max(x(hiI), 40), w - 40).toFixed(1)}" y="${Math.max(y(hi) - 5, 9).toFixed(1)}" font-size="9.5" text-anchor="middle" fill="#e5484d">최고 ${won858(hi)}</text>`
+    + (loI !== hiI ? `<text x="${Math.min(Math.max(x(loI), 40), w - 40).toFixed(1)}" y="${Math.min(y(lo) + 13, H - 1).toFixed(1)}" font-size="9.5" text-anchor="middle" fill="#3e7bfa">최저 ${won858(lo)}</text>` : '')
+    + `<circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="4" fill="${col}"/><circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="8" fill="${col}" opacity=".25" class="ivping"/>`
+    + `<line class="ivsl" x1="0" x2="0" y1="${PT}" y2="${H - PB}" stroke="currentColor" stroke-opacity=".5" visibility="hidden"/><circle class="ivsd" r="4.5" fill="var(--surface)" stroke="${col}" stroke-width="2" visibility="hidden"/>`
+    + `<rect x="0" y="0" width="${w}" height="${H}" fill="transparent" class="ivhit"/></svg>`;
+}
+function scrub858(svg, cx) {
+  try {
+    const P = svg.getAttribute('data-p').split(',').map(Number), w = +svg.getAttribute('data-w'), W = +svg.getAttribute('data-vw');
+    const mn = +svg.getAttribute('data-mn'), mx = +svg.getAttribute('data-mx'), PT = +svg.getAttribute('data-pt'), PB = +svg.getAttribute('data-pb'), H = +svg.getAttribute('data-h');
+    const r = svg.getBoundingClientRect(), fx = (cx - r.left) / r.width * W, i = Math.max(0, Math.min(P.length - 1, Math.round(fx / w * (P.length - 1))));
+    const xx = i / (P.length - 1) * w, yy = PT + (1 - (P[i] - mn) / (mx - mn)) * (H - PT - PB), ago = P.length - 1 - i, now = P[P.length - 1];
+    const l = svg.querySelector('.ivsl'), d = svg.querySelector('.ivsd');
+    l.setAttribute('x1', xx); l.setAttribute('x2', xx); l.setAttribute('visibility', 'visible'); d.setAttribute('cx', xx); d.setAttribute('cy', yy); d.setAttribute('visibility', 'visible');
+    const lab = svg.parentNode.querySelector('.ivscrub');
+    if (lab) lab.innerHTML = ago ? `<b>${ago}턴 전 ${won858(P[i])}</b> · 지금은 그때보다 <span class="${now >= P[i] ? 'up' : 'dn'}">${pctS858(now / P[i] - 1)}</span>` : `<b>지금 ${won858(now)}</b>`;
+  } catch (e) {}
+}
+function scrubEnd858(svg) { try { svg.querySelector('.ivsl').setAttribute('visibility', 'hidden'); svg.querySelector('.ivsd').setAttribute('visibility', 'hidden'); const lab = svg.parentNode.querySelector('.ivscrub'); if (lab) lab.textContent = lab.getAttribute('data-def'); } catch (e) {} }
+/* 입출금 창 미리보기 */
+function updC858() {
+  try {
+    const v = inv858(), ai = document.querySelector('.ivamt'), t = document.querySelector('.ivctot'), g = document.querySelector('.ivcgo'); if (!v || !ai || !t || !g) return;
+    const dep = ui.iv858c === 'dep', from = dep ? S.money : v.cash, n = Math.max(0, Math.floor(+ai.value || 0)), ok = n >= 1 && n <= Math.floor(from);
+    t.innerHTML = n < 1 ? '' : !ok ? `<span class="dn">${dep ? '보유 자금' : '투자용 현금'}이 부족해요 · 최대 ${money(Math.floor(from))}</span>`
+      : dep ? `입금 후 투자용 현금 <b>${money(v.cash + n)}</b> · 남는 보유 자금 ${money(S.money - n)}` : `출금 후 보유 자금 <b>${money(S.money + n)}</b> · 남는 투자용 현금 ${money(v.cash - n)}`;
+    g.disabled = !ok; g.textContent = ok ? `${money(n)} ${dep ? '입금하기' : '출금하기'}` : (dep ? '입금하기' : '출금하기');
+  } catch (e) {}
+}
+/* 아래에서 올라오는 창: 종목 주문 / 입출금 */
+function vSheet858() {
+  const v = inv858(); if (!v) return '';
+  if (ui.iv858c) {
+    const dep = ui.iv858c === 'dep', from = dep ? S.money : v.cash;
+    const chips = [[1000, '1천만'], [5000, '5천만'], [10000, '1억'], [100000, '10억']].filter(c => c[0] <= from);
+    return `<div class="ivback" data-iv858="sx"></div><div class="ivsheet"><div class="ivgrip"></div><div class="ivsh"><b>${dep ? '투자용 현금 입금' : '보유 자금으로 출금'}</b><button class="ivx2" data-iv858="sx" aria-label="닫기">✕</button></div>`
+      + `<div class="ivflow"><div><span>${dep ? '보유 자금' : '투자용 현금'}</span><b>${money(from)}</b></div><i>→</i><div><span>${dep ? '투자용 현금' : '보유 자금'}</span><b>${money(dep ? v.cash : S.money)}</b></div></div>`
+      + `<div class="ivin"><input type="number" inputmode="numeric" min="1" step="1" placeholder="금액" class="ivamt"><span>만원</span></div>`
+      + `<div class="ivchips">${chips.map(c => `<button class="btn sm" data-iv858="camt" data-v="${c[0]}">+${c[1]}</button>`).join('')}<button class="btn sm" data-iv858="camt" data-v="all">전액</button><button class="btn sm" data-iv858="camt" data-v="0">지우기</button></div>`
+      + `<div class="ivtot ivctot"></div>`
+      + `<button class="btn pri ivgo ivcgo" data-iv858="cgo" disabled>${dep ? '입금하기' : '출금하기'}</button></div>`;
+  }
+  const k = ui.iv858s, s = STK858.find(x => x.id === k); if (!s) return '';
+  const hs = v.hist[k] || [], p = v.px[k], prev = hs.length > 1 ? hs[hs.length - 2] : p, ch = p / prev - 1;
+  const own = v.sh[k] || 0, c = v.cost[k] || p, buy = (ui.iv858m || 'buy') === 'buy' || !own, mx = Math.floor(v.cash / p);
+  let h = `<div class="ivback" data-iv858="sx"></div><div class="ivsheet"><div class="ivgrip"></div><div class="ivsh"><div class="sp"><b>${s.n}</b><span class="tiny muted">${s.sec}</span></div><button class="ivx2" data-iv858="sx" aria-label="닫기">✕</button></div>`;
+  h += `<div class="ivprice"><b>${won858(p)}</b><span class="${ch >= 0 ? 'up' : 'dn'}">${pct858(ch)} 지난 턴 대비</span></div>`;
+  const rg = ui.iv858r || 'all';
+  h += `<div class="ivchart"><div class="ivscrub" data-def="${rg === '1y' ? '최근 1년' : rg === '3y' ? '최근 3년' : '전체 기록'} · 차트를 눌러 보세요">${rg === '1y' ? '최근 1년' : rg === '3y' ? '최근 3년' : '전체 기록'} · 차트를 눌러 보세요</div>${chart858(hs, own ? c : 0, rg)}<div class="ivrg">${[['1y', '1년'], ['3y', '3년'], ['all', '전체']].map(r => `<button class="${rg === r[0] ? 'on' : ''}" data-iv858="rng" data-v="${r[0]}">${r[1]}</button>`).join('')}</div></div>`;
+  h += `<div class="ivstat"><div><span>보유</span><b>${own.toLocaleString()}주</b></div><div><span>평균 단가</span><b>${own ? won858(c) : '−'}</b></div><div><span>손익</span><b class="${own ? cls858(own * (p - c)) : ''}">${own ? `${sAmt858(own * (p - c))}` : '−'}</b></div></div>`;
+  h += `<div class="seg ivseg"><button class="${buy ? 'on' : ''}" data-iv858="mode" data-v="buy">사기</button><button class="${!buy ? 'on' : ''}" data-iv858="mode" data-v="sell" ${own ? '' : 'disabled'}>팔기</button></div>`;
+  h += `<div class="ivqty"><button class="ivstep" data-iv858="qadd" data-v="-1" aria-label="1주 빼기">−</button><input type="number" inputmode="numeric" min="0" step="1" placeholder="수량" class="ivq2"><span>주</span><button class="ivstep" data-iv858="qadd" data-v="1" aria-label="1주 더하기">+</button></div>`;
+  h += buy ? `<div class="ivchips"><button class="btn sm" data-iv858="qadd" data-v="10">+10주</button><button class="btn sm" data-iv858="qadd" data-v="100">+100주</button><button class="btn sm" data-iv858="qset" data-v="quarter">현금의 25%</button><button class="btn sm" data-iv858="qset" data-v="max">최대 ${mx.toLocaleString()}주</button></div>`
+    : `<div class="ivchips"><button class="btn sm" data-iv858="qset" data-v="half">절반</button><button class="btn sm" data-iv858="qset" data-v="all">전부 ${own.toLocaleString()}주</button></div>`;
+  h += `<div class="ivtot"></div><button class="btn pri ivgo ivgo2${buy ? '' : ' sell'}" data-iv858="go" disabled>${buy ? '사기' : '팔기'}</button>`;
+  return h + `</div>`;
+}
+/* 수량·금액을 바꿀 때 화면 전체를 다시 그리지 않고 미리보기만 고침 */
+function upd858() {
+  try {
+    const v = inv858(), k = ui.iv858s, el = document.querySelector('.ivq2'), t = document.querySelector('.ivtot'), g = document.querySelector('.ivgo2');
+    if (!v || !k || !el || !t || !g) return;
+    const p = v.px[k], own = v.sh[k] || 0, n = Math.max(0, Math.floor(+el.value || 0)), buy = (ui.iv858m || 'buy') === 'buy' || !own, mx = Math.floor(v.cash / p);
+    let txt, ok;
+    if (buy) { ok = n >= 1 && n <= mx; txt = !mx ? '투자용 현금이 없어요' : n < 1 ? `최대 ${mx.toLocaleString()}주` : n > mx ? `<span class="dn">현금이 부족해요 · 최대 ${mx.toLocaleString()}주</span>` : `주문 금액 <b>${amt858(n * p)}</b> · 남는 현금 ${amt858(v.cash - n * p)}`; }
+    else { const pl = n * (p - (v.cost[k] || p)); ok = n >= 1 && n <= own; txt = n < 1 ? `보유 ${own.toLocaleString()}주` : n > own ? `<span class="dn">가진 수량(${own.toLocaleString()}주)보다 많아요</span>` : `받을 돈 <b>${amt858(n * p)}</b> · 손익 <span class="${cls858(pl)}">${sAmt858(pl)}</span>`; }
+    t.innerHTML = txt; g.disabled = !ok; g.textContent = n >= 1 && ok ? `${n.toLocaleString()}주 ${buy ? '사기' : '팔기'}` : (buy ? '사기' : '팔기');
+  } catch (e) {}
+}
+const INV858CSS = `<style>
+.inv858{display:flex;flex-direction:column;gap:10px}.inv858 .up,.ivsheet .up,.ivbtn858 .up{color:#e5484d}.inv858 .dn,.ivsheet .dn,.ivbtn858 .dn{color:#3e7bfa}
+.inv858 .ivhero{display:flex;flex-direction:column;gap:2px;padding:16px;border-radius:16px;background:var(--soft)}
+.inv858 .ivcap,.ivsheet .ivcap{font-size:.75rem;opacity:.65}.inv858 .ivbig{font-size:1.7rem;letter-spacing:-.02em}.inv858 .ivpl{font-size:.82rem;font-weight:600}
+.inv858 .ivmini{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}.inv858 .ivmini div{display:flex;flex-direction:column;min-width:0}.inv858 .ivmini span{font-size:.7rem;opacity:.6}.inv858 .ivmini b{font-size:.9rem}
+.inv858 .ivseg{margin:0}.inv858 .ivcashbar{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:1px solid var(--line)}.inv858 .ivcashbar .sp{display:flex;flex-direction:column;flex:1;min-width:0}.inv858 .ivcashbar b{font-size:1.1rem}.inv858 .ivcb{display:flex;gap:6px}
+.inv858 .ivsec{font-weight:700;font-size:.85rem;margin-top:6px;display:flex;justify-content:space-between;align-items:baseline}.inv858 .ivsec span{font-weight:400;font-size:.72rem;opacity:.55}
+.inv858 .ivrow{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}.inv858 .ivrow:active{opacity:.6}.inv858 .ivrow .sp{flex:1;min-width:0}
+.inv858 .ivn{font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:5px;flex-wrap:wrap}.inv858 .ivp{display:flex;flex-direction:column;align-items:flex-end;min-width:84px}.inv858 .ivp b{font-size:.9rem}.inv858 .ivp span{font-size:.72rem}
+.inv858 .ivtag{font-size:.62rem;padding:1px 5px;border-radius:6px;color:#fff!important}.inv858 .ivtag.up{background:#e5484d}.inv858 .ivtag.dn{background:#3e7bfa}
+.inv858 .ivown{font-size:.62rem;font-weight:600;padding:1px 6px;border-radius:6px;background:rgba(229,72,77,.14);color:#e5484d}.inv858 .ivown.off{background:var(--soft);color:inherit;opacity:.8}
+.inv858 .ivnote{font-size:.72rem;opacity:.6;line-height:1.5}
+.inv858 .ivre{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:1px solid var(--line)}.inv858 .ivre.has{border-color:rgba(229,72,77,.45)}.inv858 .ivre .sp{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.inv858 .ivrev{display:flex;flex-direction:column;font-size:.78rem;margin-top:2px}.inv858 .ivrev i{font-style:normal}.inv858 .ivre .btn{min-width:84px;line-height:1.25}.inv858 .ivre small{font-size:.66rem;opacity:.8}
+.ivbtn858{display:flex!important;flex-direction:row!important;align-items:center;gap:12px;width:100%;cursor:pointer;font:inherit;color:inherit;text-align:left}.ivbtn858 .sp{display:flex;flex-direction:column;gap:2px}.ivbtn858 b{font-size:.98rem}.ivbtn858 .ivbi{font-size:1.5rem}.ivbtn858 .ivgo{font-size:1.4rem;opacity:.5;margin-left:auto}.ivbtn858 i{font-style:normal}
 .ivpanel858{position:fixed;inset:0;z-index:60;background:var(--bg,#111);display:flex;flex-direction:column;animation:ivup858 .22s ease-out}.ivpanel858.noanim{animation:none}@keyframes ivup858{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
 .ivpanel858 .ivhead{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px;border-bottom:1px solid var(--line)}.ivpanel858 .ivhead b{font-size:1.05rem}.ivpanel858 .ivhead .tiny{margin-left:auto}.ivpanel858 .ivx{font-size:1.6rem;line-height:1;background:none;border:0;color:inherit;padding:0 6px;cursor:pointer}
-.ivpanel858 .ivbody{flex:1;overflow-y:auto;padding:12px 12px calc(24px + env(safe-area-inset-bottom,0px));max-width:640px;width:100%;margin:0 auto;box-sizing:border-box}.ivpanel858 .ivbody .card{margin:0}</style>`;
+.ivpanel858 .ivbody{flex:1;overflow-y:auto;padding:12px 16px calc(24px + env(safe-area-inset-bottom,0px));max-width:640px;width:100%;margin:0 auto;box-sizing:border-box}
+.ivback{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.45);animation:ivfade858 .18s}@keyframes ivfade858{from{opacity:0}}
+.ivsheet{position:fixed;left:0;right:0;bottom:0;z-index:71;max-width:640px;margin:0 auto;background:var(--surface);border-radius:20px 20px 0 0;padding:6px 18px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px;max-height:88vh;overflow-y:auto;box-sizing:border-box;animation:ivsh858 .22s ease-out;box-shadow:0 -8px 30px rgba(0,0,0,.3)}@keyframes ivsh858{from{transform:translateY(60px);opacity:0}}
+.ivsheet .ivgrip{width:38px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 2px}.ivsheet .ivsh{display:flex;align-items:center;gap:8px}.ivsheet .ivsh .sp{display:flex;flex-direction:column}.ivsheet .ivsh b{font-size:1.1rem}.ivsheet .ivx2{margin-left:auto;background:none;border:0;color:inherit;font-size:1.1rem;opacity:.6;padding:6px;cursor:pointer}
+.ivsheet .ivprice{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.ivsheet .ivprice b{font-size:1.5rem}.ivsheet .ivprice span{font-size:.8rem}
+.ivsheet .ivchart svg{width:100%;height:auto}.ivsheet .ivchart .tiny{display:flex;justify-content:space-between}
+.ivsheet .ivstat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:10px 12px;border-radius:12px;background:var(--soft)}.ivsheet .ivstat div{display:flex;flex-direction:column;min-width:0}.ivsheet .ivstat span{font-size:.7rem;opacity:.6}.ivsheet .ivstat b{font-size:.9rem}
+.ivsheet .seg{margin:0}.ivsheet .ivqty{display:flex;align-items:center;gap:8px}.ivsheet .ivqty input,.ivsheet .ivin input{flex:1;min-width:0;font:inherit;font-size:18px;font-weight:700;text-align:center;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--soft);color:inherit}.ivsheet .ivqty span,.ivsheet .ivin span{opacity:.7}
+.ivsheet .ivstep{width:46px;height:46px;border-radius:12px;border:1px solid var(--line);background:none;color:inherit;font-size:1.4rem;cursor:pointer}.ivsheet .ivin{display:flex;align-items:center;gap:8px}
+.ivsheet .ivchips{display:flex;gap:6px;flex-wrap:wrap}.ivsheet .ivchips .btn{flex:1;white-space:nowrap;padding-left:6px;padding-right:6px}
+.ivsheet .ivtot{font-size:.85rem;text-align:center;min-height:1.3em}.ivsheet .ivgo{width:100%;padding:13px;font-size:1rem;font-weight:700}.ivsheet .ivgo2{background:#e5484d;border-color:#e5484d;color:#fff}.ivsheet .ivgo.sell{background:#3e7bfa;border-color:#3e7bfa;color:#fff}.ivsheet .ivgo:disabled{opacity:.45}
+.ivsheet .ivflow{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--soft)}.ivsheet .ivflow div{flex:1;display:flex;flex-direction:column}.ivsheet .ivflow span{font-size:.72rem;opacity:.6}.ivsheet .ivflow i{font-style:normal;opacity:.5}
+
+.ivsheet .ivchart{display:flex;flex-direction:column;gap:4px}.ivsheet .ivsvg{width:100%;height:auto;touch-action:none;cursor:crosshair;color:var(--ink)}.ivsheet .ivscrub{font-size:.78rem;min-height:1.2em;opacity:.85}.ivsheet .ivnochart{font-size:.78rem;opacity:.6;padding:24px 0;text-align:center}
+.ivsheet .ivrg{display:flex;gap:4px;justify-content:center}.ivsheet .ivrg button{font:inherit;font-size:.75rem;padding:4px 12px;border-radius:999px;border:0;background:none;color:inherit;opacity:.55;cursor:pointer}.ivsheet .ivrg button.on{background:var(--soft);opacity:1;font-weight:700}
+.ivping{transform-box:fill-box;transform-origin:center;animation:ivping858 1.6s ease-out infinite}@keyframes ivping858{0%{transform:scale(.5);opacity:.5}100%{transform:scale(1.8);opacity:0}}
+.inv858 .pulse{animation:ivpulse858 .7s ease-out}@keyframes ivpulse858{0%{color:#e5484d;transform:scale(1.06)}100%{transform:none}}.inv858 .ivbig.pulse,.inv858 b.pulse{display:inline-block;transform-origin:left center}
+.ivsheet .btn,.inv858 .btn,.ivsheet .ivstep{transition:transform .08s}.ivsheet .btn:active,.inv858 .btn:active,.ivsheet .ivstep:active{transform:scale(.94)}.ivsheet .btn.tap{animation:ivtap858 .25s}@keyframes ivtap858{50%{transform:scale(.9)}}
+.ivsheet .ivqty input,.ivsheet .ivin input{transition:box-shadow .2s}.ivsheet .ivqty input:focus,.ivsheet .ivin input:focus{outline:0;box-shadow:0 0 0 2px #e5484d}
+.ivdone{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);animation:ivfade858 .15s;padding:24px}.ivdone .ivdc{background:var(--surface);color:var(--ink);border-radius:20px;padding:24px 22px 20px;min-width:240px;max-width:320px;display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.35);animation:ivpop858 .32s cubic-bezier(.2,1.4,.4,1)}
+.ivdone .ivck{width:54px;height:54px;border-radius:50%;background:#e5484d;color:#fff;font-size:1.8rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:6px;animation:ivpop858 .4s .05s cubic-bezier(.2,1.6,.4,1) both}.ivdone.sell .ivck{background:#3e7bfa}.ivdone b{font-size:1.1rem}.ivdone span{font-size:.85rem;opacity:.85}.ivdone i{font-style:normal;font-weight:700}.ivdone .up{color:#e5484d}.ivdone .dn{color:#3e7bfa}
+@keyframes ivpop858{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+</style>`;
 
 if (typeof vShop === 'function') {
   const _vs = vShop;
@@ -17584,45 +17728,72 @@ if (typeof vShop === 'function') {
     try { if (lp != null) h = h.replace(/생활 만족도 <b>[^<]*%<\/b>/, `생활 만족도 <b>${lp}%</b>`); } catch (e) {}  // 집을 목록에서 잠깐 뺀 사이에 만족도가 0%로 계산되던 버그 방지
     try {
       if (S && S.stage !== 'ret') {
-        const v = inv858(), sv = stkPV858(v), rv = rePV858(v);
-        const lastR = v.lastR || 0;
-        const card = INV858CSS + `<button class="card ivbtn858" data-iv858="show"><span class="ivbi">💹</span><span class="sp" style="text-align:left"><b>재테크</b><span class="tiny muted">주식 ${money(sv)}${sv && lastR ? ` <i class="${lastR >= 0 ? 'up' : 'dn'}">${pct858(lastR)}</i>` : ''} · 부동산 ${money(rv)}</span></span><span class="ivgo">›</span></button>`
-          + (ui.inv858show ? `<div class="ivpanel858${ui.inv858anim ? '' : ' noanim'}"><div class="ivhead"><button class="ivx" data-iv858="hide" aria-label="닫기">‹</button><b>재테크</b><span class="tiny muted">계좌 ${money(v.cash)} · 보유 ${money(S.money)}</span></div><div class="ivbody">${vInvest858()}</div></div>` : '');
+        const v = inv858(), t = invTot858(v), lastR = v.lastR || 0;
+        const card = INV858CSS + `<button class="card ivbtn858" data-iv858="show"><span class="ivbi">💹</span><span class="sp" style="text-align:left"><b>재테크</b><span class="tiny muted">${t.total >= 1 ? `투자 자산 ${money(t.total)}${t.sv && lastR ? ` <i class="${lastR >= 0 ? 'up' : 'dn'}">${pct858(lastR)}</i>` : ''}` : '주식 · 부동산'}</span></span><span class="ivgo">›</span></button>`
+          + (ui.inv858show ? `<div class="ivpanel858${ui.inv858anim ? '' : ' noanim'}"><div class="ivhead"><button class="ivx" data-iv858="hide" aria-label="닫기">‹</button><b>재테크</b><span class="tiny muted">보유 자금 ${money(S.money)}</span></div><div class="ivbody">${vInvest858()}</div></div>${(ui.iv858s || ui.iv858c) ? vSheet858() : ''}${ui.iv858done ? `<div class="ivdone ${ui.iv858done.k}" data-iv858="dx"><div class="ivdc"><div class="ivck">✓</div><b>${ui.iv858done.t}</b>${ui.iv858done.l.map(x => `<span>${x}</span>`).join('')}</div></div>` : ''}` : '');
         const mk = '🏠 생활'; const i = h.indexOf(mk);
         const j = i >= 0 ? h.lastIndexOf('<div class="card"', i) : -1;
         h = j >= 0 ? h.slice(0, j) + card + h.slice(j) : h + card;
+        if (ui.inv858show && ui.iv858s && typeof setTimeout === 'function') setTimeout(upd858, 0);
+        if (ui.inv858show && ui.iv858c && typeof setTimeout === 'function') setTimeout(updC858, 0);
       }
     } catch (e) {}
     return h;
   };
 }
-if (typeof document !== 'undefined') document.addEventListener('click', e => {
-  const b = e.target.closest && e.target.closest('[data-iv858]');
-  if (!b || !S) return;
-  e.stopPropagation(); e.preventDefault(); if (b.disabled) return;
-  const a = b.getAttribute('data-iv858'), k = b.getAttribute('data-k');
-  let m = '';
-  if (a === 'show') { ui.inv858show = true; ui.inv858anim = true; }
-  else if (a === 'hide') { ui.inv858show = false; }
-  else if (a === 'tab') ui.inv858 = b.getAttribute('data-v');
-  else if (a === 'open') ui.inv858o = ui.inv858o === k ? null : k;
-  else if (a === 'b') { const q = b.getAttribute('data-q'); m = stkTrade858(k, isNaN(+q) ? q : +q); }
-  else if (a === 'dep' || a === 'wd') { const inp = document.querySelector('.ivcash'), n = Math.floor(+(inp && inp.value) || 0); m = n <= 0 ? '금액을 만원 단위로 입력해 주세요.' : cashMove858(a === 'dep' ? n : -n); }
-  else if (a === 'depq') m = cashMove858(+b.getAttribute('data-v'));
-  else if (a === 'wdall') m = cashMove858(-inv858().cash);
-  else if (a === 'bin' || a === 'sin') {
-    const inp = document.querySelector(`.ivq[data-k="${k}"]`), n = Math.floor(+(inp && inp.value) || 0);
-    if (n <= 0) m = '수량을 입력해 주세요.';
-    else if (a === 'bin') { const mx = Math.floor(inv858().cash / inv858().px[k]); m = n > mx ? (mx ? `계좌 잔액이 부족해요. 최대 ${mx.toLocaleString()}주까지 살 수 있어요.` : '계좌 잔액이 부족해요. 먼저 입금해 주세요.') : stkTrade858(k, n); }
-    else { const own = inv858().sh[k] || 0; m = n > own ? `보유 수량(${own.toLocaleString()}주)보다 많이 팔 수 없어요.` : stkTrade858(k, -n); }
-  }
-  else if (a === 're') m = reTrade858(k);
-  try { save(); } catch (x) {}
-  const sc = document.querySelector('.ivpanel858 .ivbody'), st = sc ? sc.scrollTop : 0;
-  if (m) { try { toast(m); } catch (x) { render(); } } else render();
-  ui.inv858anim = false;
-  const sc2 = document.querySelector('.ivpanel858 .ivbody'); if (sc2 && a !== 'show') sc2.scrollTop = st;
-}, true);
+if (typeof document !== 'undefined') {
+  document.addEventListener('input', e => { const c = e.target && e.target.classList; if (!c) return; if (c.contains('ivq2')) upd858(); if (c.contains('ivamt')) updC858(); }, true);
+  let scr858 = null;
+  document.addEventListener('pointerdown', e => { const sv = e.target.closest && e.target.closest('.ivsvg'); if (sv) { scr858 = sv; scrub858(sv, e.clientX); } }, true);
+  document.addEventListener('pointermove', e => { const sv = scr858 || (e.pointerType === 'mouse' && e.target.closest && e.target.closest('.ivsvg')); if (sv) scrub858(sv, e.clientX); }, true);
+  document.addEventListener('pointerup', () => { if (scr858) { const sv = scr858; scr858 = null; setTimeout(() => scrubEnd858(sv), 1500); } }, true);
+  document.addEventListener('pointerout', e => { if (!scr858 && e.pointerType === 'mouse' && e.target.closest && e.target.closest('.ivsvg') && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.ivsvg'))) scrubEnd858(e.target.closest('.ivsvg')); }, true);
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('[data-iv858]');
+    if (!b || !S) return;
+    e.stopPropagation(); e.preventDefault(); if (b.disabled) return;
+    const a = b.getAttribute('data-iv858'), k = b.getAttribute('data-k'), val = b.getAttribute('data-v'), v = inv858();
+    const qi = document.querySelector('.ivq2');
+    // 다시 그리지 않고 입력칸만 바꾸는 동작
+    if (a === 'qadd' && qi) { qi.value = Math.max(0, Math.floor(+qi.value || 0) + (+val)) || ''; upd858(); return; }
+    if (a === 'qset' && qi) { const p = v.px[ui.iv858s], own = v.sh[ui.iv858s] || 0; const n = val === 'max' ? Math.floor(v.cash / p) : val === 'quarter' ? Math.floor(v.cash * .25 / p) : val === 'half' ? Math.ceil(own / 2) : own; qi.value = n || ''; upd858(); return; }
+    if (a === 'camt') { const ai = document.querySelector('.ivamt'); if (ai) { const from = Math.floor(ui.iv858c === 'dep' ? S.money : v.cash); ai.value = val === 'all' ? from : val === '0' ? '' : Math.min(from, Math.floor(+ai.value || 0) + (+val)) || ''; b.classList.remove('tap'); void b.offsetWidth; b.classList.add('tap'); } updC858(); return; }
+    if (a === 'dx') { ui.iv858done = null; render(); return; }
+    let m = '';
+    if (a === 'show') { ui.inv858show = true; ui.inv858anim = true; }
+    else if (a === 'hide') { ui.inv858show = false; ui.iv858s = null; ui.iv858c = null; }
+    else if (a === 'tab') ui.inv858 = val;
+    else if (a === 'stk') { ui.iv858s = k; ui.iv858c = null; ui.iv858m = 'buy'; }
+    else if (a === 'csheet') { ui.iv858c = val; ui.iv858s = null; }
+    else if (a === 'sx') { ui.iv858s = null; ui.iv858c = null; }
+    else if (a === 'mode') ui.iv858m = val;
+    else if (a === 'rng') ui.iv858r = val;
+    else if (a === 'go') {
+      const n = Math.floor(+(qi && qi.value) || 0), id = ui.iv858s, buy = (ui.iv858m || 'buy') === 'buy' || !(v.sh[id] || 0), p0 = v.px[id], c0 = v.cost[id] || p0, s0 = STK858.find(x => x.id === id);
+      if (n <= 0) m = '수량을 입력해 주세요.';
+      else if (buy) { const mx = Math.floor(v.cash / v.px[id]); m = n > mx ? `현금이 부족해요. 최대 ${mx.toLocaleString()}주까지 살 수 있어요.` : stkTrade858(id, n); }
+      else { const own = v.sh[id] || 0; m = n > own ? `가진 수량(${own.toLocaleString()}주)보다 많이 팔 수 없어요.` : stkTrade858(id, -n); }
+      if (/매수|매도/.test(m)) {
+        ui.iv858s = null;
+        ui.iv858done = buy ? { k: 'buy', t: '매수 완료', l: [`${s0.n} ${n.toLocaleString()}주`, `${won858(p0)} × ${n.toLocaleString()}주 = ${amt858(n * p0)}`, `남은 투자용 현금 ${amt858(v.cash)}`] }
+          : { k: 'sell', t: '매도 완료', l: [`${s0.n} ${n.toLocaleString()}주`, `받은 돈 ${amt858(n * p0)} (투자용 현금으로)`, `손익 <i class="${p0 >= c0 ? 'up' : 'dn'}">${sAmt858(n * (p0 - c0))} (${pctS858(p0 / c0 - 1)})</i>`] };
+        m = '';
+      }
+    }
+    else if (a === 'cgo') {
+      const ai = document.querySelector('.ivamt'), n = Math.floor(+(ai && ai.value) || 0);
+      m = n <= 0 ? '금액을 만원 단위로 입력해 주세요.' : cashMove858(ui.iv858c === 'dep' ? n : -n);
+      if (/입금|출금/.test(m) && !/부족|없어요/.test(m)) { const dep = ui.iv858c === 'dep'; ui.iv858c = null; ui.iv858done = { k: 'buy', t: dep ? '입금 완료' : '출금 완료', l: [`${money(n)} ${dep ? '→ 투자용 현금' : '→ 보유 자금'}`, `투자용 현금 ${money(inv858().cash)} · 보유 자금 ${money(S.money)}`] }; m = ''; }
+    }
+    else if (a === 're') { m = reTrade858(k); const it = ITEMS.find(x => x.id === k); if (it && /매입|매도/.test(m)) { ui.iv858done = { k: /매입/.test(m) ? 'buy' : 'sell', t: /매입/.test(m) ? '집을 샀어요' : '집을 팔았어요', l: [it.n, m.replace(/^.*\(/, '').replace(/\)$/, ''), `보유 자금 ${money(S.money)}`] }; m = ''; } }
+    try { save(); } catch (x) {}
+    const sc = document.querySelector('.ivpanel858 .ivbody'), st = sc ? sc.scrollTop : 0;
+    if (ui.iv858done && !m) { clearTimeout(ui.iv858dt); ui.iv858dt = setTimeout(() => { ui.iv858done = null; render(); }, 2200); }
+    if (m) { try { toast(m); } catch (x) { render(); } } else render();
+    ui.inv858anim = false;
+    const sc2 = document.querySelector('.ivpanel858 .ivbody'); if (sc2 && a !== 'show') sc2.scrollTop = st;
+  }, true);
+}
 
 /* ===== 이벤트 (11/23 유저) =====
    ① 동료의 주식 추천 — 사면 팀 분위기↑ (종목은 이후 시세대로 오르거나 내림 = 플러스·마이너스)
@@ -17638,7 +17809,7 @@ function tipEvent858() {
   if (qb < 1 || pool < v.px[s.id] * qs) return null;
   const who = pick(S.pro && S.pro.league === 'MLB' ? ['같은 팀 한국인 동료', '불펜 동료', '룸메이트'] : ['고참 선배', '동기', '주장', '룸메이트 선배', '친한 후배']);
   return { title: '📈 동료의 주식 추천', opt: 4, text: `원정 버스 안. ${jo(who, '이', '가')} 휴대폰을 내민다.\n"${s.n} 이거 진짜 간다. 나도 꽤 넣었어. 같이 하자."\n지금 ${s.n} 한 주에 ${won858(v.px[s.id])}.`, ch: [
-    { t: `${qb.toLocaleString()}주 산다`, s: `${money(qb * v.px[s.id])}어치 (계좌가 모자라면 보유 자금에서 이체) · 팀 분위기↑ · 주가는 장담 못 함`, act: 'tip858', arg: { k: s.id, q: qb, chem: 3 } },
+    { t: `${qb.toLocaleString()}주 산다`, s: `${money(qb * v.px[s.id])}어치 (투자용 현금이 모자라면 보유 자금에서 채움) · 팀 분위기↑ · 주가는 장담 못 함`, act: 'tip858', arg: { k: s.id, q: qb, chem: 3 } },
     { t: `${qs.toLocaleString()}주만 산다`, s: `${money(qs * v.px[s.id])}어치 · 팀 분위기 조금↑`, act: 'tip858', arg: { k: s.id, q: qs, chem: 1 } },
     { t: '"난 주식 안 해"', s: '돈은 지킨다', act: 'tip858', arg: { q: 0, chem: 0 } }] };
 }
@@ -17704,7 +17875,7 @@ if (typeof lifeEvents === 'function') {
     try {
       /* S.evY는 안쪽 래퍼(v77)가 모든 이벤트에 올해를 먼저 찍어서 못 씀 → 따로 저장 */
       const Y = S.evCD858 = S.evCD858 || {};
-      const cd = { '💍 프러포즈': 2, '💘 새로운 인연': 1 };
+      const cd = { '💍 프러포즈': 2, '💘 새로운 인연': 3 };   // 11/24 시뮬: 새 인연이 전체 이벤트의 9%·한 커리어 5번 → 3년 간격
       out = out.filter(e => { const k = Object.keys(cd).find(t => (e.title || '').indexOf(t) === 0); if (!k) return true; if (Y[k] != null && S.y - Y[k] < cd[k]) return false; Y[k] = S.y; return true; });
     } catch (e) {}
     return out;
