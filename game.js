@@ -17399,3 +17399,276 @@ if (typeof itemSum === 'function') {
     return v;
   };
 }
+
+/* v858r 초안 (11/23 유저) — 아직 build2에 안 넣음. 이미지 확인용.
+   "연봉마다 주식에 넣을 수 있게 · 실제 유명 기업에서 이름만 살짝 바꾸고 · 오를 확률 살짝↑ · 변동률 살짝↑
+    · 주식 오르면 컨디션↑ 내리면↓ · 싼 주식부터 비싼 주식까지 10개 · 상점에서 · 부동산도 마찬가지
+    · 펜트하우스 같은 건 생활에서 빼고 부동산/주식 묶어서 '재테크'로"
+   · 한 턴(비시즌·전반기·후반기, 연 3번)마다 시세가 바뀜
+   · 주식: 턴 수익률 ~ 정규분포(평균 = 0.15σ → 오를 확률 약 56%), σ 7~14%(실제 개별주보다 살짝 큼)
+     가끔(턴당 4%) 뉴스성 급등락 ±15~30%
+   · 부동산: 턴 σ 4%, 오를 확률 약 69% (천천히 우상향) · 팔 때 수수료 3%
+     보유한 집 중 가장 좋은 집 하나만 생활 효과(컨디션·피로)를 줌 (여러 채 사도 효과가 겹치지 않음)
+   · 컨디션: 직전 시세 변동에서 내 주식 평가액이 오르면 컨디션 상승 확률↑, 내리면↓
+     효과 = 0.6·tanh(3·수익률) × 비중곡선(1−e^(−평가액/연봉)) → 소액이면 거의 영향 X, 연봉만큼 넣으면 체감 */
+const STK858 = [
+  { id: 'kal', n: '대한황공', p0: 2.4, vol: .11, sec: '항공' },
+  { id: 'cpg', n: '쿠빵', p0: 3.6, vol: .13, sec: '유통' },
+  { id: 'kko', n: '카카우', p0: 5, vol: .10, sec: 'IT' },
+  { id: 'sse', n: '삼숭전자', p0: 8, vol: .07, sec: '반도체' },
+  { id: 'nvr', n: '네이봐', p0: 21, vol: .09, sec: 'IT' },
+  { id: 'hdc', n: '현디차', p0: 25, vol: .07, sec: '자동차' },
+  { id: 'nvd', n: '엔비디야', p0: 28, vol: .12, sec: '반도체' },
+  { id: 'skh', n: 'SK하이닉쓰', p0: 34, vol: .10, sec: '반도체' },
+  { id: 'tsl', n: '테슬러', p0: 52, vol: .14, sec: '자동차' },
+  { id: 'sbl', n: '삼숭바이오', p0: 105, vol: .08, sec: '바이오' },
+];
+const RE858 = ['home1', 'home2', 'home3', 'home4', 'lx_hw', 'lx_bh', 'lx_ny', 'lx_island'];
+const INV858 = { drift: .15, jump: .04, reVol: .04, reDrift: .5, reFee: .03, fmMax: .6 };
+
+function inv858() {
+  if (!S) return null;
+  if (!S.inv858) {
+    const px = {}, hist = {};
+    STK858.forEach(s => { px[s.id] = s.p0; hist[s.id] = [s.p0]; });
+    S.inv858 = { px, hist, sh: {}, cost: {}, re: {}, reV: {}, lastR: 0, t: S.turn, mv: {} };
+    // 기존에 생활 탭에서 산 집은 산 값 그대로 부동산 보유로 옮김
+    RE858.forEach(id => { const it = ITEMS.find(x => x.id === id); if (it) S.inv858.reV[id] = it.p; if (it && owned(id)) S.inv858.re[id] = { cost: it.p }; });
+  }
+  return S.inv858;
+}
+function stkPV858(v) { v = v || inv858(); return STK858.reduce((a, s) => a + (v.sh[s.id] || 0) * v.px[s.id], 0); }
+function rePV858(v) { v = v || inv858(); return Object.keys(v.re).reduce((a, id) => a + (v.reV[id] || 0), 0); }
+
+/* 한 턴 시세 변동 */
+function invStep858() {
+  const v = inv858(); if (!v || v.t === S.turn) return;
+  const pv0 = stkPV858(v); let pv1 = 0; v.mv = {};
+  STK858.forEach(s => {
+    let r = rn(INV858.drift * s.vol, s.vol);
+    if (R() < INV858.jump) { const up = R() < .55; r += (up ? 1 : -1) * (.15 + R() * .15); v.mv[s.id] = up ? 'up' : 'dn'; }
+    const p = Math.max(.1, Math.round(v.px[s.id] * Math.exp(r) * 100) / 100);
+    v.px[s.id] = p; (v.hist[s.id] = v.hist[s.id] || []).push(p); if (v.hist[s.id].length > 13) v.hist[s.id].shift();
+    pv1 += (v.sh[s.id] || 0) * p;
+  });
+  v.lastR = pv0 > 0 ? pv1 / pv0 - 1 : 0;
+  RE858.forEach(id => { const r = rn(INV858.reDrift * INV858.reVol, INV858.reVol); v.reV[id] = Math.round((v.reV[id] || (ITEMS.find(x => x.id === id) || {}).p || 0) * Math.exp(r)); });
+  v.t = S.turn;
+}
+
+/* 컨디션: 직전 변동 × 비중 곡선 */
+function invFm858() {
+  const v = S && S.inv858; if (!v || !v.lastR) return 0;
+  const sal = Math.max(3000, (S.pro && S.pro.salary) || 3000);
+  const w = 1 - Math.exp(-stkPV858(v) / sal);
+  return INV858.fmMax * Math.tanh(3 * v.lastR) * w;
+}
+
+/* 집 여러 채: 가장 좋은 집 하나만 생활 효과 */
+function bestHome858() { let b = null; RE858.forEach(id => { const it = ITEMS.find(x => x.id === id); if (it && owned(id) && (!b || (it.fm || 0) > (b.fm || 0))) b = it; }); return b; }
+if (typeof itemSum === 'function') {
+  const _is = itemSum;
+  itemSum = function (k) {
+    let x = _is.apply(this, arguments);
+    try {
+      if (S && S.me === ME && (k === 'fm' || k === 'recov')) {
+        const b = bestHome858();
+        RE858.forEach(id => { const it = ITEMS.find(y => y.id === id); if (it && owned(id) && it !== b) x -= (it[k] || 0); });
+        if (k === 'fm') x += invFm858();
+      }
+    } catch (e) {}
+    return x;
+  };
+}
+if (typeof newCard === 'function') { const _nc = newCard; newCard = function () { const r = _nc.apply(this, arguments); try { if (S && S.stage !== 'ret') invStep858(); } catch (e) {} return r; }; }
+
+/* 통산 수입 반영 (11/23 유저 "주식이나 부동산에서 손실도 마지막 수입에 영향 가게")
+   · S.money가 늘면 그만큼 통산 수입(S.earned)에 자동으로 더해지는 구조(v858c) → 팔 때 판 돈 전체가 수입으로 잡히는 걸 막고
+     '판 돈 − 산 값' = 실현 손익만 남게 산 값을 빼 줌 (손해 보고 팔면 통산 수입이 줄어듦)
+   · 은퇴할 때 들고 있던 주식·부동산은 그 시점 시세로 평가해서 손익을 통산 수입에 반영 (부동산은 수수료 3% 뺀 값) */
+function earnAdj858(d) { try { if (S && typeof S.earned === 'number' && isFinite(d) && S.stage !== 'hs' && S.stage !== 'univ') S.earned += d; } catch (e) {} }
+function invUnreal858() {
+  const v = S && S.inv858; if (!v) return 0;
+  let x = 0;
+  STK858.forEach(s => { const q = v.sh[s.id] || 0; if (q) x += q * (v.px[s.id] - (v.cost[s.id] || v.px[s.id])); });
+  Object.keys(v.re).forEach(id => { x += (v.reV[id] || 0) * (1 - INV858.reFee) - v.re[id].cost; });
+  return Math.round(x);
+}
+if (typeof retire === 'function') { const _rt = retire; retire = function () { try { if (S && S.inv858 && !S.inv858.done) { earnAdj858(invUnreal858()); S.inv858.done = 1; } } catch (e) {} return _rt.apply(this, arguments); }; }
+
+/* 매매 */
+function stkTrade858(id, q) {
+  const v = inv858(), s = STK858.find(x => x.id === id); if (!v || !s) return '';
+  const p = v.px[id], have = v.sh[id] || 0;
+  if (q === 'max') q = Math.floor(S.money / p);
+  if (q === 'all') q = -have; if (q === 'half') q = -Math.ceil(have / 2);
+  if (q > 0) { q = Math.min(q, Math.floor(S.money / p)); if (q <= 0) return '자금이 부족해요.'; S.money -= q * p; v.cost[id] = ((v.cost[id] || 0) * have + q * p) / (have + q); v.sh[id] = have + q; return `${s.n} ${q.toLocaleString()}주 매수 (−${money(q * p)})`; }
+  if (q < 0) { q = Math.min(-q, have); if (!q) return ''; S.money += q * p; earnAdj858(-q * (v.cost[id] || p)); v.sh[id] = have - q; if (!v.sh[id]) delete v.cost[id]; return `${s.n} ${q.toLocaleString()}주 매도 (+${money(q * p)})`; }
+  return '';
+}
+function reTrade858(id) {
+  const v = inv858(), it = ITEMS.find(x => x.id === id); if (!v || !it) return '';
+  const val = v.reV[id] || it.p;
+  if (v.re[id]) { const get = Math.round(val * (1 - INV858.reFee)); S.money += get; earnAdj858(-v.re[id].cost); delete v.re[id]; delete S.me.items[id]; return `${it.n} 매도 (+${money(get)})`; }
+  if (S.money < val) return '자금이 부족해요.';
+  S.money -= val; v.re[id] = { cost: val }; S.me.items[id] = true; return `${it.n} 매입 (−${money(val)})`;
+}
+
+/* 화면 */
+function spark858(arr, up) {
+  if (!arr || arr.length < 2) return '';
+  const mn = Math.min(...arr), mx = Math.max(...arr), W = 64, H = 22, k = mx - mn || 1;
+  const pts = arr.map((p, i) => `${(i / (arr.length - 1) * W).toFixed(1)},${(H - 2 - (p - mn) / k * (H - 4)).toFixed(1)}`).join(' ');
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block"><polyline points="${pts}" fill="none" stroke="${up ? '#e5484d' : '#3e7bfa'}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+}
+const pct858 = x => `${x >= 0 ? '▲' : '▼'} ${Math.abs(x * 100).toFixed(1)}%`;
+const won858 = p => p < 1 ? `${Math.round(p * 10000).toLocaleString()}원` : `${(Math.round(p * 10000)).toLocaleString()}원`;
+function vInvest858() {
+  const v = inv858(); if (!v) return '';
+  const tab = ui.inv858 || 'stk', sv = stkPV858(v), rv = rePV858(v);
+  const costAll = STK858.reduce((a, s) => a + (v.sh[s.id] || 0) * (v.cost[s.id] || 0), 0);
+  const pl = sv - costAll;
+  let h = `<div class="card inv858" style="gap:0"><div class="row" style="padding-bottom:6px"><span class="lbl sp">💹 재테크</span><span class="tiny muted">시세는 매 턴 바뀌어요</span></div>`;
+  h += `<div class="ivsum"><div><span>주식 평가액</span><b>${money(sv)}</b>${costAll ? `<i class="${pl >= 0 ? 'up' : 'dn'}">${pl >= 0 ? '+' : '−'}${money(Math.abs(pl))}</i>` : ''}</div><div><span>부동산</span><b>${money(rv)}</b></div></div>`;
+  h += `<div class="seg" style="margin:8px 0 2px"><button class="${tab === 'stk' ? 'on' : ''}" data-iv858="tab" data-v="stk">주식</button><button class="${tab === 're' ? 'on' : ''}" data-iv858="tab" data-v="re">부동산</button></div>`;
+  if (tab === 'stk') {
+    h += STK858.map(s => {
+      const hs = v.hist[s.id] || [], p = v.px[s.id], prev = hs.length > 1 ? hs[hs.length - 2] : p, ch = p / prev - 1, own = v.sh[s.id] || 0, open = ui.inv858o === s.id;
+      const opl = own ? (p / (v.cost[s.id] || p) - 1) : 0;
+      let r = `<div class="ivrow${open ? ' open' : ''}" data-iv858="open" data-k="${s.id}"><div class="sp"><div class="ivn">${s.n}${v.mv[s.id] ? `<span class="ivtag ${v.mv[s.id]}">${v.mv[s.id] === 'up' ? '급등' : '급락'}</span>` : ''}</div><div class="tiny muted">${s.sec}${own ? ` · ${own.toLocaleString()}주 <span class="${opl >= 0 ? 'up' : 'dn'}">${opl >= 0 ? '+' : ''}${(opl * 100).toFixed(1)}%</span>` : ''}</div></div>${spark858(hs, ch >= 0)}<div class="ivp"><b>${won858(p)}</b><span class="${ch >= 0 ? 'up' : 'dn'}">${pct858(ch)}</span></div></div>`;
+      if (open) {
+        const mx = Math.floor(S.money / p);
+        r += `<div class="ivact"><div class="tiny muted">살 수 있는 수량 ${mx.toLocaleString()}주${own ? ` · 보유 ${own.toLocaleString()}주` : ''}</div><div class="ivin"><input type="number" inputmode="numeric" min="1" step="1" placeholder="수량 직접 입력" class="ivq" data-k="${s.id}"><span>주</span><button class="btn sm pri" data-iv858="bin" data-k="${s.id}">매수</button>${own ? `<button class="btn sm" data-iv858="sin" data-k="${s.id}">매도</button>` : ''}</div><div class="ivbtns"><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="1" ${mx >= 1 ? '' : 'disabled'}>1주</button><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="10" ${mx >= 10 ? '' : 'disabled'}>10주</button><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="100" ${mx >= 100 ? '' : 'disabled'}>100주</button><button class="btn sm pri" data-iv858="b" data-k="${s.id}" data-q="max" ${mx >= 1 ? '' : 'disabled'}>최대</button></div>`
+          + (own ? `<div class="ivbtns"><button class="btn sm" data-iv858="b" data-k="${s.id}" data-q="half">절반 매도</button><button class="btn sm dng" data-iv858="b" data-k="${s.id}" data-q="all">전량 매도 ${money(own * p)}</button></div>` : '') + `</div>`;
+      }
+      return r;
+    }).join('');
+  } else {
+    h += RE858.map(id => {
+      const it = ITEMS.find(x => x.id === id); if (!it) return '';
+      const val = v.reV[id] || it.p, has = !!v.re[id], g = has ? val / v.re[id].cost - 1 : 0, can = S.money >= val;
+      return `<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="sp"><div class="ivn">${it.n}</div><div class="tiny muted">${it.d.replace(/\s*\(.*?대체\)/, '')}${has ? ` · <span class="${g >= 0 ? 'up' : 'dn'}">산 값 대비 ${g >= 0 ? '+' : ''}${(g * 100).toFixed(1)}%</span>` : ''}</div></div>${has ? `<button class="btn sm" data-iv858="re" data-k="${id}">팔기 ${money(Math.round(val * (1 - INV858.reFee)))}</button>` : `<button class="btn sm ${can ? 'pri' : ''}" data-iv858="re" data-k="${id}" ${can ? '' : 'disabled'}>${money(val)}</button>`}</div>`;
+    }).join('') + `<div class="tiny muted" style="padding-top:8px">팔 때 수수료 3% · 여러 채를 가져도 생활 효과는 가장 좋은 집 하나만</div>`;
+  }
+  return h + `</div>`;
+}
+const INV858CSS = `<style>.inv858 .ivsum{display:grid;grid-template-columns:1fr 1fr;gap:8px}.inv858 .ivsum>div{background:var(--bg2,rgba(127,127,127,.08));border-radius:10px;padding:8px 10px;display:flex;flex-direction:column}.inv858 .ivsum span{font-size:.72rem;opacity:.7}.inv858 .ivsum b{font-size:1rem}.inv858 .ivsum i{font-style:normal;font-size:.75rem}
+.inv858 .up{color:#e5484d}.inv858 .dn{color:#3e7bfa}.inv858 .ivrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}.inv858 .ivrow.open{border-bottom:0}.inv858 .ivn{font-weight:700;font-size:.9rem}.inv858 .ivp{display:flex;flex-direction:column;align-items:flex-end;min-width:78px}.inv858 .ivp b{font-size:.88rem}.inv858 .ivp span{font-size:.72rem}
+.inv858 .ivtag{font-size:.62rem;margin-left:6px;padding:1px 5px;border-radius:6px;color:#fff;vertical-align:2px}.inv858 .ivtag.up{background:#e5484d;color:#fff}.inv858 .ivtag.dn{background:#3e7bfa;color:#fff}.inv858 .ivact{padding:4px 0 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}.inv858 .ivbtns{display:flex;gap:6px;flex-wrap:wrap}.inv858 .ivbtns .btn{flex:1}.inv858 .btn.dng{color:#3e7bfa}.inv858 .ivin{display:flex;gap:6px;align-items:center}.inv858 .ivin input{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--bg2,rgba(127,127,127,.08));color:inherit}.inv858 .ivin span{font-size:.85rem;opacity:.7}
+.ivbtn858{display:flex!important;flex-direction:row!important;align-items:center;gap:12px;width:100%;cursor:pointer;font:inherit;color:inherit;text-align:left}.ivbtn858 .sp{display:flex;flex-direction:column;gap:2px}.ivbtn858 b{font-size:.98rem}.ivbtn858 .ivbi{font-size:1.5rem}.ivbtn858 .ivgo{font-size:1.4rem;opacity:.5}.ivbtn858 i{font-style:normal}.ivbtn858 .up{color:#e5484d}.ivbtn858 .dn{color:#3e7bfa}
+.ivpanel858{position:fixed;inset:0;z-index:60;background:var(--bg,#111);display:flex;flex-direction:column;animation:ivup858 .22s ease-out}.ivpanel858.noanim{animation:none}@keyframes ivup858{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.ivpanel858 .ivhead{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px;border-bottom:1px solid var(--line)}.ivpanel858 .ivhead b{font-size:1.05rem}.ivpanel858 .ivhead .tiny{margin-left:auto}.ivpanel858 .ivx{font-size:1.6rem;line-height:1;background:none;border:0;color:inherit;padding:0 6px;cursor:pointer}
+.ivpanel858 .ivbody{flex:1;overflow-y:auto;padding:12px 12px calc(24px + env(safe-area-inset-bottom,0px));max-width:640px;width:100%;margin:0 auto;box-sizing:border-box}.ivpanel858 .ivbody .card{margin:0}</style>`;
+
+if (typeof vShop === 'function') {
+  const _vs = vShop;
+  vShop = function () {
+    // 생활 목록에서 부동산 제외 (재테크로 이동)
+    const keep = ITEMS.slice();
+    let h, lp = null;
+    try { lp = typeof lifePct === 'function' ? lifePct() : null; } catch (e) {}
+    try { for (let i = ITEMS.length - 1; i >= 0; i--) if (RE858.includes(ITEMS[i].id)) ITEMS.splice(i, 1); h = _vs.apply(this, arguments); }
+    finally { ITEMS.length = 0; keep.forEach(x => ITEMS.push(x)); }
+    try { if (lp != null) h = h.replace(/생활 만족도 <b>[^<]*%<\/b>/, `생활 만족도 <b>${lp}%</b>`); } catch (e) {}  // 집을 목록에서 잠깐 뺀 사이에 만족도가 0%로 계산되던 버그 방지
+    try {
+      if (S && S.stage !== 'ret') {
+        const v = inv858(), sv = stkPV858(v), rv = rePV858(v);
+        const lastR = v.lastR || 0;
+        const card = INV858CSS + `<button class="card ivbtn858" data-iv858="show"><span class="ivbi">💹</span><span class="sp" style="text-align:left"><b>재테크</b><span class="tiny muted">주식 ${money(sv)}${sv && lastR ? ` <i class="${lastR >= 0 ? 'up' : 'dn'}">${pct858(lastR)}</i>` : ''} · 부동산 ${money(rv)}</span></span><span class="ivgo">›</span></button>`
+          + (ui.inv858show ? `<div class="ivpanel858${ui.inv858anim ? '' : ' noanim'}"><div class="ivhead"><button class="ivx" data-iv858="hide" aria-label="닫기">‹</button><b>재테크</b><span class="tiny muted">보유 자금 ${money(S.money)}</span></div><div class="ivbody">${vInvest858()}</div></div>` : '');
+        const mk = '🏠 생활'; const i = h.indexOf(mk);
+        const j = i >= 0 ? h.lastIndexOf('<div class="card"', i) : -1;
+        h = j >= 0 ? h.slice(0, j) + card + h.slice(j) : h + card;
+      }
+    } catch (e) {}
+    return h;
+  };
+}
+if (typeof document !== 'undefined') document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-iv858]');
+  if (!b || !S) return;
+  e.stopPropagation(); e.preventDefault(); if (b.disabled) return;
+  const a = b.getAttribute('data-iv858'), k = b.getAttribute('data-k');
+  let m = '';
+  if (a === 'show') { ui.inv858show = true; ui.inv858anim = true; }
+  else if (a === 'hide') { ui.inv858show = false; }
+  else if (a === 'tab') ui.inv858 = b.getAttribute('data-v');
+  else if (a === 'open') ui.inv858o = ui.inv858o === k ? null : k;
+  else if (a === 'b') { const q = b.getAttribute('data-q'); m = stkTrade858(k, isNaN(+q) ? q : +q); }
+  else if (a === 'bin' || a === 'sin') {
+    const inp = document.querySelector(`.ivq[data-k="${k}"]`), n = Math.floor(+(inp && inp.value) || 0);
+    if (n <= 0) m = '수량을 입력해 주세요.';
+    else if (a === 'bin') { const mx = Math.floor(S.money / inv858().px[k]); m = n > mx ? `자금이 부족해요. 최대 ${mx.toLocaleString()}주까지 살 수 있어요.` : stkTrade858(k, n); }
+    else { const own = inv858().sh[k] || 0; m = n > own ? `보유 수량(${own.toLocaleString()}주)보다 많이 팔 수 없어요.` : stkTrade858(k, -n); }
+  }
+  else if (a === 're') m = reTrade858(k);
+  try { save(); } catch (x) {}
+  const sc = document.querySelector('.ivpanel858 .ivbody'), st = sc ? sc.scrollTop : 0;
+  if (m) { try { toast(m); } catch (x) { render(); } } else render();
+  ui.inv858anim = false;
+  const sc2 = document.querySelector('.ivpanel858 .ivbody'); if (sc2 && a !== 'show') sc2.scrollTop = st;
+}, true);
+
+/* ===== 이벤트 (11/23 유저) =====
+   ① 동료의 주식 추천 — 사면 팀 분위기↑ (종목은 이후 시세대로 오르거나 내림 = 플러스·마이너스)
+   ② 승부조작 브로커 — 수락 시 80% 성공(돈·멘탈↑) / 20% 실패(벌금·워크에식·인기↓) · 거절 · 신고
+   · 둘 다 프로 시즌 중에만 · 같은 이벤트는 최소 2년 간격 · 한 턴에 둘 중 하나만 · 승부조작은 커리어 최대 2번
+   · 기존 '수상한 제안'(도박)처럼 선택 이벤트 우선순위 대열에 들어가서 다른 이벤트를 밀어내지 않게(opt) */
+const EV858S = { tipP: .12, fixP: .05, gap: 2 };
+function tipEvent858() {
+  const v = inv858(); if (!v) return null;
+  const s = pick(STK858), sal = (S.pro && S.pro.salary) || 3000;
+  const big = Math.max(s.p0, Math.min(S.money * .3, sal * .2)), small = Math.max(s.p0, big / 4);
+  const qb = Math.floor(big / v.px[s.id]), qs = Math.max(1, Math.floor(small / v.px[s.id]));
+  if (qb < 1 || S.money < v.px[s.id] * qs) return null;
+  const who = pick(S.pro && S.pro.league === 'MLB' ? ['같은 팀 한국인 동료', '불펜 동료', '룸메이트'] : ['고참 선배', '동기', '주장', '룸메이트 선배', '친한 후배']);
+  return { title: '📈 동료의 주식 추천', opt: 4, text: `원정 버스 안. ${jo(who, '이', '가')} 휴대폰을 내민다.\n"${s.n} 이거 진짜 간다. 나도 꽤 넣었어. 같이 하자."\n지금 ${s.n} 한 주에 ${won858(v.px[s.id])}.`, ch: [
+    { t: `${qb.toLocaleString()}주 산다`, s: `−${money(qb * v.px[s.id])} · 팀 분위기↑ · 주가는 장담 못 함`, act: 'tip858', arg: { k: s.id, q: qb, chem: 3 } },
+    { t: `${qs.toLocaleString()}주만 산다`, s: `−${money(qs * v.px[s.id])} · 팀 분위기 조금↑`, act: 'tip858', arg: { k: s.id, q: qs, chem: 1 } },
+    { t: '"난 주식 안 해"', s: '돈은 지킨다 · 팀 분위기 조금↓', act: 'tip858', arg: { q: 0, chem: -1 } }] };
+}
+function fixEvent858() {
+  const sal = (S.pro && S.pro.salary) || 3000, pay = Math.min(30000, Math.max(1000, Math.round(sal * .25 / 100) * 100));
+  return { title: '🕶️ 낯선 남자의 제안', opt: 1, text: `원정 숙소 앞. 처음 보는 남자가 다가와 명함도 없이 말을 건다.\n"다음 경기 1회에 ${isP() ? '볼넷 하나만 주시면' : '삼진 하나만 당해 주시면'} ${money(pay)} 드립니다. 아무도 몰라요."\n\n승부조작 브로커다.`, ch: [
+    { t: '"…딱 한 번만."', s: '성공하면 돈과 배짱, 걸리면…', act: 'fix858', arg: { j: 1, pay } },
+    { t: '못 들은 걸로 한다', s: '마음은 편하다 · 찜찜해서 컨디션 조금↓', act: 'fix858', arg: { j: 0 } },
+    { t: '구단에 신고한다', s: '감독 신뢰↑ · 인기↑ · 라커룸이 뒤숭숭해짐 (팀 분위기↓)', act: 'fix858', arg: { j: 2 } }] };
+}
+Object.assign(ACT, {
+  tip858(a) {
+    S.rel.chem = cl(S.rel.chem + (a.chem || 0), 0, 100);
+    if (!a.q) return '"그래, 안 하는 게 맞을 수도 있지." 선배가 머쓱하게 웃었다.';
+    const m = stkTrade858(a.k, a.q);
+    if (/부족/.test(m)) { S.rel.chem = cl(S.rel.chem - (a.chem || 0), 0, 100); return m; }
+    return `${m}\n"오 같이 가는 거지?" 버스 뒷자리가 한결 시끌벅적해졌다.`;
+  },
+  fix858(a) {
+    S.fixN858 = (S.fixN858 || 0) + (a.j === 1 ? 1 : 0);
+    if (a.j === 1) {
+      if (R() < .8) { S.money += a.pay; ME.hid.men = cl(ME.hid.men + 3, 20, 80); return `아무 일도 없었다. 통장에 ${money(a.pay)}이 들어왔다. (멘탈 +3)\n…다음 날 그 남자에게서 또 문자가 왔다.`; }
+      const fine = Math.min(50000, Math.max(2000, Math.round(((S.pro && S.pro.salary) || 3000) * .5 / 100) * 100));
+      S.money = Math.max(0, S.money - fine); ME.hid.we = cl(ME.hid.we - 8, 20, 80); S.rel.fame = cl(S.rel.fame - 15, 0, 100);
+      try { news(`승부조작 가담 적발 — 제재금 ${money(fine)}.`); article(`[단독] ${ME.name}, 승부조작 브로커와 접촉… 제재금 ${money(fine)}`, `${ME.name}이 승부조작 브로커에게 돈을 받은 사실이 드러났다. 리그는 제재금 ${money(fine)}을 부과했다. 팬들의 실망이 크다.`, 'scandal'); } catch (e) {}
+      return `들켰다. 제재금 ${money(fine)}. 기사가 쏟아졌다. (워크에식 −8 · 인기 크게↓)`;
+    }
+    if (a.j === 2) { S.rel.coach = cl(S.rel.coach + 6, 0, 100); S.rel.fame = cl(S.rel.fame + 4, 0, 100); S.rel.chem = cl(S.rel.chem - 4, 0, 100); try { news('승부조작 제안을 구단에 신고.'); } catch (e) {} return '구단과 리그가 조사에 나섰다. "용기 있는 신고"라는 기사가 났지만, 라커룸에는 누가 또 연락받았나 서로 눈치를 보는 공기가 흘렀다.'; }
+    ME.form = cl(ME.form - 1, -6, 6); return '못 들은 척 숙소로 들어왔다. 그날 밤 잠을 설쳤다.';
+  },
+});
+if (typeof newCard === 'function') {
+  const _nc2 = newCard;
+  newCard = function () {
+    const r = _nc2.apply(this, arguments);
+    try {
+      if (!S || S.stage !== 'pro' || S.phase === 0 || S.susp > 0) return r;
+      if (S.queue.some(q => /수상한 제안|주식 추천|낯선 남자/.test(q.title || ''))) return r;
+      S.evY = S.evY || {};
+      const ok = t => !(S.evY[t] >= S.y - EV858S.gap + 1);
+      const c = [];
+      if (ok('📈 동료의 주식 추천') && R() < EV858S.tipP) c.push(tipEvent858);
+      if (ok('🕶️ 낯선 남자의 제안') && (S.fixN858 || 0) < 2 && proYears() >= 2 && R() < EV858S.fixP) c.push(fixEvent858);
+      if (c.length) { const e = pick(c)(); if (e) { S.evY[e.title] = S.y; S.queue.push(e); } }
+    } catch (e) {}
+    return r;
+  };
+}
