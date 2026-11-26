@@ -17294,8 +17294,9 @@ const GIFT858 = [
   { id: 'car', n: '🚗 드림카', p: 30000, d: 18 },
 ];
 const giftDim858 = n => knot(n, [0, 1, 2, 3, 5], [1, .65, .4, .25, .1]); /* 같은 반기에 n번째 선물 */
-/* v860 (11/27 유저 "배우자한테 사는건 한번만 살 수 있게 해 선물"): 선물은 반기에 한 번 (연인도 같음) */
-function gDone860() { return !!(S && S.gift858 && S.gift858.t === S.turn && S.gift858.n >= 1); }
+/* v860b (11/27 03:44 유저 "반기에 한번도 아니고 그냥 두번씩 영구적으로"): 선물마다 커리어 통틀어 두 번까지 (연인·배우자 같은 칸, 다음 반기에도 안 풀림) */
+const GIFTMAX860 = 2;
+function gLeft860(id) { const c = (S && S.gift860 && S.gift860[id]) || 0; return Math.max(0, GIFTMAX860 - c); }
 function giftTarget858() { if (S.married) return { n: S.married.n, sp: true }; if (S.gf) return { n: S.gf.n, sp: false }; return null; }
 {
   const _vs858k = vShop;
@@ -17304,8 +17305,8 @@ function giftTarget858() { if (S.married) return { n: S.married.n, sp: true }; i
     try {
       const t = giftTarget858(); if (!t || S.stage === 'ret') return h;
       const card = `<div class="card" style="gap:0"><div class="row" style="padding-bottom:6px"><span class="lbl sp">💝 ${esc(t.n)}에게 선물하기</span><span class="tiny" style="color:#e2557a">${t.sp ? '배우자' : '연인'}</span></div>`
-        + `<div class="tiny muted" style="padding-bottom:6px">${gDone860() ? '이번 반기엔 이미 선물했어요 · 다음 반기에 다시 할 수 있어요' : '마음을 전해 보세요 · 반기에 한 번'}</div>`
-        + GIFT858.map(it => { const can = !gDone860() && S.money >= it.p; return `<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="sp"><div style="font-weight:700;font-size:.9rem">${it.n}</div><div class="tiny muted">${t.sp ? '배우자' : '연인'} 호감↑${it.d >= 13 ? '↑↑' : it.d >= 9 ? '↑' : ''}</div></div><button class="btn sm ${can ? 'pri' : ''}" data-g858="${it.id}" ${can ? '' : 'disabled'}>${gDone860() ? '완료' : money(it.p)}</button></div>`; }).join('') + `</div>`;
+        + `<div class="tiny muted" style="padding-bottom:6px">마음을 전해 보세요 · 선물마다 두 번까지</div>`
+        + GIFT858.map(it => { const left = gLeft860(it.id), can = left > 0 && S.money >= it.p; return `<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="sp"><div style="font-weight:700;font-size:.9rem">${it.n}</div><div class="tiny muted">${t.sp ? '배우자' : '연인'} 호감↑${it.d >= 13 ? '↑↑' : it.d >= 9 ? '↑' : ''} · ${left > 0 ? `남은 횟수 ${left}/${GIFTMAX860}` : '두 번 다 줬어요'}</div></div><button class="btn sm ${can ? 'pri' : ''}" data-g858="${it.id}" ${can ? '' : 'disabled'}>${left > 0 ? money(it.p) : '완료'}</button></div>`; }).join('') + `</div>`;
       const mk = '<span class="lbl" style="padding-bottom:6px">🏏';
       const i = h.indexOf(mk);
       if (i >= 0) { const j = h.lastIndexOf('<div class="card"', i); h = j >= 0 ? h.slice(0, j) + card + h.slice(j) : h + card; } else h += card;
@@ -17315,8 +17316,8 @@ function giftTarget858() { if (S.married) return { n: S.married.n, sp: true }; i
 }
 function giveGift858(id) {
   const it = GIFT858.find(x => x.id === id), t = giftTarget858();
-  if (!it || !t || S.money < it.p || gDone860()) return '';
-  S.money -= it.p; if (S.led && S.led.y === S.y) S.led.exp += it.p;
+  if (!it || !t || S.money < it.p || gLeft860(id) <= 0) return '';
+  S.money -= it.p; S.gift860 = S.gift860 || {}; S.gift860[id] = (S.gift860[id] || 0) + 1; if (S.led && S.led.y === S.y) S.led.exp += it.p;
   S.gift858 = S.gift858 && S.gift858.t === S.turn ? S.gift858 : { t: S.turn, n: 0 };
   const dim = giftDim858(S.gift858.n); S.gift858.n++;
   const tgt = t.sp ? S.married : S.gf, b = tgt.aff ?? 70;
