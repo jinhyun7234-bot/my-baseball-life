@@ -6259,17 +6259,19 @@ function vSheet(){
     ${(typeof optAttach804==='function'&&optAttach804(q),'')}${ui.offd1!=null&&q.ch[ui.offd1]&&q.ch[ui.offd1].d?offDetail(q,ui.offd1):q.ch.map((c,i)=>c.d?`<div class="chrow"><button class="choice" data-act="pick" data-i="${i}"><b>${esc(c.t)}</b>${c.s?`<span>${esc(c.s)}</span>`:''}</button><button class="chdet" data-act="offd1" data-i="${i}">조건<br>보기</button></div>`:`<button class="choice" data-act="pick" data-i="${i}"><b>${esc(c.t)}</b>${c.s?`<span>${esc(c.s)}</span>`:''}</button>`).join('')}
     <button class="btn sm" data-act="closeq">나중에 결정</button></div></div>`}
 const GUIDE=[
- ['flow','시작하기',[['한 해는 3번','스프링캠프 → 전반기 → 후반기. 아래 노란 버튼을 누르면 그 기간이 진행돼요.'],['목표','고교에서 잘해서 프로 지명 → 1군 주전 → FA·메이저리그 → 명예의 전당까지.'],['선택','계약·병역·이벤트 같은 선택이 가끔 떠요. 감독 신뢰와 인기, 커리어 방향이 달라져요.']]],
+ ['flow','시작하기',[['한 해는 3번','스프링캠프 → 전반기 → 후반기. 아래 파란 진행 버튼을 누르면 그 기간이 진행돼요.'],['목표','고교에서 잘해서 프로 지명 → 1군 주전 → FA·메이저리그 → 명예의 전당까지.'],['선택','계약·병역·이벤트 같은 선택이 가끔 떠요. 감독 신뢰와 인기, 커리어 방향이 달라져요.']]],
  ['train','훈련',[['훈련 탭','아래 메뉴의 훈련 탭에서 키우고 싶은 능력치 훈련을 메인 1개, 서브 1개 골라요.'],['메인·서브','메인으로 고른 훈련이 가장 크게 오르고, 서브도 꽤 많이 올라요. 오래 안 한 능력치는 조금씩 떨어질 수 있어요.'],['투수','투수는 아래쪽 변화구 연마에서 다듬을 변화구를 따로 골라요. 직구는 구위·구속 훈련으로 같이 올라가요. 선발은 쓸만한 구종 3개 이상, 불펜은 2개 이상이 목표예요.'],['피곤하면','피로가 높으면 서브를 휴식으로 바꾸세요.']]],
  ['xp','성장 포인트·특성',[['얻는 법','활약, 수상·대기록, 성실한 훈련, 이벤트로 얻어요.'],['쓰는 법','능력치 탭 아래 특성을 배워요. "득점권에서 안타 +5%"처럼 특정 상황에서 유리해져요. 비쌀수록 효과가 넓어요.']]],
  ['body','몸 관리',[['피로','60을 넘으면 경고, 75를 넘으면 큰 부상 위험이 커요. 휴식과 상점 관리 서비스로 조절하세요.'],['워크에식','높을수록 훈련 효율이 커져요. 같은 훈련을 해도 능력치가 더 많이 올라요.'],['멘탈','높을수록 큰 경기 활약이 좋아요. 포스트시즌·국제대회, 득점권 같은 중요한 순간에 강해져요.'],['내구성','좋을수록 피로가 덜 쌓여요. 부상도 덜 당하고 회복도 빨라요.'],['올리는 법','워크에식·멘탈·내구성은 이벤트 선택과 상점으로 올릴 수 있어요.']]],
  ['career','커리어 팁',[['메이저리그','종합 실력만큼 툴(능력치)이 고르게 좋아야 제안이 와요. 약점이 있으면 마이너에서 시작해요. 댓글 힌트를 참고하세요.'],['연봉·FA','잘하면 연봉 협상과 FA에서 크게 대우받아요.'],['병역','아시안게임 금메달·올림픽 메달이면 면제. 아니면 만 28세까지 상무·현역 중 선택해요.'],['큰 경기','포스트시즌·국제대회는 문자중계로 직접 봐요. 결과까지 건너뛸 수도 있어요.']]]];
-function vGuide(){const cur=GUIDE.find(g=>g[0]===ui.guide)||GUIDE[0];
-  return`<div class="scrim" data-act="guideclose"><div class="sheet guide" role="dialog" aria-modal="true" data-stop="1"><div class="grab"></div><span class="ey">게임 가이드</span><h2>${cur[1]}</h2>
-  <div class="gtabs">${GUIDE.map(g=>`<button class="chip ${g[0]===cur[0]?'on':''}" data-act="guide" data-v="${g[0]}">${g[1]}</button>`).join('')}</div>
-  ${cur[2].map(([t,d],i)=>`<div class="gitem"><span class="gnum">${i+1}</span><div><b>${t}</b><p class="small">${d}</p></div></div>`).join('')}
-  <div class="btns">${(()=>{const i=GUIDE.indexOf(cur);return`${i>0?`<button class="btn" data-act="guide" data-v="${GUIDE[i-1][0]}">이전</button>`:''}${i<GUIDE.length-1?`<button class="btn pri" data-act="guide" data-v="${GUIDE[i+1][0]}">다음: ${GUIDE[i+1][1]}</button>`:`<button class="btn pri" data-act="guideclose">시작하기</button>`}`})()}</div>
-  <button class="btn sm" data-act="guideclose">닫기</button></div></div>`}
+function vGuide(){const cur=GUIDE.find(g=>g[0]===ui.guide)||GUIDE[0];const i=GUIDE.indexOf(cur),SH={xp:'성장·특성'};
+  /* v858z: 높이 고정 · 탭 한 줄 · 내용만 스크롤 · [이전][다음] 버튼은 항상 같은 자리(첫 장은 이전 흐리게) · 닫기는 오른쪽 위 */
+  return`<div class="scrim" data-act="guideclose"><div class="sheet guide g858z" role="dialog" aria-modal="true" data-stop="1"><div class="grab"></div>
+  <div class="ghd"><span class="ey">게임 가이드 · ${i+1}/${GUIDE.length}</span><button class="gx" data-act="guideclose">닫기</button></div>
+  <div class="gtabs">${GUIDE.map(g=>`<button class="chip ${g[0]===cur[0]?'on':''}" data-act="guide" data-v="${g[0]}">${SH[g[0]]||g[1]}</button>`).join('')}</div>
+  <h2>${cur[1]}</h2>
+  <div class="gbody">${cur[2].map(([t,d],k)=>`<div class="gitem"><span class="gnum">${k+1}</span><div><b>${t}</b><p class="small">${d}</p></div></div>`).join('')}</div>
+  <div class="gfoot">${i>0?`<button class="btn" data-act="guide" data-v="${GUIDE[i-1][0]}">이전</button>`:`<button class="btn" disabled>이전</button>`}${i<GUIDE.length-1?`<button class="btn pri" data-act="guide" data-v="${GUIDE[i+1][0]}">다음: ${GUIDE[i+1][1]}</button>`:`<button class="btn pri" data-act="guideclose">시작하기</button>`}</div></div></div>`}
 function vBar(){
   if(ui.screen==='title')return S?`<button class="btn" data-act="newgame">${ui.confirm==='newgame'?'저장이 지워져요. 한 번 더':'새 커리어'}</button><button class="btn pri glow" data-act="cont">이어하기 ▶</button>`:`<button class="btn pri glow" data-act="newgame">새 커리어 시작 ▶</button>`;
   if(!S)return`<button class="btn pri glow" data-act="start">${SCHOOLS[ui.cr.school].n} 입학 — 커리어 시작</button>`;

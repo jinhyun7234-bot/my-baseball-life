@@ -102,7 +102,7 @@ img{max-width:100%}[hidden]{display:none!important}
 </style>
 <script>window.WEB_BUILD=true;window.APP_VER='1.0.0'</script>
 <script defer src="config.js"></script>
-<script defer src="game.js?v=2a0b2a836e"></script>
+<script defer src="game.js?v=9e0f43110c"></script>
 <title>나의 야구 인생 - 무료 야구 선수 키우기 웹게임 | KBO·메이저리그 커리어</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap">
@@ -844,6 +844,19 @@ h1,h2{font-family:var(--fd);font-weight:400;letter-spacing:0}
 .sheet.guide{max-height:calc(100dvh - 10px - env(safe-area-inset-top,0px));min-height:min(78dvh,640px);gap:10px}
 .sheet.guide .gtabs{flex-wrap:wrap;overflow:visible;margin:0}
 .sheet.guide .gtabs .chip{font-size:.74rem;padding:5px 9px}
+/* v858z 게임 가이드: 탭마다 높이가 달라 파란 버튼이 오르내리고 아래 여백이 컸음 → 높이 고정 · 내용만 스크롤 · 버튼 줄은 항상 맨 아래 같은 자리 */
+.sheet.guide.g858z{height:min(660px,calc(100dvh - 24px - env(safe-area-inset-top,0px)));min-height:0;max-height:none;overflow:hidden;gap:0;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.sheet.guide.g858z .ghd{display:flex;align-items:center;justify-content:space-between;margin:2px 0 10px}
+.sheet.guide.g858z .gx{border:0;background:none;color:var(--ink2);font:inherit;font-size:.85rem;padding:6px 2px;cursor:pointer}
+.sheet.guide.g858z .gtabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:6px;margin:0 0 14px;padding:0}
+.sheet.guide.g858z .gtabs::-webkit-scrollbar{display:none}
+.sheet.guide.g858z .gtabs .chip{font-size:.76rem;padding:6px 9px}
+@media (max-width:374px){.sheet.guide.g858z .gtabs{gap:4px}.sheet.guide.g858z .gtabs .chip{font-size:.7rem;padding:5px 7px}}
+.sheet.guide.g858z h2{margin:0 0 12px}
+.sheet.guide.g858z .gbody{flex:1;-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 18px),transparent);padding-bottom:14px!important;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin:0 -2px;padding:0 2px}
+.sheet.guide.g858z .gfoot{display:grid;grid-template-columns:1fr 2fr;gap:8px;padding-top:14px;margin-top:auto}
+.sheet.guide.g858z .gfoot .btn{margin:0;min-height:48px}
+.sheet.guide.g858z .gfoot .btn[disabled]{opacity:.35;pointer-events:none}
 .sheet.guide .gitem{padding:12px 14px}
 .sheet.guide h2{margin:0}
 .card .rt.hidr{grid-template-columns:minmax(18px,1fr) 26px 44px!important;row-gap:4px!important}
