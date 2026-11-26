@@ -1165,7 +1165,7 @@ const LEG=[
  {pow:['대전 홈런왕 장종훈 느낌 ㄷㄷ','김태균 보는 줄','김태균처럼 그냥 다 넘김'],con:['김태균 출루머신 느낌','이용규 커트신공 생각남','김태균 4할 출루 시절 소환'],spd:['이용규 리드오프 느낌'],def:['정근우 2루 수비 생각남'],ace:['류현진 이후 이글스 에이스 드디어 ㅠ','송진우 정민철 계보 ㄷㄷ','문동주 강속구 느낌'],cl:['대성불패 구대성 재림','정우람 느낌 마무리'],C:['이글스 포수 고민 해결'],big:['체격은 김태균이네 ㅋㅋ']},
  {pow:['전성기 이승엽 보는 줄','라이언킹 재림 대구가 들썩','이승엽 56호 시즌 소환 ㄷㄷ','국민타자 계보 잇는다'],con:['양준혁 만세타법 느낌','구자욱 느낌 타격','박한이 꾸준함 그 자체'],spd:['김상수 느낌 내야 발'],def:['박진만 수비 보는 줄','국민유격수 계보 ㄷㄷ'],ace:['배영수 윤성환 계보','원태인 느낌 토종 에이스'],cl:['오승환 돌직구 생각남','끝판대장 계보 잇는다','임창용 뱀직구 느낌'],C:['진갑용 느낌 포수']},
  {pow:['최형우 느낌 ㄷㄷ','김도영처럼 다 갖춘 놈','광주 거포 계보'],con:['김선빈 느낌 컨택','장성호 꾸준함 생각남'],spd:['이종범 바람의 아들 재림','김도영 툴 보는 줄 ㄷㄷ'],def:['이종범 유격 수비 생각남'],ace:['선동열 무등산 폭격기 ㄷㄷ','양현종 대투수 계보','윤석민 슬라이더 느낌'],cl:['선동열 마무리 시절 생각남','정해영 느낌 뒷문'],C:['김상훈 느낌 포수'],big:['체격은 최형우네 ㅋㅋ']},
- {pow:['이대호 느낌 난다 ㄷㄷ','조선의 4번타자 재림','사직에 이대호 돌아왔다','롯데 4번 드디어 주인 찾았다'],con:['손아섭이네 ㅋㅋ 안타기계','손아섭처럼 악착같이 침','전준우 느낌 타격'],spd:['자이언츠에 발 빠른 놈이라니 신기함 ㅋㅋ','김주찬 느낌 발'],def:['박기혁 느낌 유격 수비'],ace:['무쇠팔 최동원 느낌 ㄷㄷ','염종석 92년 생각난다','박세웅 안경에이스 계보'],cl:['손승락 느낌 마무리','김원중 느낌 뒷문'],C:['강민호 느낌 포수'],big:['덩치 보니 이대호 2세 ㅋㅋ']},
+ {pow:['이대호 느낌 난다 ㄷㄷ','조선의 4번타자 재림','사직에 이대호 돌아왔다','자이언츠 4번 드디어 주인 찾았다'],con:['손아섭이네 ㅋㅋ 안타기계','손아섭처럼 악착같이 침','전준우 느낌 타격'],spd:['자이언츠에 발 빠른 놈이라니 신기함 ㅋㅋ','김주찬 느낌 발'],def:['박기혁 느낌 유격 수비'],ace:['무쇠팔 최동원 느낌 ㄷㄷ','염종석 92년 생각난다','박세웅 안경에이스 계보'],cl:['손승락 느낌 마무리','김원중 느낌 뒷문'],C:['강민호 느낌 포수'],big:['덩치 보니 이대호 2세 ㅋㅋ']},
  {pow:['나성범 느낌 ㄷㄷ','창원 거포 계보 잇는다'],con:['박민우 느낌 컨택','양의지 타격 보는 줄'],spd:['박민우 느낌 발야구'],def:['손시헌 느낌 수비'],ace:['구창모 느낌 에이스','NC 토종 에이스 탄생'],cl:['임창민 이용찬 뒤를 잇는다'],C:['양의지 보는 줄 ㄷㄷ']}];
 function legPool(){if(!S.pro||S.pro.league!=='KBO'||S.pro.team==null||!LEG[S.pro.team])return[];const L=LEG[S.pro.team],o=[];
   if(!isP()){const {b}=yearTot(S.y);if(E('pow')>=63||b.HR>=25)o.push(...L.pow);if(E('con')>=63)o.push(...L.con);if(E('spd')>=63)o.push(...(L.spd||[]));if(['SS','2B','3B','CF'].includes(ME.pos)&&E('rng')>=63)o.push(...(L.def||[]));if(ME.pos==='C'&&ovrE()>=58)o.push(...(L.C||[]));if(ME.body==='거구'&&L.big)o.push(...L.big)}
@@ -1802,7 +1802,7 @@ randEvent=function(){S.evLog=S.evLog||[];const recent=new Set(S.evLog.slice(-14)
   return r}}
 
 /* ===================== 경기 맥락 댓글 (우승·가뭄·호수비·실책·무관) ===================== */
-const DROUGHT_T={5:['한화 팬들 드디어 보상받는다 ㅠㅠㅠ','보살 팬들 이 날을 위해 버텼다','대전 오늘 잠 못 잔다','이글스 우승이라니 내가 살아서 이걸 보네'],8:['부산 바다가 눈물로 넘친다','사직 오늘 난리 났다 ㅋㅋㅋ','롯데팬 평생 소원 이뤘다','엄마 나 자이언츠 우승 봤어'],2:['창단 첫 우승!!!!!','히어로즈 첫 반지 역사적인 날','고척돔 지붕 뚫리겠다']};
+const DROUGHT_T={5:['이글스 팬들 드디어 보상받는다 ㅠㅠㅠ','보살 팬들 이 날을 위해 버텼다','대전 오늘 잠 못 잔다','이글스 우승이라니 내가 살아서 이걸 보네'],8:['부산 바다가 눈물로 넘친다','사직 오늘 난리 났다 ㅋㅋㅋ','자이언츠 팬 평생 소원 이뤘다','엄마 나 자이언츠 우승 봤어'],2:['창단 첫 우승!!!!!','히어로즈 첫 반지 역사적인 날','고척돔 지붕 뚫리겠다']};
 function ctxLines(tone,x){const L=[],nz=ME.name.slice(1);
   if(tone==='ring'){const d=S.drought;if(d==='never'||d>=15){L.push(d==='never'?'창단 첫 우승 실화냐 ㅠㅠ':`${d}년 만의 우승 ㅠㅠㅠ`,'오래 살고 볼 일이다','이 팀이 우승하는 걸 내 눈으로 보다니',`${jo(ME.name,'이','가')} 이 팀을 우승시키네 ㄷㄷ`,'우리 아빠도 이 날만 기다렸는데','오늘은 그냥 울어도 된다');if(S.pro&&DROUGHT_T[S.pro.team])L.push(...(S.pro.team===2&&d!=='never'?['고척돔 지붕 뚫리겠다',`${d}년 만에 고척이 뒤집어졌다`]:DROUGHT_T[S.pro.team]))/* v842e: 히어로즈 '창단 첫'은 진짜 처음일 때만 */}
     else if(d<=3)L.push('왕조 시작이다','또 우승 ㅋㅋ 이 팀 왜 이렇게 강함','우승이 익숙해지는 게 무섭다');
@@ -14198,12 +14198,12 @@ try{const _wl849=walkLines;walkLines=function(){const L=_wl849.apply(this,argume
 function rkSeq849(){try{const H=S._rk849||{},ys=Object.keys(H).map(Number).filter(y=>y<S.y&&H[y]&&H[y][9]).sort((a,b)=>a-b);return ys.slice(-6).map(y=>H[y][9])}catch(e){return[]}}
 {const _cmTM849=comments;comments=function(tone,x){let out=_cmTM849.apply(this,arguments);try{if(!Array.isArray(out)||!S||S.stage!=='pro'||!ME||S.me!==ME||!S.pro||S.pro.league!=='KBO'||(x&&(x.ps||x.intl)))return out;
   const T=String(tone||'');if(!/^(mix|bad|hype)$/.test(T)||S._tm849===S.y+':'+S.m||R()>=.3)return out;const H=(S._rk849||{})[S.y]||{},now=H[S.m]||null,may=H[5]||H[4]||null,nick=TEAMS[S.pro.team].nick;
-  const L=[];if(now&&may&&S.m>=7&&may<=3&&now>=6){if(nick==='자이언츠')L.push('올해도 봄데냐 벚꽃 지니까 순위도 같이 진다 ㅠ','벚꽃야구 끝났다 여름만 되면 왜 이러냐');else L.push('DTD는 과학이다 ㅠ 봄에 잘나가더니','봄에만 잘하는 팀 됐냐 여름부터 왜 이러냐')}
+  const L=[];if(now&&may&&S.m>=7&&may<=3&&now>=6){if(nick==='자이언츠')L.push('올해도 봄에만 잘하냐 벚꽃 지니까 순위도 같이 진다 ㅠ','벚꽃야구 끝났다 여름만 되면 왜 이러냐');else L.push('DTD는 과학이다 ㅠ 봄에 잘나가더니','봄에만 잘하는 팀 됐냐 여름부터 왜 이러냐')}
   /* v842r: 봄데·DTD 쓰는 때를 커뮤 그대로 — ①봄에 잘나갈 때 ②봄에도 못할 때(봄데 반어) ③봄엔 못하다 여름에 올라올 때 · DTD는 작년 하위권 팀이 초반에 잘나갈 때 */
   {const prevRk=S.lg&&Array.isArray(S.lg.prev)?S.lg.prev.indexOf(S.pro.team)+1:0;
-   if(now&&S.m>=4&&S.m<=5&&now<=3){if(nick==='자이언츠')L.push('벚꽃 질 때까지만 즐기자 ㅋㅋ 봄데 소리 안 들으려면 여름까지 버텨라','이 순위 6월에도 그대로면 그때 설레자 지금은 참는다');else if(prevRk>=7)L.push('작년 하위권 팀이 지금 3위 안? DTD 오기 전에 즐기자 ㅋㅋ','DTD 오나 안 오나 여름까지 지켜본다 일단 지금은 행복하다')}
-   if(now&&S.m>=4&&S.m<=5&&now>=8&&nick==='자이언츠')L.push('봄데 이미지 깨 달라는 게 봄에도 못하라는 뜻은 아니었는데 ㅠ','차라리 봄데가 그립다 봄에라도 잘했잖아 ㅠ');
-   if(now&&may&&S.m>=7&&S.m<=8&&may>=6&&now<=3)L.push(nick==='자이언츠'?'이제 봄데 말고 여름데라고 불러라 ㅋㅋ':'봄에 바닥 치고 여름에 올라왔다 이게 진짜 저력이다')}
+   if(now&&S.m>=4&&S.m<=5&&now<=3){if(nick==='자이언츠')L.push('벚꽃 질 때까지만 즐기자 ㅋㅋ 봄에만 잘한다는 소리 안 들으려면 여름까지 버텨라','이 순위 6월에도 그대로면 그때 설레자 지금은 참는다');else if(prevRk>=7)L.push('작년 하위권 팀이 지금 3위 안? DTD 오기 전에 즐기자 ㅋㅋ','DTD 오나 안 오나 여름까지 지켜본다 일단 지금은 행복하다')}
+   if(now&&S.m>=4&&S.m<=5&&now>=8&&nick==='자이언츠')L.push('봄에만 잘한다는 이미지 깨 달라는 게 봄에도 못하라는 뜻은 아니었는데 ㅠ','차라리 봄에만 잘하던 때가 그립다 봄에라도 잘했잖아 ㅠ');
+   if(now&&may&&S.m>=7&&S.m<=8&&may>=6&&now<=3)L.push(nick==='자이언츠'?'이제 봄에만 잘하는 팀 아니다 여름에 더 잘한다 ㅋㅋ':'봄에 바닥 치고 여름에 올라왔다 이게 진짜 저력이다')}
   {const jul=H[7]||null;if(now&&jul&&S.m>=9&&jul<=2&&now>=4)L.push('7월까지 2위 안이었는데 결국 DTD… 막판에 이러냐 ㅠ','다른 팀 팬들 DTD 노래 부르는 거 보기 싫다 ㅠ 마지막까지 버텨라')}
   const sq=rkSeq849();if(sq.length>=4&&sq.slice(-4).every(v=>v>=6)){const code=sq.every(v=>v<10)?sq.join(''):sq.join('-');L.push(`우리 팀 비밀번호 ${code} 이제 그만 좀 늘리자 ㅠ`,`비밀번호 ${code}… 이 번호 언제 바꾸냐 ㅋㅋ ㅠ`)}
   if(now&&now<=2&&S.m>=8&&typeof S.drought==='number'&&S.drought>=10)L.push('설레발 금지인데 올해는 좀 설레도 되냐…','이 순위 시즌 끝까지만 지키자 제발');
@@ -17436,10 +17436,10 @@ const STK858 = [
   { id: 'skh', n: '로우닉스', p0: 34, vol: 0.11, sec: '반도체' },
   { id: 'tsl', n: '테스형모터스', p0: 52, vol: 0.154, sec: '자동차' },
   { id: 'sbl', n: '셋별바이오', p0: 105, vol: 0.088, sec: '바이오' },
-  /* v860 (11/27 유저) 꾸준히 오르는 종목 · 꾸준히 내리는 종목 · 상장폐지될 수 있는 종목 */
-  { id: 'odk', n: '오뚝이식품', p0: 12, vol: .06, sec: '식품', kind: 'steady' },
-  { id: 'sun', n: '석양미디어', p0: 18, vol: .09, sec: '미디어', kind: 'down', dl: 1 },
-  { id: 'dbk', n: '한방바이오', p0: 1.8, vol: .2, sec: '바이오', kind: 'spec', dl: 1 },
+  /* v860 (11/27 유저) 종목 3개 추가 (어떤 종목이 오르고 내릴지는 정해져 있지 않음 · 아래 v860 흐름 참고) */
+  { id: 'odk', n: '오뚝이식품', p0: 12, vol: .07, sec: '식품' },
+  { id: 'sun', n: '석양미디어', p0: 18, vol: .1, sec: '미디어' },
+  { id: 'dbk', n: '한방바이오', p0: 1.8, vol: .2, sec: '바이오' },
 ];
 const RE858 = ['home1', 'home2', 'home3', 'home4', 'lx_hw', 'lx_bh', 'lx_ny', 'lx_island'];
 const INV858 = { drift: .15, jump: .04, reVol: .04, reDrift: .5, reFee: .03, fmMax: .6 };
@@ -17465,12 +17465,13 @@ function invStep858() {
   const pv0 = stkPV858(v); let pv1 = 0; v.mv = {};
   STK858.forEach(s => {
     if (stkDl860(v, s)) return;
-    let r = s.kind === 'steady' ? stdyR860(v, s) : s.kind === 'down' ? rn(-.04, s.vol) + (R() < .15 ? .06 + R() * .1 : 0) : rn(INV858.drift * s.vol * (s.kind === 'spec' ? .3 : 1), s.vol);
-    if (s.kind !== 'steady' && R() < INV858.jump * (s.kind === 'spec' ? 2 : 1)) { const up = R() < (s.kind === 'down' ? .35 : .55); r += (up ? 1 : -1) * (.15 + R() * .15); v.mv[s.id] = up ? 'up' : 'dn'; }
+    const tr = trend860(v, s);
+    let r = tr === 'up' ? rn(.03, s.vol * .7) : tr === 'dn' ? rn(-.035, s.vol * .8) : rn(INV858.drift * s.vol, s.vol);
+    if (R() < INV858.jump) { const up = R() < (tr === 'dn' ? .35 : tr === 'up' ? .7 : .55); r += (up ? 1 : -1) * (.15 + R() * .15); v.mv[s.id] = up ? 'up' : 'dn'; }
     const p = Math.max(.1, Math.round(v.px[s.id] * Math.exp(r) * 100) / 100);
     v.px[s.id] = p; (v.hist[s.id] = v.hist[s.id] || []).push(p); if (v.hist[s.id].length > 31) v.hist[s.id].shift();
     pv1 += (v.sh[s.id] || 0) * p;
-    if (s.dl) stkDlChk860(v, s);
+    stkDlChk860(v, s);
   });
   v.lastR = pv0 > 0 ? pv1 / pv0 - 1 : 0;
   RE858.forEach(id => { const r = rn(INV858.reDrift * INV858.reVol, INV858.reVol); v.reV[id] = Math.round((v.reV[id] || (ITEMS.find(x => x.id === id) || {}).p || 0) * Math.exp(r)); });
@@ -18240,23 +18241,17 @@ if (typeof document !== 'undefined') { try { const st = document.createElement('
 .ivbarl860{display:flex;justify-content:space-between;font-size:11px;opacity:.6}
 .ivsheet .ivqty .ivstep{min-width:48px;width:auto;padding:0 8px;white-space:nowrap;font-size:14px;font-weight:700}`; document.head.appendChild(st); } catch (e) {} }
 
-/* ===== v860 (11/27 03:52 유저) 주식 종목 추가 · 변동폭 아주 살짝↑
-   "꾸준히 우상향 하는거 하나 · 5년 연속 우상향 후 가끔 떨어지고 다시 4년 우상향 그리고 한번 떨구고 4년 우상향 · 변동폭 아주 살짝만 더 크게
-    · 꾸준히 하향하는것도 · 가끔 상장폐지도"
-   · 기존 10종목 변동폭 ×1.1
-   · 오뚝이식품(꾸준히 오름): 처음 5년(15턴) 매 턴 평균 +3.5% (연 11% 안팎) → 한 번 크게 빠짐(−15~27%) → 다시 4년 오름 → 빠짐 → 4년 … 반복
-       오르는 구간에선 해마다(3턴 합) 무조건 플러스가 되게 마지막 턴에서 맞춤 (턴 사이 작은 출렁임은 있음)
-   · 석양미디어(꾸준히 내림): 매 턴 평균 −4% · 가끔 반짝 반등
-   · 한방바이오(작전주): 변동폭 아주 큼 · 급등락 잦음
-   · 상장폐지: 석양미디어·한방바이오만 · 처음 가격 대비 많이 떨어질수록 확률↑ (곡선: 40% 위에선 0 → 20%면 턴당 10% → 8%면 40%)
+/* ===== v860 주식 흐름 (11/27 03:52·04:01 유저 "꾸준히 우상향·우하향·가끔 상장폐지 · 근데 그냥 올랜덤으로 · 4년 간격 굳이 X · 현실에서 보이는 꾸준한 우상향/우하향")
+   · 기존 10종목 변동폭 ×1.1 · 종목 3개 추가(오뚝이식품·석양미디어·한방바이오)
+   · 모든 종목이 '흐름'을 가짐: 보통 / 꾸준히 오름 / 꾸준히 내림 — 어느 종목이 언제 어떤 흐름일지는 무작위
+       흐름 길이도 무작위(2~6년 = 6~18턴) · 끝나면 다시 뽑음 (보통 55% · 오름 25% · 내림 20%)
+       꾸준히 오름: 턴 평균 +3%, 출렁임 ×0.7 / 꾸준히 내림: 턴 평균 −3.5%, 출렁임 ×0.8 → 몇 년 동안 한 방향으로 가는 느낌
+   · 상장폐지도 무작위: 어떤 종목이든 상장 때 가격보다 많이 떨어질수록 확률↑ (곡선: 40% 위에선 0 → 20%면 턴당 10% → 8%면 40%)
        폐지되면 들고 있던 주식은 0원(산 값만큼 통산 수입에서 빠짐) · 2년(6턴) 뒤 새 가격으로 재상장 */
-function stdyR860(v, s) {
-  v.reg = v.reg || {}; const g = v.reg[s.id] = v.reg[s.id] || { n: 15, k: 0, yc: 0 };
-  if (g.n <= 0) { g.n = 12; g.k = 0; g.yc = 0; return -(.15 + R() * .12); }
-  let r = rn(.035, s.vol);
-  if (g.k === 2 && g.yc + r < .04) r = .04 - g.yc + R() * .05;
-  g.yc = g.k === 2 ? 0 : g.yc + r; g.k = (g.k + 1) % 3; g.n--;
-  return r;
+function trend860(v, s) {
+  v.tr = v.tr || {}; let g = v.tr[s.id];
+  if (!g || g.n <= 0) { const x = R(); g = v.tr[s.id] = { k: x < .25 ? 'up' : x < .45 ? 'dn' : 'flat', n: ri(6, 18) }; }
+  g.n--; return g.k;
 }
 function stkDlChk860(v, s) {
   try {
@@ -18320,6 +18315,101 @@ if (typeof document !== 'undefined') { try { const st = document.createElement('
       const bad = t => (ag >= 28 && /다 컸네/.test(t)) || (yrs >= 5 && /반짝하고 끝/.test(t));
       out = out.filter(c => !(c && typeof c.t === 'string' && bad(c.t)));
       out.forEach(c => { if (c && Array.isArray(c.re)) c.re = c.re.filter(r => !(r && typeof r.t === 'string' && bad(r.t))); });
+    } catch (e) {}
+    return out;
+  };
+}
+
+/* ===== v861 우승·준우승 댓글 (11/27 04:00 유저)
+   "진짜 아쉽게 우승 놓치면 더 호들갑 · 밈 활용 · 몇 년 만에 우승 · 몇 번 준우승 끝에 드디어(n전n기) · 개인 커리어 역사 참고
+    · 우승 안 한 지 10년 넘었으면 '우승 이렇게 힘들다' · 우승한 지 10년 넘었으면 유관기운 드립은 좀… · 우승 두 개는 있어야 유관 드립
+    · 팀별 우승 역사·밈 (다이노스 집행검 · 자이언츠 몇 년 만 · 베어스 허슬두 · 트윈스 신바람 · 라이온스 여름 · 타이거스 불패신화 · 이글스 마리·보살 · 위즈 마법)"
+   ① 유관 드립(유관기운·우승 DNA·반지의 힘…)은 리그 우승 반지 2개 이상 + 마지막 반지가 10년 안일 때만
+   ② 우승 기사: 팀 밈 한 줄 · 개인 n전n기 / N년 만에 다시 반지 · 팀 6~14년 만의 우승
+   ③ 한국시리즈 탈락 경기가 아쉬울수록(1점 차·연장·7차전·리드 뺏김) 호들갑
+   ④ 가을에 떨어졌는데 마지막 반지가 10년 넘었거나 10년 넘게 반지가 없으면 '우승 이렇게 힘들다'
+   ⑤ 시즌 중 팀 밈: 이글스 하위권 보살 · 자이언츠 봄에만 잘함('봄데'는 실제 구단명 연상 + 비하라 단어는 안 씀) · 라이온스 여름에 상위권 · 트윈스 상위권 신바람 */
+function ringYs861(cur) {
+  const ys = new Set(); try { (S.awards || []).forEach(a => { if (a && /^(한국시리즈|월드시리즈) 우승$/.test(a.n || '')) ys.add(a.y); }); } catch (e) {}
+  if (cur) ys.add(S.y); return [...ys].sort((a, b) => a - b);
+}
+const TEAMRING861 = {
+  트윈스: ['신바람 야구 돌아왔다 ㅠㅠ 이 맛이지', '유광점퍼 장롱에서 꺼낸 보람 있다', '잠실 주인은 우리다 무적 트윈스', '신바람 분다 오늘 잠실 난리 났다'],
+  베어스: ['허슬두는 죽지 않았다', '미라클 베어스 이번에도 기적 썼다', '화수분 야구 클라스 어디 안 간다', '가을만 되면 강해지는 게 베어스 DNA'],
+  히어로즈: ['영웅들이 드디어 해냈다', '버티고 버틴 고척 영웅들 ㅠㅠ', '돈 없어도 야구 잘한다는 거 증명했다'],
+  랜더스: ['랜더스 상륙작전 성공 ㅋㅋㅋ', '인천 야구는 원래 강했다', '문학 하늘에 불꽃놀이 개장'],
+  위즈: ['마법 같은 우승 이게 위즈 마법이지', '수원에 마법이 내렸다', '마법사 군단 또 해냈다 ㄷㄷ'],
+  이글스: ['보살 팬들 드디어 성불한다 ㅠㅠㅠ', '마리이글스 끊을 수가 없다 이 맛에 버텼다', '대전 오늘 불꽃 축제다', '이글스 팬 하길 잘했다 진짜로'],
+  라이온스: ['라이온스 왕조 다시 시작이다', '여름 라이온스가 가을까지 왔다 ㅋㅋ', '파란 피가 끓는다 대구 오늘 잠 못 잔다'],
+  타이거스: ['한국시리즈 가면 무조건 이긴다 불패신화 계속된다', '이게 타이거스 정신이다', '무등산 호랑이 포효했다', '광주의 밤이 뜨겁다 남행열차 틀어라'],
+  자이언츠: ['봄에만 잘한다는 소리 이제 끝이다 ㅠㅠ', '부산 갈매기 목 터지게 불렀다', '마 이게 자이언츠다', '사직 노래방 오늘 밤샘이다'],
+  다이노스: ['집행검 다시 뽑는다 ㅋㅋㅋ', '집행검 세리머니 가자!!!', '공룡군단 최강 창원이 들썩인다'],
+};
+const TEAMRE861 = { 트윈스: '무적 트윈스', 베어스: '허슬두!', 히어로즈: '영웅 만세', 랜더스: '인천 최고', 위즈: '마법 ㄷㄷ', 이글스: '보살 성불 ㅠㅠ', 라이온스: '왕조 가즈아', 타이거스: '불패 ㅋㅋ', 자이언츠: '마!!!', 다이노스: '집행검 ㅋㅋㅋ' };
+{
+  const _c861 = comments;
+  comments = function (tone, x) {
+    let out = _c861.apply(this, arguments);
+    try {
+      if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || S.me !== ME || !S.pro) return out;
+      const kbo = S.pro.league === 'KBO', nick = kbo && TEAMS[S.pro.team] ? TEAMS[S.pro.team].nick : '', gn = giv(ME.name);
+      const ringNow = typeof ringArt681 === 'function' && ringArt681(tone, x) && !(x && x.win === false);
+      const ys = ringYs861(ringNow), k = ys.length, prev = ys.filter(y => y < S.y), lastY = ys.length ? ys[ys.length - 1] : null, gap = lastY == null ? null : S.y - lastY;
+      /* ① 유관 드립 */
+      if (typeof RINGY !== 'undefined' && (k < 2 || gap > 10)) {
+        out = out.filter(c => !(c && typeof c.t === 'string' && RINGY.test(c.t)));
+        out.forEach(c => { if (c && Array.isArray(c.re)) c.re = c.re.filter(r => !(r && typeof r.t === 'string' && RINGY.test(r.t))); });
+      }
+      const put = (L, re, at) => { const C = L.filter(t => t && !seenHas('v861:' + t)); if (!C.length) return false; const t = pick(C); seenAdd('v861:' + t); out.splice(Math.min(at == null ? 1 : at, out.length), 0, mkC(josaFix(t), re ? [{ nk: pick(NICKS), t: re, up: ri(30, 900) }] : [], { up: ri(2500, 9000), must: 1 })); return true; };
+      /* ② 우승 기사 */
+      if (ringNow && kbo && S._r861Y !== S.y) {
+        S._r861Y = S.y;
+        let tl = TEAMRING861[nick] || [];
+        if (nick === '타이거스' && S.tgsKSL861) tl = tl.filter(t => !/불패/.test(t));
+        if (tl.length) put(tl, TEAMRE861[nick], 0);
+        const ru = typeof myRunnerUps840 === 'function' ? myRunnerUps840() : 0;
+        const has = re => out.some(c => c && re.test(String(c.t || '')));
+        if (k === 1 && ru >= 1 && !has(/콩라인 탈출|준우승 끝에|번의 준우승/)) put([`준우승 ${ru}번 끝에 ${ru}전 ${ru + 1}기 드디어 반지 ㅠㅠ`, `${ru}전 ${ru + 1}기 ${gn} 드디어 우승 반지 낀다`, `${ru}번 미끄러지고 ${ru + 1}번째에 올라섰다 이게 낭만이지`], pick(['콩라인 졸업 ㅠㅠ', '버틴 보람 있다', '이 맛에 야구 본다']));
+        if (prev.length) { const g2 = S.y - prev[prev.length - 1]; if (g2 >= 10 && !has(/년 만에 다시 반지|년 만의 반지/)) put([`${g2}년 만에 다시 반지 ㅠㅠ 우승 한 번 더 하기가 이렇게 힘들다`, `${gn} ${prev[prev.length - 1]}년 이후 ${g2}년 만의 반지`, `마지막 반지가 ${g2}년 전이었는데 또 끼네 ${gn}`], pick(['오래 기다렸다', '이 순간을 위해 버텼다'])); }
+        const d = S.drought; if (typeof d === 'number' && d >= 6 && d < 15 && !has(/년 만의 우승|년 만에 우승/)) put([`${d}년 만의 우승 길었다 ㅠ`, `${d}년 기다렸다 ${nick} 우승`, `${d}년 동안 남의 우승 구경만 했는데 드디어`], null);
+      }
+      /* ③ 한국시리즈 아쉽게 탈락 */
+      if (x && x.ps === 'KS' && x.elim && x.win === false && S._hb861Y !== S.y) {
+        S._hb861Y = S.y; if (nick === '타이거스') S.tgsKSL861 = 1;
+        const diff = (x.opR || 0) - (x.myR || 0), gm7 = /7차전/.test(String(x.title || '')), xtra = (x.inns || 9) > 9;
+        let blown = false; try { const ln = x.lsc, my = x.home ? 1 : 0; if (ln && ln[my] && ln[1 - my]) { const sm = a => a.slice(0, 7).reduce((p, q) => p + (+q || 0), 0); blown = sm(ln[my]) > sm(ln[1 - my]); } } catch (e) {}
+        const L = [];
+        if (diff <= 1) L.push('1점 차로 우승 놓친 거 실화냐 ㅠㅠㅠㅠ', '공 하나 차이였다 진짜 공 하나', '이거 꿈이지? 누가 좀 깨워 줘라');
+        if (gm7) L.push('7차전까지 와서 이러기냐 ㅠㅠ 심장 다 갈렸다', '7차전 마지막 아웃 장면 평생 꿈에 나올 듯', '여기까지 와서 한 경기가 모자랐다');
+        if (xtra) L.push('연장까지 가서 지는 건 너무 잔인하다', '연장 들어갈 때 이길 줄 알았는데 ㅠㅠ 새벽까지 못 잔다');
+        if (blown) L.push('7회까지 이기고 있었는데 이게 무슨 일이냐', '다 잡은 우승을 놓쳤다 말이 안 나온다', '샴페인 준비했는데 따지도 못했다 ㅠ');
+        if (L.length) {
+          L.push('야구 끊는다 (내년 개막전 예매 완료)', '집 가는 지하철에서 울었다 진짜로', '야구 신이 있다면 오늘은 우리 편이 아니었다', '이게 야구다… 근데 알고 싶지 않았다', '오늘 밤 잠은 다 잤다 ㅠㅠ', '심장 아파서 병원 가야 됨 ㄹㅇ', '누가 1년 뒤로 시간 좀 돌려 줘라');
+          put(L, pick(['ㅠㅠㅠㅠㅠㅠ', '아 진짜 너무 아프다', '내년엔 웃자 제발', '오늘은 그냥 울자']), 0);
+          put(L, null, 2);
+        }
+      }
+      /* ④ 가을 탈락 + 오래 반지 없음 */
+      if (x && x.elim && x.win === false && x.ps && S._hd861Y !== S.y) {
+        const yrs = typeof proYears === 'function' ? proYears() : 0;
+        if (k && gap >= 10) { S._hd861Y = S.y; put([`마지막 반지가 ${gap}년 전… 우승 다시 하기 이렇게 힘들다`, `${lastY}년 우승 이후로 ${gap}년째 반지가 안 늘어난다`, '반지 하나 더 끼는 게 이렇게 어려운 거였나'], pick(['내년엔 꼭', 'ㅠㅠ'])); }
+        else if (!k && yrs >= 10) { S._hd861Y = S.y; put([`데뷔 ${yrs}년째 아직 반지가 없다… 우승 이렇게 힘들다`, `${yrs}년 뛰었는데 반지 하나가 이렇게 멀다`, '우승은 실력만으로 되는 게 아니더라'], pick(['내년엔 진짜 끼자', 'ㅠㅠ'])); }
+      }
+      /* ⑤ 시즌 중 팀 밈 */
+      if (kbo && !(x && (x.ps || x.intl)) && ['bad', 'mix', 'mid', 'hype', 'feat'].includes(tone) && S._tm861 !== S.y + ':' + S.phase && R() < .25) {
+        const rk = myTeamRank(), m = S.m || 0, L = [];
+        if (nick === '이글스' && rk >= 8) L.push('보살 팬 수행 또 시작이다 ㅋㅋ', '이 팀 응원하면 해탈한다', '그래도 대전 야구장 매진이다 이게 보살이지', '져도 응원한다 이게 보살이다');
+        if (nick === '이글스' && rk && rk <= 3) L.push('마리이글스 다시 시작이다 중독된다 ㅋㅋ', '이글스가 위에 있으니까 적응이 안 된다 ㅋㅋ');
+        if (nick === '자이언츠' && rk && rk <= 3 && m <= 5) L.push('아직 봄이다 설레발 금지 ㅋㅋ', '봄에만 잘하는 거 아니지? 제발');
+        if (nick === '자이언츠' && rk >= 6 && m >= 7) L.push('봄에 반짝하고 또 이러네 ㅠ', '여름 되니까 역시나…');
+        if (nick === '라이온스' && rk && rk <= 3 && m >= 6 && m <= 8) L.push('여름 라이온스 개장 ㅋㅋㅋ', '여름만 되면 라이온스 무섭다', '날 더워지니까 라이온스 살아난다');
+        if (nick === '트윈스' && rk && rk <= 2) L.push('신바람 분다 ㅋㅋ 유광점퍼 준비해라', '올해 신바람 야구 제대로다');
+        if (nick === '베어스' && rk >= 5 && rk <= 6 && m >= 8) L.push('여기서부터 미라클 베어스 시작이다', '허슬두는 가을에 강하다 아직 모른다');
+        if (nick === '위즈' && rk >= 6 && m <= 6) L.push('위즈는 원래 초반에 죽고 후반에 마법 부린다', '아직 마법 시작 안 했다');
+        if (nick === '다이노스' && rk && rk <= 2) L.push('집행검 미리 닦아 놔라 ㅋㅋ', '공룡군단 올해 심상치 않다');
+        if (nick === '타이거스' && rk && rk <= 2) L.push('한국시리즈만 가면 된다 가면 이긴다', '불패신화 이어 가자');
+        if (L.length) { S._tm861 = S.y + ':' + S.phase; put(L, null, 3); }
+      }
     } catch (e) {}
     return out;
   };
