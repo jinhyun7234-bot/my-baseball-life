@@ -560,7 +560,7 @@ function tourney(name,rep,ps){
   S.rel.fame+=[0,.5,1,2,4,7][w];if(w>=4)ME.xp+=2;
   rep.lines.push(`${name}: ${teamLabel()} ${res}`);news(`${name} ${res}`);
   if(w===5)celebrate(ps>=1?'trophy':'trophy',`${name} 우승`,`${teamLabel()} · ${S.y}`,ps>=1?['대회 최우수선수']:[]);
-  if(w===5&&ps>=1){S.awards.push({y:S.y,n:`${name} 최우수선수`});S.rel.fame+=4;rep.lines.push('대회 최우수선수에 선정됐다!');article(`${teamLabel()} 우승 이끈 ${ME.name}, 대회 MVP`,(S.grade||1)<=1?`1학년답지 않은 활약에 스카우트들도 ${jo(ME.name,'을','를')} 수첩에 적어 갔다.`:(S.grade||1)===2?`벌써부터 내년 드래프트 상위권 후보로 ${jo(ME.name,'이','가')} 거론된다.`:`프로 스카우트들의 시선이 ${ME.name}에게 쏠렸다. 드래프트 순위가 요동칠 전망이다.`,'hs')}}
+  if(w===5&&ps>=1){S.awards.push({y:S.y,n:`${name} 최우수선수`});S.rel.fame+=4;rep.lines.push('대회 최우수선수에 선정됐다!');article(`${teamLabel()} ${name} 우승 이끈 ${ME.name}, 대회 MVP`,(S.grade||1)<=1?`1학년답지 않은 활약에 스카우트들도 ${jo(ME.name,'을','를')} 수첩에 적어 갔다.`:(S.grade||1)===2?`벌써부터 내년 드래프트 상위권 후보로 ${jo(ME.name,'이','가')} 거론된다.`:`프로 스카우트들의 시선이 ${ME.name}에게 쏠렸다. 드래프트 순위가 요동칠 전망이다.`,'hs')}}
 function kboTeamR(i){return LV.KBO+(S.lg.str[i]-50)*.27}
 /* 팀 전력 보정(−0.17~+0.17 안팎): 타자 득점·타점, 투수 승·패에 반영 */
 function teamD(){try{if(S.stage!=='pro'||!S.pro||S.pro.dev)return 0;const ch=((S.rel&&S.rel.chem!=null?S.rel.chem:50)-50)*.0015;if(S.pro.league==='KBO')return cl((S.lg.str[S.pro.team]-50)*.011+ch,-.2,.2);if(S.pro.league==='MLB'&&!S.pro.minor){const o=mlbStandings().out,r=[...o.AL,...o.NL].find(x=>x.me);if(r){const pc=r.w+r.l>20?r.w/(r.w+r.l):.5;return cl((pc-.5)*1.2+ch,-.18,.18)}}}catch(e){}return 0}
@@ -9976,7 +9976,8 @@ mlbGapPen=function(){try{if(!S||S.stage!=='pro'||!S.pro||S.pro.league!=='MLB'||S
   const p=S.pro,mlbExp=S.rows.some(r=>r.lv==='MLB'&&((r.b&&r.b.G)||(r.p&&r.p.G))),hsDirect=(p.league==='MLB')&&!S.rows.some(r=>r.lv==='KBO');
   const good=/^(hype|ws|ring|gold|award|walkoff)$/.test(String(tone||''))||((x.gH||0)>=2||(x.gHR||0)>=1);
   const prePost=p.league==='KBO'&&!p.dev&&!mlbExp&&age()>=24&&age()<=28&&(p.service||0)>=5&&(p.service||0)<=8;
-  if(!((prePost&&good&&R()<.42)||(hsDirect&&R()<.38)))return out;
+  const mlbYrs862=new Set(S.rows.filter(r=>r.lv==='MLB'&&r.b&&r.b.PA>=100).map(r=>r.y)).size;/* v862: 고졸 직행 '적응' 얘기는 메이저 3시즌·25살까지만 (MVP 받은 31살한테 '어린 나이에 넘어갔는데' X) */
+  if(!((prePost&&good&&R()<.42)||(hsDirect&&mlbYrs862<=3&&age()<=25&&R()<.38)))return out;
   const gn=giv(ME.name),st=DV(LV.MLB)+2,eyeLow=DV(E('eye'))<st,visLow=DV(E('vis'))<st;
   const pr=[...new Set((POSPRIO[ME.pos]||POSPRIO.DH).slice(0,4).flat())],weak=pr.filter(k=>DV(prioVal(k))<st-4).sort((a,b)=>DV(prioVal(a))-DV(prioVal(b))).slice(0,2).map(k=>LBL[k]);
   if(eyeLow&&!weak.includes('선구안')&&weak.length<2&&R()<.5)weak.push('선구안');if(visLow&&!weak.includes('동체시력')&&weak.length<2&&R()<.5)weak.push('동체시력');
@@ -18462,3 +18463,87 @@ if (typeof vSheet858 === 'function') {
   };
 }
 if (typeof document !== 'undefined') { try { const st = document.createElement('style'); st.textContent = `.ivwarn861{font-size:12.5px;line-height:1.45;padding:9px 11px;border-radius:10px;background:rgba(232,137,12,.14);color:#c46f00;font-weight:600}.ivwarn861.liq{background:rgba(122,31,43,.14);color:#b3263a}`; document.head.appendChild(st); } catch (e) {} }
+
+/* ===== v862 (11/27 04:11 유저 "구체적인 상황에서 구체적인 댓글 · 재미있고 자극적인 거 ㄱㅊ · 골고루")
+   경기 기사에서 그 경기 기록으로 상황을 읽고 딱 맞는 말을 1~2개 (상황마다 55%) · 많이 나온 말은 덜 나오게 돌려 씀
+   타자: 4삼진(골든 솜브레로)·3삼진 · 멀티 홈런·3홈런 · 도루 실패 · 볼넷 3개+ · 4안타+
+   투수: 호투(6이닝+ 1실점 이하)인데 팀 패배(물타선) · 조기 강판 6실점+ · 10탈삼진+ · 7이닝+ 무실점
+   경기: 10점 차 이상 대승·대패 · 1-0 승리·패배 · KBO면 가끔 ABS(로봇 심판) 드립 */
+const SIT862 = {
+  k4: ['오늘 삼진만 {K}개 선풍기 성능 미쳤다 ㅋㅋ', '{K}삼진이면 골든 솜브레로 완성이다 모자 하나 씌워 줘라', '에어컨 필요 없다 {n} 타석 때 바람 시원함', '방망이에 구멍 났냐 공이 다 지나가네', '오늘 상대 투수 탈삼진 기록 {n}이 다 채워 줌'],
+  k3: ['3삼진 선풍기 풀가동 ㅋㅋ', '오늘 방망이는 그냥 장식이었다', '삼진 3개… 오늘은 빨리 잊고 내일 보자', '배트 스피드보다 선풍기 회전수가 빨랐다'],
+  hr3: ['한 경기 홈런 3개 이건 게임에서나 보는 거다', '홈런 세 방 실화냐 오늘 구장이 동네 놀이터로 보였다', '홈런볼 줍줍한 관중들 오늘 로또 맞았다 ㅋㅋ'],
+  hr2: ['{n} 멀티 홈런 오늘 담장이 낮아 보였다', '홈런 두 방이면 오늘 주인공 확정', '한 방도 어려운데 두 방 ㄷㄷ 타구 소리부터 다르다', '외야석 관중들 오늘 글러브 챙겨 온 보람 있다'],
+  cs: ['그 도루는 왜 뛴 거냐 ㅋㅋ', '발보다 마음이 먼저 뛰었다', '2루에 택배 배달하고 옴 ㅋㅋㅋ', '주루 코치 사인 맞냐 이거', '아웃 카운트 하나 공짜로 선물함'],
+  bb3: ['볼넷만 {BB}개 투수들이 아예 피해 간다', '오늘 {n}한테 정면승부한 투수 하나도 없음 ㅋㅋ', '눈야구 장인 오늘도 걸어서 출근', '방망이 안 휘두르고 출루 {BB}번 이게 무서운 거다'],
+  h4: ['{n} 오늘 {H}안타 공이 수박만 하게 보였나 봄', '안타 기계 오늘 풀가동', '타석 들어설 때마다 안타 ㅋㅋ 상대 투수 멘탈 나갔다'],
+  noSup: ['이렇게 던졌는데 승리를 못 챙기네 물타선 ㅠㅠ', '타선 지원 0점 실화냐 {n} 혼자 야구함', '{n} 등판하는 날만 타자들 단체 휴가 감', '이 정도 던지고 승리 못 하면 투수가 뭘 더 하냐', '호투하고 패전 위기 이게 맞냐'],
+  shell: ['오늘 마운드에 불났다 소방차 불러라', '{n} 오늘 공이 너무 착했다', '배팅볼 투수 오늘 출근했냐 ㅠ', '오늘은 그냥 없던 날로 하자 다음 등판 보자', '공 던질 때마다 외야수들 운동함'],
+  k10: ['삼진 {K}개 오늘 선풍기 공장 사장님 ㅋㅋ', '타자들 오늘 {n} 공 구경만 하다 감', '관중석 K 카드 오늘 다 떨어졌다', '삼진 잡는 소리가 BGM이었다'],
+  zero7: ['7이닝 무실점 이게 에이스지', '{n} 공 하나하나가 작품이었다', '오늘 상대 타선 {n} 앞에서 순한 양 됨'],
+  big: ['오늘 스코어 야구 맞냐 핸드볼인 줄', '{d}점 차 ㅋㅋ 상대 팀 팬들 5회에 이미 퇴근함', '타자들 오늘 다 같이 회식 각', '점수판 숫자 모자란다 ㅋㅋ'],
+  bigL: ['오늘 경기는 없던 걸로 하자', '{d}점 차로 지면 그냥 축구나 봐야겠다', '투수 다 써서 야수가 마운드 올라갈 뻔', '중간에 채널 돌린 사람 승리자다'],
+  w10: ['1-0 투수전 이 맛에 야구 본다', '점수 하나로 버텼다 마운드 미쳤다', '1점이면 충분했다 이게 야구지'],
+  l10: ['1점도 못 뽑았네 물타선 실화냐', '투수는 잘 던졌는데 타선이 0점이면 어쩌라고', '0점 패배는 진짜 할 말이 없다'],
+  absB: ['ABS 존 오늘 왜 이러냐 억울하다 ㅋㅋ', '로봇 심판한테 따질 수도 없고 미치겠네', '사람 심판이었으면 볼이었다 ABS 너무하네'],
+  absP: ['ABS 존 구석구석 찌르는 제구 미쳤다', '로봇 심판도 인정한 제구 ㅋㅋ', 'ABS 시대에 저 제구면 무적이다'],
+};
+const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠㅠ', '내일 보자'], hr3: ['ㄷㄷㄷ', '미쳤다'], hr2: ['ㄷㄷ', '오늘 주인공'], cs: ['ㅋㅋㅋ 아', '사인 미스냐'], bb3: ['눈야구 인정', 'ㄹㅇ'], h4: ['안타 기계', 'ㄷㄷ'], noSup: ['ㅠㅠㅠ', '타자들 반성해라'], shell: ['ㅠㅠ', '다음엔 잘하자'], k10: ['ㄷㄷ', '삼진쇼'], zero7: ['에이스', 'ㄷㄷ'], big: ['ㅋㅋㅋ', '오늘 기분 좋다'], bigL: ['ㅠㅠ', '잊자'], w10: ['명경기', 'ㄹㅇ'], l10: ['ㅠ', '타자들 뭐 함'], absB: ['ㅋㅋㅋ', '억울하다'], absP: ['ㄷㄷ', '제구 미쳤다'] };
+{
+  const _c862 = comments;
+  comments = function (tone, x) {
+    let out = _c862.apply(this, arguments);
+    try {
+      if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || S.me !== ME || !x || x.myR == null || x.intl) return out;
+      const P = isP(), gn = giv(ME.name), kbo = S.pro && S.pro.league === 'KBO', d = (x.myR || 0) - (x.opR || 0), keys = [];
+      const played = P ? (x.ipO || 0) > 0 : (x.gPA || 0) > 0;
+      if (played && !P) {
+        if ((x.K || 0) >= 4) keys.push('k4'); else if ((x.K || 0) === 3) keys.push('k3');
+        if ((x.gHR || 0) >= 3) keys.push('hr3'); else if ((x.gHR || 0) === 2) keys.push('hr2');
+        if ((x.gCS || 0) >= 1) keys.push('cs');
+        if ((x.gBB || 0) >= 3) keys.push('bb3');
+        if ((x.gH || 0) >= 4) keys.push('h4');
+        if (kbo && (x.K || 0) >= 2 && R() < .3) keys.push('absB');
+      }
+      if (played && P) {
+        if ((x.ipO || 0) >= 18 && (x.ra || 0) <= 1 && x.win === false) keys.push('noSup');
+        if ((x.ra || 0) >= 6 && (x.ipO || 0) <= 12) keys.push('shell');
+        if ((x.gK || x.K || 0) >= 10) keys.push('k10');
+        if ((x.ipO || 0) >= 21 && (x.ra || 0) === 0) keys.push('zero7');
+        if (kbo && (x.gK || x.K || 0) >= 8 && R() < .35) keys.push('absP');
+      }
+      if (d >= 10) keys.push('big'); else if (d <= -10) keys.push('bigL');
+      if (x.myR === 1 && x.opR === 0) keys.push('w10'); else if (x.myR === 0 && x.opR === 1) keys.push('l10');
+      if (!keys.length) return out;
+      const U = S.sit862 = S.sit862 || {}; let n = 0;
+      keys.sort(() => R() - .5).forEach(k => {
+        if (n >= 2 || R() > .55) return;
+        const L = SIT862[k].map(t => t.replace(/\{n\}/g, gn).replace(/\{K\}/g, String(P ? (x.gK || x.K || 0) : (x.K || 0))).replace(/\{BB\}/g, String(x.gBB || 0)).replace(/\{H\}/g, String(x.gH || 0)).replace(/\{d\}/g, String(Math.abs(d))))
+          .map(josaFix).filter(t => !out.some(c => c && c.t === t));
+        if (!L.length) return;
+        const mn = Math.min(...L.map(t => U[t] || 0)), C = L.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1; n++;
+        out.splice(Math.min(out.length, ri(0, 3)), 0, mkC(t, R() < .55 ? [{ nk: pick(NICKS), t: pick(SITRE862[k]), up: ri(20, 500) }] : [], { up: ri(400, 4000) }));
+      });
+    } catch (e) {}
+    return out;
+  };
+}
+
+/* v862b 시뮬에서 찾은 상황 안 맞는 댓글 거르기
+   · '한국인 최초 MVP 가즈아' → 이미 MVP 받았으면 X
+   · '국대에서 이 정도면 해외 스카우트 줄 선다' → 이미 메이저리거면 X
+   · 우승 기사에 '경기력 안 좋으면 외모 얘기…'·'패션팬…' 같은 엉뚱한 말 X */
+{
+  const _c862b = comments;
+  comments = function (tone, x) {
+    let out = _c862b.apply(this, arguments);
+    try {
+      if (!Array.isArray(out) || !S || !ME) return out;
+      const aw = (S.awards || []).map(a => a.n || ''), mvp = aw.some(n => /^(정규시즌 MVP|MLB .*MVP)$/.test(n)), mlbG = (S.rows || []).some(r => r.lv === 'MLB');
+      const ring = typeof ringArt681 === 'function' && ringArt681(tone, x);
+      const bad = t => (mvp && /최초 MVP|첫 MVP 가즈아/.test(t)) || (mlbG && /해외 스카우트 줄/.test(t)) || (ring && /경기력 안 좋으면|외모 얘기|패션팬이라고/.test(t));
+      out = out.filter(c => !(c && typeof c.t === 'string' && bad(c.t)));
+    } catch (e) {}
+    return out;
+  };
+}
