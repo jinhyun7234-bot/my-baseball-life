@@ -17523,6 +17523,7 @@ if (typeof retire === 'function') { const _rt = retire; retire = function () { t
 function stkTrade858(id, q) {
   const v = inv858(), s = STK858.find(x => x.id === id); if (!v || !s) return '';
   if (v.dl && v.dl[id]) return '상장폐지된 종목이에요.';
+  if (v.ds && v.ds[id] && v.ds[id].st === 'liq' && (q === 'max' || q > 0)) return '정리매매 중엔 살 수 없어요. 팔기만 돼요.';
   const p = v.px[id], have = v.sh[id] || 0;
   if (q === 'max') q = Math.floor(v.cash / p);
   if (q === 'all') q = -have; if (q === 'half') q = -Math.ceil(have / 2);
@@ -17596,7 +17597,7 @@ function vInvest858() {
     h += `<div class="ivsec">전체 종목 <span>지난 턴 대비</span></div>`;
     h += STK858.map(s => {
       const hs = v.hist[s.id] || [], p = v.px[s.id], prev = hs.length > 1 ? hs[hs.length - 2] : p, ch = p / prev - 1;
-      return `<div class="ivrow" data-iv858="stk" data-k="${s.id}"><div class="sp"><div class="ivn">${s.n}${v.mv[s.id] ? `<span class="ivtag ${v.mv[s.id]}">${v.mv[s.id] === 'up' ? '급등' : v.mv[s.id] === 'new' ? '신규 상장' : '급락'}</span>` : ''}${v.sh[s.id] ? '<span class="ivown">보유</span>' : ''}</div><div class="tiny muted">${s.sec}</div></div>${spark858(hs.slice(-13), ch >= 0)}<div class="ivp"><b>${won858(p)}</b><span class="${ch >= 0 ? 'up' : 'dn'}">${pct858(ch)}</span></div></div>`;
+      return `<div class="ivrow" data-iv858="stk" data-k="${s.id}"><div class="sp"><div class="ivn">${s.n}${v.mv[s.id] ? `<span class="ivtag ${v.mv[s.id]}">${v.mv[s.id] === 'up' ? '급등' : v.mv[s.id] === 'new' ? '신규 상장' : v.mv[s.id] === 'warn' ? '관리종목' : v.mv[s.id] === 'liq' ? '정리매매' : '급락'}</span>` : ''}${v.sh[s.id] ? '<span class="ivown">보유</span>' : ''}</div><div class="tiny muted">${s.sec}</div></div>${spark858(hs.slice(-13), ch >= 0)}<div class="ivp"><b>${won858(p)}</b><span class="${ch >= 0 ? 'up' : 'dn'}">${pct858(ch)}</span></div></div>`;
     }).join('');
   } else {
     const best = bestHome858();
@@ -18244,33 +18245,62 @@ if (typeof document !== 'undefined') { try { const st = document.createElement('
 /* ===== v860 주식 흐름 (11/27 03:52·04:01 유저 "꾸준히 우상향·우하향·가끔 상장폐지 · 근데 그냥 올랜덤으로 · 4년 간격 굳이 X · 현실에서 보이는 꾸준한 우상향/우하향")
    · 기존 10종목 변동폭 ×1.1 · 종목 3개 추가(오뚝이식품·석양미디어·한방바이오)
    · 모든 종목이 '흐름'을 가짐: 보통 / 꾸준히 오름 / 꾸준히 내림 — 어느 종목이 언제 어떤 흐름일지는 무작위
-       흐름 길이도 무작위(2~6년 = 6~18턴) · 끝나면 다시 뽑음 (보통 55% · 오름 25% · 내림 20%)
+       흐름 길이도 무작위(2~6년 = 6~18턴) · 끝나면 다시 뽑음 (보통 80% · 오름 11% · 내림 9%)
        꾸준히 오름: 턴 평균 +3%, 출렁임 ×0.7 / 꾸준히 내림: 턴 평균 −3.5%, 출렁임 ×0.8 → 몇 년 동안 한 방향으로 가는 느낌
    · 상장폐지도 무작위: 어떤 종목이든 상장 때 가격보다 많이 떨어질수록 확률↑ (곡선: 40% 위에선 0 → 20%면 턴당 10% → 8%면 40%)
        폐지되면 들고 있던 주식은 0원(산 값만큼 통산 수입에서 빠짐) · 2년(6턴) 뒤 새 가격으로 재상장 */
 function trend860(v, s) {
   v.tr = v.tr || {}; let g = v.tr[s.id];
-  if (!g || g.n <= 0) { const x = R(); g = v.tr[s.id] = { k: x < .25 ? 'up' : x < .45 ? 'dn' : 'flat', n: ri(6, 18) }; }
+  if (!g || g.n <= 0) { const x = R(); g = v.tr[s.id] = { k: x < .11 ? 'up' : x < .2 ? 'dn' : 'flat', n: ri(6, 18) };   /* v861 (04:09 유저 "보통이 80으로"): 보통 80 · 오름 11 · 내림 9 */ }
   g.n--; return g.k;
 }
+/* v861 (04:09 유저 "실제 상폐되는 주식들 기준으로") 상장폐지를 실제 절차처럼
+   관리종목 지정 → (못 살아나면) 거래정지·정리매매(한 턴, 주가 70~90% 폭락 · 팔기만 됨) → 상장폐지 (들고 있던 주식 0원)
+   관리종목이 되는 이유 (실제 퇴출 사유를 게임식으로):
+   · 장기 하락: 상장가 대비 30% 밑으로 떨어지면 확률이 곡선으로 올라감 (30%면 턴당 8% → 15%면 30% → 8%면 60%)
+   · 동전주: 주가 1,000원 밑 → 턴당 35%
+   · 감사의견 거절·횡령 같은 돌발 악재: 턴당 0.07% (상장가 5만원 밑 작은 회사는 0.4%)
+   관리종목에서 주가가 상장가 45% 위 + 1,000원 위로 올라오면 60% 확률로 해제 · 아니면 턴당 50%로 정리매매
+   폐지된 자리는 2년(6턴) 뒤 다른 회사가 새로 상장 */
+const NEWCO861 = ['새싹로보틱스', '구름게임즈', '별빛배터리', '바람에너지', '푸른바이오', '달빛엔터', '모래알반도체', '반짝화장품', '두근두근펫', '하늘드론', '은하우주항공', '소금빵푸드'];
+const NEWSEC861 = { 새싹로보틱스: '로봇', 구름게임즈: '게임', 별빛배터리: '2차전지', 바람에너지: '에너지', 푸른바이오: '바이오', 달빛엔터: '엔터', 모래알반도체: '반도체', 반짝화장품: '화장품', 두근두근펫: '반려동물', 하늘드론: '드론', 은하우주항공: '우주항공', 소금빵푸드: '식품' };
 function stkDlChk860(v, s) {
   try {
-    const f = v.px[s.id] / (v.p0 && v.p0[s.id] || s.p0), pr = knot(f, [.08, .2, .4], [.4, .1, 0]);
-    if (!(R() < pr)) return;
-    v.dl = v.dl || {}; v.dl[s.id] = S.turn;
-    const q = v.sh[s.id] || 0, c = v.cost[s.id] || 0;
-    if (q) { earnAdj858(-Math.round(q * c)); delete v.sh[s.id]; delete v.cost[s.id]; }
-    v.mv[s.id] = 'dn';
-    try { news(`${s.n} 상장폐지${q ? ` · 보유 ${q.toLocaleString()}주(산 값 ${money(q * c)})가 휴지 조각이 됐다` : ''}`); } catch (e) {}
-    if (q) S.dlMsg860 = `${s.n} 상장폐지 · 보유 ${q.toLocaleString()}주가 0원이 됐어요`;
+    v.ds = v.ds || {}; const d = v.ds[s.id], p = v.px[s.id], lp = (v.p0 && v.p0[s.id]) || s.p0, f = p / lp;
+    if (!d) {
+      const pr = Math.max(knot(f, [.08, .15, .3], [.6, .3, .08]) * (f < .3 ? 1 : 0), p < .1 ? .35 : 0, lp < 5 ? .004 : .0007);
+      if (R() < pr) { v.ds[s.id] = { st: 'warn', t: S.turn }; v.mv[s.id] = 'warn'; try { news(`${s.n} 관리종목 지정 · 상장폐지 위험`); } catch (e) {} if (v.sh[s.id]) S.dlMsg860 = `${s.n} 관리종목 지정 · 상장폐지 위험이 있어요`; }
+      return;
+    }
+    if (d.st === 'warn') {
+      if (d.t === S.turn) return;
+      if (f >= .45 && p >= .1 && R() < .6) { delete v.ds[s.id]; try { news(`${s.n} 관리종목 해제`); } catch (e) {} return; }
+      if (R() < .5) {
+        v.ds[s.id] = { st: 'liq', t: S.turn };
+        const np = Math.max(.01, Math.round(p * (.1 + R() * .2) * 100) / 100); v.px[s.id] = np; const h = v.hist[s.id]; if (h && h.length) h[h.length - 1] = np; v.mv[s.id] = 'liq';
+        try { news(`${s.n} 상장폐지 결정 · 정리매매 시작 (주가 ${won858(np)})`); } catch (e) {}
+        if (v.sh[s.id]) S.dlMsg860 = `${s.n} 상장폐지 결정 · 이번 턴이 정리매매(팔 수 있는 마지막 기회)예요`;
+      }
+      return;
+    }
+    if (d.st === 'liq' && d.t !== S.turn) {
+      delete v.ds[s.id]; v.dl = v.dl || {}; v.dl[s.id] = S.turn;
+      const q = v.sh[s.id] || 0, c = v.cost[s.id] || 0;
+      if (q) { earnAdj858(-Math.round(q * c)); delete v.sh[s.id]; delete v.cost[s.id]; S.dlMsg860 = `${s.n} 상장폐지 · 보유 ${q.toLocaleString()}주가 0원이 됐어요`; }
+      v.mv[s.id] = 'dn';
+      try { news(`${s.n} 상장폐지${q ? ` · 보유 ${q.toLocaleString()}주(산 값 ${money(q * c)})가 휴지 조각이 됐다` : ''}`); } catch (e) {}
+    }
   } catch (e) {}
 }
 function stkDl860(v, s) {
+  if (v.ds && v.ds[s.id] && v.ds[s.id].st === 'liq') { stkDlChk860(v, s); return true; }
   if (!v.dl || v.dl[s.id] == null) return false;
   if (S.turn - v.dl[s.id] < 6) return true;
-  const p = Math.round(s.p0 * Math.exp(rn(0, .35)) * 100) / 100;
+  const used = new Set(STK858.map(x => x.n)), nm = NEWCO861.filter(n => !used.has(n)), n = nm.length ? pick(nm) : s.n;
+  const p = Math.round(s.p0 * Math.exp(rn(0, .5)) * 100) / 100;
   delete v.dl[s.id]; v.px[s.id] = p; v.hist[s.id] = [p]; (v.p0 = v.p0 || {})[s.id] = p; v.mv[s.id] = 'new';
-  try { news(`${s.n} 재상장 · 시작가 ${won858(p)}`); } catch (e) {}
+  (v.nm = v.nm || {})[s.id] = n; s.n = n; s.sec = NEWSEC861[n] || s.sec; if (v.tr) delete v.tr[s.id];
+  try { news(`${n} 신규 상장 · 공모가 ${won858(p)}`); } catch (e) {}
   return true;
 }
 /* 예전 저장 데이터: 새 종목 시세 채우기 */
@@ -18278,7 +18308,7 @@ function stkDl860(v, s) {
   const _inv860 = inv858;
   inv858 = function () {
     const v = _inv860.apply(this, arguments);
-    try { if (v) STK858.forEach(s => { if (v.px[s.id] == null) { v.px[s.id] = s.p0; v.hist[s.id] = [s.p0]; } }); } catch (e) {}
+    try { if (v) STK858.forEach(s => { if (v.px[s.id] == null) { v.px[s.id] = s.p0; v.hist[s.id] = [s.p0]; } if (!s.n0) { s.n0 = s.n; s.sec0 = s.sec; } const nn = v.nm && v.nm[s.id]; s.n = nn || s.n0; s.sec = nn ? (NEWSEC861[nn] || s.sec0) : s.sec0; }); } catch (e) {}
     return v;
   };
 }
@@ -18300,7 +18330,7 @@ if (typeof vInvest858 === 'function') {
   };
 }
 if (typeof render === 'function') { const _rd860s = render; render = function () { const r = _rd860s.apply(this, arguments); try { if (S && S.dlMsg860) { const m = S.dlMsg860; S.dlMsg860 = null; toast(m); } } catch (e) {} return r; }; }
-if (typeof document !== 'undefined') { try { const st = document.createElement('style'); st.textContent = `.inv858 .ivdl860{opacity:.55;pointer-events:none}.inv858 .ivdl860 .ivp b{text-decoration:line-through}.inv858 .ivtag.new{background:#2f9e5b}`; document.head.appendChild(st); } catch (e) {} }
+if (typeof document !== 'undefined') { try { const st = document.createElement('style'); st.textContent = `.inv858 .ivdl860{opacity:.55;pointer-events:none}.inv858 .ivdl860 .ivp b{text-decoration:line-through}.inv858 .ivtag.new{background:#2f9e5b}.inv858 .ivtag.warn{background:#e8890c}.inv858 .ivtag.liq{background:#7a1f2b}`; document.head.appendChild(st); } catch (e) {} }
 
 /* v860 (11/27 유저 "재계약 할때 댓글 살짝씩 이상하다") 오래 뛴 선수한테 안 맞는 말 거르기
    · '우리 ○○ 다 컸네' → 28살부터 X
@@ -18334,16 +18364,16 @@ function ringYs861(cur) {
   if (cur) ys.add(S.y); return [...ys].sort((a, b) => a - b);
 }
 const TEAMRING861 = {
-  트윈스: ['신바람 야구 돌아왔다 ㅠㅠ 이 맛이지', '유광점퍼 장롱에서 꺼낸 보람 있다', '잠실 주인은 우리다 무적 트윈스', '신바람 분다 오늘 잠실 난리 났다'],
-  베어스: ['허슬두는 죽지 않았다', '미라클 베어스 이번에도 기적 썼다', '화수분 야구 클라스 어디 안 간다', '가을만 되면 강해지는 게 베어스 DNA'],
-  히어로즈: ['영웅들이 드디어 해냈다', '버티고 버틴 고척 영웅들 ㅠㅠ', '돈 없어도 야구 잘한다는 거 증명했다'],
-  랜더스: ['랜더스 상륙작전 성공 ㅋㅋㅋ', '인천 야구는 원래 강했다', '문학 하늘에 불꽃놀이 개장'],
-  위즈: ['마법 같은 우승 이게 위즈 마법이지', '수원에 마법이 내렸다', '마법사 군단 또 해냈다 ㄷㄷ'],
-  이글스: ['보살 팬들 드디어 성불한다 ㅠㅠㅠ', '마리이글스 끊을 수가 없다 이 맛에 버텼다', '대전 오늘 불꽃 축제다', '이글스 팬 하길 잘했다 진짜로'],
-  라이온스: ['라이온스 왕조 다시 시작이다', '여름 라이온스가 가을까지 왔다 ㅋㅋ', '파란 피가 끓는다 대구 오늘 잠 못 잔다'],
-  타이거스: ['한국시리즈 가면 무조건 이긴다 불패신화 계속된다', '이게 타이거스 정신이다', '무등산 호랑이 포효했다', '광주의 밤이 뜨겁다 남행열차 틀어라'],
-  자이언츠: ['봄에만 잘한다는 소리 이제 끝이다 ㅠㅠ', '부산 갈매기 목 터지게 불렀다', '마 이게 자이언츠다', '사직 노래방 오늘 밤샘이다'],
-  다이노스: ['집행검 다시 뽑는다 ㅋㅋㅋ', '집행검 세리머니 가자!!!', '공룡군단 최강 창원이 들썩인다'],
+  트윈스: ['신바람 야구 돌아왔다 ㅠㅠ 이 맛이지', '유광점퍼 장롱에서 꺼낸 보람 있다', '잠실 주인은 우리다 무적 트윈스', '엘린이 출신 아재들 오늘 다 운다', '서울의 자존심은 트윈스다', '유광점퍼 입고 출근한다 아무도 못 말림'],
+  베어스: ['허슬두는 죽지 않았다', '미라클 베어스 이번에도 기적 썼다', '화수분 야구 클라스 어디 안 간다', '가을 곰은 건드리는 거 아니다', '잠실 곰탕 오늘 진하게 끓였다 ㅋㅋ', '곰들 겨울잠 자기 전에 우승 한 번 하고 간다'],
+  히어로즈: ['영웅들이 드디어 해냈다', '버티고 버틴 고척 영웅들 ㅠㅠ', '돈 없어도 야구 잘한다는 거 증명했다', '고척 지붕 오늘 들썩인다', '키워서 보내기만 하던 팀이 드디어 우승했다 ㅠㅠ'],
+  랜더스: ['랜더스 상륙작전 성공 ㅋㅋㅋ', '인천 야구는 원래 강했다', '문학 하늘에 불꽃놀이 개장', '인천 짠물 야구 클라스 보여줬다', '인천 앞바다까지 우승 함성 들린다'],
+  위즈: ['마법 같은 우승 이게 위즈 마법이지', '수원에 마법이 내렸다', '마법사 군단 또 해냈다 ㄷㄷ', '막내 구단이라고 무시하던 사람들 어디 갔냐', '수원 통닭거리 오늘 닭 다 팔린다 ㅋㅋ'],
+  이글스: ['보살 팬들 드디어 성불한다 ㅠㅠㅠ', '마리이글스 끊을 수가 없다 이 맛에 버텼다', '대전 오늘 불꽃 축제다', '이글스 팬 하길 잘했다 진짜로', '꼴찌 하던 시절 버틴 보살들 오늘은 다 울어라', '성심당 빵 오늘 우승 기념으로 다 털린다 ㅋㅋ'],
+  라이온스: ['라이온스 왕조 다시 시작이다', '여름 라이온스가 가을까지 왔다 ㅋㅋ', '파란 피가 끓는다 대구 오늘 잠 못 잔다', '대구 날씨보다 라이온스가 더 뜨겁다', '대프리카 오늘 밤은 더 덥다 ㅋㅋㅋ'],
+  타이거스: ['한국시리즈 가면 무조건 이긴다 불패신화 계속된다', '이게 타이거스 정신이다', '무등산 호랑이 포효했다', '광주의 밤이 뜨겁다 남행열차 틀어라', '한국시리즈 올라간 순간 끝난 거였다 불패는 과학 ㅋㅋ', '호랑이 군단 V 하나 더 추가'],
+  자이언츠: ['봄에만 잘한다는 소리 이제 끝이다 ㅠㅠ', '부산 갈매기 목 터지게 불렀다', '마 이게 자이언츠다', '사직 노래방 오늘 밤샘이다', '신문지 응원 오늘 다 찢었다 ㅋㅋ', '주황 봉다리 오늘은 우승 봉다리다', '광안리 바다에 다 뛰어들자 ㅋㅋㅋ'],
+  다이노스: ['집행검 다시 뽑는다 ㅋㅋㅋ', '집행검 세리머니 가자!!!', '공룡군단 최강 창원이 들썩인다', '집행검 강화 +1 성공 ㅋㅋㅋ', '창원 오늘 공룡 축제다'],
 };
 const TEAMRE861 = { 트윈스: '무적 트윈스', 베어스: '허슬두!', 히어로즈: '영웅 만세', 랜더스: '인천 최고', 위즈: '마법 ㄷㄷ', 이글스: '보살 성불 ㅠㅠ', 라이온스: '왕조 가즈아', 타이거스: '불패 ㅋㅋ', 자이언츠: '마!!!', 다이노스: '집행검 ㅋㅋㅋ' };
 {
@@ -18360,7 +18390,7 @@ const TEAMRE861 = { 트윈스: '무적 트윈스', 베어스: '허슬두!', 히�
         out = out.filter(c => !(c && typeof c.t === 'string' && RINGY.test(c.t)));
         out.forEach(c => { if (c && Array.isArray(c.re)) c.re = c.re.filter(r => !(r && typeof r.t === 'string' && RINGY.test(r.t))); });
       }
-      const put = (L, re, at) => { const C = L.filter(t => t && !seenHas('v861:' + t)); if (!C.length) return false; const t = pick(C); seenAdd('v861:' + t); out.splice(Math.min(at == null ? 1 : at, out.length), 0, mkC(josaFix(t), re ? [{ nk: pick(NICKS), t: re, up: ri(30, 900) }] : [], { up: ri(2500, 9000), must: 1 })); return true; };
+      const put = (L, re, at) => { const U = S.mm861 = S.mm861 || {}, C0 = L.filter(t => t && !out.some(c => c && c.t === josaFix(t))); if (!C0.length) return false; const mn = Math.min(...C0.map(t => U[t] || 0)), C = C0.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1;   /* 골고루: 지금까지 가장 적게 나온 말 중에서 고름 (다 써도 안 끊김) */ out.splice(Math.min(at == null ? 1 : at, out.length), 0, mkC(josaFix(t), re ? [{ nk: pick(NICKS), t: re, up: ri(30, 900) }] : [], { up: ri(2500, 9000), must: 1 })); return true; };
       /* ② 우승 기사 */
       if (ringNow && kbo && S._r861Y !== S.y) {
         S._r861Y = S.y;
@@ -18414,3 +18444,21 @@ const TEAMRE861 = { 트윈스: '무적 트윈스', 베어스: '허슬두!', 히�
     return out;
   };
 }
+
+/* v861 주문창: 관리종목·정리매매 안내 (정리매매 중엔 팔기만) */
+if (typeof vSheet858 === 'function') {
+  const _vs861 = vSheet858;
+  vSheet858 = function () {
+    try { const v = inv858(), k = ui.iv858s; if (v && k && v.ds && v.ds[k] && v.ds[k].st === 'liq') ui.iv858m = 'sell'; } catch (e) {}
+    let h = _vs861.apply(this, arguments);
+    try {
+      const v = inv858(), k = ui.iv858s, d = v && k && v.ds && v.ds[k]; if (!d) return h;
+      const note = d.st === 'liq' ? `<div class="ivwarn861 liq">상장폐지 결정 · 이번 턴이 정리매매예요. 팔기만 되고, 다음 턴엔 남은 주식이 0원이 돼요.</div>`
+        : `<div class="ivwarn861">관리종목 지정 · 주가가 살아나지 못하면 상장폐지될 수 있어요.</div>`;
+      h = h.replace('<div class="ivstat">', note + '<div class="ivstat">');
+      if (d.st === 'liq') h = h.replace(/(<button class="[^"]*" data-iv858="mode" data-v="buy")/, '$1 disabled');
+    } catch (e) {}
+    return h;
+  };
+}
+if (typeof document !== 'undefined') { try { const st = document.createElement('style'); st.textContent = `.ivwarn861{font-size:12.5px;line-height:1.45;padding:9px 11px;border-radius:10px;background:rgba(232,137,12,.14);color:#c46f00;font-weight:600}.ivwarn861.liq{background:rgba(122,31,43,.14);color:#b3263a}`; document.head.appendChild(st); } catch (e) {} }
