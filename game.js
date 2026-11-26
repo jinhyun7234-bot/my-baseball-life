@@ -18096,3 +18096,29 @@ if (typeof vShop === 'function') {
     return _vsh859b.apply(this, arguments);
   };
 }
+
+/* ===== v859b 연속 터치 버그 (11/26 유저 "버튼 연속해서 누르면 진행이 안되는 버그") =====
+   원인: 화면이 바뀌는 버튼을 빠르게 두 번 누르면 두 번째 터치가 새로 뜬 화면의 같은 자리 버튼에 들어감
+   · '결정해야 할 일'을 두 번 누르면 창이 열리자마자 그 자리 선택지가 저절로 골라짐
+   · 진행 버튼을 연타하면 진행 화면 건너뛰기 → 다음 반기 진행까지 이어져 반기 하나가 통째로 지나감 (스프링캠프가 사라지기도)
+   · 결과 '확인' 연타 → 바로 다음 진행이 눌림
+   → 버튼을 눌러 화면이 바뀐 직후 0.35초 동안은 '화면을 넘기는 버튼'만 무시 (훈련 +/− 같은 같은 화면 버튼, 문자중계 한 타석씩 넘기기는 그대로) */
+const TAP859 = { ms: 350, acts: /^(adv|skipsim|openq|pick|resok|closeq|gend|gdone|awdone|cdone|cont|csign|fwnext|dftok|dftskip|dftgo|psfskip|artclose|guideclose|[a-z0-9]*ok)$/ };
+let tap859Clk = false, tap859Until = 0;
+if (typeof window !== 'undefined') {
+  window.addEventListener('click', e => {
+    try {
+      const el = e.target && e.target.closest && e.target.closest('[data-act]');
+      const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+      if (el && now < tap859Until && TAP859.acts.test(el.dataset.act || '')) { e.stopImmediatePropagation(); e.preventDefault(); return; }
+      tap859Clk = true; setTimeout(() => { tap859Clk = false; }, 0);
+    } catch (x) {}
+  }, true);
+}
+if (typeof render === 'function') {
+  const _rd859 = render;
+  render = function () {
+    try { if (tap859Clk) tap859Until = (typeof performance !== 'undefined' ? performance.now() : Date.now()) + TAP859.ms; } catch (x) {}
+    return _rd859.apply(this, arguments);
+  };
+}
