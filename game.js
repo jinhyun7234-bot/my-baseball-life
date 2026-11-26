@@ -17936,3 +17936,163 @@ function salOptFix858z(q) {
   const _advSO858z = advance;
   advance = function () { const r = _advSO858z.apply(this, arguments); try { (S.queue || []).forEach(salOptFix858z); } catch (e) {} return r; };
 }
+
+/* ===== v859a 재테크 (11/26 유저) =====
+   "버튼 누르면 그래프가 다시 뜨는 거 없애고 그래프 변형만 · 사기 팔기 할 때 창이 다시 뜨는 느낌 없애기 · 보유자금 잘 보이게 ·
+    자동화 조금 더 · 증권계좌로 바로 끌어다 쓸 수 있게 물어보고"
+   · 기간(1년/3년/전체) 버튼: 화면을 다시 그리지 않고 차트만 바꿈
+   · 사기/팔기 전환: 아래 창 내용만 바꿈 (창이 다시 올라오는 애니메이션 없음)
+   · 같은 창이 열려 있는 동안은 다시 그려져도 올라오는 애니메이션을 다시 틀지 않음
+   · 거래 완료 알림: 화면을 가리는 팝업 대신 아래쪽에 잠깐 뜨는 알림으로
+   · 보유 자금과 투자용 현금을 나란히 크게 표시
+   · 투자용 현금이 모자라면 "보유 자금에서 X 옮기고 N주 사기"로 바로 살 수 있게 (누르는 게 확인)
+     + '부족하면 보유 자금에서 자동으로 옮기기' 켜면 주문창 '최대'도 보유 자금까지 합쳐서 계산 */
+const IV859CSS = `.ivsheet.noanim,.ivback.noanim{animation:none!important}
+.inv858 .ivfunds{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.inv858 .ivfund{display:flex;flex-direction:column;gap:1px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);min-width:0}
+.inv858 .ivfund span{font-size:.74rem;opacity:.65}.inv858 .ivfund b{font-size:1.15rem;letter-spacing:-.01em}
+.inv858 .ivfund.main{border-color:rgba(229,72,77,.45)}
+.inv858 .ivfbtn{display:flex;gap:6px}.inv858 .ivfbtn .btn{flex:1}
+.ivauto859{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--soft);font-size:.82rem;cursor:pointer;user-select:none}
+.ivauto859 .sw{flex:none;width:38px;height:22px;border-radius:11px;background:var(--line);position:relative;transition:background .15s}
+.ivauto859 .sw:after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
+.ivauto859.on .sw{background:#e5484d}.ivauto859.on .sw:after{transform:translateX(16px)}
+.ivauto859 small{display:block;opacity:.6;font-size:.7rem}
+.ivsheet .ivfundl{font-size:.8rem;display:flex;justify-content:space-between;gap:8px;padding:0 2px;opacity:.9}
+.ivsheet .ivfundl b{font-weight:700}
+.ivdone{inset:auto 0 0 0!important;bottom:calc(92px + env(safe-area-inset-bottom,0px))!important;background:none!important;pointer-events:none;align-items:flex-end!important;animation:none!important;padding:0 16px!important}
+.ivdone .ivdc{flex-direction:row!important;flex-wrap:wrap;align-items:center!important;text-align:left!important;min-width:0!important;max-width:420px!important;width:100%;padding:12px 16px!important;gap:2px 10px!important;border-radius:16px!important;animation:ivtoast859 .22s ease-out!important}
+.ivdone .ivck{width:28px!important;height:28px!important;font-size:1rem!important;margin:0!important;animation:none!important}
+.ivdone b{font-size:.95rem!important}.ivdone span{flex-basis:100%;padding-left:38px;font-size:.8rem!important}
+@keyframes ivtoast859{from{transform:translateY(16px);opacity:0}}`;
+if (typeof document !== 'undefined') { try { const st = document.createElement('style'); st.textContent = IV859CSS; document.head.appendChild(st); } catch (e) {} }
+
+function ivAutoRow859() {
+  const on = !!(S && S.iv858auto);
+  return `<div class="ivauto859${on ? ' on' : ''}" data-iv859="auto"><span class="sw"></span><span>부족하면 보유 자금에서 자동으로 옮기기<small>${on ? '켜짐 · 묻지 않고 바로 옮겨서 사요' : '꺼짐 · 부족할 때마다 버튼으로 확인해요'}</small></span></div>`;
+}
+/* 현금 칸: 보유 자금 · 투자용 현금 나란히 */
+if (typeof vInvest858 === 'function') {
+  const _vi859 = vInvest858;
+  vInvest858 = function () {
+    let h = _vi859.apply(this, arguments);
+    try {
+      const v = inv858(), i = h.indexOf('<div class="ivcashbar">');
+      if (v && i >= 0) {
+        const j = h.indexOf('</div></div>', h.indexOf('<div class="ivcb">', i)) + 12;
+        const old = h.slice(i, j), pulse = /<b class="pulse">/.test(old);
+        const blk = `<div class="ivfunds"><div class="ivfund"><span>보유 자금</span><b>${money(S.money)}</b></div><div class="ivfund main"><span>투자용 현금</span><b class="${pulse ? 'pulse' : ''}">${money(v.cash)}</b></div></div>`
+          + `<div class="ivfbtn"><button class="btn sm pri" data-iv858="csheet" data-v="dep">보유 자금 → 투자용 현금</button><button class="btn sm" data-iv858="csheet" data-v="wd" ${v.cash >= 1 ? '' : 'disabled'}>투자용 현금 → 보유 자금</button></div>`
+          + ivAutoRow859();
+        h = h.slice(0, i) + blk + h.slice(j);
+      }
+    } catch (e) {}
+    return h;
+  };
+}
+/* 주문창: 같은 창이면 애니메이션 X · 자금 한 줄 · 자동 이체 스위치 */
+if (typeof vSheet858 === 'function') {
+  const _vs859 = vSheet858;
+  vSheet858 = function () {
+    let h = _vs859.apply(this, arguments);
+    try {
+      const key = (ui.iv858s || '') + '|' + (ui.iv858c || '');
+      if (ui.iv859k === key) h = h.replace('class="ivback"', 'class="ivback noanim"').replace('class="ivsheet"', 'class="ivsheet noanim"');
+      ui.iv859k = key;
+      const v = inv858();
+      if (ui.iv858s && v) {
+        h = h.replace('<div class="seg ivseg">', `<div class="ivfundl"><span>투자용 현금 <b>${money(v.cash)}</b></span><span>보유 자금 <b>${money(S.money)}</b></span></div><div class="seg ivseg">`);
+        const own = v.sh[ui.iv858s] || 0, buy = (ui.iv858m || 'buy') === 'buy' || !own;
+        if (buy) {
+          h = h.replace('<div class="ivtot"></div>', ivAutoRow859() + '<div class="ivtot"></div>');
+          if (S.iv858auto) { const p = v.px[ui.iv858s], mx2 = Math.floor((v.cash + S.money) / p); h = h.replace(/data-v="max">최대 [\d,]+주/, `data-v="max">최대 ${mx2.toLocaleString()}주`); }
+        }
+      }
+    } catch (e) {}
+    return h;
+  };
+}
+if (typeof vShop === 'function') {
+  const _vsh859 = vShop;
+  vShop = function () { const h = _vsh859.apply(this, arguments); try { if (!(ui.iv858s || ui.iv858c) || !ui.inv858show) ui.iv859k = null; } catch (e) {} return h; };
+}
+/* 주문 미리보기: 부족하면 보유 자금에서 옮겨서 사기 */
+upd858 = function () {
+  try {
+    const v = inv858(), k = ui.iv858s, el = document.querySelector('.ivq2'), t = document.querySelector('.ivsheet .ivtot:not(.ivctot)'), g = document.querySelector('.ivgo2');
+    if (!v || !k || !el || !t || !g) return;
+    const p = v.px[k], own = v.sh[k] || 0, n = Math.max(0, Math.floor(+el.value || 0)), buy = (ui.iv858m || 'buy') === 'buy' || !own, mx = Math.floor(v.cash / p);
+    let txt, ok, lab = buy ? '사기' : '팔기';
+    if (buy) {
+      if (n < 1) { ok = false; txt = mx ? `투자용 현금으로 최대 ${mx.toLocaleString()}주` : '투자용 현금이 없어요 · 수량을 넣으면 보유 자금에서 옮겨서 살 수 있어요'; }
+      else if (n <= mx) { ok = true; txt = `주문 금액 <b>${amt858(n * p)}</b> · 남는 투자용 현금 ${amt858(v.cash - n * p)}`; lab = `${n.toLocaleString()}주 사기`; }
+      else {
+        const need = Math.ceil(n * p - v.cash);
+        if (need <= S.money) { ok = true; txt = `투자용 현금이 <b>${money(need)}</b> 부족해요 · ${S.iv858auto ? '보유 자금에서 자동으로 옮겨서 사요' : '보유 자금에서 옮겨서 살까요?'}`; lab = `${money(need)} 옮기고 ${n.toLocaleString()}주 사기`; }
+        else { ok = false; txt = `<span class="dn">보유 자금까지 합쳐도 부족해요 · 최대 ${Math.floor((v.cash + S.money) / p).toLocaleString()}주</span>`; }
+      }
+    } else {
+      const pl = n * (p - (v.cost[k] || p)); ok = n >= 1 && n <= own;
+      txt = n < 1 ? `보유 ${own.toLocaleString()}주` : n > own ? `<span class="dn">가진 수량(${own.toLocaleString()}주)보다 많아요</span>` : `받을 돈 <b>${amt858(n * p)}</b> · 손익 <span class="${cls858(pl)}">${sAmt858(pl)}</span>`;
+      if (ok) lab = `${n.toLocaleString()}주 팔기`;
+    }
+    t.innerHTML = txt; g.disabled = !ok; g.textContent = lab;
+  } catch (e) {}
+};
+/* 아래 창만 바꿔 끼우기 (화면 전체를 다시 그리지 않음) */
+function swapSheet859() {
+  try {
+    const old = document.querySelector('.ivsheet'); if (!old) return false;
+    const tmp = document.createElement('div'); tmp.innerHTML = vSheet858();
+    const ns = tmp.querySelector('.ivsheet'); if (!ns) return false;
+    ns.classList.add('noanim'); ns.scrollTop = old.scrollTop; old.replaceWith(ns); upd858(); return true;
+  } catch (e) { return false; }
+}
+if (typeof window !== 'undefined') {
+  window.addEventListener('click', e => {
+    try {
+      if (!S) return;
+      const sw = e.target.closest && e.target.closest('[data-iv859="auto"]');
+      if (sw) {
+        e.stopPropagation(); e.preventDefault();
+        S.iv858auto = !S.iv858auto; try { save(); } catch (x) {}
+        document.querySelectorAll('.ivauto859').forEach(el => { const t = document.createElement('div'); t.innerHTML = ivAutoRow859(); el.replaceWith(t.firstChild); });
+        if (ui.iv858s) { const mxb = document.querySelector('.ivsheet [data-iv858="qset"][data-v="max"]'); const v = inv858(); if (mxb && v) { const p = v.px[ui.iv858s]; mxb.textContent = `최대 ${Math.floor((S.iv858auto ? v.cash + S.money : v.cash) / p).toLocaleString()}주`; } upd858(); }
+        return;
+      }
+      const b = e.target.closest && e.target.closest('[data-iv858]'); if (!b || b.disabled) return;
+      const a = b.getAttribute('data-iv858'), val = b.getAttribute('data-v'), v = inv858(); if (!v) return;
+      if (a === 'stk' || a === 'csheet' || a === 'hide' || a === 'tab') { ui.iv858done = null; clearTimeout(ui.iv858dt); }   // 새 창을 열면 거래 완료 알림은 바로 치움 (창을 가리지 않게)
+      if (a === 'rng') {   // 차트만 바꿈
+        e.stopPropagation(); e.preventDefault();
+        ui.iv858r = val;
+        const box = document.querySelector('.ivsheet .ivchart'), k = ui.iv858s; if (!box || !k) return;
+        const own = v.sh[k] || 0, c = v.cost[k] || v.px[k], tmp = document.createElement('div'); tmp.innerHTML = chart858(v.hist[k] || [], own ? c : 0, val);
+        const cur = box.querySelector('.ivsvg,.ivnochart'); if (cur && tmp.firstChild) cur.replaceWith(tmp.firstChild);
+        box.querySelectorAll('.ivrg button').forEach(x => x.classList.toggle('on', x.getAttribute('data-v') === val));
+        const lab = box.querySelector('.ivscrub'), d = `${val === '1y' ? '최근 1년' : val === '3y' ? '최근 3년' : '전체 기록'} · 차트를 눌러 보세요`; if (lab) { lab.setAttribute('data-def', d); lab.textContent = d; }
+        return;
+      }
+      if (a === 'mode') {   // 사기/팔기 전환: 창 안만 바꿈
+        e.stopPropagation(); e.preventDefault();
+        ui.iv858m = val; if (!swapSheet859()) render(); return;
+      }
+      if (a === 'qset' && val === 'max' && S.iv858auto && ui.iv858s) {   // 자동 이체 켜짐: 보유 자금까지 합친 최대
+        e.stopPropagation(); e.preventDefault();
+        const qi = document.querySelector('.ivq2'); if (qi) { qi.value = Math.floor((v.cash + S.money) / v.px[ui.iv858s]) || ''; upd858(); } return;
+      }
+      if (a === 'go' && ui.iv858s) {   // 모자라면 먼저 보유 자금에서 옮김 → 기존 주문 처리로 이어짐
+        const qi = document.querySelector('.ivq2'), n = Math.floor(+(qi && qi.value) || 0), id = ui.iv858s, own = v.sh[id] || 0, buy = (ui.iv858m || 'buy') === 'buy' || !own;
+        if (buy && n > 0) { const need = Math.ceil(n * v.px[id] - v.cash); if (need > 0 && need <= S.money) { cashMove858(need); ui.iv859moved = need; } }
+      }
+    } catch (x) {}
+  }, true);
+}
+/* 거래 완료 알림에 '보유 자금에서 옮김' 한 줄 */
+if (typeof vShop === 'function') {
+  const _vsh859b = vShop;
+  vShop = function () {
+    try { if (ui.iv859moved && ui.iv858done && ui.iv858done.k === 'buy' && !ui.iv858done._m) { ui.iv858done.l.push(`보유 자금에서 ${money(ui.iv859moved)} 옮겨서 샀어요`); ui.iv858done._m = 1; ui.iv859moved = 0; } } catch (e) {}
+    return _vsh859b.apply(this, arguments);
+  };
+}
