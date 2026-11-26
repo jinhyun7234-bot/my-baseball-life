@@ -14291,7 +14291,7 @@ function flow849(x){try{const L=x&&x.lsc,me=x&&x.mySide;if(!Array.isArray(L)||!A
     else if(rd>=2&&rd<=4)L.push(`${rd}라운드에 ${gn} 남아 있었다고? 개꿀 ㅋㅋ`,'스카우트팀 일 잘했다 이 순번에 이 선수면 이득');
     else if(rd>=7)L.push('하위 라운드에서 터지는 선수가 진짜 대박이다','순번은 순번일 뿐 1군 와서 보여 주면 된다');
     put849(out,L,['ㅇㅈ','기대된다','스카우트 리포트 보니까 툴은 확실함'],{pos:2})}
-  else if(T==='debut')put849(out,[`${gn} 첫 타석 긴장한 거 다 보였다 ㅋㅋ 그래도 잘했다`,'데뷔전 직관한 사람 나중에 자랑해라','오늘 경기 기념구 꼭 챙겨라',P?'첫 등판에 공 던지는 거 보니까 배짱은 확실하다':'첫 타석 초구부터 휘두르는 거 보고 반함 ㅋㅋ'],['10타석까지는 쉴드 쳐 준다','첫 단추 잘 끼웠다'],{pos:2})
+  else if(T==='debut')put849(out,[P?`${gn} 첫 등판 긴장한 거 다 보였다 ㅋㅋ 그래도 잘했다`:`${gn} 첫 타석 긴장한 거 다 보였다 ㅋㅋ 그래도 잘했다`,'데뷔전 직관한 사람 나중에 자랑해라','오늘 경기 기념구 꼭 챙겨라',P?'첫 등판에 공 던지는 거 보니까 배짱은 확실하다':'첫 타석 초구부터 휘두르는 거 보고 반함 ㅋㅋ'],[P?'다섯 경기까지는 쉴드 쳐 준다':'10타석까지는 쉴드 쳐 준다','첫 단추 잘 끼웠다'],{pos:2})
   else if(T==='callup'){const ml=S.pro&&S.pro.league==='MLB',a=age();/* v842l: 베테랑 콜업은 다른 말 */
     if(a>=31)put849(out,[`베테랑 올라왔다 ${ml?'빅리그':'1군'} 분위기 좀 잡아 줘라`,`${ml?'빅리그':'1군'}에 경험 있는 선수 하나 있는 게 다르다`,`${gn} 아직 안 죽었다 보여 줘라`],['경험치는 못 속인다','한 번 더 해 보자'],{pos:2});
     else put849(out,['드디어 콜업!! 이번엔 내려가지 말자',ml?'트리플A에서 갈고닦은 거 다 보여 줘라':'퓨처스에서 갈고닦은 거 다 보여 줘라','기회 왔을 때 잡아야 한다 화이팅'],['이번엔 버티자',ml?'빅리그 맛 제대로 봐라':'1군 맛 제대로 봐라'],{pos:2})}}catch(e){}return out}}
@@ -18556,8 +18556,14 @@ const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠ
       if (!Array.isArray(out) || !S || !ME) return out;
       const aw = (S.awards || []).map(a => a.n || ''), mvp = aw.some(n => /^(정규시즌 MVP|MLB .*MVP)$/.test(n)), mlbG = (S.rows || []).some(r => r.lv === 'MLB');
       const ring = typeof ringArt681 === 'function' && ringArt681(tone, x);
-      const bad = t => (mvp && /최초 MVP|첫 MVP 가즈아/.test(t)) || (mlbG && /해외 스카우트 줄/.test(t)) || (ring && /경기력 안 좋으면|외모 얘기|패션팬이라고/.test(t));
+      const bad = t => (mvp && /최초 MVP|첫 MVP 가즈아/.test(t)) || (mlbG && /해외 스카우트 줄/.test(t)) || (ring && /경기력 안 좋으면|외모 얘기|패션팬이라고|팀 성적이 아쉬워서|순위가 왜 이러냐/.test(t));
       out = out.filter(c => !(c && typeof c.t === 'string' && bad(c.t)));
+      /* '○○팬 다 모였네'·'기사 쓰는 사람 ○○ 직원임?' 같은 팀 팬 장난은 한 기사에 하나만 (시뮬에서 한 기사에 4개 연달아 나옴) */
+      let fan = 0; const FAN = /팬 다 모였네|팬인데 요즘 단톡|직원임\?|누른 사람 다 \S*팬|팬들 출동/;
+      out = out.filter(c => { if (!(c && typeof c.t === 'string' && FAN.test(c.t))) return true; fan++; return fan <= 1; });
+      /* 거의 같은 말 두 번 X: 앞 군더더기('ㄹㅇ'·'솔직히'…)를 빼고 첫 7글자가 같으면 뒤엣것 뺌 (예: '한 판씩 주고받았다…'·'한 판씩 주고받았네…') */
+      const seen7 = new Set();
+      out = out.filter(c => { if (!(c && typeof c.t === 'string')) return true; const b = c.t.replace(/^(ㄹㅇ|솔직히|진짜|아니|근데|와|형들|ㅋㅋㅋ)\s+/, ''); if (b.length < 9) return true; const k = b.slice(0, 7); if (seen7.has(k)) return false; seen7.add(k); return true; });
     } catch (e) {}
     return out;
   };
