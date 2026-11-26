@@ -9982,7 +9982,7 @@ mlbGapPen=function(){try{if(!S||S.stage!=='pro'||!S.pro||S.pro.league!=='MLB'||S
   const pr=[...new Set((POSPRIO[ME.pos]||POSPRIO.DH).slice(0,4).flat())],weak=pr.filter(k=>DV(prioVal(k))<st-4).sort((a,b)=>DV(prioVal(a))-DV(prioVal(b))).slice(0,2).map(k=>LBL[k]);
   if(eyeLow&&!weak.includes('선구안')&&weak.length<2&&R()<.5)weak.push('선구안');if(visLow&&!weak.includes('동체시력')&&weak.length<2&&R()<.5)weak.push('동체시력');
   const W=weak.length?(weak.length===1?weak[0]:jo(weak[0],'이랑','랑')+' '+weak[1]):'';const low=eyeLow||visLow||weak.length;let M,RE;
-  if(hsDirect){M=low?[`메이저 강속구에 대비할 만한 동체시력은 있나?`,`어린 나이에 바로 넘어갔는데 반응속도가 아직 강속구엔 부족해 보인다`,`메이저 심판 존이 넓다 좁다 해서 선구안 없으면 고생함`,`툴부터 키워야 한다 메이저는 툴 싸움임`]:[`고졸 바로 메이저인데 공 보는 눈이 벌써 남다르다`,`동체시력 하나는 진짜 메이저급`];
+  if(hsDirect){M=(low&&!good)?[`메이저 강속구에 대비할 만한 동체시력은 있나?`,`어린 나이에 바로 넘어갔는데 반응속도가 아직 강속구엔 부족해 보인다`,`메이저 심판 존이 넓다 좁다 해서 선구안 없으면 고생함`,`툴부터 키워야 한다 메이저는 툴 싸움임`]:[`고졸 바로 메이저인데 공 보는 눈이 벌써 남다르다`,`동체시력 하나는 진짜 메이저급`];
     RE=low?['동체시력 훈련 좀 해야 할 듯','마이너에서 몇 년 더 굴러야 할 수도','그래도 이 나이에 이 정도면 대박임']:['이대로만 크면 된다','그래도 이 나이에 이 정도면 대박임']}
   else{M=low?[`와 이 정도로 잘하면 메이저 갈 듯`,`${gn} 포스팅 얼마 안 남았지? 이 페이스면 메이저 간다`,`KBO는 이제 좁아 보인다 ${gn}`]:[`와 이 정도면 메이저 가서도 통할 듯`];
     RE=low?['메이저는 툴이 중요하다 KBO 성적만으론 모름',...(visLow?['얘 반응속도로는 아직 강속구 대처 못함 동체시력 훈련 좀 해야 할 듯','메이저 강속구에 대비할 만한 동체시력은 있나?','155 넘는 공 매일 보면 지금 타율 반토막 날 수도']:[]),...(eyeLow?['메이저는 아직 사람 심판이라 존이 들쭉날쭉함 선구안이 진짜 중요하다']:[])]:['동체시력 좋아서 강속구도 따라갈 것 같음','공 고르는 눈이 있어서 메이저 존에도 적응 빠를 듯','툴이 고르게 있어서 메이저 스카우트들이 좋아할 스타일']}
@@ -18414,7 +18414,7 @@ const TEAMRE861 = { 트윈스: '무적 트윈스', 베어스: '허슬두!', 히�
         if (tl.length) put(tl, TEAMRE861[nick], 0);
         const ru = typeof myRunnerUps840 === 'function' ? myRunnerUps840() : 0;
         const has = re => out.some(c => c && re.test(String(c.t || '')));
-        if (k === 1 && ru >= 1 && !has(/콩라인 탈출|준우승 끝에|번의 준우승/)) put([`준우승 ${ru}번 끝에 ${ru}전 ${ru + 1}기 드디어 반지 ㅠㅠ`, `${ru}전 ${ru + 1}기 ${gn} 드디어 우승 반지 낀다`, `${ru}번 미끄러지고 ${ru + 1}번째에 올라섰다 이게 낭만이지`], pick(['콩라인 졸업 ㅠㅠ', '버틴 보람 있다', '이 맛에 야구 본다']));
+        if (k === 1 && ru >= 1 && !has(/콩라인 탈출|준우승 끝에|번의 준우승|준우승 아픔/)) put(ru >= 2 ? [`준우승 ${ru}번 끝에 ${ru}전 ${ru + 1}기 드디어 반지 ㅠㅠ`, `${ru}전 ${ru + 1}기 ${gn} 드디어 우승 반지 낀다`, `${ru}번 미끄러지고 ${ru + 1}번째에 올라섰다 이게 낭만이지`] : [`준우승 아픔 딛고 드디어 반지 ㅠㅠ ${gn}`, `한 번 미끄러졌던 그 무대에서 결국 웃었다`], pick(['콩라인 졸업 ㅠㅠ', '버틴 보람 있다', '이 맛에 야구 본다']));
         if (prev.length) { const g2 = S.y - prev[prev.length - 1]; if (g2 >= 10 && !has(/년 만에 다시 반지|년 만의 반지/)) put([`${g2}년 만에 다시 반지 ㅠㅠ 우승 한 번 더 하기가 이렇게 힘들다`, `${gn} ${prev[prev.length - 1]}년 이후 ${g2}년 만의 반지`, `마지막 반지가 ${g2}년 전이었는데 또 끼네 ${gn}`], pick(['오래 기다렸다', '이 순간을 위해 버텼다'])); }
         const d = S.drought; if (typeof d === 'number' && d >= 6 && d < 15 && !has(/년 만의 우승|년 만에 우승/)) put([`${d}년 만의 우승 길었다 ㅠ`, `${d}년 기다렸다 ${nick} 우승`, `${d}년 동안 남의 우승 구경만 했는데 드디어`], null);
       }
@@ -18556,7 +18556,8 @@ const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠ
       if (!Array.isArray(out) || !S || !ME) return out;
       const aw = (S.awards || []).map(a => a.n || ''), mvp = aw.some(n => /^(정규시즌 MVP|MLB .*MVP)$/.test(n)), mlbG = (S.rows || []).some(r => r.lv === 'MLB');
       const ring = typeof ringArt681 === 'function' && ringArt681(tone, x);
-      const bad = t => (mvp && /최초 MVP|첫 MVP 가즈아/.test(t)) || (mlbG && /해외 스카우트 줄/.test(t)) || (ring && /경기력 안 좋으면|외모 얘기|패션팬이라고|팀 성적이 아쉬워서|순위가 왜 이러냐/.test(t));
+      const awT = String(tone || '') === 'award';
+      const bad = t => (awT && /7월에 꺾|여름에 꺾|봄에도 이랬다|후반기에 꺾/.test(t)) || (mvp && /최초 MVP|첫 MVP 가즈아/.test(t)) || (mlbG && /해외 스카우트 줄/.test(t)) || (ring && /경기력 안 좋으면|외모 얘기|패션팬이라고|팀 성적이 아쉬워서|순위가 왜 이러냐/.test(t));
       out = out.filter(c => !(c && typeof c.t === 'string' && bad(c.t)));
       /* '○○팬 다 모였네'·'기사 쓰는 사람 ○○ 직원임?' 같은 팀 팬 장난은 한 기사에 하나만 (시뮬에서 한 기사에 4개 연달아 나옴) */
       let fan = 0; const FAN = /팬 다 모였네|팬인데 요즘 단톡|직원임\?|누른 사람 다 \S*팬|팬들 출동/;
@@ -18597,7 +18598,7 @@ const DERBY862 = {
   };
 }
 
-/* v862g 요즘 커뮤 말투 (11/27 유저 "재미있고 자극적인 거 ㄱㅊ") — 잘한 날·못한 날 기사에 30%, 많이 나온 말은 덜 나오게
+/* v862g 요즘 커뮤 말투 (11/27 유저 "재미있고 자극적인 거 ㄱㅊ") — 잘한 날·못한 날 기사에 20%, 많이 나온 말은 덜 나오게
    욕설·비하 없이 요즘 드립만: 레게노·킹갓·중꺾마·가보자고·도파민 / 연봉 루팡(연봉 3억 이상만)·자동 아웃·아웃 카운트 자판기·나락·짜친다·킹받네·혈압·청심환 */
 const SLANG862 = {
   gB: ['레게노 ㄷㄷ {n} 오늘 미쳤다', '킹갓 {n} 그저 빛', '이게 중꺾마지 {n}', '가보자고!!! 오늘 {n} 폼 미쳤다', '{n} 오늘 도파민 공급원이다', '럭키비키 아니고 그냥 실력임', '상대 투수 킹받은 표정 봤냐 ㅋㅋ'],
@@ -18614,7 +18615,7 @@ const SLANG862 = {
       if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || S.me !== ME || !S.pro || x && x.intl) return out;
       const T = String(tone || ''), P = isP(), gn = giv(ME.name);
       const good = /^(hype|feat|walkoff|psHero|record)$/.test(T), badT = /^(bad|psGoat)$/.test(T);
-      if (!(good || badT) || R() > .3) return out;
+      if (!(good || badT) || R() > .2) return out;
       let L = good ? SLANG862[P ? 'gP' : 'gB'] : SLANG862[P ? 'bP' : 'bB'];
       if (badT && (S.pro.salary || 0) >= 30000) L = L.concat(SLANG862.rich);
       L = L.map(t => josaFix(t.replace(/\{n\}/g, gn))).filter(t => !out.some(c => c && c.t === t));
