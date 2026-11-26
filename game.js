@@ -18564,6 +18564,9 @@ const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠ
       /* 거의 같은 말 두 번 X: 앞 군더더기('ㄹㅇ'·'솔직히'…)를 빼고 첫 7글자가 같으면 뒤엣것 뺌 (예: '한 판씩 주고받았다…'·'한 판씩 주고받았네…') */
       /* 가을야구 패배인데 탈락 경기가 아니면 '올해도 가을은 짧았다'·'내년엔 꼭'·'시즌 끝난' 같은 끝난 말 X (시뮬: 한국시리즈 3차전 패배에 나옴) */
       if (x && x.ps && x.win === false && !x.elim) out = out.filter(c => !(c && typeof c.t === 'string' && /여기까지|가을은 짧았|시즌 끝난|올 시즌 고생|내년엔 꼭|내년에 보자|내년에 다시|오래 남을 듯|스토브리그|멈췄다 고생|가을야구 끝/.test(c.t)));
+      /* 진 경기에 '응원했던 보람 있다'·'이겼으니 됐다', 이긴 경기에 '졌지만…' 같은 반대말 X */
+      if (x && x.win === false) out = out.filter(c => !(c && typeof c.t === 'string' && /보람이 있다|보람 있다|이겼으니|이긴 날|이겼으면 됐다|이겨서 다행/.test(c.t)));
+      if (x && x.win === true) out = out.filter(c => !(c && typeof c.t === 'string' && /졌지만|이렇게 지면|진 경기|패배 오래|져도 응원/.test(c.t)));
       const seen7 = new Set();
       out = out.filter(c => { if (!(c && typeof c.t === 'string')) return true; const b = c.t.replace(/^(ㄹㅇ|솔직히|진짜|아니|근데|와|형들|ㅋㅋㅋ)\s+/, ''); if (b.length < 9) return true; const k = b.slice(0, 7); if (seen7.has(k)) return false; seen7.add(k); return true; });
     } catch (e) {}
@@ -18589,6 +18592,35 @@ const DERBY862 = {
       const U = S.dby862 = S.dby862 || {}, C0 = L.filter(t => !out.some(c => c && c.t === t)); if (!C0.length) return out;
       const mn = Math.min(...C0.map(t => U[t] || 0)), C = C0.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1;
       out.splice(Math.min(out.length, ri(0, 3)), 0, mkC(t, R() < .5 ? [{ nk: pick(NICKS), t: pick(x.win ? ['ㅋㅋㅋ 이 맛이지', '라이벌전은 이겨야 함'] : ['ㅠㅠ', '다음엔 갚아 주자']), up: ri(20, 400) }] : [], { up: ri(500, 4000) }));
+    } catch (e) {}
+    return out;
+  };
+}
+
+/* v862g 요즘 커뮤 말투 (11/27 유저 "재미있고 자극적인 거 ㄱㅊ") — 잘한 날·못한 날 기사에 30%, 많이 나온 말은 덜 나오게
+   욕설·비하 없이 요즘 드립만: 레게노·킹갓·중꺾마·가보자고·도파민 / 연봉 루팡(연봉 3억 이상만)·자동 아웃·아웃 카운트 자판기·나락·짜친다·킹받네·혈압·청심환 */
+const SLANG862 = {
+  gB: ['레게노 ㄷㄷ {n} 오늘 미쳤다', '킹갓 {n} 그저 빛', '이게 중꺾마지 {n}', '가보자고!!! 오늘 {n} 폼 미쳤다', '{n} 오늘 도파민 공급원이다', '럭키비키 아니고 그냥 실력임', '상대 투수 킹받은 표정 봤냐 ㅋㅋ'],
+  gP: ['레게노 ㄷㄷ 오늘 {n} 공 미쳤다', '킹갓 {n} 마운드 위의 왕', '이게 에이스 폼이지 가보자고', '{n} 오늘 타자들 킹받게 만드는 중 ㅋㅋ', '타자들 오늘 {n} 공 보고 현타 왔을 듯'],
+  bB: ['{n} 타석은 자동 아웃이냐', '아웃 카운트 자판기 오늘도 출근', '보는 내가 다 짜친다 ㅠ', '킹받네 진짜 오늘 왜 이러냐', '나락 가는 중 ㅠ 빨리 올라와라', '이 정도면 2군 가서 리셋하고 와라'],
+  bP: ['{n} 마운드 올라오면 혈압 오른다', '청심환 먹고 봐야 하는 투수 ㅠ', '볼넷 공장장 오늘도 출근', '보는 내가 다 짜친다 ㅠ', '킹받네 오늘 공 왜 이러냐'],
+  rich: ['연봉 루팡 그 자체 ㅠ', '연봉 생각하면 오늘 경기는 루팡이다'],
+};
+{
+  const _c862g = comments;
+  comments = function (tone, x) {
+    let out = _c862g.apply(this, arguments);
+    try {
+      if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || S.me !== ME || !S.pro || x && x.intl) return out;
+      const T = String(tone || ''), P = isP(), gn = giv(ME.name);
+      const good = /^(hype|feat|walkoff|psHero|record)$/.test(T), badT = /^(bad|psGoat)$/.test(T);
+      if (!(good || badT) || R() > .3) return out;
+      let L = good ? SLANG862[P ? 'gP' : 'gB'] : SLANG862[P ? 'bP' : 'bB'];
+      if (badT && (S.pro.salary || 0) >= 30000) L = L.concat(SLANG862.rich);
+      L = L.map(t => josaFix(t.replace(/\{n\}/g, gn))).filter(t => !out.some(c => c && c.t === t));
+      if (!L.length) return out;
+      const U = S.sl862 = S.sl862 || {}, mn = Math.min(...L.map(t => U[t] || 0)), C = L.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1;
+      out.splice(Math.min(out.length, ri(1, 4)), 0, mkC(t, R() < .5 ? [{ nk: pick(NICKS), t: pick(good ? ['ㄹㅇ', 'ㅋㅋㅋ 인정', '가보자고'] : ['ㅋㅋㅋ ㅠ', '팩트라 반박 불가', '내일은 잘하자']), up: ri(20, 500) }] : [], { up: ri(400, 4000) }));
     } catch (e) {}
     return out;
   };
