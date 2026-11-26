@@ -117,7 +117,7 @@ const kmh=v=>(128+v*.42).toFixed(1);
 const gcls=v=>v>=80.5?'g8':v>=70?'g7':v>=60?'g6':v>=50?'g5':v>=32?'g4':'g3';
 const word=v=>v>=80?'괴물급':v>=68?'리그 탑급':v>=62?'수준급':v>=55?'주전급':v>=48?'벤치~주전급':v>=42?'벤치·2군급':v>=36?'유망주':'미완성';
 const usd=m=>`$${(m*10000/1380/1e6).toFixed(1)}M`,moneyL=(m,lg)=>lg==='MLB'?`${usd(m)} (약 ${money(m)})`:money(m);
-const money=m=>m>=10000?`${(m/10000).toFixed(m>=100000?0:1)}억`:`${Math.round(m).toLocaleString()}만원`;
+const money=m=>m>=1e8?`${(m/1e8).toFixed(m>=1e9?0:1).replace(/\.0$/,'')}조`:m>=10000?`${(m/10000).toFixed(m>=100000?0:1)}억`:`${Math.round(m).toLocaleString()}만원`;
 const f3=(n,d)=>d?(n/d).toFixed(3).replace(/^0/,''):'.000';
 const avg=b=>f3(b.H,b.AB),obp=b=>f3(b.H+b.BB,b.PA),slg=b=>f3(b.H+b.D+2*b.T+3*b.HR,b.AB);
 const opsN=b=>b.PA&&b.AB?(b.H+b.BB)/b.PA+(b.H+b.D+2*b.T+3*b.HR)/b.AB:0;
@@ -17294,6 +17294,8 @@ const GIFT858 = [
   { id: 'car', n: '🚗 드림카', p: 30000, d: 18 },
 ];
 const giftDim858 = n => knot(n, [0, 1, 2, 3, 5], [1, .65, .4, .25, .1]); /* 같은 반기에 n번째 선물 */
+/* v860 (11/27 유저 "배우자한테 사는건 한번만 살 수 있게 해 선물"): 선물은 반기에 한 번 (연인도 같음) */
+function gDone860() { return !!(S && S.gift858 && S.gift858.t === S.turn && S.gift858.n >= 1); }
 function giftTarget858() { if (S.married) return { n: S.married.n, sp: true }; if (S.gf) return { n: S.gf.n, sp: false }; return null; }
 {
   const _vs858k = vShop;
@@ -17302,8 +17304,8 @@ function giftTarget858() { if (S.married) return { n: S.married.n, sp: true }; i
     try {
       const t = giftTarget858(); if (!t || S.stage === 'ret') return h;
       const card = `<div class="card" style="gap:0"><div class="row" style="padding-bottom:6px"><span class="lbl sp">💝 ${esc(t.n)}에게 선물하기</span><span class="tiny" style="color:#e2557a">${t.sp ? '배우자' : '연인'}</span></div>`
-        + `<div class="tiny muted" style="padding-bottom:6px">마음을 전해 보세요.</div>`
-        + GIFT858.map(it => { const can = S.money >= it.p; return `<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="sp"><div style="font-weight:700;font-size:.9rem">${it.n}</div><div class="tiny muted">${t.sp ? '배우자' : '연인'} 호감↑${it.d >= 13 ? '↑↑' : it.d >= 9 ? '↑' : ''}</div></div><button class="btn sm ${can ? 'pri' : ''}" data-g858="${it.id}" ${can ? '' : 'disabled'}>${money(it.p)}</button></div>`; }).join('') + `</div>`;
+        + `<div class="tiny muted" style="padding-bottom:6px">${gDone860() ? '이번 반기엔 이미 선물했어요 · 다음 반기에 다시 할 수 있어요' : '마음을 전해 보세요 · 반기에 한 번'}</div>`
+        + GIFT858.map(it => { const can = !gDone860() && S.money >= it.p; return `<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="sp"><div style="font-weight:700;font-size:.9rem">${it.n}</div><div class="tiny muted">${t.sp ? '배우자' : '연인'} 호감↑${it.d >= 13 ? '↑↑' : it.d >= 9 ? '↑' : ''}</div></div><button class="btn sm ${can ? 'pri' : ''}" data-g858="${it.id}" ${can ? '' : 'disabled'}>${gDone860() ? '완료' : money(it.p)}</button></div>`; }).join('') + `</div>`;
       const mk = '<span class="lbl" style="padding-bottom:6px">🏏';
       const i = h.indexOf(mk);
       if (i >= 0) { const j = h.lastIndexOf('<div class="card"', i); h = j >= 0 ? h.slice(0, j) + card + h.slice(j) : h + card; } else h += card;
@@ -17313,7 +17315,7 @@ function giftTarget858() { if (S.married) return { n: S.married.n, sp: true }; i
 }
 function giveGift858(id) {
   const it = GIFT858.find(x => x.id === id), t = giftTarget858();
-  if (!it || !t || S.money < it.p) return '';
+  if (!it || !t || S.money < it.p || gDone860()) return '';
   S.money -= it.p; if (S.led && S.led.y === S.y) S.led.exp += it.p;
   S.gift858 = S.gift858 && S.gift858.t === S.turn ? S.gift858 : { t: S.turn, n: 0 };
   const dim = giftDim858(S.gift858.n); S.gift858.n++;
@@ -18103,22 +18105,125 @@ if (typeof vShop === 'function') {
    · 진행 버튼을 연타하면 진행 화면 건너뛰기 → 다음 반기 진행까지 이어져 반기 하나가 통째로 지나감 (스프링캠프가 사라지기도)
    · 결과 '확인' 연타 → 바로 다음 진행이 눌림
    → 버튼을 눌러 화면이 바뀐 직후 0.35초 동안은 '화면을 넘기는 버튼'만 무시 (훈련 +/− 같은 같은 화면 버튼, 문자중계 한 타석씩 넘기기는 그대로) */
-const TAP859 = { ms: 350, acts: /^(adv|skipsim|openq|pick|resok|closeq|gend|gdone|awdone|cdone|cont|csign|fwnext|dftok|dftskip|dftgo|psfskip|artclose|guideclose|[a-z0-9]*ok)$/ };
-let tap859Clk = false, tap859Until = 0;
+/* v860 (11/27 유저 "연속으로 누르면 가끔 진행 안될때 있다. 버튼 누르고도 안될때 있고")
+   v859b는 '아무 버튼이나 눌러서 다시 그려지면' 0.35초 동안 진행 버튼을 다 막아서, 화면이 안 바뀌는 버튼(훈련 +/− 등) 뒤에 바로 누른 진행도 씹혔음
+   → 막는 조건을 좁힘: ① 방금 누른 버튼 때문에 화면 구성이 실제로 바뀌었고 ② 0.3초 안에 ③ 거의 같은 자리(40px 안)를 또 누른 경우만 무시
+   (다른 자리를 누르거나 같은 화면이면 바로 통과) */
+const TAP859 = { ms: 300, px: 40, acts: /^(adv|skipsim|openq|pick|resok|closeq|gend|gdone|awdone|cdone|cont|csign|fwnext|dftok|dftskip|dftgo|psfskip|artclose|guideclose|[a-z0-9]*ok)$/ };
+let tap859Clk = false, tap859Until = 0, tap859X = -999, tap859Y = -999, tap859Pend = null;
+const tapNow859 = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+const tapSig859 = () => { try { return Array.from(document.querySelectorAll('[data-act]'), e => e.dataset.act + (e.dataset.i || '')).join(','); } catch (x) { return ''; } };
 if (typeof window !== 'undefined') {
   window.addEventListener('click', e => {
     try {
       const el = e.target && e.target.closest && e.target.closest('[data-act]');
-      const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
-      if (el && now < tap859Until && TAP859.acts.test(el.dataset.act || '')) { e.stopImmediatePropagation(); e.preventDefault(); return; }
-      tap859Clk = true; setTimeout(() => { tap859Clk = false; }, 0);
+      const now = tapNow859(), x = e.clientX || 0, y = e.clientY || 0;
+      if (el && now < tap859Until && TAP859.acts.test(el.dataset.act || '') && Math.hypot(x - tap859X, y - tap859Y) < TAP859.px) { e.stopImmediatePropagation(); e.preventDefault(); return; }
+      tap859Clk = true; tap859Pend = { x, y }; setTimeout(() => { tap859Clk = false; }, 0);
     } catch (x) {}
   }, true);
 }
 if (typeof render === 'function') {
   const _rd859 = render;
   render = function () {
-    try { if (tap859Clk) tap859Until = (typeof performance !== 'undefined' ? performance.now() : Date.now()) + TAP859.ms; } catch (x) {}
-    return _rd859.apply(this, arguments);
+    let b = null; try { if (tap859Clk) b = tapSig859(); } catch (x) {}
+    const r = _rd859.apply(this, arguments);
+    try { if (b !== null && tapSig859() !== b && tap859Pend) { tap859Until = tapNow859() + TAP859.ms; tap859X = tap859Pend.x; tap859Y = tap859Pend.y; } } catch (x) {}
+    return r;
   };
 }
+
+/* ===== v860 재테크 수량 (11/27 유저 "돈이 너무 많으면 최대랑 숫자 높은 값이랑 차이가 어마무시하게 나잖아")
+   +10주·+100주·+1억 같은 고정 버튼은 돈이 수천억이 되면 '최대'와 수만 배 차이 → 의미가 없어짐
+   → 고정 버튼 대신 '최대 기준 비율' 버튼(10%·25%·절반·최대)으로 바꾸고, 그 아래 밀어서 고르는 바를 붙임
+   · 바는 곡선(앞쪽이 촘촘): 수량 = 최대 × (위치)^2.2 → 적게 살 때도 세밀하게, 끝까지 밀면 최대
+   · −/+ 한 번에 움직이는 양도 최대에 맞춰 커짐 (최대 1만 주면 100주씩, 100만 주면 1만 주씩) · 버튼에 그 양 표시
+   · 입출금 창도 같은 방식 (10%·25%·절반·전액 + 바) */
+const IV860K = 2.2;
+function ivBuy860() { const v = inv858(), k = ui.iv858s; if (!v || !k) return true; return (ui.iv858m || 'buy') === 'buy' || !(v.sh[k] || 0); }
+function ivMax860() {
+  const v = inv858(); if (!v) return 0;
+  if (ui.iv858c) return Math.max(0, Math.floor(ui.iv858c === 'dep' ? S.money : v.cash));
+  const k = ui.iv858s; if (!k) return 0;
+  const p = v.px[k], own = v.sh[k] || 0;
+  if (!ivBuy860()) return own;
+  const m = Math.floor((S.iv858auto ? v.cash + S.money : v.cash) / p);
+  return m > 0 ? m : Math.floor((v.cash + S.money) / p);   // 투자용 현금이 0이어도 바로 고를 수 있게 (부족분은 옮겨서 사기로 안내)
+}
+function ivStep860(M) { return M <= 200 ? 1 : Math.pow(10, Math.floor(Math.log10(M / 100))); }
+function ivQ860(n) { return n >= 1e8 ? (n / 1e8) + '억' : n >= 1e4 ? (n / 1e4) + '만' : n >= 1e3 ? (n / 1e3) + '천' : String(n); }
+function ivChips860() {
+  const M = ivMax860();
+  if (ui.iv858c) return `<div class="ivchips">${[['.1', '10%'], ['.25', '25%'], ['.5', '절반'], ['1', '전액']].map(c => `<button class="btn sm" data-iv860="pct" data-v="${c[0]}">${c[1]}</button>`).join('')}<button class="btn sm" data-iv860="pct" data-v="0">지우기</button></div>`;
+  const buy = ivBuy860();
+  return `<div class="ivchips">${[['.1', '10%'], ['.25', '25%'], ['.5', '절반'], ['1', `${buy ? '최대' : '전부'} ${M.toLocaleString()}주`]].map(c => `<button class="btn sm" data-iv860="pct" data-v="${c[0]}">${c[1]}</button>`).join('')}</div>`;
+}
+const ivBar860 = () => `<div class="ivbar860"><input type="range" class="ivrng860" min="0" max="1000" step="1" value="0" aria-label="수량 고르기"><div class="ivbarl860"><span>0</span><span class="ivbarm860"></span></div></div>`;
+if (typeof vSheet858 === 'function') {
+  const _vs860 = vSheet858;
+  vSheet858 = function () {
+    let h = _vs860.apply(this, arguments);
+    try {
+      if (!ui.iv858c && !ui.iv858s) return h;
+      h = h.replace(/<div class="ivchips">[\s\S]*?<\/div>/, ivChips860());
+      if (ui.iv858c) h = h.replace(/(<div class="ivin">[\s\S]*?<\/div>)/, '$1' + ivBar860());
+      else {
+        const st = ivStep860(ivMax860()), lb = st > 1 ? ivQ860(st) : '';
+        h = h.replace(/(<div class="ivqty">[\s\S]*?<\/div>)/, '$1' + ivBar860())
+          .replace('data-iv858="qadd" data-v="-1" aria-label="1주 빼기">−', `data-iv858="qadd" data-v="-${st}" aria-label="${st.toLocaleString()}주 빼기">−${lb}`)
+          .replace('data-iv858="qadd" data-v="1" aria-label="1주 더하기">+', `data-iv858="qadd" data-v="${st}" aria-label="${st.toLocaleString()}주 더하기">+${lb}`);
+      }
+    } catch (e) {}
+    return h;
+  };
+}
+/* 바·버튼을 지금 입력값·최대에 맞춤 */
+function ivSync860() {
+  try {
+    const r = document.querySelector('.ivsheet .ivrng860'); if (!r) return;
+    const inp = document.querySelector(ui.iv858c ? '.ivamt' : '.ivq2'); if (!inp) return;
+    const M = ivMax860(), n = Math.max(0, Math.floor(+inp.value || 0));
+    if (document.activeElement !== r) r.value = M > 0 ? Math.round(1000 * Math.pow(Math.min(1, n / M), 1 / IV860K)) : 0;
+    r.disabled = M <= 0;
+    r.style.setProperty('--p', (r.value / 10) + '%');
+    const m = document.querySelector('.ivsheet .ivbarm860'); if (m) m.textContent = ui.iv858c ? money(M) : `${M.toLocaleString()}주`;
+    const mx = document.querySelector('.ivsheet [data-iv860="pct"][data-v="1"]'); if (mx && !ui.iv858c) mx.textContent = `${ivBuy860() ? '최대' : '전부'} ${M.toLocaleString()}주`;
+    if (!ui.iv858c) { const st = ivStep860(M), lb = st > 1 ? ivQ860(st) : ''; document.querySelectorAll('.ivsheet .ivstep[data-iv858="qadd"]').forEach(b => { const neg = +b.getAttribute('data-v') < 0; b.setAttribute('data-v', (neg ? -st : st)); b.textContent = (neg ? '−' : '+') + lb; }); }
+  } catch (e) {}
+}
+if (typeof upd858 === 'function') { const _u860 = upd858; upd858 = function () { const r = _u860.apply(this, arguments); ivSync860(); return r; }; }
+if (typeof updC858 === 'function') { const _uc860 = updC858; updC858 = function () { const r = _uc860.apply(this, arguments); ivSync860(); return r; }; }
+function ivSet860(n) {
+  const inp = document.querySelector(ui.iv858c ? '.ivamt' : '.ivq2'); if (!inp) return;
+  inp.value = n > 0 ? n : '';
+  if (ui.iv858c) updC858(); else upd858();
+}
+if (typeof window !== 'undefined') {
+  window.addEventListener('click', e => {
+    try {
+      if (!S) return;
+      const b = e.target.closest && e.target.closest('[data-iv860="pct"]'); if (!b) return;
+      e.stopPropagation(); e.preventDefault();
+      const f = +b.getAttribute('data-v'), M = ivMax860();
+      ivSet860(f >= 1 ? M : (!ui.iv858c && !ivBuy860() && f === .5) ? Math.ceil(M / 2) : Math.floor(M * f));
+      b.classList.remove('tap'); void b.offsetWidth; b.classList.add('tap');
+    } catch (x) {}
+  }, true);
+  document.addEventListener('input', e => {
+    try {
+      const t = e.target; if (!t || !t.classList) return;
+      if (t.classList.contains('ivrng860')) { const M = ivMax860(), x = (+t.value) / 1000; t.style.setProperty('--p', (t.value / 10) + '%'); ivSet860(x >= 1 ? M : Math.floor(M * Math.pow(x, IV860K))); }
+      else if (t.classList.contains('ivq2') || t.classList.contains('ivamt')) setTimeout(ivSync860, 0);
+    } catch (x) {}
+  });
+}
+if (typeof render === 'function') { const _rd860 = render; render = function () { const r = _rd860.apply(this, arguments); try { if (document.querySelector('.ivsheet .ivrng860')) ivSync860(); } catch (x) {} return r; }; }
+if (typeof document !== 'undefined') { try { const st = document.createElement('style'); st.textContent = `.ivbar860{display:flex;flex-direction:column;gap:2px;padding:0 2px}
+.ivrng860{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;margin:0;--p:0%}
+.ivrng860::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(90deg,#e5484d var(--p),var(--line) var(--p))}
+.ivrng860::-moz-range-track{height:6px;border-radius:3px;background:var(--line)}.ivrng860::-moz-range-progress{height:6px;border-radius:3px;background:#e5484d}
+.ivrng860::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid #e5484d;margin-top:-8px;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.ivrng860::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid #e5484d}
+.ivrng860:disabled{opacity:.4}
+.ivbarl860{display:flex;justify-content:space-between;font-size:11px;opacity:.6}
+.ivsheet .ivqty .ivstep{min-width:48px;width:auto;padding:0 8px;white-space:nowrap;font-size:14px;font-weight:700}`; document.head.appendChild(st); } catch (e) {} }
