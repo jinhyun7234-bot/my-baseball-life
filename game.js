@@ -16569,7 +16569,7 @@ if (IS_APP858) {
   } catch (e) {}
   if (typeof tipOpen === 'function') tipOpen = function () {};
 }
-const PRIVACY_URL858 = '/privacy.html';
+const PRIVACY_URL858 = '/privacy';
 if (typeof vSettings === 'function') {
   const _vs858 = vSettings;
   vSettings = function () {
