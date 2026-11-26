@@ -4257,7 +4257,11 @@ function eraPlusLines(tone,x){if(!isP()||S.stage!=='pro'||!S.pro)return[];const 
 const KBO_ONLY=/우물 안|KBO에서만|크보에서만|국내용|내수용|크보용|해외 가면 안 통|메이저 가면 털/;
 function respectLines(){const nm=ME.name,gn=giv(nm),mw=mlbW(),ct=careerTot(PRO),rings=S.hist.rings||0,o=[];
   const inM=S.pro&&S.pro.league==='MLB';
-  if(mw>=3&&!inM){o.push('메이저에서 증명하고 온 선수한테 무슨 말이 더 필요하냐',`MLB 통산 WAR ${mw.toFixed(1)} 찍고 온 선수다 존중해라`,`${gn} 돌아와 줘서 고맙다 왕의 귀환`,`메이저에서 뛰던 클라스는 어디 안 간다`)}
+  /* v860 (11/27 유저 "이미 국내복귀하고 또 fa로 같은팀 갔는데 mlb어쩌구 이런건 어색"): '돌아와 줘서'·'증명하고 온' 같은 복귀 말은 복귀 후 두 시즌까지만
+     그 뒤엔 커리어 존중 말만 · FA·연봉·이적 기사엔 아예 안 씀 (몇 년 전 복귀를 계약 기사에서 다시 꺼내면 어색) */
+  const lastM=Math.max(-1,...(S.rows||[]).filter(r=>r.lv==='MLB').map(r=>r.y)),backY=S.retKBO||(lastM>=0?lastM+1:null),fresh=backY!=null&&S.y-backY<=1,ctr=/^(faBig|faFair|move|kmove|franMove|homeBack|legend|salary|contract|sign)$/.test(String(respectLines._t||''));
+  if(mw>=3&&!inM&&fresh&&!ctr){o.push('메이저에서 증명하고 온 선수한테 무슨 말이 더 필요하냐',`MLB 통산 WAR ${mw.toFixed(1)} 찍고 온 선수다 존중해라`,`${gn} 돌아와 줘서 고맙다 왕의 귀환`,`메이저에서 뛰던 클라스는 어디 안 간다`)}
+  else if(mw>=3&&!inM&&!ctr){o.push(`메이저 WAR ${mw.toFixed(1)}에 KBO까지 커리어 자체가 다르다`,'빅리그 경험 있는 선수라 확실히 여유가 있다')}
   else if(mw>=3&&inM){o.push(`벌써 빅리그 통산 WAR ${mw.toFixed(1)}… 메이저에서 자리 잡았다`,'메이저에서도 통한다는 거 이미 증명했다',`${gn} 빅리그에서 이 정도면 그냥 클래스임`)}
   if(ct.w>=35)o.push(`${nm} 커리어 보면 리스펙밖에 없다`,'레전드는 레전드다 기록이 말해줌',`통산 WAR ${ct.w.toFixed(0)}… 이건 명예의 전당 코스다`);
   if(rings>=2)o.push(`우승 반지 ${rings}개 있는 선수 클라스`,'큰 경기 경험 자체가 팀 자산임');
@@ -4273,7 +4277,7 @@ function pDomLines(tone,x){if(!isP()||S.stage!=='pro')return[];const gn=giv(ME.n
 {const _c33=comments;comments=function(tone,x){let out=_c33(tone,x);try{if(!S||!ME||S.stage!=='pro')return out;
   const proven=mlbW()>=3||careerTot(PRO).w>=35;if(proven)out=out.filter(c=>c.troll?!KBO_ONLY.test(c.t)||R()<.3:!KBO_ONLY.test(c.t));
   const good=['hype','psHero','feat','award','record','psWin','ring','ws','gold','faBig','faFair','mix','salary','mlbBig'].includes(tone),add=[];S.rsY=S.rsY||{};const key=S.y+':'+S.phase;
-  if(proven&&good&&S.rsY.r!==key&&R()<.5){const L=respectLines().filter(t=>!seenHas(t));if(L.length){const t=pick(L);seenAdd(t);S.rsY.r=key;add.push(t)}}
+  if(proven&&good&&S.rsY.r!==key&&R()<.5){const L=(respectLines._t=tone,respectLines()).filter(t=>!seenHas(t));if(L.length){const t=pick(L);seenAdd(t);S.rsY.r=key;add.push(t)}}
   if(isP()&&good&&tone!=='faBig'&&S.rsY.p!==key&&!(typeof dnpGame704==='function'&&dnpGame704(x))&&R()<.45){const g=perfGrade();if(g==='elite'||g==='good'||(x&&x.ipO>=18&&(x.ra||0)<=1)){const L=pDomLines(tone,x).filter(t=>!seenHas(t));if(L.length){const t=pick(L);seenAdd(t);S.rsY.p=key;add.push(t)}}}
   if(good&&S.rsY.g!==key&&!(typeof dnpGame704==='function'&&dnpGame704(x))&&R()<.18){const g=perfGrade();if(g==='elite'||g==='good'||(x&&(x.ps||x.intl)&&(isP()?x.ipO>=15&&(x.ra||0)<=1:(x.gHR||0)>=1||(x.gH||0)>=3))){const gn=giv(ME.name);S.rsY.g=key;add.push(pick([`역시 ${gn}신`,`${gn}신 오늘도 강림`,`${gn}신 믿습니다`,`역시 ${gn}신 ㅋㅋ 믿고 있었다`]))}}
   add.forEach((t,i)=>out.splice(Math.min(out.length,i+ri(0,2)),0,{nk:pick(NICKS),fl:null,t,up:Math.round(ri(150,1100)*(1+S.rel.fame/25)),dn:ri(0,8),ago:pick(AGO),re:[]}))}catch(e){}return out}}
@@ -17422,16 +17426,20 @@ if (typeof itemSum === 'function') {
    · 컨디션: 직전 시세 변동에서 내 주식 평가액이 오르면 컨디션 상승 확률↑, 내리면↓
      효과 = 0.6·tanh(3·수익률) × 비중곡선(1−e^(−평가액/연봉)) → 소액이면 거의 영향 X, 연봉만큼 넣으면 체감 */
 const STK858 = [
-  { id: 'kal', n: '대한날개', p0: 2.4, vol: .11, sec: '항공' },
-  { id: 'cpg', n: '쿠당탕', p0: 3.6, vol: .13, sec: '유통' },
-  { id: 'kko', n: '초코톡', p0: 5, vol: .10, sec: 'IT' },
-  { id: 'sse', n: '셋별전자', p0: 8, vol: .07, sec: '반도체' },
-  { id: 'nvr', n: '녹색창', p0: 21, vol: .09, sec: 'IT' },
-  { id: 'hdc', n: '요즘모터스', p0: 25, vol: .07, sec: '자동차' },
-  { id: 'nvd', n: '가죽잠바칩스', p0: 28, vol: .12, sec: '반도체' },
-  { id: 'skh', n: '로우닉스', p0: 34, vol: .10, sec: '반도체' },
-  { id: 'tsl', n: '테스형모터스', p0: 52, vol: .14, sec: '자동차' },
-  { id: 'sbl', n: '셋별바이오', p0: 105, vol: .08, sec: '바이오' },
+  { id: 'kal', n: '대한날개', p0: 2.4, vol: 0.121, sec: '항공' },
+  { id: 'cpg', n: '쿠당탕', p0: 3.6, vol: 0.143, sec: '유통' },
+  { id: 'kko', n: '초코톡', p0: 5, vol: 0.11, sec: 'IT' },
+  { id: 'sse', n: '셋별전자', p0: 8, vol: 0.077, sec: '반도체' },
+  { id: 'nvr', n: '녹색창', p0: 21, vol: 0.099, sec: 'IT' },
+  { id: 'hdc', n: '요즘모터스', p0: 25, vol: 0.077, sec: '자동차' },
+  { id: 'nvd', n: '가죽잠바칩스', p0: 28, vol: 0.132, sec: '반도체' },
+  { id: 'skh', n: '로우닉스', p0: 34, vol: 0.11, sec: '반도체' },
+  { id: 'tsl', n: '테스형모터스', p0: 52, vol: 0.154, sec: '자동차' },
+  { id: 'sbl', n: '셋별바이오', p0: 105, vol: 0.088, sec: '바이오' },
+  /* v860 (11/27 유저) 꾸준히 오르는 종목 · 꾸준히 내리는 종목 · 상장폐지될 수 있는 종목 */
+  { id: 'odk', n: '오뚝이식품', p0: 12, vol: .06, sec: '식품', kind: 'steady' },
+  { id: 'sun', n: '석양미디어', p0: 18, vol: .09, sec: '미디어', kind: 'down', dl: 1 },
+  { id: 'dbk', n: '한방바이오', p0: 1.8, vol: .2, sec: '바이오', kind: 'spec', dl: 1 },
 ];
 const RE858 = ['home1', 'home2', 'home3', 'home4', 'lx_hw', 'lx_bh', 'lx_ny', 'lx_island'];
 const INV858 = { drift: .15, jump: .04, reVol: .04, reDrift: .5, reFee: .03, fmMax: .6 };
@@ -17456,11 +17464,13 @@ function invStep858() {
   const v = inv858(); if (!v || v.t === S.turn) return;
   const pv0 = stkPV858(v); let pv1 = 0; v.mv = {};
   STK858.forEach(s => {
-    let r = rn(INV858.drift * s.vol, s.vol);
-    if (R() < INV858.jump) { const up = R() < .55; r += (up ? 1 : -1) * (.15 + R() * .15); v.mv[s.id] = up ? 'up' : 'dn'; }
+    if (stkDl860(v, s)) return;
+    let r = s.kind === 'steady' ? stdyR860(v, s) : s.kind === 'down' ? rn(-.04, s.vol) + (R() < .15 ? .06 + R() * .1 : 0) : rn(INV858.drift * s.vol * (s.kind === 'spec' ? .3 : 1), s.vol);
+    if (s.kind !== 'steady' && R() < INV858.jump * (s.kind === 'spec' ? 2 : 1)) { const up = R() < (s.kind === 'down' ? .35 : .55); r += (up ? 1 : -1) * (.15 + R() * .15); v.mv[s.id] = up ? 'up' : 'dn'; }
     const p = Math.max(.1, Math.round(v.px[s.id] * Math.exp(r) * 100) / 100);
     v.px[s.id] = p; (v.hist[s.id] = v.hist[s.id] || []).push(p); if (v.hist[s.id].length > 31) v.hist[s.id].shift();
     pv1 += (v.sh[s.id] || 0) * p;
+    if (s.dl) stkDlChk860(v, s);
   });
   v.lastR = pv0 > 0 ? pv1 / pv0 - 1 : 0;
   RE858.forEach(id => { const r = rn(INV858.reDrift * INV858.reVol, INV858.reVol); v.reV[id] = Math.round((v.reV[id] || (ITEMS.find(x => x.id === id) || {}).p || 0) * Math.exp(r)); });
@@ -17511,6 +17521,7 @@ if (typeof retire === 'function') { const _rt = retire; retire = function () { t
 /* 매매 */
 function stkTrade858(id, q) {
   const v = inv858(), s = STK858.find(x => x.id === id); if (!v || !s) return '';
+  if (v.dl && v.dl[id]) return '상장폐지된 종목이에요.';
   const p = v.px[id], have = v.sh[id] || 0;
   if (q === 'max') q = Math.floor(v.cash / p);
   if (q === 'all') q = -have; if (q === 'half') q = -Math.ceil(have / 2);
@@ -17584,7 +17595,7 @@ function vInvest858() {
     h += `<div class="ivsec">전체 종목 <span>지난 턴 대비</span></div>`;
     h += STK858.map(s => {
       const hs = v.hist[s.id] || [], p = v.px[s.id], prev = hs.length > 1 ? hs[hs.length - 2] : p, ch = p / prev - 1;
-      return `<div class="ivrow" data-iv858="stk" data-k="${s.id}"><div class="sp"><div class="ivn">${s.n}${v.mv[s.id] ? `<span class="ivtag ${v.mv[s.id]}">${v.mv[s.id] === 'up' ? '급등' : '급락'}</span>` : ''}${v.sh[s.id] ? '<span class="ivown">보유</span>' : ''}</div><div class="tiny muted">${s.sec}</div></div>${spark858(hs.slice(-13), ch >= 0)}<div class="ivp"><b>${won858(p)}</b><span class="${ch >= 0 ? 'up' : 'dn'}">${pct858(ch)}</span></div></div>`;
+      return `<div class="ivrow" data-iv858="stk" data-k="${s.id}"><div class="sp"><div class="ivn">${s.n}${v.mv[s.id] ? `<span class="ivtag ${v.mv[s.id]}">${v.mv[s.id] === 'up' ? '급등' : v.mv[s.id] === 'new' ? '신규 상장' : '급락'}</span>` : ''}${v.sh[s.id] ? '<span class="ivown">보유</span>' : ''}</div><div class="tiny muted">${s.sec}</div></div>${spark858(hs.slice(-13), ch >= 0)}<div class="ivp"><b>${won858(p)}</b><span class="${ch >= 0 ? 'up' : 'dn'}">${pct858(ch)}</span></div></div>`;
     }).join('');
   } else {
     const best = bestHome858();
@@ -18228,3 +18239,88 @@ if (typeof document !== 'undefined') { try { const st = document.createElement('
 .ivrng860:disabled{opacity:.4}
 .ivbarl860{display:flex;justify-content:space-between;font-size:11px;opacity:.6}
 .ivsheet .ivqty .ivstep{min-width:48px;width:auto;padding:0 8px;white-space:nowrap;font-size:14px;font-weight:700}`; document.head.appendChild(st); } catch (e) {} }
+
+/* ===== v860 (11/27 03:52 유저) 주식 종목 추가 · 변동폭 아주 살짝↑
+   "꾸준히 우상향 하는거 하나 · 5년 연속 우상향 후 가끔 떨어지고 다시 4년 우상향 그리고 한번 떨구고 4년 우상향 · 변동폭 아주 살짝만 더 크게
+    · 꾸준히 하향하는것도 · 가끔 상장폐지도"
+   · 기존 10종목 변동폭 ×1.1
+   · 오뚝이식품(꾸준히 오름): 처음 5년(15턴) 매 턴 평균 +3.5% (연 11% 안팎) → 한 번 크게 빠짐(−15~27%) → 다시 4년 오름 → 빠짐 → 4년 … 반복
+       오르는 구간에선 해마다(3턴 합) 무조건 플러스가 되게 마지막 턴에서 맞춤 (턴 사이 작은 출렁임은 있음)
+   · 석양미디어(꾸준히 내림): 매 턴 평균 −4% · 가끔 반짝 반등
+   · 한방바이오(작전주): 변동폭 아주 큼 · 급등락 잦음
+   · 상장폐지: 석양미디어·한방바이오만 · 처음 가격 대비 많이 떨어질수록 확률↑ (곡선: 40% 위에선 0 → 20%면 턴당 10% → 8%면 40%)
+       폐지되면 들고 있던 주식은 0원(산 값만큼 통산 수입에서 빠짐) · 2년(6턴) 뒤 새 가격으로 재상장 */
+function stdyR860(v, s) {
+  v.reg = v.reg || {}; const g = v.reg[s.id] = v.reg[s.id] || { n: 15, k: 0, yc: 0 };
+  if (g.n <= 0) { g.n = 12; g.k = 0; g.yc = 0; return -(.15 + R() * .12); }
+  let r = rn(.035, s.vol);
+  if (g.k === 2 && g.yc + r < .04) r = .04 - g.yc + R() * .05;
+  g.yc = g.k === 2 ? 0 : g.yc + r; g.k = (g.k + 1) % 3; g.n--;
+  return r;
+}
+function stkDlChk860(v, s) {
+  try {
+    const f = v.px[s.id] / (v.p0 && v.p0[s.id] || s.p0), pr = knot(f, [.08, .2, .4], [.4, .1, 0]);
+    if (!(R() < pr)) return;
+    v.dl = v.dl || {}; v.dl[s.id] = S.turn;
+    const q = v.sh[s.id] || 0, c = v.cost[s.id] || 0;
+    if (q) { earnAdj858(-Math.round(q * c)); delete v.sh[s.id]; delete v.cost[s.id]; }
+    v.mv[s.id] = 'dn';
+    try { news(`${s.n} 상장폐지${q ? ` · 보유 ${q.toLocaleString()}주(산 값 ${money(q * c)})가 휴지 조각이 됐다` : ''}`); } catch (e) {}
+    if (q) S.dlMsg860 = `${s.n} 상장폐지 · 보유 ${q.toLocaleString()}주가 0원이 됐어요`;
+  } catch (e) {}
+}
+function stkDl860(v, s) {
+  if (!v.dl || v.dl[s.id] == null) return false;
+  if (S.turn - v.dl[s.id] < 6) return true;
+  const p = Math.round(s.p0 * Math.exp(rn(0, .35)) * 100) / 100;
+  delete v.dl[s.id]; v.px[s.id] = p; v.hist[s.id] = [p]; (v.p0 = v.p0 || {})[s.id] = p; v.mv[s.id] = 'new';
+  try { news(`${s.n} 재상장 · 시작가 ${won858(p)}`); } catch (e) {}
+  return true;
+}
+/* 예전 저장 데이터: 새 종목 시세 채우기 */
+{
+  const _inv860 = inv858;
+  inv858 = function () {
+    const v = _inv860.apply(this, arguments);
+    try { if (v) STK858.forEach(s => { if (v.px[s.id] == null) { v.px[s.id] = s.p0; v.hist[s.id] = [s.p0]; } }); } catch (e) {}
+    return v;
+  };
+}
+/* 목록: 상장폐지된 종목은 눌러도 안 열리고 '상장폐지 · N턴 뒤 재상장' */
+if (typeof vInvest858 === 'function') {
+  const _vi860 = vInvest858;
+  vInvest858 = function () {
+    let h = _vi860.apply(this, arguments);
+    try {
+      const v = inv858(); if (!v || !v.dl) return h;
+      Object.keys(v.dl).forEach(id => {
+        const s = STK858.find(x => x.id === id); if (!s) return;
+        const left = Math.max(1, 6 - (S.turn - v.dl[id]));
+        h = h.split(`<div class="ivrow" data-iv858="stk" data-k="${id}">`).join(`<div class="ivrow ivdl860">`)
+          .split(`<div class="ivn">${s.n}`).join(`<div class="ivn">${s.n}<span class="ivtag dn">상장폐지</span><span class="tiny muted" style="margin-left:4px">${left}턴 뒤 재상장</span>`);
+      });
+    } catch (e) {}
+    return h;
+  };
+}
+if (typeof render === 'function') { const _rd860s = render; render = function () { const r = _rd860s.apply(this, arguments); try { if (S && S.dlMsg860) { const m = S.dlMsg860; S.dlMsg860 = null; toast(m); } } catch (e) {} return r; }; }
+if (typeof document !== 'undefined') { try { const st = document.createElement('style'); st.textContent = `.inv858 .ivdl860{opacity:.55;pointer-events:none}.inv858 .ivdl860 .ivp b{text-decoration:line-through}.inv858 .ivtag.new{background:#2f9e5b}`; document.head.appendChild(st); } catch (e) {} }
+
+/* v860 (11/27 유저 "재계약 할때 댓글 살짝씩 이상하다") 오래 뛴 선수한테 안 맞는 말 거르기
+   · '우리 ○○ 다 컸네' → 28살부터 X
+   · '반짝하고 끝날 듯' → 1군(KBO·MLB) 다섯 시즌 이상 뛰었으면 X (대댓글 포함) */
+{
+  const _c860 = comments;
+  comments = function (tone, x) {
+    let out = _c860.apply(this, arguments);
+    try {
+      if (!Array.isArray(out) || !S || !ME) return out;
+      const ag = age(), yrs = new Set((S.rows || []).filter(r => (r.lv === 'KBO' || r.lv === 'MLB') && ((r.b && r.b.PA >= 100) || (r.p && r.p.outs >= 150))).map(r => r.y)).size;
+      const bad = t => (ag >= 28 && /다 컸네/.test(t)) || (yrs >= 5 && /반짝하고 끝/.test(t));
+      out = out.filter(c => !(c && typeof c.t === 'string' && bad(c.t)));
+      out.forEach(c => { if (c && Array.isArray(c.re)) c.re = c.re.filter(r => !(r && typeof r.t === 'string' && bad(r.t))); });
+    } catch (e) {}
+    return out;
+  };
+}
