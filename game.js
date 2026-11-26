@@ -18400,9 +18400,10 @@ const TEAMRE861 = { 트윈스: '무적 트윈스', 베어스: '허슬두!', 히�
       const ringNow = typeof ringArt681 === 'function' && ringArt681(tone, x) && !(x && x.win === false);
       const ys = ringYs861(ringNow), k = ys.length, prev = ys.filter(y => y < S.y), lastY = ys.length ? ys[ys.length - 1] : null, gap = lastY == null ? null : S.y - lastY;
       /* ① 유관 드립 */
-      if (typeof RINGY !== 'undefined' && (k < 2 || gap > 10)) {
-        out = out.filter(c => !(c && typeof c.t === 'string' && RINGY.test(c.t)));
-        out.forEach(c => { if (c && Array.isArray(c.re)) c.re = c.re.filter(r => !(r && typeof r.t === 'string' && RINGY.test(r.t))); });
+      const RG861 = t => (typeof RINGY !== 'undefined' && RINGY.test(t)) || (/유관|있는 팀이 우승한다|반지 냄새/.test(t) && !/무관|유관 (선수 )?된다|유관 탈출/.test(t));
+      if (k < 2 || gap > 10) {
+        out = out.filter(c => !(c && typeof c.t === 'string' && RG861(c.t)));
+        out.forEach(c => { if (c && Array.isArray(c.re)) c.re = c.re.filter(r => !(r && typeof r.t === 'string' && RG861(r.t))); });
       }
       const put = (L, re, at) => { const U = S.mm861 = S.mm861 || {}, C0 = L.filter(t => t && !out.some(c => c && c.t === josaFix(t))); if (!C0.length) return false; const mn = Math.min(...C0.map(t => U[t] || 0)), C = C0.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1;   /* 골고루: 지금까지 가장 적게 나온 말 중에서 고름 (다 써도 안 끊김) */ out.splice(Math.min(at == null ? 1 : at, out.length), 0, mkC(josaFix(t), re ? [{ nk: pick(NICKS), t: re, up: ri(30, 900) }] : [], { up: ri(2500, 9000), must: 1 })); return true; };
       /* ② 우승 기사 */
