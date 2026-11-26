@@ -1891,10 +1891,10 @@ function mlbUSD(o,w,proven){if(proven)return cl(.78+Math.max(0,w)*7.6,.78,60);co
 function npbPer(o){return Math.round(cl(40000+Math.max(0,o-52)**2*1500,40000,700000)/1000)*1000}
 function mlbYears(usd,proven){const a=age();if(a>=35)return 1;if(a>=33)return ri(1,2);if(!proven)return usd>=20?ri(5,6):usd>=8?ri(3,4):ri(1,2);return usd>=40?(a<=29?ri(8,10):ri(5,7)):usd>=20?ri(4,6):usd>=8?ri(2,4):1}
 function kboReturnPer(o,w){const mw=mlbW(),lw=lastLgWAR('MLB')||0,base=faValue(o,w);if(mw<3&&lw<2.5)return base;return Math.min(300000,Math.max(base,180000+mw*5000+Math.max(0,lw)*8000))}
-function optOf(tot,yrs,lg){return Math.round(tot*.12/yrs/1000)*1000}
+function optOf(tot,yrs,lg){return Math.round(tot*.14/yrs/1000)*1000}
 /* 해외 제안 (포스팅/해외 FA) */
 abroadOffers=function(o){const out=[],proven=S.rows.some(r=>r.lv==='MLB'),w=lastLgWAR('MLB')??lastWAR();
-  const lucky=!proven&&o>=60&&o<64&&R()<.08;if((o>=64&&R()<cl((o-62)/10,.12,.9))||lucky||proven&&o>=LV.MLB-4){const n=proven?(w>=4?ri(2,3):1):lucky?1:o>=74?ri(2,3):o>=70?ri(1,2):1;for(let i=0;i<n;i++){const usd=+Math.min(proven?70:34,mlbUSD(o,w,proven)*rn(1,.07)).toFixed(1),yrs=mlbYears(usd,proven),per=Math.round(usd*USDM/1000)*1000,nm=usd>=8;out.push({t:`${pick(ABROAD.MLB)} (MLB)`,s:`${yrs}년 총액 ${usd2(usd*yrs)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.12)} · 마이너 거부권 ${nm?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs,per,noMinor:nm,opt:optOf(per*yrs,yrs)}})}}
+  const lucky=!proven&&o>=60&&o<64&&R()<.08;if((o>=64&&R()<cl((o-62)/10,.12,.9))||lucky||proven&&o>=LV.MLB-4){const n=proven?(w>=4?ri(2,3):1):lucky?1:o>=74?ri(2,3):o>=70?ri(1,2):1;for(let i=0;i<n;i++){const usd=+Math.min(proven?70:34,mlbUSD(o,w,proven)*rn(1,.07)).toFixed(1),yrs=mlbYears(usd,proven),per=Math.round(usd*USDM/1000)*1000,nm=usd>=8;out.push({t:`${pick(ABROAD.MLB)} (MLB)`,s:`${yrs}년 총액 ${usd2(usd*yrs)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.14)} · 마이너 거부권 ${nm?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs,per,noMinor:nm,opt:optOf(per*yrs,yrs)}})}}
   if(o>=54&&R()<cl((o-52)/8,.25,.95)){const yrs=ri(2,3),per=npbPer(o);out.push({t:`${pick(ABROAD.NPB)} (NPB)`,s:`${yrs}년 연평균 ${money(per)}`,d:`옵션 연 ${money(per*.12)} (WAR 1.5 이상)`,act:'abroad',arg:{lg:'NPB',yrs,per,opt:optOf(per*yrs,yrs)}})}
   return out};
 const usd2=m=>m>=100?`$${Math.round(m)}M`:`$${(+m).toFixed(1)}M`;
@@ -4823,7 +4823,7 @@ function gfExtra(){const g=S.gf,nm=jo(g.n,'이','가'),wa=jo(g.n,'과','와'),bi
 function eliteKBO(){const mvp=S.awards.filter(a=>/정규시즌 MVP/.test(a.n)).length;return ovrE()>=68||mvp>=2}
 {const _ao6=abroadOffers;abroadOffers=function(o){let out=_ao6(o);try{if(!S.rows.some(r=>r.lv==='MLB')&&eliteKBO()&&!out.some(c=>c.arg&&c.arg.lg==='MLB')&&R()<.92){
   const w=lastWAR(),wt=weakTools().length,usd=+Math.min(34,mlbUSD(o,w,false)*rn(1,.08)*(wt?.85:1)).toFixed(1),yrs=mlbYears(usd,false),per=Math.round(usd*USDM/1000)*1000,nm=usd>=8&&!wt,tn=pick(ABROAD.MLB);
-  out.unshift({t:`${tn} (MLB)`,s:`${yrs}년 총액 ${usd2(usd*yrs)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.12)} · 마이너 거부권 ${nm?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs,per,noMinor:nm,opt:optOf(per*yrs,yrs),tname:tn}})}}catch(e){}return out}}
+  out.unshift({t:`${tn} (MLB)`,s:`${yrs}년 총액 ${usd2(usd*yrs)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.14)} · 마이너 거부권 ${nm?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs,per,noMinor:nm,opt:optOf(per*yrs,yrs),tname:tn}})}}catch(e){}return out}}
 function weakestTool(){try{const ks=keyTools();let k=ks[0],v=99;ks.forEach(x=>{const e=E(x);if(e>0&&e<v){v=e;k=x}});if(isP()){const n=PITCHES.filter(p=>(ME.pt[p]||0)>0&&E(p)>=50).length;if(n<(ME.pos==='SP'?3:2)&&v>=50)return{k:'pitches',n:'구종 수',v:45}}return{k,n:TOOLN[k]||LBL[k],v}}catch(e){return null}}
 {const _c78=comments;comments=function(tone,x){let out=_c78(tone,x);try{if(!S||!ME||!['draft','abroad'].includes(tone))return out;const w=weakestTool();if(!w)return out;const gn=giv(ME.name),mlb=S.pro&&S.pro.league==='MLB',lv=mlb?'메이저':tone==='draft'?'프로':'거기';let z;
   if(DV(w.v)<65)z=[pick([`${gn} 다 좋은데 ${jo(w.n,'이','가')} 좀 걱정이네`,`${w.n}만 보면 아직 물음표임`,...(['컨택','선구안','동체시력','수비범위','타구처리','어깨','제구'].includes(w.n)?[`${lv} 가면 ${w.n} 쪽으로 집요하게 공략당할 듯`]:[])]),[pick([`${w.n}만 보완하면 진짜 물건이다`,`${w.n}${jo(w.n,'은','는').slice(-1)} 훈련으로 충분히 올라옴 걱정 ㄴㄴ`,mlb?`메이저는 구멍 하나 있으면 바로 파고드는데…`:'신인 때는 다 그런 거지'])]];
@@ -6866,7 +6866,7 @@ if(typeof document!=='undefined'){const auOff=()=>{try{if(AU.timer)AU._wasOn=tru
 /* 5) 투수는 MLB 제의를 조금 더 자주 */
 {const _ao=abroadOffers;abroadOffers=function(o){let out=_ao(o);try{if(isP()&&S.pro&&S.pro.league==='KBO'&&!S.rows.some(r=>r.lv==='MLB')&&!out.some(c=>c.arg&&c.arg.lg==='MLB')&&(()=>{const mvp=S.awards.filter(a=>/정규시즌 MVP/.test(a.n)).length;return mvp>=1?(o>=55&&R()<.85):(o>=61&&R()<cl((o-59)/12,.12,.5))})()){
   const w=lastWAR(),wt=weakTools().length,usd=+Math.min(30,mlbUSD(o,w,false)*rn(1,.08)*(wt?.85:1)).toFixed(1),yrs=mlbYears(usd,false),per=Math.round(usd*USDM/1000)*1000,nm=usd>=8&&!wt,tn=pick(ABROAD.MLB);
-  out.push({t:`${tn} (MLB)`,s:`${yrs}년 총액 ${usd2(usd*yrs)} (연 ${usd2(usd)})${wt?' · 툴 보완 필요':''}`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.12)} · 마이너 거부권 ${nm?'있음':'없음 (성적이 나쁘면 마이너행)'}`,act:'abroad',arg:{lg:'MLB',yrs,per,noMinor:nm,opt:optOf(per*yrs,yrs),tname:tn,toolsWeak:wt||undefined}})}}catch(e){}return out}}
+  out.push({t:`${tn} (MLB)`,s:`${yrs}년 총액 ${usd2(usd*yrs)} (연 ${usd2(usd)})${wt?' · 툴 보완 필요':''}`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.14)} · 마이너 거부권 ${nm?'있음':'없음 (성적이 나쁘면 마이너행)'}`,act:'abroad',arg:{lg:'MLB',yrs,per,noMinor:nm,opt:optOf(per*yrs,yrs),tname:tn,toolsWeak:wt||undefined}})}}catch(e){}return out}}
 /* 6) 잘 던진 날: 주무기 구종 칭찬 · 가을 완봉은 확실하게 */
 function bestPitch(){try{let k=null,v=0;PITCHES.forEach(p=>{if(p==='FB'||!(ME.pt[p]>0))return;const d=DV(eff(p));if(d>v){v=d;k=p}});const fb=(DV(E('velo'))+DV(E('stf')))/2;if(fb>=80&&fb>v+3)return{k:'FB',v:fb};return k?{k,v}:null}catch(e){return null}}
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(!S||!ME||!x||!isP())return out;const ipO=x.ipO||0,ra=x.ra||0;if(ipO<9)return out;
@@ -9318,7 +9318,7 @@ function ctTag(y,y0){return y<y0?(y<=2?'단기·고연봉':'단기'):(y>=8?'초�
 function ctVarKBO(c){const a=c.arg,y0=a.yrs,aav=a.tot/y0;return ctLens('KBO',y0,aav).map(y=>{const tot=Math.max(10000,Math.round(aav*ctFac('KBO',y0,y)*y/10000)*10000);
   return{...c,t:`${c.t} · ${y}년 ${ctTag(y,y0)}`,s:`${y}년 최대 ${money(tot)}`,d:`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/y)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상 시 연 ${money(tot*.15/y)})`,arg:{...a,yrs:y,tot}}})}
 function ctVarMLB(c){const a=c.arg,y0=a.yrs,usd0=a.per/USDM;return ctLens('MLB',y0,usd0).map(y=>{const per=Math.round(a.per*ctFac('MLB',y0,y)/1000)*1000,usd=per/USDM,nm=a.noMinor||usd>=8;
-  return{...c,t:`${c.t} · ${y}년 ${ctTag(y,y0)}`,s:`${y}년 총액 ${usd2(usd*y)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.12)} · 마이너 거부권 ${nm?'있음':'없음'}`,arg:{...a,yrs:y,per,noMinor:nm,opt:optOf(per*y,y)}}})}
+  return{...c,t:`${c.t} · ${y}년 ${ctTag(y,y0)}`,s:`${y}년 총액 ${usd2(usd*y)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.14)} · 마이너 거부권 ${nm?'있음':'없음'}`,arg:{...a,yrs:y,per,noMinor:nm,opt:optOf(per*y,y)}}})}
 function ctDiversify(ch,kind){try{if(!Array.isArray(ch))return ch;const ok=c=>c&&c.arg&&!c.arg.cheap&&!c.arg.ret&&!c.arg.optY&&!c._ctv&&(kind==='fa'?c.act==='fa'&&c.arg.tot>0&&c.arg.team!=null:c.act==='abroad'&&c.arg.lg==='MLB'&&c.arg.per>0);
   const nmK=o=>kind==='fa'?'T'+(o.arg&&o.arg.team):String(o.t).split(' · ')[0],had=new Set(ch.filter(o=>o._ctv).map(nmK));const base=ch.filter(c=>ok(c)&&!had.has(nmK(c))).sort((x,z)=>kind==='fa'?z.arg.tot/z.arg.yrs-x.arg.tot/x.arg.yrs:z.arg.per-x.arg.per).slice(0,kind==='fa'?2:2);const nOff=ch.filter(o=>o.act===(kind==='fa'?'fa':'abroad')||(o.act==='fa'&&o.arg&&!o.arg.cheap)).length,cap=Math.max(0,Math.min(kind==='fa'?3:4,(kind==='fa'?8:8)-nOff));let add=[];
   base.forEach((c,i)=>{const v=(kind==='fa'?ctVarKBO(c):ctVarMLB(c)).slice(0,i===0?(kind==='fa'?2:3):1);v.forEach(x=>{x._ctv=1;if(!ch.concat(add).some(o=>o.act===x.act&&o.arg&&o.arg.yrs===x.arg.yrs&&(kind==='fa'?o.arg.team===x.arg.team:String(o.t).split(' · ')[0]===String(x.t).split(' · ')[0])))add.push(x)})});
@@ -9421,7 +9421,7 @@ FEV2.forEach(e=>FEV.push(e));
 {const _axW=abroadExpire;abroadExpire=function(o,w){const q=_axW(o,w);try{const p=S.pro;if(!q||!q.ch||!p||p.league!=='MLB')return q;const lw=Math.max(+w||0,(typeof lastLgWAR==='function'?lastLgWAR('MLB'):0)||0);if(lw<2.95)return q;
   if(q.ch.some(c=>c.act==='abroad'&&c.arg&&c.arg.lg==='MLB'))return q;
   const usd=+Math.max(2,(typeof mlbUSD==='function'?mlbUSD(o,lw,true):8)*.85).toFixed(1),per=Math.round(usd*USDM/1000)*1000,y=age()>=40?1:age()>=37?1:2;
-  const c={t:`${p.tname} 재계약`,s:`${y}년 총액 ${usd2(usd*y)} (연 ${usd2(usd)})`,d:`옵션 연 ${usd2(usd*.12)} · 마이너 거부권 ${usd>=8?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs:y,per,stay:true,noMinor:usd>=8,opt:optOf(per*y,y)}};
+  const c={t:`${p.tname} 재계약`,s:`${y}년 총액 ${usd2(usd*y)} (연 ${usd2(usd)})`,d:`옵션 연 ${usd2(usd*.14)} · 마이너 거부권 ${usd>=8?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs:y,per,stay:true,noMinor:usd>=8,opt:optOf(per*y,y)}};
   q.ch=q.ch.filter(x=>x.act!=='tryout');const ri2=q.ch.findIndex(x=>x.act==='retire');q.ch.splice(ri2>=0?ri2:q.ch.length,0,c)}catch(e){}return q}}
 
 /* 계약·이적 기사: 경기 얘기 댓글/대댓글 최종 제거 (대댓글 포함) */
@@ -10503,7 +10503,7 @@ function mktReYr(c,y){const a=c.arg;if(!a||!(a.yrs>y))return c;
   if(c.act==='fa'&&a.tot){const per=a.tot/a.yrs;
     if(a.optY){const tot=Math.round(per*y/10000)*10000,full=Math.round(per*(y+1)/10000)*10000;return{...c,t:c.t.replace(/ · \d+\+\d+년/,` · ${y}+1년`),s:`${y}+1년 최대 ${money(full)}`,d:`보장 ${y}년 ${money(tot)} · 이후 1년은 선수 옵션 (실행하면 같은 연봉으로 연장, 거절하면 FA)`,arg:{...a,yrs:y,tot,optY:1}}}
     const tot=Math.max(10000,Math.round(per*y/10000)*10000);return{...c,t:c.t.replace(MKT_TAG,''),s:`${y}년 최대 ${money(tot)}`,d:`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/y)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상 시 연 ${money(tot*.15/y)})`,arg:{...a,yrs:y,tot}}}
-  if(c.act==='abroad'&&a.per){const usd=a.per/USDM,nm=!!a.noMinor;return{...c,t:c.t.replace(MKT_TAG,'').replace(/ · \d+\+\d+년/,''),s:`${y}년 총액 ${usd2(usd*y)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(a.per)}) · 옵션 연 ${usd2(usd*.12)} · 마이너 거부권 ${nm?'있음':'없음'}`,arg:{...a,yrs:y,optY:0,opt:optOf(a.per*y,y)}}}
+  if(c.act==='abroad'&&a.per){const usd=a.per/USDM,nm=!!a.noMinor;return{...c,t:c.t.replace(MKT_TAG,'').replace(/ · \d+\+\d+년/,''),s:`${y}년 총액 ${usd2(usd*y)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(a.per)}) · 옵션 연 ${usd2(usd*.14)} · 마이너 거부권 ${nm?'있음':'없음'}`,arg:{...a,yrs:y,optY:0,opt:optOf(a.per*y,y)}}}
   return c}
 function mktOpt1(c){const a=c.arg,y=a.yrs,per=a.tot/y,tot=Math.round(per*y/10000)*10000,full=Math.round(per*(y+1)/10000)*10000;return{...c,t:c.t.replace(/ · \d+\+\d+년/,` · ${y}+1년`),s:`${y}+1년 최대 ${money(full)}`,d:`보장 ${y}년 ${money(tot)} · 이후 1년은 선수 옵션 (실행하면 같은 연봉으로 연장, 거절하면 FA)`,arg:{...a,tot,optY:1}}}
 function mktApply(q){try{if(!q||!Array.isArray(q.ch)||!S.pro||S.stage!=='pro')return q;const a=age(),cur=S.pro.league,MK=mktScore('KBO'),MM=mktScore('MLB'),L=mktLine(a);
@@ -12104,7 +12104,7 @@ ctDiversify=function(ch,kind){try{if(!Array.isArray(ch))return ch;const g=domG70
     const c={t:`${TEAMS[t].city} ${TEAMS[t].nick}`,s:`${y}년 최대 ${money(tot)}`,d:`계약금 ${money(tot*.4)} · 연봉 ${money(tot*.45/y)} · 옵션 ${money(tot*.15)} (WAR 1.5 이상 시 연 ${money(tot*.15/y)})`,act:'fa',arg:{team:t,yrs:y,tot}};q.ch.splice(at>=0?at:q.ch.length,0,c)})}catch(e){}return q}}
 {const _aoG=abroadOffers;abroadOffers=function(o){let out=_aoG.apply(this,arguments);try{const g=domG707();if(!(S&&S.pro&&S.pro.league==='KBO'))return out;const ml=out.filter(c=>c.act==='abroad'&&c.arg&&c.arg.lg==='MLB'&&!c._ctv);if(!ml.length)return out;
   const extra=Math.round(g*2.6*R()+g*.8);if(extra<=0)return out;const used=new Set(ml.map(c=>String(c.t).split(' (')[0]));const free=shuffle(ABROAD.MLB.filter(n=>!used.has(n))).slice(0,extra);const b=ml[0].arg;
-  free.forEach(nm=>{const per=Math.round(b.per*rn(1,.07)/1000)*1000,y=Math.max(1,b.yrs+(R()<.4?1:R()<.3?-1:0)),usd=per/USDM,nmn=b.noMinor||usd>=8;out.splice(out.indexOf(ml[ml.length-1])+1,0,{t:`${nm} (MLB)`,s:`${y}년 총액 ${usd2(usd*y)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.12)} · 마이너 거부권 ${nmn?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs:y,per,noMinor:nmn,opt:optOf(per*y,y)}})});
+  free.forEach(nm=>{const per=Math.round(b.per*rn(1,.07)/1000)*1000,y=Math.max(1,b.yrs+(R()<.4?1:R()<.3?-1:0)),usd=per/USDM,nmn=b.noMinor||usd>=8;out.splice(out.indexOf(ml[ml.length-1])+1,0,{t:`${nm} (MLB)`,s:`${y}년 총액 ${usd2(usd*y)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.14)} · 마이너 거부권 ${nmn?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs:y,per,noMinor:nmn,opt:optOf(per*y,y)}})});
   ctDiversify(out,'mlb')}catch(e){}return out}}
 /* ③ 같은 스토브리그 안에서는 제시 금액 고정: 해외 진출 타진 후 국내로 돌아와도 처음 받은 제안 그대로 */
 function faClone707(ch){return JSON.parse(JSON.stringify(ch))}
@@ -12559,12 +12559,12 @@ optAttach804=function(q){try{if(!q||!q.ch)return;q.ch.forEach(c=>{if(!c||!c.d||!
   const ab=c.act==='abroad',lg=ab?(c.arg.lg||'MLB'):'KBO',a=c.arg;a._opts=genOpts804(lg);const cond=optCond804(a._opts);
   if(!ab&&a.tot&&a.yrs){const keep=c.d.split(' · ').filter(x=>!/^(계약금|연봉|옵션)/.test(x));const ot=Math.max(1000,Math.min(120000,Math.round(a.tot*.08/1000)*1000)),bn=Math.round(a.tot*.4),sal=Math.round((a.tot-bn-ot)/a.yrs/100)*100;a._optTot=ot;
     c.d=`계약금 ${money(bn)} · 연봉 ${money(sal)} · 옵션 최대 ${money(ot)} (조건당 연 ${money(Math.round(ot/3/a.yrs/100)*100)})${keep.length?' · '+keep.join(' · '):''} · 옵션 조건: ${cond}`}
-  else if(ab&&a.per){const capY=Math.min(a.opt||a.per*.12,a.per*.08,1.5*USDM);a.opt=Math.round(capY/1000)*1000;const u=a.opt/USDM;c.d=c.d.replace(/옵션 연 [^·]*/,`옵션 연 최대 ${usd2(u)} (조건당 ${usd2(u/3)}) `)+` · 옵션 조건: ${cond}`}
+  else if(ab&&a.per){const capY=Math.min(a.opt||a.per*.14,a.per*.1,2*USDM);/* v858z MLB 옵션 연봉의 8%→10%, 상한 150만→200만 달러 */a.opt=Math.round(capY/1000)*1000;const u=a.opt/USDM;c.d=c.d.replace(/옵션 연 [^·]*/,`옵션 연 최대 ${usd2(u)} (조건당 ${usd2(u/3)}) `)+` · 옵션 조건: ${cond}`}
   else c.d=c.d.replace(/\s*\(WAR 1\.5 이상[^)]*\)/g,'')+` · 옵션 조건: ${cond}`})}catch(e){}};
 {const _faO805=ACT.fa;ACT.fa=function(a){const r=_faO805.apply(this,arguments);try{if(a&&a._optTot&&!a.cheap){const p=S.pro;p.opt=Math.round(a._optTot/a.yrs/100)*100;p.salary=Math.round((a.tot-Math.round(a.tot*.4)-a._optTot)/a.yrs/100)*100;
   S.queue.forEach(x=>{if(x&&x.type==='contract'&&x.c){x.c.salary=p.salary;if(x.c.note)x.c.note=x.c.note.replace(/옵션 연 [^(·]*/,`옵션 연 최대 ${money(p.opt)} `)}})}}catch(e){}return r}}
-/* 연봉 협상 옵션 계약도 현실 범위로 (최대 제시액의 20%, 조건당 4억 이하) */
-{const _cdS805=contractDec;contractDec=function(rep){const n0=S.queue.length;const r=_cdS805.apply(this,arguments);try{S.queue.slice(n0).forEach(q=>{const c=q&&q.ch&&q.ch.find(x=>x.arg&&x.arg._salOpt);if(!c||c._f805)return;c._f805=1;const v0=Math.round(c.arg.v/.9/100)*100,amt=Math.min(120000,Math.round(v0*.2/100)*100);c.arg._salOpt=amt;
+/* 연봉 협상 옵션 계약도 현실 범위로 (v858z: 최대 제시액의 30%, 조건당 5억 이하) */
+{const _cdS805=contractDec;contractDec=function(rep){const n0=S.queue.length;const r=_cdS805.apply(this,arguments);try{S.queue.slice(n0).forEach(q=>{const c=q&&q.ch&&q.ch.find(x=>x.arg&&x.arg._salOpt);if(!c||c._f805)return;c._f805=1;const v0=Math.round(c.arg.v/.9/100)*100,amt=Math.min(150000,Math.round(v0*.3/100)*100);c.arg._salOpt=amt;/* v858z 유저 '옵션 조금만 더, 특히 연봉협상': 최대 제시액의 20%→30%, 상한 12억→15억 */
   c.s=`보장 ${money(c.arg.v)} + 옵션 최대 ${money(amt)}`;c.d=`보장 연봉 ${money(c.arg.v)} · 옵션 최대 ${money(amt)} (조건당 ${money(Math.round(amt/3/100)*100)}) · 옵션 조건: ${optCond804(c.arg._opts)}`})}catch(e){}return r}}
 /* 요구 툴 순위 숫자는 능력치 화면과 같은 값으로 표시 */
 prioHtml=function(){const L=POSPRIO[ME.pos]||POSPRIO.DH;return L.map(g=>g.map(k=>{const v=E(k)-(typeof rustOf==='function'?rustOf(k):0);return`${PRIO_LBL[k]} <span class="num ${gcls(v)}">${DV(v).toFixed(0)}</span>`}).join(' + ')).join(' <span class="muted">›</span> ')};
@@ -13683,7 +13683,7 @@ function hofLikely841(){try{const w=careerTot(PRO).w,sc=hofScore(w),role=isP()?(
    const wa=typeof wAvg==='function'?wAvg('KBO'):0;if(wa<5.5||age()>=34)return out;const maj=out.some(c=>c&&c.act==='abroad'&&c.arg&&c.arg.lg==='MLB'&&!c.arg.split&&c.arg.act!=='mlbSplit'&&!/마이너 계약|스플릿/.test(String(c.t||'')+String(c.s||'')));if(maj)return out;
    const usd=+Math.max(1.5,Math.min(34,mlbUSD(o,lastWAR(),false)*rn(1,.07))).toFixed(1),yrs=mlbYears(usd,false),per=Math.round(usd*USDM/1000)*1000,nm=usd>=8,used=new Set(out.map(c=>String((c&&c.t)||'').split(' (')[0]));
    const tn=pick(ABROAD.MLB.filter(t=>!used.has(t)).concat([]).length?ABROAD.MLB.filter(t=>!used.has(t)):ABROAD.MLB);
-   out.unshift({t:`${tn} (MLB)`,s:`${yrs}년 총액 ${usd2(usd*yrs)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.12)} · 마이너 거부권 ${nm?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs,per,noMinor:nm,opt:optOf(per*yrs,yrs)}})}catch(e){}return out}}
+   out.unshift({t:`${tn} (MLB)`,s:`${yrs}년 총액 ${usd2(usd*yrs)} (연 ${usd2(usd)})`,d:`연봉 ${usd2(usd)} (약 ${money(per)}) · 옵션 연 ${usd2(usd*.14)} · 마이너 거부권 ${nm?'있음':'없음'}`,act:'abroad',arg:{lg:'MLB',yrs,per,noMinor:nm,opt:optOf(per*yrs,yrs)}})}catch(e){}return out}}
 /* · '우리 팀이었으면 4번 박았다'는 장타가 있는 타자에게만 (도루·단타형에 4번 타자 얘기 X) */
 {const _c4B841=comments;comments=function(tone,x){let out=_c4B841.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME)return out;
    let pw=true;try{pw=!isP()&&DV(E('pow'))>=62}catch(e){}if(pw)return out;out=out.filter(c=>!(c&&/4번 박았다|4번 타자감|4번 쳐야/.test(String(c.t||''))))}catch(e){}return out}}
@@ -17882,9 +17882,57 @@ if (typeof lifeEvents === 'function') {
     try {
       /* S.evY는 안쪽 래퍼(v77)가 모든 이벤트에 올해를 먼저 찍어서 못 씀 → 따로 저장 */
       const Y = S.evCD858 = S.evCD858 || {};
-      const cd = { '💍 프러포즈': 2, '💘 새로운 인연': 3 };   // 11/24 시뮬: 새 인연이 전체 이벤트의 9%·한 커리어 5번 → 3년 간격
+      const cd = { '💍 프러포즈': 3, '💘 새로운 인연': 4 };   // 11/24 시뮬: 새 인연 9%·한 커리어 5번 → 3년 간격 · v858z(11/26 골고루): 새 인연 4년·프러포즈 3년
       out = out.filter(e => { const k = Object.keys(cd).find(t => (e.title || '').indexOf(t) === 0); if (!k) return true; if (Y[k] != null && S.y - Y[k] < cd[k]) return false; Y[k] = S.y; return true; });
     } catch (e) {}
     return out;
   };
+}
+
+/* v858z (11/26 14:31 유저) "이벤트 조금만 더 줄이자 아주 살짝 커리어당 4개에서 5개정돈 덜 나오게금 그리고 골고루 나오게"
+   · 시뮬 60커리어 기준 선택형 일반 이벤트 평균 26.1개 → 약 21~22개 목표
+   · 이번 커리어에 이미 나온 이벤트일수록 더 잘 걸러짐 → 같은 이벤트 반복이 줄고 여러 종류가 고르게 나옴
+   · 계약·FA·드래프트·병역·부상·보직·연애 흐름(프러포즈·이별 등) 같은 필수/연결 이벤트, 선택지 1개짜리 알림은 절대 안 거름 (v86과 같은 기준) */
+const EVT858Z = { base: .14, rep: .22, max: .8 };
+const EVT858Z_CRIT = new Set(['draftSign','univ','fa','sal','retire','mil','abroad','abroadTry','posting','surgery','rehab','tryout','devSign','devTry','mlbDirect','restplan','trade','rolechg','abroadStay','minorUp']);
+function evKey858z(q) { return String(q && q.title || '').replace(/\d{4}/g, '').trim(); }
+{
+  const _adv858z = advance;
+  advance = function () {
+    const n0 = S && S.queue ? S.queue.length : 0;
+    const r = _adv858z.apply(this, arguments);
+    try {
+      if (S && S.queue && S.queue.length > n0) {
+        const seen = S.evSeen858z = S.evSeen858z || {};
+        const keep = S.queue.slice(0, n0), add = S.queue.slice(n0).filter(q => {
+          if (!q || q.type || !q.ch || q.ch.length < 2) return true;
+          if (q.ch.some(c => EVT858Z_CRIT.has(c.act)) || EV_KEEP.test(q.title || '') || /부상|보직|진로/.test(q.title || '')) return true;
+          const k = evKey858z(q), n = seen[k] || 0;
+          if (R() < Math.min(EVT858Z.max, EVT858Z.base + EVT858Z.rep * n)) return false;
+          seen[k] = n + 1; return true;
+        });
+        if (add.length + keep.length !== S.queue.length) { S.queue = keep.concat(add); if (typeof afterQueue === 'function' && !S.queue.length) afterQueue(); }
+      }
+    } catch (e) {}
+    return r;
+  };
+}
+
+/* v858z 버그 수정: 연봉 협상 '옵션을 걸고 도장' 선택지 — 1년 인상 상한(+4억)이 걸리면 옵션 쪽 보장 연봉까지 상한액으로 올라가
+   '바로 도장(보장 X)'과 보장액이 같아지고 옵션만 더 붙는 공짜 선택지가 됐음 → 항상 바로 도장 금액의 90% 보장 + 30% 옵션(최대 15억)으로 다시 맞춤 */
+function salOptFix858z(q) {
+  try {
+    if (!q || q.type || !/연봉 협상$/.test(q.title || '') || !q.ch) return;
+    const ok = q.ch.find(c => c && c.act === 'sal' && c.arg && c.arg.k === 'ok' && !c.arg._salOpt), op = q.ch.find(c => c && c.arg && c.arg._salOpt);
+    if (!ok || !op) return;
+    const v0 = ok.arg.v, base = Math.round(v0 * .9 / 100) * 100, amt = Math.min(150000, Math.round(v0 * .3 / 100) * 100);
+    if (op.arg.v === base && op.arg._salOpt === amt) return;
+    op.arg.v = base; op.arg._salOpt = amt; if (ok.arg.cap) op.arg.cap = ok.arg.cap;
+    op.s = `보장 ${money(base)} + 옵션 최대 ${money(amt)}`;
+    op.d = `보장 연봉 ${money(base)} · 옵션 최대 ${money(amt)} (조건당 ${money(Math.round(amt / 3 / 100) * 100)}) · 옵션 조건: ${optCond804(op.arg._opts)}`;
+  } catch (e) {}
+}
+{
+  const _advSO858z = advance;
+  advance = function () { const r = _advSO858z.apply(this, arguments); try { (S.queue || []).forEach(salOptFix858z); } catch (e) {} return r; };
 }
