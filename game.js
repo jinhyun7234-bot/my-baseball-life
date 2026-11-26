@@ -18562,6 +18562,8 @@ const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠ
       let fan = 0; const FAN = /팬 다 모였네|팬인데 요즘 단톡|직원임\?|누른 사람 다 \S*팬|팬들 출동/;
       out = out.filter(c => { if (!(c && typeof c.t === 'string' && FAN.test(c.t))) return true; fan++; return fan <= 1; });
       /* 거의 같은 말 두 번 X: 앞 군더더기('ㄹㅇ'·'솔직히'…)를 빼고 첫 7글자가 같으면 뒤엣것 뺌 (예: '한 판씩 주고받았다…'·'한 판씩 주고받았네…') */
+      /* 가을야구 패배인데 탈락 경기가 아니면 '올해도 가을은 짧았다'·'내년엔 꼭'·'시즌 끝난' 같은 끝난 말 X (시뮬: 한국시리즈 3차전 패배에 나옴) */
+      if (x && x.ps && x.win === false && !x.elim) out = out.filter(c => !(c && typeof c.t === 'string' && /여기까지|가을은 짧았|시즌 끝난|올 시즌 고생|내년엔 꼭|내년에 보자|내년에 다시|오래 남을 듯|스토브리그|멈췄다 고생|가을야구 끝/.test(c.t)));
       const seen7 = new Set();
       out = out.filter(c => { if (!(c && typeof c.t === 'string')) return true; const b = c.t.replace(/^(ㄹㅇ|솔직히|진짜|아니|근데|와|형들|ㅋㅋㅋ)\s+/, ''); if (b.length < 9) return true; const k = b.slice(0, 7); if (seen7.has(k)) return false; seen7.add(k); return true; });
     } catch (e) {}
