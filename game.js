@@ -19984,6 +19984,8 @@ if (typeof buildSeasonRecap === 'function') {
         if (L.length && R() < .7) { const z = pick(L); seenAdd('po868:' + z[0]); put(z[0], z[1]); }
       }
       if (age() >= 33 && R() < .6) { const m = msCount868(1); if (m && !(S._ms868 || {})[m[2]]) { (S._ms868 = S._ms868 || {})[m[2]] = S.y; put(m[0], m[1]); } }
+      /* 펨코 포스팅 글('○○ 포스팅이 몇 년 남았지') — KBO에서 잘하는 젊은 선수, 커리어 한 번 */
+      if (lg === 'KBO' && age() <= 28 && w >= 3.5 && !S._pc868 && !/우승/.test(ps) && !(typeof leagueRings === 'function' && leagueRings() > 0) && !(S.rows || []).some(z => z.lv === 'MLB')) { const ky = new Set((S.rows || []).filter(z => z.lv === 'KBO' && ((z.b && z.b.PA >= 100) || (z.p && z.p.outs >= 90))).map(z => z.y)).size, n = 7 - ky; if (n >= 1 && n <= 3 && R() < .5) { S._pc868 = S.y; put(`포스팅까지 ${n}년 남았다 그 전에 우승 한 번 하자`, ['보내기 전에 반지부터', '시간 얼마 안 남았다 ㅠ']); } }
     } catch (e) {}
     return q;
   };
