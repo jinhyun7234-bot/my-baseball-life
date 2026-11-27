@@ -18530,7 +18530,23 @@ const SIT862 = {
   absB: ['ABS 존 오늘 왜 이러냐 억울하다 ㅋㅋ', '로봇 심판한테 따질 수도 없고 미치겠네', '사람 심판이었으면 볼이었다 ABS 너무하네'],
   absP: ['ABS 존 구석구석 찌르는 제구 미쳤다', '로봇 심판도 인정한 제구 ㅋㅋ', 'ABS 시대에 저 제구면 무적이다'],
 };
+/* v867o 상황 댓글 추가 (유저 "구체적인 상황에서 구체적인 댓글") — 그 경기 기록(타석·투구 로그)으로 읽음
+   타자: 1회 선제포(0-0에서 1회 홈런) · 2루타 2개+ · 무안타인데 2타점+
+   투수: 볼넷 4개+ (실점 많으면 제구 한탄 / 1실점 이하면 위기관리 감탄) · 피홈런 3개+ · 1회 3실점 뒤 무실점(선발 5이닝+) · 3타자 연속 삼진 */
+Object.assign(SIT862, {
+  lead1: ['1회부터 선제포 ㄷㄷ 시작하자마자 분위기 가져왔다', '경기 시작하자마자 {n} 홈런 치킨 시키기도 전에 터짐 ㅋㅋ', '1회 첫 공격부터 담장 넘기네 상대 선발 1회에 멘탈 나갔다', '오늘 1회 선제 홈런 보고 바로 맥주 깠다'],
+  dbl2: ['2루타만 {D}개 ㅋㅋ 오늘 외야 사이를 계속 꿰뚫네', '{n} 오늘 2루 베이스랑 정들었다 ㅋㅋ', '홈런만 장타냐 2루타 {D}개도 장타다', '좌중간 우중간 골고루 갈랐다 2루타 {D}개'],
+  rbiNH: ['안타 하나 없이 {RBI}타점 ㅋㅋ 이게 영양가다', '기록지 보면 무안타인데 타점은 {RBI}개 ㅋㅋ 해결은 했다', '안타가 다가 아니다 오늘 {n} 타점으로 할 일 다 함'],
+  bb4: ['볼넷 {PB}개… 오늘 존을 끝까지 못 찾았다', '볼넷 주고 맞고 또 볼넷 보는 내가 다 지친다', '볼넷 {PB}개면 수비들 오늘 다리 아프다 ㅠ', '{n} 오늘 포수 미트가 안 보였나 보다'],
+  bb4h: ['볼넷 {PB}개 주고도 {RA}실점이면 위기관리는 미쳤다 ㅋㅋ', '주자 쌓아 놓고 다 막네 심장에 안 좋은 투수', '볼넷 {PB}개인데 실점이 이거밖에 안 되는 게 신기하다', '불 지르고 본인이 끄는 소방관 ㅋㅋ'],
+  hr3p: ['피홈런 {PHR}개… 오늘 공이 다 가운데로 몰렸다', '오늘 상대 타자들 홈런 더비 하는 줄 ㅠ', '담장 밖으로 공이 {PHR}번 나갔다 오늘은 그냥 지우자', '실투 하나하나를 다 담장 밖으로 보내네 상대 타선 무섭다'],
+  first1: ['1회에 {R1}점 주고 나서 완전히 다른 투수가 됐다', '1회만 지우면 완벽한 경기였는데 ㅠ', '1회 끝나고 덕아웃에서 뭘 먹었길래 ㅋㅋ 그 뒤로 0점', '초반에 무너질 줄 알았는데 끝까지 버텼다 이게 선발이지'],
+  k3row: ['3타자 연속 삼진 ㄷㄷ 순삭이다', '삼진 삼진 삼진 오늘 공 진짜 좋다', '연속 삼진 잡을 때 소리 질렀다 ㅋㅋ', '타자 셋이 배트에 공을 한 번도 못 맞혔다'],
+});
 const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠㅠ', '내일 보자'], hr3: ['ㄷㄷㄷ', '미쳤다'], hr2: ['ㄷㄷ', '오늘 주인공'], cs: ['ㅋㅋㅋ 아', '사인 미스냐'], bb3: ['눈야구 인정', 'ㄹㅇ'], h4: ['안타 기계', 'ㄷㄷ'], noSup: ['ㅠㅠㅠ', '타자들 반성해라'], shell: ['ㅠㅠ', '다음엔 잘하자'], k10: ['ㄷㄷ', '삼진쇼'], zero7: ['에이스', 'ㄷㄷ'], big: ['ㅋㅋㅋ', '오늘 기분 좋다'], bigL: ['ㅠㅠ', '잊자'], w10: ['명경기', 'ㄹㅇ'], l10: ['ㅠ', '타자들 뭐 함'], absB: ['ㅋㅋㅋ', '억울하다'], absP: ['ㄷㄷ', '제구 미쳤다'] };
+Object.assign(SITRE862, { lead1: ['기선제압 제대로', '1회부터 분위기 탔다', '상대 선발 1회부터 멘붕 ㅋㅋ'], dbl2: ['갭 파워 ㅇㅈ', '장타율 쭉쭉 오른다', 'ㄹㅇ 2루타 장인'], rbiNH: ['타점은 타점이다', '영양가 만점 ㅋㅋ', '이런 날도 있어야지'],
+  bb4: ['제구가 문제다', '볼넷이 제일 화난다', '포수만 고생했다 ㅠ'], bb4h: ['위기관리 ㅇㅈ', '심장 쫄깃 투구 ㅋㅋ', '결과는 막았다'], hr3p: ['실투가 너무 많았다', '오늘은 안 되는 날', '다음 등판에 갚자'],
+  first1: ['1회만 아니었으면', '초반 제구만 잡으면 된다', '그래도 이닝은 먹었다'], k3row: ['ㄷㄷㄷ', '결정구 미쳤다', '타자들이 손도 못 대네'] });
 {
   const _c862 = comments;
   comments = function (tone, x) {
@@ -18546,6 +18562,10 @@ const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠ
         if ((x.gBB || 0) >= 3) keys.push('bb3');
         if ((x.gH || 0) >= 4) keys.push('h4');
         if (kbo && (x.K || 0) >= 2 && R() < .3) keys.push('absB');
+        { const pl = Array.isArray(x.pl) ? x.pl : [], f = pl[0];
+          if (f && f.i === 1 && f.t === 'HR' && (f.my - f.r) === 0 && f.op === 0) keys.push('lead1');
+          if (pl.filter(q => q && q.t === '2B').length >= 2) keys.push('dbl2');
+          if ((x.gH || 0) === 0 && (x.gRBI || 0) >= 2) keys.push('rbiNH'); }
       }
       if (played && P) {
         if ((x.ipO || 0) >= 18 && (x.ra || 0) <= 1 && x.win === false) keys.push('noSup');
@@ -18553,6 +18573,12 @@ const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠ
         if ((x.gK || x.K || 0) >= 10) keys.push('k10');
         if ((x.ipO || 0) >= 21 && (x.ra || 0) === 0) keys.push('zero7');
         if (kbo && (x.gK || x.K || 0) >= 8 && R() < .35) keys.push('absP');
+        { const pp = Array.isArray(x.pp) ? x.pp : [], bbN = pp.filter(q => q && q.t === 'BB').length, i0 = pp.length ? pp[0].i : 0;
+          if (bbN >= 4) keys.push((x.ra || 0) <= 1 ? 'bb4h' : 'bb4');
+          if ((x.pHR || 0) >= 3) keys.push('hr3p');
+          const r1 = pp.filter(q => q && q.i === i0).reduce((s2, q) => s2 + (q.r || 0), 0), rL = pp.filter(q => q && q.i > i0).reduce((s2, q) => s2 + (q.r || 0), 0);
+          if (i0 === 1 && r1 >= 3 && rL === 0 && (x.ipO || 0) >= 15) keys.push('first1');
+          let run = 0, best = 0; pp.forEach(q => { run = q && q.t === 'K' ? run + 1 : 0; best = Math.max(best, run); }); if (best >= 3) keys.push('k3row'); }
       }
       if (d >= 10) keys.push('big'); else if (d <= -10) keys.push('bigL');
       if (x.myR === 1 && x.opR === 0) keys.push('w10'); else if (x.myR === 0 && x.opR === 1) keys.push('l10');
@@ -18560,8 +18586,8 @@ const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠ
       const U = S.sit862 = S.sit862 || {}; let n = 0;
       keys.sort(() => R() - .5).forEach(k => {
         if (n >= 2 || R() > .55) return;
-        const L = SIT862[k].map(t => t.replace(/\{n\}/g, gn).replace(/\{K\}/g, String(P ? (x.gK || x.K || 0) : (x.K || 0))).replace(/\{BB\}/g, String(x.gBB || 0)).replace(/\{H\}/g, String(x.gH || 0)).replace(/\{d\}/g, String(Math.abs(d))))
-          .map(josaFix).filter(t => !out.some(c => c && c.t === t));
+        const L = SIT862[k].map(t => t.replace(/\{n\}/g, gn).replace(/\{K\}/g, String(P ? (x.gK || x.K || 0) : (x.K || 0))).replace(/\{BB\}/g, String(x.gBB || 0)).replace(/\{H\}/g, String(x.gH || 0)).replace(/\{d\}/g, String(Math.abs(d))).replace(/\{D\}/g, String((Array.isArray(x.pl) ? x.pl : []).filter(q => q && q.t === '2B').length)).replace(/\{RBI\}/g, String(x.gRBI || 0)).replace(/\{PB\}/g, String((Array.isArray(x.pp) ? x.pp : []).filter(q => q && q.t === 'BB').length)).replace(/\{PHR\}/g, String(x.pHR || 0)).replace(/\{RA\}/g, String(x.ra || 0)).replace(/\{R1\}/g, String((Array.isArray(x.pp) ? x.pp : []).filter(q => q && x.pp[0] && q.i === x.pp[0].i).reduce((s2, q) => s2 + (q.r || 0), 0))))
+          .map(josaFix).filter(t => !out.some(c => c && c.t === t) && !(/홈런만 장타냐/.test(t) && (x.gHR || 0) >= 1));
         if (!L.length) return;
         const mn = Math.min(...L.map(t => U[t] || 0)), C = L.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1; n++;
         out.splice(Math.min(out.length, ri(0, 3)), 0, mkC(t, R() < .55 ? [{ nk: pick(NICKS), t: pick(SITRE862[k]), up: ri(20, 500) }] : [], { up: ri(400, 4000) }));
