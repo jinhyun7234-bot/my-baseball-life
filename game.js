@@ -896,7 +896,7 @@ const ACT={
     news(`${TEAMS[t].city} ${TEAMS[t].nick} 육성선수 입단.`);contractQ({kind:'dev',title:'육성선수 계약서',team:t,bonus:0,salary:3300,note:'정식 선수 등록 전까지 퓨처스리그 소속'});return`${TEAMS[t].city} ${TEAMS[t].nick} 육성선수. 밑바닥부터 증명해야 한다.`},
   quit(){retire('야구를 그만두었다');return'유니폼을 벗었다.'},
   mlbDirect(a){S.stage='pro';S.pro={league:'MLB',tname:pick(ABROAD.MLB),salary:2500,years:6,service:0,faReq:99,dev:true,debut:(S.phase===0?S.y:S.y+1),minor:true,m1y:0};S.money+=a.bonus;S.ach.abroad=S.y;
-    news(`MLB ${S.pro.tname} 구단과 마이너 계약. 계약금 ${money(a.bonus)}.`);article(`고교생 ${ME.name}, MLB 직행 선언`,`${S.pro.tname} 구단과 계약금 ${money(a.bonus)}에 사인했다.`,'abroad',{yrs:6,bonus:money(a.bonus)});contractQ({kind:'minor',title:'MINOR LEAGUE CONTRACT',tname:S.pro.tname+' (MLB)',bonus:a.bonus,salary:2500,note:'루키리그 배정 · 마이너리그 계약'});return'태평양을 건넌다. 루키리그부터 시작이다.'},
+    news(`MLB ${S.pro.tname} 구단과 마이너 계약. 계약금 ${money(a.bonus)}.`);article(`${S.univ?'대졸 ':'고교생 '}${ME.name}, MLB 직행 선언`,`${S.pro.tname} 구단과 계약금 ${money(a.bonus)}에 사인했다.`,'abroad',{yrs:6,bonus:money(a.bonus)});contractQ({kind:'minor',title:'MINOR LEAGUE CONTRACT',tname:S.pro.tname+' (MLB)',bonus:a.bonus,salary:2500,note:'루키리그 배정 · 마이너리그 계약'});return'태평양을 건넌다. 루키리그부터 시작이다.'},
   sal(a){const p=S.pro;let v=a.v,msg;
     if(a.k==='ok'){S.rel.coach+=2;msg=`${money(v)}에 계약했다.`}
     else if(a.k==='demand'){if(R()<.5){v=Math.round(v*1.12/100)*100;S.rel.coach-=2;msg=`요구가 받아들여졌다. ${money(v)}.`}else{S.rel.coach-=4;msg=`구단은 꿈쩍하지 않았다. ${money(v)}에 사인.`}}
@@ -7889,7 +7889,7 @@ function noKboCareer(){try{return S&&S.stage==='pro'&&S.pro&&S.pro.league!=='KBO
 const NOKBO_RX=/KBO|크보|국내 ?(무대|리그|용|에서)|내수용|한국에서(는| 하던| 보여준| 하던 거| 했던)|사직에서|우물 안|역수출|국내 복귀/;
 function noKboFilter(arr){if(!Array.isArray(arr))return arr;const o=arr.filter(c=>!NOKBO_RX.test((c&&c.t)||''));o.forEach(c=>{if(c&&c.re)c.re=c.re.filter(q=>!NOKBO_RX.test((q&&q.t)||''))});return o}
 {const _cm=comments;comments=function(tone,x){let out=_cm(tone,x);try{if(noKboCareer()){out=noKboFilter(out);
-  if(tone==='abroad'&&Array.isArray(out)&&out.length<6){const gn=giv(ME.name),tn=(S.pro&&S.pro.tname)||'';const L=[['고졸 메이저 직행 ㄷㄷ 배짱 하나는 인정',['실패해도 경험은 남는다']],[`${gn} 고등학교 때부터 스카우트들이 따라다녔다던데`,['영상 보니까 왜 데려가는지 알겠더라']],['마이너부터 차근차근 올라가면 된다',['루키리그 버스 생활 버티는 게 관건']],['한국 프로 안 거치고 바로 미국이라니 진짜 모험이다',['그래서 더 응원하게 됨']],[`${tn} 팜에서 잘 키워줬으면`,[]],['3~4년 뒤에 빅리그 데뷔하면 소름일 듯',[]],['영어 공부부터 빡세게 해라 ㅋㅋ',['통역 없이 버텨야 됨']],['부모님 마음은 반반일 듯',[]],['계약금 보니까 기대치가 보인다',[]]].filter(z=>!seenHas(z[0]));
+  if(tone==='abroad'&&Array.isArray(out)&&out.length<6){const gn=giv(ME.name),tn=(S.pro&&S.pro.tname)||'';const L=[[S.univ?'대학 졸업하고 바로 메이저 도전 ㄷㄷ 배짱 하나는 인정':'고졸 메이저 직행 ㄷㄷ 배짱 하나는 인정',['실패해도 경험은 남는다']],[`${gn} ${S.univ?'대학':'고등학교'} 때부터 스카우트들이 따라다녔다던데`,['영상 보니까 왜 데려가는지 알겠더라']],['마이너부터 차근차근 올라가면 된다',['루키리그 버스 생활 버티는 게 관건']],['한국 프로 안 거치고 바로 미국이라니 진짜 모험이다',['그래서 더 응원하게 됨']],[`${tn} 팜에서 잘 키워줬으면`,[]],['3~4년 뒤에 빅리그 데뷔하면 소름일 듯',[]],['영어 공부부터 빡세게 해라 ㅋㅋ',['통역 없이 버텨야 됨']],['부모님 마음은 반반일 듯',[]],['계약금 보니까 기대치가 보인다',[]]].filter(z=>!seenHas(z[0]));
    const pool=L.sort(()=>R()-.5).slice(0,6-out.length);pool.forEach(([t,re])=>{seenAdd(t);out.push(mkC(t,re))})}}}catch(e){}return out}}
 {const _ar=article;article=function(head,body,tone,x){const r=_ar(head,body,tone,x);try{if(noKboCareer()){const a=S.arts&&S.arts[0];if(a&&Array.isArray(a.cm))a.cm=noKboFilter(a.cm)}}catch(e){}return r}}
 /* 2군·마이너 기사 댓글: 1군/메이저급 얘기 제거 + 레벨 용어 맞추기 + 상황 맞는 댓글 보충 */
@@ -19053,6 +19053,8 @@ function ctx867(a, x, tone) {
   try {
     if (!a || !Array.isArray(a.cm) || !S || !ME) return;
     const head = String(a.head || ''), game = !!(x && (x.ipO != null || x.gPA != null)), T = c => c && typeof c.t === 'string';
+    /* 대학 거쳐 온 선수한테 '고졸 신인'·'고졸 메이저 직행' X (시뮬: 대학 졸업생 기사 제목이 '고교생 ○○, MLB 직행 선언') */
+    if (S.univ) a.cm.forEach(c => { if (T(c)) c.t = c.t.replace('고졸 신인 맞음?', '대졸 신인 맞음?').replace('고졸 메이저 직행', '대졸 메이저 직행'); });
     /* 아마추어 포함: '고1치고는 몸이 벌써 완성형'과 '몸만 좀 키우면 대박'이 같이 나오면 뒤쪽 X */
     if (a.cm.some(c => T(c) && /몸이 벌써 완성형/.test(c.t))) a.cm = a.cm.filter(c => !(T(c) && !c.must && /몸만 좀 키우면/.test(c.t)));
     if (S.stage !== 'pro' || !S.pro) return;
@@ -19107,4 +19109,13 @@ function ctx867(a, x, tone) {
     /* 같은 숫자(ERA 1.64·타율 .331·OPS .976)를 읊는 댓글은 기사당 1개 (시뮬: 'ERA 1.64 불펜이면…'·'ERA 1.64 실화냐…' 연달아) */
     { const seenSt = new Set(); a.cm = a.cm.filter(c => { if (!T(c) || c.fight864 || c.cheer866) return true; const m = c.t.match(/(ERA|평균자책(점)?|타율|OPS|출루율|장타율) ?(\d?\.\d{2,3})/), n = c.t.match(/(\d{2,3})(타점|도루|홀드|세이브|탈삼진|안타|홈런)(?! 페이스)/); if (!m && !n) return true; const k = m ? m[1].replace(/점$/, '').replace('평균자책', 'ERA') + m[3] : n[1] + n[2]; if (seenSt.has(k)) return false; seenSt.add(k); return true; }); }
   } catch (e) {}
+}
+
+/* v867s: 해외파 유턴 뒤 독립리그 2년 동안 나오는 기사엔 [독립리그] 꼬리표 (시뮬: 'OPS 1.048… 지금이 최고의 컨디션'만 떠서 어느 리그인지 모름) */
+{
+  const _arIndy867 = article;
+  article = function (head, body, tone, x) {
+    try { if (S && S.stage === 'mil' && S.mil && S.mil.indy && typeof head === 'string' && !/^\[/.test(head) && !(x && x.intl)) head = '[독립리그] ' + head; } catch (e) {}
+    return _arIndy867.apply(this, [head, body, tone, x]);
+  };
 }
