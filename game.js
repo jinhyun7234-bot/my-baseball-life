@@ -10048,7 +10048,8 @@ try{const st=document.createElement('style');st.textContent='.hv-rcp.hv-long{jus
   const key=c=>c&&typeof c.t==='string'?c.t.replace(/\s+/g,''):'',used=t=>{const v=U[_hA(t)];return!!v&&v>1&&N-v<WIN},nr=()=>keep.filter(c=>c&&!c.rl).length;
   const tgt=a.cm.filter(c=>c&&!c.rl).length;
   a.cm.forEach(c=>{const t=key(c);if(!c||c.rl||t.length<=4||G.test(t)){keep.push(c);return}(used(t)?drop:keep).push(c)});
-  for(let k=0;k<3&&nr()<tgt;k++){let ex=[];try{ex=comments(tone,x)||[]}catch(e){}ex.forEach(c=>{const t=key(c);if(c&&!c.rl&&t.length>4&&!used(t)&&!keep.some(z=>key(z)===t)&&nr()<tgt)keep.push(c)})}
+  const tg4=Math.min(tgt,4);/* v865c (11/27 13:18 유저 "할 말 없으면 줄여도 됨 · 억지로 비슷한 댓글 많게 할 필요 없음"): 중복 빼고 4개 넘게 남으면 안 채움 · 모자라면 4개까지 한 번만 채움 (예전: 원래 개수까지 최대 3번) */
+  for(let k=0;k<1&&nr()<tg4;k++){let ex=[];try{ex=comments(tone,x)||[]}catch(e){}ex.forEach(c=>{const t=key(c);if(c&&!c.rl&&t.length>4&&!used(t)&&!keep.some(z=>key(z)===t)&&nr()<tg4)keep.push(c)})}
   if(!nr()&&drop.length)keep.push(drop[0]);
   keep.forEach(c=>{const t=key(c);if(c&&!c.rl&&t.length>4)U[_hA(t)]=N});a.cm=keep}catch(e){}return r}}
 
@@ -18758,7 +18759,7 @@ const FIGHT864 = {
 }
 
 /* v865 (11/27 13:11 유저 "다답글 너무 많은 건 좀 별로 · 다답글 많은 건 훈훈한 댓글일 때 · ㄱㅇㅌ 같은 것도 2~4개로 컷")
-   · 답글은 최대 4개 (넘으면 2~4개로 자름) · 우승 기사의 훈훈한 댓글(축하·고생·감동·ㅠㅠ…)만 최대 7개
+   · 답글은 최대 4개 (넘으면 2~4개로 자름) · 우승 기사의 훈훈한 댓글(축하·고생·감동·ㅠㅠ…)만 최대 5개 (13:18 유저 "7개도 많음")
    · '역시 ○○신'은 원래 있음(잘한 경기 18%) → 가끔 짧은 맞장구 답글 2~3개 붙임 */
 {
   const _c865 = comments;
@@ -18773,7 +18774,7 @@ const FIGHT864 = {
         if (!c || !Array.isArray(c.re)) return;
         const t = String(c.t || ''), warm = WARM865.test(t) && !COLD865.test(t);
         const big = warm && ring865;   /* v865b (13:16 유저 "훈훈한 댓글도 최대 4개 · 우승할 때 정도만 더") */
-        if (c.re.length > (big ? 7 : 4)) c.re = c.re.slice(0, big ? 7 : ri(2, 4));
+        if (c.re.length > (big ? 5 : 4)) c.re = c.re.slice(0, big ? 5 : ri(2, 4));
         if (/^역시 \S+신|신 오늘도 강림|신 믿습니다/.test(t) && !c.re.length && R() < .5) { const g = t.replace(/^역시 /, '').split('신')[0]; c.re = [`역시 ${g}신 ㄹㅇ`, `${g}신 찬양해`, `신 그 자체`, `${g}신 오늘도 일하신다 ㅋㅋ`].sort(() => R() - .5).slice(0, ri(2, 3)).map(r => ({ nk: pick(NICKS), t: r, up: ri(20, 400) })); }
       });
     } catch (e) {}
