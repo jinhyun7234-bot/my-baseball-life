@@ -18484,6 +18484,9 @@ if (typeof document !== 'undefined') { try { const st = document.createElement('
    타자: 4삼진(골든 솜브레로)·3삼진 · 멀티 홈런·3홈런 · 도루 실패 · 볼넷 3개+ · 4안타+
    투수: 호투(6이닝+ 1실점 이하)인데 팀 패배(물타선) · 조기 강판 6실점+ · 10탈삼진+ · 7이닝+ 무실점
    경기: 10점 차 이상 대승·대패 · 1-0 승리·패배 · KBO면 가끔 ABS(로봇 심판) 드립 */
+
+/* v863b 한 기사에 같은 종류 밈 한 번만: 댓글 수 채우려고 comments()를 여러 번 부르는 곳(최대 3번 더)이 있어서 'ㅈㅈ' 두 개·용암 두 개처럼 겹쳐 나옴 → 기사 번호로 막음 */
+function once863(k) { try { S._on863 = S._on863 || {}; const id = S.artId || 0; if (S._on863[k] === id) return false; S._on863[k] = id; return true; } catch (e) { return true; } }
 const SIT862 = {
   k4: ['오늘 삼진만 {K}개 선풍기 성능 미쳤다 ㅋㅋ', '{K}삼진이면 골든 솜브레로 완성이다 모자 하나 씌워 줘라', '에어컨 필요 없다 {n} 타석 때 바람 시원함', '방망이에 구멍 났냐 공이 다 지나가네', '오늘 상대 투수 탈삼진 기록 {n}이 다 채워 줌'],
   k3: ['3삼진 선풍기 풀가동 ㅋㅋ', '오늘 방망이는 그냥 장식이었다', '삼진 3개… 오늘은 빨리 잊고 내일 보자', '배트 스피드보다 선풍기 회전수가 빨랐다'],
@@ -18529,7 +18532,7 @@ const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠ
       }
       if (d >= 10) keys.push('big'); else if (d <= -10) keys.push('bigL');
       if (x.myR === 1 && x.opR === 0) keys.push('w10'); else if (x.myR === 0 && x.opR === 1) keys.push('l10');
-      if (!keys.length) return out;
+      if (!keys.length || !once863('sit')) return out;
       const U = S.sit862 = S.sit862 || {}; let n = 0;
       keys.sort(() => R() - .5).forEach(k => {
         if (n >= 2 || R() > .55) return;
@@ -18588,7 +18591,7 @@ const DERBY862 = {
     try {
       if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || S.me !== ME || !S.pro || S.pro.league !== 'KBO' || !x || !x.opp || !x.ps || x.intl || x.win == null) return out;   /* v863 (11/27 유저 "정규시즌 라이벌전은 중계 안 하니 의미 없음 · 가을야구에선 써도 됨") */
       const my = S.pro.team, oi = TEAMS.findIndex(t => t.nick === x.opp), rv = typeof RIVAL684 !== 'undefined' && oi >= 0 ? RIVAL684.find(r => (r[0] === my && r[1] === oi) || (r[1] === my && r[0] === oi)) : null;
-      if (!rv || R() > .5) return out;
+      if (!rv || R() > .5 || out.some(c => c && /라이벌|한 지붕|더비/.test(String(c.t || ''))) || !once863('dby')) return out;
       const L = (DERBY862[rv[2]] || {})[x.win ? 'w' : 'l']; if (!L) return out;
       const U = S.dby862 = S.dby862 || {}, C0 = L.filter(t => !out.some(c => c && c.t === t)); if (!C0.length) return out;
       const mn = Math.min(...C0.map(t => U[t] || 0)), C = C0.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1;
@@ -18615,7 +18618,7 @@ const SLANG862 = {
       if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || S.me !== ME || !S.pro || x && x.intl) return out;
       const T = String(tone || ''), P = isP(), gn = giv(ME.name);
       const good = /^(hype|feat|walkoff|psHero|record)$/.test(T), badT = /^(bad|psGoat)$/.test(T);
-      if (!(good || badT) || R() > .2) return out;
+      if (!(good || badT) || R() > .2 || !once863('sl')) return out;
       let L = good ? SLANG862[P ? 'gP' : 'gB'] : SLANG862[P ? 'bP' : 'bB'];
       if (badT && (S.pro.salary || 0) >= 30000) L = L.concat(SLANG862.rich);
       L = L.map(t => josaFix(t.replace(/\{n\}/g, gn))).filter(t => !out.some(c => c && c.t === t));
@@ -18651,23 +18654,24 @@ const LIGHT863 = /치맥|라면|편의점|중계 화질|라디오 중계|셀카|
     let out = _c863.apply(this, arguments);
     try {
       if (!Array.isArray(out) || !S || !ME || !x || x.myR == null) return out;
+      const first = once863('fl');
       const gn = giv(ME.name), P = isP(), d = (x.myR || 0) - (x.opR || 0);
       const U = S.fl863 = S.fl863 || {};
       const put = (k, at) => { const L = FLOW863[k].map(t => josaFix(t.replace(/\{n\}/g, gn))).filter(t => !out.some(c => c && c.t === t)); if (!L.length) return; const mn = Math.min(...L.map(t => U[t] || 0)), C = L.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1; out.splice(Math.min(out.length, at == null ? ri(0, 2) : at), 0, mkC(t, R() < .5 ? [{ nk: pick(NICKS), t: pick(k === 'lava' || k === 'lavaP' ? ['ㅋㅋㅋ 뜨겁다', '용암 인정'] : k.startsWith('dp') ? ['ㅠㅠ', '그건 진짜 아팠다'] : ['ㅋㅋㅋ ㅠ', '아직 모른다…', '내일 보자']), up: ri(20, 600) }] : [], { up: ri(600, 5000) })); };
       /* ② 시리즈 */
       let seriesDone = false;
       const m = String(x.sub || '').match(/시리즈 (\d+)승 (\d+)패/);
-      if (m && x.ps && x.win === false && !x.elim) {
+      if (first && m && x.ps && x.win === false && !x.elim) {
         const w = +m[1], l = +m[2] + 1, ks = x.ps === 'KS' || /한국시리즈|월드시리즈/.test(String(x.title || ''));
         if (w === 0 && l === 3 && R() < .75) { put('s03', 0); seriesDone = true; }
         else if (w === 0 && l === 2 && R() < (ks ? .4 : .5)) { put('s02', 0); seriesDone = true; }
       }
       /* ① 기울어진 경기 */
-      if (!seriesDone && !x.elim && d <= -5 && R() < .4) put('gg');
+      if (first && !seriesDone && !x.elim && !/8강|4강|준결승|결승|동메달/.test(String(x.title || '')) && d <= -5 && R() < .4) put('gg');
       /* ③ 병살 찬물 */
-      if (!P && Array.isArray(x.pl) && x.pl.some(p => p && p.dp && p.i >= 6 && p.my <= p.op) && R() < .55) put(x.win ? 'dpW' : 'dp');
+      if (first && !P && Array.isArray(x.pl) && x.pl.some(p => p && p.dp && p.i >= 6 && p.my <= p.op) && R() < .55) put(x.win ? 'dpW' : 'dp');
       /* ④ 용암 */
-      if (((x.myR || 0) >= 8 || (!P && (x.gH || 0) >= 3 && (x.myR || 0) >= 6)) && R() < .4) put(P ? 'lavaP' : 'lava');
+      if (first && ((x.myR || 0) >= 8 || (!P && (x.gH || 0) >= 3 && (x.myR || 0) >= 6)) && R() < .4) put(P ? 'lavaP' : 'lava');
       /* ⑤ 중요한 경기 가벼운 잡담 줄이기 */
       const big = x.ps && (x.ps === 'KS' || /한국시리즈|월드시리즈/.test(String(x.title || '')) || x.elim || x.clinch || /지면 탈락|마지막 승부|이기면 시리즈 승리/.test(String(x.sub || '')));
       const mid = !big && (x.ps || x.intl);
