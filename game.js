@@ -10626,6 +10626,16 @@ const GAENGGI=['마 갱기에 집중 안하나','마! 갱기에 집중 안하나
 const MAGJ=['마갱집 ㅋㅋㅋㅋㅋㅋ','마갱집 ㅋㅋㅋㅋ','ㅋㅋㅋㅋㅋ 마갱집','마갱집 ㅋㅋㅋ 이거 언제 들어도 웃기네','마갱집 ㅋㅋㅋㅋㅋㅋㅋ 국룰'];
 function gaengRe(){const r={nk:pick(NICKS),t:pick(GAENGGI),up:ri(200,1500)};if(R()<.55)r.re=[{nk:pick(NICKS),t:pick(MAGJ),up:ri(30,600)}];return r}
 const GISE_RE=['우리 팀은 그 단어 언급 금지다','그 단어 쓰지 마라 제발','아 그 단어 꺼내지 마라 불길하다','그 단어는 우리 팀 금지어다 지워라','그 단어 나오면 지는 거 모르냐','2023년 잊었냐 그 단어 금지다'];
+/* v868za: '기세' 밈 다시 켬 (유저 11/27 20:06 "끝내기마다 기세는 넣어도됨") — 1위·5연승 때 시즌 1번 + 끝내기 홈런 기사 + 가을야구 끝내기 승리.
+   '마 이게 우리팀의 기세다'·'그 단어 금지어' 답글은 부산 팀일 때만: 2023 기세 밈은 부산 팀 얘기라 2023년에 우승한 팀 팬이 '2023년 잊었냐' 하면 안 맞음.
+   2023년 꺼내는 답글은 해가 지날수록 덜 나옴(곡선). 새로 넣은 줄은 커리어당 1번, 원래 있던 줄을 더 자주 */
+function gise868(wo,ps,done){try{if(!S||!S.pro||S.pro.league!=='KBO')return null;const bu=(TEAMS[S.pro.team]||{}).city==='부산',U8=S._u868=S._u868||{};
+  const OLD=bu?['마 이게 우리팀의 기세다','마 이게 우리팀의 "기세"다','이게 바로 우리팀의 기세다 ㅋㅋㅋ']:['이게 바로 우리팀의 기세다 ㅋㅋㅋ'];
+  const NEW=(bu?[]:['요즘 우리 팀 기세 장난 아니다','기세 탔다 이대로 쭉 가자']).concat(wo?[bu?'끝내기까지 나오면 이건 진짜 기세다':'끝내기로 이기는 팀이 기세 있는 팀이다']:[]);
+  const Co=OLD.filter(t=>!seenHas(josaFix(t))),Cn=NEW.filter(t=>!U8[t]&&!seenHas(josaFix(t)));
+  let t=null,nw=false;if(Co.length&&!(Cn.length&&R()<.4))t=pick(Co);else if(Cn.length){t=pick(Cn);nw=true}if(!t)return null;
+  const RE=bu?GISE_RE.filter(z=>!/2023/.test(z)||R()<Math.exp(-Math.max(0,S.y-2024)/10)):done?['이 흐름 그대로 끝까지 가자','그 단어 함부로 쓰는 거 아니다 ㅋㅋ','이럴 때일수록 차분하게 가자']:ps?['설레발 금지 시리즈 아직 안 끝났다','이 흐름 그대로 끝까지 가자','그 단어 함부로 쓰는 거 아니다 ㅋㅋ']:[S.m>=9?'설레발 금지 끝까지 가 봐야 안다':'설레발 금지 아직 시즌 길다','이럴 때일수록 조심해야 된다 ㅋㅋ','기세 좋을 때 승수 쌓아 두자','그 단어 함부로 쓰는 거 아니다 ㅋㅋ'];
+  return{t,re:RE,nw}}catch(e){return null}}
 function lastTitleGap(){try{const my=S.pro.team,BASE=[2025,2019,null,2022,2021,1999,2026,2024,1992,2020];const last=(S.champs||{})[my]??BASE[my];return last==null?'never':S.y-last}catch(e){return null}}
 {const _cV5=comments;comments=function(tone,x){let out=_cV5(tone,x);try{if(!Array.isArray(out)||!S||!ME||!S.pro)return out;x=x||{};
   const gn=giv(ME.name),re=(L,n)=>L.slice().sort(()=>R()-.5).slice(0,n).map(t=>({nk:pick(NICKS),t,up:ri(40,900)}));
@@ -10638,9 +10648,10 @@ function lastTitleGap(){try{const my=S.pro.team,BASE=[2025,2019,null,2022,2021,1
   const SS=serState(x);if(ps&&x.win===false&&SS&&SS.W>SS.L&&R()<.85){const s=SS;
     const L=['아직 시리즈 유리하다 내일 다시 다잡고 하자',`${s.W}승 ${s.L}패 아직 우리가 앞서 있다 쫄 거 없다`,'한 판 졌다고 흔들릴 필요 없음 아직 유리함','오늘 건 빨리 잊고 내일 끝내자','시리즈는 길게 봐야지 아직 우리 쪽이다','져도 되는 경기 하나 쓴 거다 내일 잡자'];
     put(pick(L.filter(t=>!seenHas(josaFix(t))))||L[0],re(['ㅇㅇ 아직 유리함','내일 잡으면 됨','멘탈 잡자','맞다 쫄지 마라'],R()<.6?1:0),ri(1500,5000),0)}
-  /* ③ 기세 — v868s: 2023 롯데 '기세' 밈은 실존 선수 말에서 나온 롯데 놀림이라 '봄데'처럼 안 씀 */
-  if(false&&kbo&&!ps&&!x.intl&&!x.wbc&&x.win!==false&&S.stage==='pro'&&!S.pro.minor&&S._giseY!==S.y&&S.m>=4&&S.m<=8&&!/결승|준결승|라운드|올림픽|아시안게임|WBC|프리미어|2군|퓨처스|부상|방출|트레이드/.test(title+' '+String(tone))){const st=standings(),rk=st.findIndex(z=>z.i===my)+1,sk=streakOf((S.lg.rec||[])[my]);const n=+(String(sk).match(/^(\d+)승/)||[])[1]||0;
-    if((rk===1||n>=5)&&R()<(n>=5?.4:.2)){S._giseY=S.y;put(pick(['마 이게 우리팀의 기세다','마 이게 우리팀의 "기세"다','이게 바로 우리팀의 기세다 ㅋㅋㅋ']),re(GISE_RE,2+ri(0,1)),ri(800,3000))}}
+  /* ③ 기세 — v868za: 다시 켬 (gise868 참고). 1위·5연승일 때 시즌 1번 + 끝내기 홈런 기사(정규시즌 3~9월) */
+  {const wo3=String(tone)==='walkoff';
+  if(kbo&&!ps&&!x.intl&&!x.wbc&&x.win!==false&&S.stage==='pro'&&!S.pro.minor&&(wo3?S.m>=3&&S.m<=9:S._giseY!==S.y&&S.m>=4&&S.m<=8)&&!/결승|준결승|라운드|올림픽|아시안게임|WBC|프리미어|2군|퓨처스|부상|방출|트레이드/.test(title+' '+String(tone))&&!out.some(c=>/기세/.test(String((c&&c.t)||'')))){const st=standings(),rk=st.findIndex(z=>z.i===my)+1,sk=streakOf((S.lg.rec||[])[my]);const n=+(String(sk).match(/^(\d+)승/)||[])[1]||0;
+    if(wo3?R()<.7:(rk===1||n>=5)&&R()<(n>=5?.4:.2)){const g=gise868(wo3,false,false);if(g&&put(g.t,re(g.re,2+ri(0,1)),ri(800,3000))){const jt=josaFix(g.t),c=out.find(z=>z&&z.t===jt);if(c)c._gz={t:g.t,nw:g.nw,wo:wo3}/* 시즌 1번·새 줄 1번 표시는 기사에 실제로 남을 때 (파일 끝 gzCommit868) */}}}}
   /* ④ 드디어 터지네 */
   if(S._burstY!==S.y&&(x.gPA>0||x.ipO>0||tone==='hype')){const lvs=['KBO','MLB'],cur=S.rows.filter(r=>r.y===S.y&&lvs.includes(r.lv)),prevY=[S.y-1,S.y-2,S.y-3];
     const prevW=prevY.map(y=>S.rows.filter(r=>r.y===y&&lvs.includes(r.lv)).reduce((s,r)=>s+rowWAR(r),0)),had=prevY.filter(y=>S.rows.some(r=>r.y===y&&lvs.includes(r.lv)&&((r.b&&r.b.PA>=30)||(r.p&&r.p.outs>=30)))).length,bad=prevY.filter((y,i)=>prevW[i]<(isP()&&ME.pos!=='SP'?.8:1.8)&&S.rows.some(r=>r.y===y&&lvs.includes(r.lv)&&((r.b&&r.b.PA>=30)||(r.p&&r.p.outs>=30)))).length;/* v867l: 아마추어 기록 말고 1군에서 뛴 해만 (시뮬: 데뷔 시즌에 '존버는 승리한다') */
@@ -15381,6 +15392,11 @@ try{if(typeof followGame==='function'){const _fgW854=followGame;followGame=funct
     if(!a.cm.some(c=>c&&/끝내기/.test(String(c.t||'')))){const L=mine?[`${inn}회말 끝내기 ${kind}!!! ${gn} 이건 평생 간다`,`${gn} 끝내기 ${kind} 치는 순간 소리 질렀다 ㅋㅋㅋ`,`${typeof ro853==='function'?ro853('끝내기 '+kind):'끝내기 '+kind+'로'} 끝낸 ${gn} 오늘 그냥 영화 주인공이다`]:won?['끝내기로 이겼다!!! 오늘 잠 다 잤다','큰 경기 끝내기는 평생 간다','끝내기 순간 덕아웃 뛰쳐나오는 거 보고 울컥함']:['끝내기로 졌다… 이건 진짜 잔인하다','다 잡은 경기 끝내기 맞고 졌다 잠 못 잔다','상대 덕아웃 뛰쳐나오는 장면 보기 싫다 ㅠ'];
       const C=L.filter(t=>!seenHas(t)),t=pick(C.length?C:L);seenAdd(t);const top=a.cm.reduce((m,c)=>Math.max(m,(c&&+c.up)||0),0);
       a.cm.unshift(mkC(t,shuffle((won?['오늘 MVP 고민할 필요 없음','이 장면 평생 돌려본다','소름 아직도 안 가라앉음','동료들 뛰쳐나오는 장면 무한 반복 중']:['잠이 안 온다','이건 진짜 잔인하다','다음 경기에 갚자'])).slice(0,2),{up:top+ri(800,4000)}))}}}catch(e){}
+  /* v868za: KBO 가을야구 끝내기 승리에도 '기세' (gise868). 한국시리즈 우승 확정 경기·국제대회는 빼고, 시리즈 끝낸 경기는 '시리즈 아직 안 끝났다' 답글 X */
+  try{const tt=String((o&&o.title)||''),done=!!(o&&o.clinch);
+    if(won&&S.stage==='pro'&&S.pro&&S.pro.league==='KBO'&&!(o&&(o.intl||o.wbc))&&!/결승|준결승|동메달|올림픽|아시안게임|WBC|프리미어/.test(tt)&&!(done&&/한국시리즈/.test(tt))&&Array.isArray(a.cm)&&!a.cm.some(c=>c&&/기세/.test(String(c.t||'')))&&R()<.5){
+      const gz=gise868(true,true,done);if(gz){const t=josaFix(gz.t);if(!seenHas(t)){seenAdd(t);if(gz.nw)(S._u868=S._u868||{})[gz.t]=S.y;
+        a.cm.splice(Math.min(a.cm.length,ri(1,3)),0,mkC(t,gz.re.slice().sort(()=>R()-.5).slice(0,1+ri(0,1)),{up:ri(800,3000)}))}}}}catch(e){}
   if(/끝내기/.test(a.head))return g;
   if(mine){const d=`${inn}회말 끝내기 ${kind}`;if(ml&&a.head.indexOf(nm+' '+ml)>=0)a.head=a.head.replace(nm+' '+ml,`${nm} ${d}`);else a.head=`${nm}, ${String((o&&o.title)||'').trim()} ${d}!`;
     if(typeof a.body==='string'&&!/끝내기/.test(a.body))a.body=a.body.replace(/\.\s*$/,'')+`. ${inn}회말 ${jo(nm,'이','가')} ${typeof ro853==='function'?ro853('끝내기 '+kind):'끝내기 '+kind+'로'} 경기를 끝냈다.`}
@@ -20114,5 +20130,33 @@ if (typeof tradeComments === 'function') {
       if (C.length && R() < .75) { const z = pick(C); U8[z[0]] = S.y; out.splice(Math.min(out.length, ri(1, 3)), 0, mkC(z[0], R() < .55 ? [{ nk: pick(NICKS), t: pick(z[1]), up: ri(20, 600) }] : [], { up: ri(800, 4000) })); }
     } catch (e) {}
     return out;
+  };
+}
+
+/* v868za: '기세' 줄의 '시즌 1번'·'새 줄 커리어 1번' 표시는 기사에 실제로 남은 줄만 (모자란 기사 채우려고 댓글을 다시 뽑을 때 뽑혔다 버려진 줄이 표시만 먹던 것 방지)
+   · 한 기사에 기세 밈 줄은 하나만 · 렌더 직전에도 한 번 더 확인 (렌더 때 채워 넣은 댓글용) */
+{
+  const GZ868 = /우리팀의 "?기세"?다|이건 진짜 기세다|기세 있는 팀이다|우리 팀 기세 장난 아니다|기세 탔다 이대로 쭉 가자/;
+  const gzCommit868 = a => {
+    if (!a || !Array.isArray(a.cm) || !S) return;
+    let seen = a.cm.some(c => c && !c._gz && typeof c.t === 'string' && GZ868.test(c.t));
+    a.cm = a.cm.filter(c => {
+      const z = c && c._gz; if (!z) return true;
+      delete c._gz; if (seen) return false; seen = true;
+      if (z.nw) (S._u868 = S._u868 || {})[z.t] = S.y;
+      if (!z.wo) S._giseY = S.y;
+      return true;
+    });
+  };
+  const _arGZ868 = article;
+  article = function (head, body, tone, x) {
+    const id0 = S && S.artId, r = _arGZ868.apply(this, arguments);
+    try { const a = S && S.arts && S.arts[0]; if (a && a.id !== id0) gzCommit868(a); } catch (e) {}
+    return r;
+  };
+  const _rdGZ868 = render;
+  render = function () {
+    try { if (S && Array.isArray(S.arts)) for (let i = 0; i < Math.min(12, S.arts.length); i++) gzCommit868(S.arts[i]); } catch (e) {}
+    return _rdGZ868.apply(this, arguments);
   };
 }
