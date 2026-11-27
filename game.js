@@ -19124,6 +19124,12 @@ function ctx867(a, x, tone) {
         if (py >= 5 && /이제 상대 팀들이 분석 제대로 들어가|상대 팀이 분석을 덜 한/.test(t)) return false;
         return true; });
       a.cm.forEach(c => { if (T(c) && Array.isArray(c.re) && sp && ipGS >= 5.8) c.re = c.re.filter(w => !(w && /5이닝이 최대치/.test(String(w.t || '')))); }); }
+    /* '커리어하이 각'은 올해(전반기면 페이스)가 실제로 커리어 최고일 때만 · 팀이 3위 안이면 '이 팀 팬 하려면 멘탈이 강해야' X */
+    if (S.stage === 'pro' && S.pro) {
+      const chBad = (() => { try { const lg = S.pro.league, ws = {}; S.rows.forEach(r => { if (r.lv === lg) ws[r.y] = (ws[r.y] || 0) + rowWAR(r); }); const cur = ws[S.y] || 0, prev = Object.keys(ws).filter(y => +y < S.y).map(y => ws[y]); if (!prev.length) return false; return cur / (S.phase === 1 ? .5 : 1) < Math.max(...prev) * .95; } catch (e) { return false; } })();
+      const top3 = (() => { try { return S.pro.league === 'KBO' && myTeamRank() <= 3; } catch (e) { return false; } })();
+      a.cm = a.cm.filter(c => !(T(c) && !c.must && ((chBad && /커리어하이|커리어 하이|커리어 최전성기/.test(c.t)) || (top3 && /팬 하려면 멘탈이|팬 하기 힘들다|날 가만두질 않아/.test(c.t)))));
+    }
     /* 같은 답글이 여러 댓글에 반복되면 처음 하나만 (시뮬: '작년에도 이맘때 이 소리 했던 거 기억함'이 두 스레드에) */
     { const seenR = new Set(); a.cm.forEach(c => { if (T(c) && Array.isArray(c.re)) c.re = c.re.filter(w => { const k = String((w && w.t) || '').replace(/[ㅋㅎ!~.\s]+$/, '').slice(0, 14); if (k.length < 6) return true; if (seenR.has(k)) return false; seenR.add(k); return true; }); }); }
     /* 꼭 나오는 기록 댓글끼리도 앞머리가 같으면 하나만 (시뮬: '이 페이스면 시즌 37홈런…'·'이 페이스면 커리어하이 각' 둘 다 기록 댓글로 붙음) */
@@ -19200,7 +19206,7 @@ if (typeof phaseArticle === 'function') {
       const injN = (S.news || []).filter(n => n && n.y === S.y && /이탈/.test(String(n.t || ''))).length;
       const sea = (() => { try { return stdSeason(); } catch (e) { return 'na'; } })(), good = sea === 'elite' || sea === 'good', bad = sea === 'bad';
       const wY = y => S.rows.filter(z => z.y === y && (z.lv === 'KBO' || z.lv === 'MLB')).reduce((s, z) => s + rowWAR(z), 0), gY = y => S.rows.filter(z => z.y === y && (z.lv === 'KBO' || z.lv === 'MLB')).reduce((s, z) => s + ((z.b && z.b.G) || 0) + ((z.p && z.p.G) || 0), 0);
-      if (injN >= 1 && (m.G || 0) < gHalf * (P ? .25 : .55)) keys.push('inj');
+      if (injN >= 1 && (P ? ((m.GS || 0) >= (m.G || 0) / 2 ? (m.GS || 0) < gHalf / 5 * .5 : (m.G || 0) < gHalf * .2) : (m.G || 0) < gHalf * .55)) keys.push('inj');/* v867z: 선발은 선발 등판 수로 (16경기 10승 선발한테 '전설의 포켓몬' 뜨던 것) */
       if (good && gY(S.y - 1) >= 40 && wY(S.y - 1) / WARK(lg) < 1) keys.push('reb');
       if (P && (m.GS || 0) < (m.G || 0) / 2 && (m.G || 0) >= 28 && m.outs >= 60 && m.R * 27 / m.outs < 3.6) keys.push('rpw');
       if ((S.faList || []).some(f => f && f.y === S.y)) keys.push(good ? 'faG' : bad ? 'faB' : null);
