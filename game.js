@@ -11667,7 +11667,7 @@ function srCm685(){const out=[];try{if(!S||!S.pro||!ME||S.stage!=='pro')return o
   else if(!out.length)out.push(mkC(pick(['이번 시즌은 빨리 잊고 내년에 보자','겨울에 확실히 준비해서 돌아와라']),[],{up:ri(300,1500)}))
   out.forEach(c=>{c.t=String(c.t).replace(/\s+/g,' ').trim()});try{const MC=mlbCtr686();if(MC&&out.some(c=>/오버페이라고 하냐/.test(c.t)))S._ovp686=MC.tot+':'+S.pro.tname}catch(e){}}catch(e){}return out}
 {const _bsr=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsr.apply(this,arguments);try{if(q&&!q.cm)q.cm=srCm685()}catch(e){}return q}}
-function srCmHtml685(L){const one=(c,d)=>`<div class="src-i${d?' sub':''}"><div class="src-h"><b>${esc(String(c.nk||'').replace(/^@/,''))}</b>${d?'':`<span>👍 ${(c.up||0).toLocaleString()}</span>`}</div><div class="src-t">${esc(c.t)}</div>${Array.isArray(c.re)&&c.re.length?`<div class="src-re">${c.re.map(r=>one(r,1)).join('')}</div>`:''}</div>`;
+function srCmHtml685(L){const one=(c,d)=>`<div class="src-i${d?' sub':''}"><div class="src-h"><b>${esc(String(c.nk||'').replace(/^@/,''))}</b></div><div class="src-t">${esc(c.t)}</div>${Array.isArray(c.re)&&c.re.length?`<div class="src-re">${c.re.map(r=>one(r,1)).join('')}</div>`:''}</div>`;
   return`<div class="srec-card src"><div class="srec-k">팬 반응</div>${L.map(c=>one(c,0)).join('')}</div>`}
 {const _vsr=vSeasonRecap;vSeasonRecap=function(q){let h=_vsr.apply(this,arguments);try{if(q&&Array.isArray(q.cm)&&q.cm.length){const i=h.lastIndexOf('</div>');if(i>0)h=h.slice(0,i)+srCmHtml685(q.cm)+h.slice(i)}}catch(e){}return h}}
 (function(){try{const s=document.createElement('style');s.textContent=`.srec-card.src .src-i{padding:10px 0;border-top:1px solid rgba(255,255,255,.08)}
@@ -20167,5 +20167,65 @@ if (typeof tradeComments === 'function') {
   render = function () {
     try { if (S && Array.isArray(S.arts)) for (let i = 0; i < Math.min(12, S.arts.length); i++) gzCommit868(S.arts[i]); } catch (e) {}
     return _rdGZ868.apply(this, arguments);
+  };
+}
+
+/* v868za3 (11/28 00:04 유저 "시즌결산 좋아요 너무 짜침 빼고 옵션 달성 여부 알려줘", "제재금 댓글 수위 높이셈", "오늘도 ○○은 뭐야")
+   · 시즌 결산: 팬 반응 좋아요 숫자 뺌(위) + '계약 옵션' 카드 (조건별 ✅/❌, 보너스는 오프시즌 정산)
+   · 도박·승부조작 징계 기사: 댓글 수위 ↑ (일반 욕설까지, 팀·지역 비하 X) · 응원 댓글('오늘도 ○○' 등) 전부 X */
+{
+  const _bsOP = buildSeasonRecap;
+  buildSeasonRecap = function () {
+    const q = _bsOP.apply(this, arguments);
+    try {
+      const p = S.pro; if (!q || !p) return q;
+      const K = p.optK;
+      if (K && S.y >= K.from && S.y <= K.until && Array.isArray(K.list)) {
+        let pay = 0;
+        const res = K.list.map((x, i) => { const ok = optHit804(x, S.y, K.lg || p.league); if (ok) pay += K.amt * (OPTW804[i] || 0); return { t: x.t, ok }; });
+        q.opt = { res, pay: Math.round(pay / 100) * 100, lg: K.lg || p.league };
+      } else if (p.opt && p.years >= 1) {
+        const ok = lastWAR() >= 1.5; q.opt = { res: [{ t: '시즌 WAR 1.5 이상', ok }], pay: ok ? p.opt : 0, lg: p.league };
+      }
+    } catch (e) {}
+    return q;
+  };
+  const _vsOP = vSeasonRecap;
+  vSeasonRecap = function (q) {
+    let h = _vsOP.apply(this, arguments);
+    try {
+      if (q && q.opt && q.opt.res && q.opt.res.length) {
+        const n = q.opt.res.filter(r => r.ok).length;
+        const card = `<div class="srec-card"><div class="srec-k">계약 옵션 · ${n}/${q.opt.res.length} 달성</div>${q.opt.res.map(r => `<div class="srec-sub" style="margin-top:4px">${r.ok ? '✅' : '❌'} ${esc(r.t)}</div>`).join('')}<div class="srec-sub" style="margin-top:8px;opacity:.75">${q.opt.pay > 0 ? `보너스 ${moneyL(q.opt.pay, q.opt.lg)} (오프시즌에 정산)` : '이번 시즌 옵션 보너스 없음'}</div></div>`;
+        const j = h.indexOf('<div class="srec-card src">');
+        if (j >= 0) h = h.slice(0, j) + card + h.slice(j);
+        else { const i = h.lastIndexOf('</div>'); if (i > 0) h = h.slice(0, i) + card + h.slice(i); }
+      }
+    } catch (e) {}
+    return h;
+  };
+}
+const SCAN868 = ['도박할 시간에 스윙 연습이나 해라 ㅅㅂ', '연봉 받아서 토토 돌렸냐 미쳤네 진짜', '마킹한 유니폼 환불해 줘라 돈 아깝다', '이 새끼 때문에 시즌 망하면 책임질 거냐', '솜방망이 징계 또 나왔네 정신 차려라', '사과문 대필 티 난다 반성은 무슨', '복귀전에서 야유 각오해라 진짜', '구단은 계약 해지 안 하고 뭐 하냐', '팬들은 돈 내고 야구 보는데 이게 뭐냐', '도박은 끝이 없다 한 번 하면 또 한다', '응원가 부르던 내 목이 아깝다', '이름만 봐도 열받는다 꼴도 보기 싫다', '벌금 몇천으로 끝나는 게 말이 되냐', '영구제명 안 하면 리그도 공범이다', '이번 시즌 응원 접는다', 'ㅅㅂ 진짜 팬 하기 싫어진다', '애들한테 뭐라고 설명하냐 이걸', '변명의 여지가 없으면 그냥 옷 벗어라'];
+const SCAN868R = ['이건 쉴드 못 친다', '쉴드 치는 사람들 다 똑같다', 'ㄹㅇ 실망', '변명하지 마라', '복귀해도 안 본다', '이제 끝났다 진짜', '할 말이 없다', '팬들만 바보 됐다'];
+{
+  const _arSC = article;
+  article = function (head, body, tone, x) {
+    const id0 = S && S.artId;
+    const r = _arSC.apply(this, arguments);
+    try {
+      if (String(tone) !== 'scandal') return r;
+      const a = S.arts && S.arts[0]; if (!a || a.id === id0 || !Array.isArray(a.cm)) return r;
+      const OK = new Set([...(CM.scandal || []), ...SCAN868].map(t => josaFix(t)));
+      a.cm = a.cm.filter(c => c && typeof c.t === 'string' && OK.has(c.t));
+      a.cm.forEach(c => { c.re = (c.re || []).filter(w => w && typeof w.t === 'string' && (SCAN868R.includes(w.t) || OK.has(w.t))); });
+      const have = new Set(a.cm.map(c => c.t));
+      /* 센 줄 2~3개 섞고 6~8개까지 채움 */
+      const hard = shuffle(SCAN868.filter(t => !have.has(t) && !seenHas(t))).slice(0, ri(2, 3));
+      const soft = shuffle((CM.scandal || []).filter(t => !have.has(t) && !hard.includes(t)));
+      const add = [...hard, ...soft].slice(0, Math.max(0, ri(6, 8) - a.cm.length));
+      add.forEach(t => { seenAdd(t); a.cm.push(mkC(josaFix(t), R() < .45 ? [{ nk: pick(NICKS), t: pick(SCAN868R), up: ri(10, 600) }] : [], { up: ri(200, 5000) })); });
+      a.cm = shuffle(a.cm).sort((p, q) => (q.up || 0) - (p.up || 0));
+    } catch (e) {}
+    return r;
   };
 }
