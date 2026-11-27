@@ -19977,7 +19977,7 @@ if (typeof buildSeasonRecap === 'function') {
     const q = _bs868p.apply(this, arguments);
     try {
       if (!q || !Array.isArray(q.cm) || !S || !ME || !S.pro) return q;
-      const y = q.y || S.y, lg = S.pro.league, w = (S.rows || []).filter(r => r.y === y && r.lv === lg).reduce((s, r) => s + rowWAR(r), 0), ps = String(q.ps || '');
+      const y = q.y || S.y, lg = S.pro.league, w = (S.rows || []).filter(r => r.y === y && r.lv === lg).reduce((s, r) => s + rowWAR(r), 0), ps = String(q.psRes || q.ps || '');/* v868y: 결산 객체 필드 이름이 psRes (시뮬: '가을 탈락 직후' 줄 0번) */
       const has = t => q.cm.some(c => c && c.t === t), put = (t, re) => { if (has(t)) return; q.cm.splice(Math.min(q.cm.length, ri(1, 3)), 0, mkC(t, R() < .55 ? [{ nk: pick(NICKS), t: pick(re), up: ri(20, 600) }] : [], { up: ri(500, 3000) })); };
       if (w >= (lg === 'MLB' ? 3 : 3.5) && /^최종 [2-5]위|12강|8강|4강/.test(ps) && !/우승/.test(ps)) {
         const L = [['가을 탈락 직후라 다들 평가가 박하다 겨울 지나면 다시 보일 거다', ['시즌 전체로 보자', '그래도 아쉬운 건 아쉬운 거']], ['정규시즌만 놓고 보면 올해 진짜 잘했다 가을이 아쉬울 뿐', ['내년 가을엔 웃자', '가을에 한 번만 더']]].filter(z => !seenHas('po868:' + z[0]));
@@ -20016,7 +20016,7 @@ if (typeof buildSeasonRecap === 'function') {
         const L0 = S.injLast, d = L0 ? ((S.y - L0.y) * 12 + ((S.m || 0) - (L0.m || 0))) * 30 : 0, L = [['이번엔 터지지 말고 끝까지 건강하게 가자', ['제발 ㅠ', '몸이 먼저다']]];
         if (d >= 50 && d <= 720) L.push([`우리 ${giv(ME.name)} 무사 복귀 기원 ${d}일차였는데 드디어 돌아왔다 ㅠ`, ['매일 빌었다 진짜', '이제 아프지만 말자']]);
         if (isP()) L.push(['요즘은 복귀하면 투구 수부터 세어 가면서 던지더라 천천히 올리자', ['무리하면 또 다친다', '관리가 먼저다']]);
-        put1(L, 'ir868:');
+        if (R() < .5) put1(L, 'ir868:');/* v868y: 부상 복귀 줄이 커리어당 1.4번 → 절반으로 */
       }
       /* KBO 대형 계약 (펨코: '200억대 계약서 결재 올리는 건 단장도 두렵겠지'·'계약금만 해도 몇십억'·'15년 570억 초장기 계약 안 되나') */
       { const mt = h.match(/(\d+)년 ([\d,]+)억/); if (mt && S.pro.league === 'KBO' && !/방출|트레이드/.test(h)) { const tot = +String(mt[2]).replace(/,/g, ''), yr = +mt[1], L = [];
@@ -20036,7 +20036,7 @@ if (typeof buildSeasonRecap === 'function') {
           else if (!P && tb.AB >= 40) { const av = tb.H / tb.AB; if (av <= .18) put1([[`속보) ${giv(ME.name)} 오늘로 가을야구 통산 타율 .${String(Math.round(av * 1000)).padStart(3, '0')} 달성 ㅋㅋ ㅠ`, ['가을만 되면 다른 사람이다', '내년 가을엔 제발']]], 'ps868:'); } }
       }
       /* 트레이드 */
-      if (/로 트레이드$|초대형 트레이드/.test(h)) put1([['트레이드는 뒷이야기가 1~2년 지나야 풀리더라 썰 기다린다', ['썰 풀리면 다시 모이자 ㅋㅋ', '단장 인터뷰 기다린다']], ['벌써부터 손해네 이득이네 말 많은데 시즌 끝나고 다시 보자', ['지금은 아무도 모른다', '결과는 성적이 말해 준다']], ['팬들끼리 누가 이득인지 따지는 게 트레이드의 재미다 ㅋㅋ', ['스토브리그 꿀잼', '오늘 커뮤 불탄다']]], 'tr868:');
+      /* 트레이드 줄은 tradeComments 쪽에서 (기사 만든 뒤 댓글을 통째로 tradeComments로 바꿔서 여기 넣으면 지워짐) */
       /* 은퇴 */
       if (T === 'retire' && /은퇴|명예의 전당/.test(h) && !/영구결번/.test(h)) {
         const t = careerTot(['KBO', 'MLB']), why = String((S.ended && S.ended.why) || ''), vol = /은퇴를 선언/.test(why), P = isP();
@@ -20096,5 +20096,23 @@ if (typeof render === 'function') {
       const fx = t => typeof t === 'string' ? t.replace(/144경기/g, '162경기') : t;
       a.cm.forEach(c => { if (!c) return; c.t = fx(c.t); if (Array.isArray(c.re)) c.re.forEach(r => { if (r) r.t = fx(r.t); }); });
     } catch (e) {}
+  };
+}
+/* v868y: 트레이드 기사 댓글은 ACT.tradeGo가 기사 만든 뒤 tradeComments()로 통째로 바꿈 → 기사 쪽에서 붙인 새 줄이 다 지워지던 것 (시뮬: 트레이드 기사 14개 중 새 줄 0개)
+   펨코 트레이드 글('트레이드는 숨겨진 썰이 재밌음'·'1~2년 지나야 뒷이야기가 풀림'·'손해네 이득이네 갈드컵이 재밌지') 말투 · 커리어 한 번 */
+if (typeof tradeComments === 'function') {
+  const _tc868 = tradeComments;
+  tradeComments = function (from, to, star, rich, big) {
+    const out = _tc868.apply(this, arguments);
+    try {
+      if (!Array.isArray(out) || !S || !ME || !S.pro) return out;
+      const U8 = S._u868 = S._u868 || {}, has = t => out.some(c => c && typeof c.t === 'string' && (c.t === t || c.t.slice(0, 8) === t.slice(0, 8)));
+      const L = [['트레이드는 뒷이야기가 1~2년 지나야 풀리더라 썰 기다린다', ['썰 풀리면 다시 모이자 ㅋㅋ', '단장 인터뷰 기다린다']], ['벌써부터 손해네 이득이네 말 많은데 시즌 끝나고 다시 보자', ['지금은 아무도 모른다', '결과는 성적이 말해 준다']], ['팬들끼리 누가 이득인지 따지는 게 트레이드의 재미다 ㅋㅋ', ['스토브리그 꿀잼', '오늘 커뮤 불탄다']]];
+      try { const lg = S.pro.league, yrs = proYears(), w2 = [S.y, S.y - 1].map(y => (S.rows || []).filter(z => z.y === y && z.lv === lg).reduce((s2, z) => s2 + rowWAR(z), 0) / WARK(lg)), avgW = (w2[0] + w2[1]) / 2;
+        if (!big && !star && yrs >= 3 && avgW < 1.5) L.push(['기회 줄 만큼 줬다 견적 내고 보낸 거다', ['거기 가서는 터지길', '여기선 안 맞았던 거지']], ['여기서 못 핀 꽃 거기 가서 피우길', ['진심으로 응원한다']]); } catch (e) {}
+      const C = L.filter(z => !U8[z[0]] && !has(z[0]));
+      if (C.length && R() < .75) { const z = pick(C); U8[z[0]] = S.y; out.splice(Math.min(out.length, ri(1, 3)), 0, mkC(z[0], R() < .55 ? [{ nk: pick(NICKS), t: pick(z[1]), up: ri(20, 600) }] : [], { up: ri(800, 4000) })); }
+    } catch (e) {}
+    return out;
   };
 }
