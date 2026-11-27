@@ -5060,14 +5060,26 @@ function runAnim(g,e,draw){try{const L=e.last;if(!L||!L.pb||!e.b)return null;con
 
 {const _mb5=meBatPA;meBatPA=function(pR,risp){const t=_mb5(pR,risp);_meBat=true;return t}}
 
-/* ===================== 고교 지역 표시 · 연고 구단 지명 30% ===================== */
+/* ===================== 고교 지역 표시 · 연고 구단 지명 (v866: 한 팀 지역 40% · 서울 팀당 30%) ===================== */
 const SREG=['서울','서울','부산','광주','대구','대전','수원','창원','인천','서울'];
 const REGT={서울:[0,1,2],부산:[8],광주:[7],대구:[6],대전:[5],수원:[4],창원:[9],인천:[3]};
 {const _de10=draftEvent;draftEvent=function(){const q=_de10();try{if(!q||!q.ch)return q;const sign=q.ch.find(c=>c.act==='draftSign');if(!sign)return q;
-  const reg=SREG[S.school]||'서울',loc=REGT[reg]||[];const base=loc.length/10,sw=Math.max(0,(.3-base)/(1-base));if(!loc.length||loc.includes(sign.arg.team)||R()>=sw)return q;
-  const old=sign.arg.team,nt=pick(loc);sign.arg.team=nt;const on=`${TEAMS[old].city} ${TEAMS[old].nick}`,nn=`${TEAMS[nt].city} ${TEAMS[nt].nick}`;
-  sign.t=sign.t.replace(on,nn);q.text=q.text.replace(jo(on,'이','가'),jo(nn,'이','가')).replace(on,nn)+`\n연고 지역(${reg}) 구단이 지역 출신 유망주를 놓치지 않았다.`;
-  const sh=S.queue&&S.queue.find(x=>x&&x.type==='draftshow');const show=q._show||sh;if(show&&show.board){const me=show.board.find(b=>b.me);if(me){const sw=show.board.find(b=>!b.me&&b.k>me.k&&b.t===nt);me.t=nt;if(sw)sw.t=old}}}catch(e){}return q}}
+  const reg=SREG[S.school]||'서울',loc=REGT[reg]||[];const base=loc.length/10,T866=loc.length>=3?.9:.4,sw=Math.max(0,(T866-base)/(1-base));/* v866 (11/27 13:33 유저 "로컬보이 지명 40% · 서울은 트윈스·베어스·히어로즈 각각 30% · 나머지 10% 타 구단"): 연고 구단 한 팀인 지역 40% · 서울(세 팀) 합 90%(팀당 30%) (예전: 지역 합 30%) */
+  if(!loc.length||loc.includes(sign.arg.team)||R()>=sw)return q;
+  /* v866 (11/27 13:33 유저 "지명할 때 바로 밑 팀이 자이언츠인데 또 자이언츠 뜨는 경우 · 10팀 번갈아 뽑으니까 같은 라운드에 같은 팀 두 번 X")
+     예전: 지명 팀만 연고 팀으로 바꾸고 중계 보드는 '내 뒤에서 그 팀을 찾아' 맞바꿨음 → 연고 팀이 같은 라운드 내 앞 순번이면 그 팀이 두 번 뽑는 것처럼 보였음
+     → 지명 순번 자체를 같은 라운드의 연고 팀 차례로 옮김 (보드도 그 순번까지 다시 맞춤 · 순번 순서는 그대로라 같은 라운드에 같은 팀 두 번 X) */
+  const sh=S.queue&&S.queue.find(x=>x&&x.type==='draftshow'),show=q._show||sh;
+  const order=(S.lg&&S.lg.prev&&S.lg.prev.length===10)?S.lg.prev.slice().reverse():[0,1,2,3,4,5,6,7,8,9];
+  const old=sign.arg.team,op=sign.arg.pick||0,rd=sign.arg.rd||Math.ceil(op/10)||1,nt=pick(loc),np=(rd-1)*10+order.indexOf(nt)+1;
+  if(order.indexOf(nt)<0||np<1||np>110)return q;
+  if(show&&Array.isArray(show.board)&&show.board.some(b=>b&&b.rv&&b.k===np))return q;
+  sign.arg.team=nt;sign.arg.pick=np;const on=`${TEAMS[old].city} ${TEAMS[old].nick}`,nn=`${TEAMS[nt].city} ${TEAMS[nt].nick}`;
+  sign.t=sign.t.replace(on,nn);sign.s=String(sign.s||'').replace(/전체 \d+순위/,`전체 ${np}순위`);q.text=q.text.replace(jo(on,'이','가'),jo(nn,'이','가')).replace(on,nn)+`\n연고 지역(${reg}) 구단이 지역 출신 유망주를 놓치지 않았다.`;
+  if(show&&Array.isArray(show.board)){const B=show.board,mk=k=>({k,t:order[(k-1)%10],name:mkName(),pos:pick(DPOS),sc:R()<.82?pick(SCHOOLS).n:pick(['한강대','남산대','해오름대','갑천대'])});
+    const meE=B.find(b=>b&&b.me);if(meE){const k=meE.k;B[B.indexOf(meE)]=mk(k)}
+    while(B.length<np)B.push(mk(B.length+1));B.length=np;B[np-1]={k:np,t:nt,me:1};
+    show.my=np;if(Array.isArray(show.intr)){show.intr=show.intr.filter(t=>t!==old);if(!show.intr.includes(nt))show.intr.unshift(nt)}}}catch(e){}return q}}
 
 /* ===================== 선택형 이벤트 빈도 60%로 ===================== */
 const EV_KEEP=/계약|FA|드래프트|병역|입대|방출|연봉|포스팅|피로 경고|수술|인대|부상|트레이드|보직|진로|면담|살림|출산|프러포즈|이별|육아|이름|아빠|국가대표|WBC|프리미어|2세|투수 진로/;
