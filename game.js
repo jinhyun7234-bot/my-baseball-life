@@ -11475,7 +11475,7 @@ function cm684(a,x,tone){if(!a||!Array.isArray(a.cm)||!x||!ME||!S||!S.pro)return
     else if(st&&x.win===true&&x.clinch&&(st==='와카'||st==='디비')&&R()<.5){const t=take(st==='와카'?['와카딱은 면했다 ㅋㅋ','일단 와카딱 탈출 다음 가자']:['디비딱 저주 깼다 ㅋㅋㅋ','디비딱 국룰 드디어 깼다']);if(put(t,[rr(pick(['이제 시작이다','올해는 다르다','설레발 금지']))]))n++}}
   /* ② 우승 토템 · GOAT 초성 릴레이 */
   if(ring&&leagueRings()>=2&&R()<.5){const t=take([`우승 토템 ${gn} ㅋㅋ 가는 팀마다 반지`,`${gn} 있는 팀이 우승한다 토테미즘 GOAT`,`반지 ${ringsNow841()}개째 우승 토템 인정`]);if(put(t,[rr(pick(['토템 ㅋㅋ','이건 과학이다','정사 맞음']))]))n++}
-  if((ps||ring||x.intl)&&great&&n<2&&R()<.07&&gn.length>=2){const ch=cho(gn),t=`G O A T ${[...gn].join(' ')}`;if(!seenHas(t)){seenAdd(t);const k=ri(3,6),R2=[];for(let i=0;i<k;i++)R2.push({nk:pick(NICKS),t:i===k-1&&R()<.5?`고트${gn}`:'ㄱㅇㅌ'+ch,up:ri(10,300)});put(t,R2,ri(1500,6000));n++}}
+  if((ps||ring||x.intl)&&great&&n<2&&R()<.07&&gn.length>=2){const ch=cho(gn),t=`G O A T ${[...gn].join(' ')}`;if(!seenHas(t)){seenAdd(t);const k=ri(2,4),R2=[];for(let i=0;i<k;i++)R2.push({nk:pick(NICKS),t:i===k-1&&R()<.5?`고트${gn}`:'ㄱㅇㅌ'+ch,up:ri(10,300)});/* v865: ㄱㅇㅌ 답글 2~4개 */put(t,R2,ri(1500,6000));n++}}
   /* ③ 가을 타자 영웅 */
   if(!P&&ps&&game&&(x.gHR||0)>=1&&x.win!==false&&n<2&&R()<.55){const hrs=x.gHR||0,pl=Array.isArray(x.pl)?x.pl:[],cons=pl.some((p,i)=>i>0&&p&&p.t==='HR'&&pl[i-1]&&pl[i-1].t==='HR'),psHR=((S.post&&S.post.b&&S.post.b.HR)||0)+((Q&&Q.hr)||0),py=S.postY&&S.postY[S.y-1];
     const L=['결과로 증명해 버리기','스타성 지리긴 하네 ㅋㅋ','다시 봐도 지린다 ㄹㅇ','가을야구는 뭐니 뭐니 해도 홈런이 최고다'];if(hrs>=2)L.push(`한 경기 홈런 ${hrs}개${cons?' 심지어 연타석':''} ㄷㄷ`);if(psHR>=3)L.push(`이걸로 가을 통산 홈런 ${psHR}개째 ㄷㄷ`);
@@ -18749,8 +18749,31 @@ const FIGHT864 = {
         if (i === 1 && R() < .55) re.push({ nk: nkA, t: pick(k === 'fan' ? ['아 그런가요 ㅠ 열심히 배울게요', '얼빠 맞는데 뭐 어때요 ㅋㅋ 표는 제 돈으로 삼', '규칙은 몰라도 응원은 제일 크게 함 ㅋㅋ'] : k === 'old' ? ['라떼 아니고 팩트임', '꼰대 소리 들어도 할 말은 한다'] : ['내 느낌이 그렇다는 거임 아니면 지나가셈', '왜 이렇게 다들 긁혔음 ㅋㅋ', '아니 내 말이 틀림?', '팩트 말했는데 왜 화냄', '다들 진정해 그냥 의견임']), up: ri(0, 40) });
       }
       if (R() < .6) re.push({ nk: pick(NICKS), t: rp(FIGHT864.end), up: ri(50, 1500) });
-      const c = mkC(root, [], { nk: nkA, up: ri(30, 400), dn: k === 'fan' ? ri(5, 120) : ri(80, 700), fight864: 1 }); c.re = re;
+      const c = mkC(root, [], { nk: nkA, up: ri(30, 400), dn: k === 'fan' ? ri(5, 120) : ri(80, 700), fight864: 1 });
+      { const nT = ri(2, 4), endR = re.length && FIGHT864.end.includes(re[re.length - 1].t) ? re[re.length - 1] : null; let keep = re.slice(0, nT); if (endR && !keep.includes(endR) && R() < .5) keep[keep.length - 1] = endR; c.re = keep; }   /* v865 (유저 "다답글 너무 많은 건 별로 · 2~4개로 컷") */
       out.splice(Math.min(out.length, ri(2, 5)), 0, c);
+    } catch (e) {}
+    return out;
+  };
+}
+
+/* v865 (11/27 13:11 유저 "다답글 너무 많은 건 좀 별로 · 다답글 많은 건 훈훈한 댓글일 때 · ㄱㅇㅌ 같은 것도 2~4개로 컷")
+   · 답글이 4개 넘는 댓글: 훈훈한 댓글(축하·고생·응원·감동·사랑·ㅠㅠ…)만 그대로(최대 7개) · 나머지는 2~4개로 자름
+   · '역시 ○○신'은 원래 있음(잘한 경기 18%) → 가끔 짧은 맞장구 답글 2~3개 붙임 */
+{
+  const _c865 = comments;
+  const WARM865 = /축하|고생|고맙|감동|울컥|눈물|사랑|응원|힘내|자랑|대단|멋지|믿는다|믿고|수고|기특|ㅠㅠ|최고|행복|레전드|평생|은퇴/;
+  const COLD865 = /분탕|야알못|패션|거품|꺼져|긁|ㅈㅈ|못하|욕|비판|탓|싸우|그만/;
+  comments = function (tone, x) {
+    let out = _c865.apply(this, arguments);
+    try {
+      if (!Array.isArray(out)) return out;
+      out.forEach(c => {
+        if (!c || !Array.isArray(c.re)) return;
+        const t = String(c.t || ''), warm = WARM865.test(t) && !COLD865.test(t);
+        if (c.re.length > (warm ? 7 : 4)) c.re = c.re.slice(0, warm ? 7 : ri(2, 4));
+        if (/^역시 \S+신|신 오늘도 강림|신 믿습니다/.test(t) && !c.re.length && R() < .5) { const g = t.replace(/^역시 /, '').split('신')[0]; c.re = [`역시 ${g}신 ㄹㅇ`, `${g}신 찬양해`, `신 그 자체`, `${g}신 오늘도 일하신다 ㅋㅋ`].sort(() => R() - .5).slice(0, ri(2, 3)).map(r => ({ nk: pick(NICKS), t: r, up: ri(20, 400) })); }
+      });
     } catch (e) {}
     return out;
   };
