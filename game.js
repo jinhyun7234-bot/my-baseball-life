@@ -10014,6 +10014,7 @@ mlbGapPen=function(){try{if(!S||S.stage!=='pro'||!S.pro||S.pro.league!=='MLB'||S
   else{M=low?[`와 이 정도로 잘하면 메이저 갈 듯`,`${gn} 포스팅 얼마 안 남았지? 이 페이스면 메이저 간다`,`KBO는 이제 좁아 보인다 ${gn}`]:[`와 이 정도면 메이저 가서도 통할 듯`];
     RE=low?['메이저는 툴이 중요하다 KBO 성적만으론 모름',...(visLow?['얘 반응속도로는 아직 강속구 대처 못함 동체시력 훈련 좀 해야 할 듯','메이저 강속구에 대비할 만한 동체시력은 있나?','155 넘는 공 매일 보면 지금 타율 반토막 날 수도']:[]),...(eyeLow?['메이저는 아직 사람 심판이라 존이 들쭉날쭉함 선구안이 진짜 중요하다']:[])]:['동체시력 좋아서 강속구도 따라갈 것 같음','공 고르는 눈이 있어서 메이저 존에도 적응 빠를 듯','툴이 고르게 있어서 메이저 스카우트들이 좋아할 스타일']}
   if(W)RE.push(josaFix(`근데 ${jo(W,'은','는')} 아직 메이저급은 아님`),josaFix(`${jo(W,'은','는')} 좀 더 키워야 메이저에서 버틴다`),josaFix(`${W} 보완하면 진짜 완성형인데`));
+  {const fw=t=>(eyeLow||!/선구안|존이/.test(t))&&(visLow||!/동체시력은 있나|반응속도|동체시력 훈련/.test(t));M=M.filter(fw);RE=RE.filter(fw);}/* v868: 실제로 약한 툴만 말하기 (시뮬: 선구안 좋은 선수에게 '선구안 없으면 고생함'·같은 기사에 '볼넷 골라내는 눈이 미쳤음') */
   const C=M.map(josaFix).filter(t=>!seenHas('mt:'+t));if(!C.length)return out;const t=pick(C);seenAdd('mt:'+t);
   const rr=RE.filter(r=>!seenHas('mtr:'+r)).sort(()=>R()-.5).slice(0,ri(1,2));rr.forEach(r=>seenAdd('mtr:'+r));
   out.splice(Math.min(2,out.length),0,mkC(t,rr.map(r=>({nk:pick(NICKS),t:r,up:ri(60,1500)}))))}catch(e){}return out}}
@@ -11189,8 +11190,8 @@ function wbcLines(x){const st=wbcStage(x),win=x.win===true,loss=x.win===false,P=
     if(win&&!strong)A.push('이겨야 할 경기 확실하게 잡았다','방심 안 하고 깔끔하게 이겼다',mg>=5?'점수 차 벌려놓은 거 나중에 실점률 따질 때 크다':'이기긴 했는데 점수를 더 냈어야 했다');
     if(win&&strong)A.push('도쿄돔에서 이런 경기를 보다니','이 맛에 국대 경기 본다','오랜만에 국대 보면서 소리 질렀다')}
   if(opp==='일본')(win?A:B).push(...(win?['한일전은 무조건 이겨야 제맛','한일전 승리는 언제 봐도 짜릿하다']:['한일전 지면 잠이 안 온다','다음 한일전에서는 꼭 갚자']));
-  if(st==='qf')A.push(...(win?[prev4?'4강 간다!! 이 기세 그대로 가자':'이게 얼마 만의 4강이냐 2009년 이후 처음이다','마이애미에서 4강까지… 이번 대표팀 다르다']:['8강까지 온 것도 잘했다 고개 숙이지 마라','마이애미까지 온 것만 해도 수확이다']));
-  if(st==='sf')A.push(...(win?['결승 간다!!! 이게 꿈이냐 생시냐','2009년 이후 결승… 이제 한 판 남았다']:['세계 4강이면 충분히 잘했다','결승 문턱에서 멈췄다 다음 대회가 더 기대된다']));
+  if(st==='qf')A.push(...(win?[prev4?'4강 간다!! 이 기세 그대로 가자':'이게 얼마 만의 4강이냐 진짜 오래 기다렸다','마이애미에서 4강까지… 이번 대표팀 다르다']:['8강까지 온 것도 잘했다 고개 숙이지 마라','마이애미까지 온 것만 해도 수확이다']));
+  if(st==='sf')A.push(...(win?['결승 간다!!! 이게 꿈이냐 생시냐','결승이다… 이제 진짜 한 판 남았다']:['세계 4강이면 충분히 잘했다','결승 문턱에서 멈췄다 다음 대회가 더 기대된다']));
   if(st==='f'&&loss)A.push('준우승도 대단하다 2009년이 떠오른다','결승까지 온 선수들 다 고생 많았다');
   if(!played)B.push(P?'오늘은 불펜에서 대기만 했네 다음 경기엔 나오겠지':'오늘은 벤치에서 응원 다음 경기엔 나오겠지');
   else if(x.good)B.push(P?`국대 마운드에서 ${gn} 이렇게 던져주면 든든하다`:`태극마크 달고 ${gn} 이런 활약이면 국대 붙박이 확정`,mlb?'메이저리거 클래스는 확실히 다르다':`${gn} 국제대회 체질인 듯`);
@@ -18833,6 +18834,7 @@ const FIGHT864 = {
         if (/구속 빠르면/.test(t)) return P && +kmh(E('velo')) >= 150;
         if (/레전드 반열|이 페이스면 역대급/.test(t)) return proYears() >= 3;
         if (/오늘 못한 건/.test(t)) return !!x && (P ? (x.ra || 0) >= 2 : (x.gPA || 0) >= 3 && (x.gH || 0) === 0);
+        if (/현지에서도 난리|메이저에서도 통한다/.test(t)) { const sg = (() => { try { return stdSeason(); } catch (e) { return 'na'; } })(); return sg === 'elite' || sg === 'good'; }/* v868: ERA 5점대 반기에 '현지에서도 난리 났다는데?' X */
         return true; } catch (e) { return true; } };
       const pool0 = isP() && F.rootP ? F.rootP : (x && x.win === false && F.rootL) ? F.rootL : F.root, pool1 = pool0.filter(okRoot864);
       const root = fx(rp(pool1.length ? pool1 : pool0)), rn0 = ri(3, 5), used = new Set(), re = [];
