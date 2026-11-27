@@ -5477,6 +5477,7 @@ CM.franMove=['오피셜 떴다 ㄷㄷ','스토브리그 최대 이슈 터졌다'
   const id0m=S.artId||0;const r=_fa9(a);try{if(ctx){S._mv=ctx;const N=i=>i>=0?TEAMS[i].nick:'',nn=N(ctx.nw),on=N(ctx.old);
     if(ctx.from!=='abroad'&&!a.cheap){try{const big=a.tot>=1500000;S.arts=(S.arts||[]).filter(z=>!(z&&z.id>id0m&&(/(와|과) \d+년 .+ (이적|잔류)$/.test(String(z.head||''))||/^\[단독\] .+ 천문학적 계약/.test(String(z.head||'')))));S._mvTerm867=`${a.yrs}년 ${money(a.tot)} 계약${big?', KBO 역대급 규모다':''}. `}catch(e){}}/* v867q: KBO 안 이적도 기사 하나로 ([오피셜] 기사에 계약 규모) */
     if(ctx.from==='abroad'){}
+    else if(a.cheap){}/* v868n: 방출 뒤 1년 계약은 '방출 아픔 딛고' 기사 하나만 (시뮬: 같은 겨울에 'FA 이적' 오피셜이랑 '방출 아픔 딛고' 기사가 같이 나옴) */
     else if(ctx.back)article(ctx.orig?`[오피셜] 친정 복귀! ${ME.name}, ${S.y+1-ctx.last}년 만에 ${nn} 유니폼`:`[오피셜] ${ME.name}, ${jo(nn,'으로','로')} 돌아간다`,ctx.from==='abroad'?`해외 무대를 거친 ${jo(ME.name,'이','가')} 다시 ${nn} 품에 안겼다.`:`${on}에서 뛰던 ${jo(ME.name,'이','가')} 옛 팀 ${jo(nn,'으로','로')} 돌아간다.`,'homeBack',{});
     else if(ctx.oy>=5)article(`[오피셜] ${on} 프랜차이즈 스타 ${ME.name}, ${jo(nn,'으로','로')} 이적`,`${ctx.oy}시즌을 함께한 ${jo(on,'을','를')} 떠나 ${nn} 유니폼을 입는다.`,'franMove',{});
     else if(ctx.old>=0)article(`[오피셜] ${ME.name}, ${jo(nn,'으로','로')} FA 이적`,`${jo(on,'을','를')} 떠나 새 도전에 나선다.`,'kmove',{});
@@ -14504,7 +14505,10 @@ try{if(typeof SRDEFB840==='object')Object.assign(SRDEFB840,{C:['포수 수비가
 /* ---------- ㉓ 시즌 결산 '팬 반응'이 비면 그 시즌 성적에 맞춰 두 줄 채우기 ---------- */
 try{if(typeof buildSeasonRecap==='function'){const _bsF849=buildSeasonRecap;buildSeasonRecap=function(){const q=_bsF849.apply(this,arguments);try{if(q&&Array.isArray(q.cm)&&q.cm.length<2&&S&&S.pro&&ME){
   const y=q.y||S.y,lg=S.pro.league,P=isP(),w=(S.rows||[]).filter(r=>r.y===y&&r.lv===lg).reduce((s,r)=>s+rowWAR(r),0),t=yearTot(y,[lg]),low=P?((t.p&&t.p.outs)||0)<120:((t.b&&t.b.PA)||0)<150,gn=g849();
-  const lowBad=P?(((t.p&&t.p.outs)||0)>=9&&(t.p.R||0)*27/t.p.outs>=5.5):(((t.b&&t.b.PA)||0)>=20&&opsN(t.b)<.6),L=low?['올해는 벤치에서 기다린 시간이 길었다 내년엔 그라운드에서 보자',lowBad?'짧게 뛰었는데 그마저도 안 풀렸다 겨울에 몸부터 다시 만들자':'짧게 뛰어도 존재감은 있었다 내년이 진짜 승부',`${gn} 내년엔 더 자주 보고 싶다`]
+  const zero=P?!((t.p&&t.p.outs)||0):!((t.b&&t.b.PA)||0),fG=(S.rows||[]).filter(r=>r.y===y&&!['KBO','MLB','hs','univ','intl','mil'].includes(r.lv)).reduce((s,r)=>s+Math.max((r.b&&r.b.G)||0,(r.p&&r.p.G)||0),0),ag=age();
+  /* v868n: 1군(메이저) 경기를 한 번도 못 뛴 시즌에 '짧게 뛰어도 존재감은 있었다' X → 2군·재활 시즌 말로 */
+  const ZL=zero?(fG>0?[lg==='MLB'?`올해는 메이저에서 한 번도 못 봤다 마이너에서 ${fG}경기 뛰면서 버텼다`:`올해는 1군에서 한 번도 못 봤다 2군에서 ${fG}경기 뛰면서 버텼다`,ag>=35?'이 나이에 2군에서 1년을 버틴 것만으로도 대단하다 포기 안 하는 게 멋있다':(lg==='MLB'?'마이너에서 칼 갈았으니까 내년엔 메이저에서 보자':'2군에서 칼 갈았으니까 내년엔 1군에서 보자'),lg==='MLB'?'콜업 소식만 기다렸는데 1년이 그냥 갔다':`${gn} 이름 1군 엔트리에서 다시 보고 싶다`]:(S.injLast&&S.injLast.y===y?['1년 내내 재활만 했다 ㅠ 내년엔 그라운드에서 보자','아픈 데 없이 돌아오는 게 먼저다 서두르지 말자']:['올해는 경기에서 아예 못 봤다 ㅠ',`${gn} 내년엔 그라운드에서 보자`])):null;
+  const lowBad=P?(((t.p&&t.p.outs)||0)>=9&&(t.p.R||0)*27/t.p.outs>=5.5):(((t.b&&t.b.PA)||0)>=20&&opsN(t.b)<.6),L=ZL?ZL:low?['올해는 벤치에서 기다린 시간이 길었다 내년엔 그라운드에서 보자',lowBad?'짧게 뛰었는데 그마저도 안 풀렸다 겨울에 몸부터 다시 만들자':'짧게 뛰어도 존재감은 있었다 내년이 진짜 승부',`${gn} 내년엔 더 자주 보고 싶다`]
     :(w>=(lg==='MLB'?3:3.5)-(typeof ythW851==='function'?ythW851(lg):0)||(P&&ME.pos!=='SP'&&t.p&&t.p.outs>=135&&(t.p.R||0)*27/t.p.outs<=2.6))?[`올해 ${gn} 덕분에 야구 볼 맛 났다`/* v868: 불펜 ERA 1~2점대 시즌을 '무난한 1년'이라 하지 않게 */,'1년 동안 고생 많았다 내년에도 이대로만','이 정도 시즌이면 연봉 협상 기대해도 된다']
     :w>=(lg==='MLB'?.5:.8)?['큰 탈 없이 시즌 완주한 것도 실력이다','무난한 1년 내년엔 한 단계 위로 가자','올해 성적표는 B 내년엔 A 받자']
     :['올해는 잊자 내년엔 다를 거다','반등의 계기가 필요하다 겨울에 칼 갈자','이번 겨울이 진짜 중요하다 몸 잘 만들고 오자'];
@@ -14513,7 +14517,7 @@ try{if(typeof buildSeasonRecap==='function'){const _bsF849=buildSeasonRecap;buil
 /* ---------- ㉔ 방출 후 새 팀 (최저 연봉 1년 계약) — 기사 + 재취업 댓글 (펨코 방출생 반응: 재취업 ㅊㅊ·줍줍·가서 잘되길) ---------- */
 try{if(typeof ACT==='object'&&typeof ACT.fa==='function'){const _fa849=ACT.fa;ACT.fa=function(a){const before=S&&S.pro?S.pro.team:null,lg0=S&&S.pro?S.pro.league:null;const r=_fa849.apply(this,arguments);
   try{if(a&&a.cheap&&S&&S.stage==='pro'&&S.pro&&S.pro.league==='KBO'&&lg0==='KBO'&&before!=null&&S.pro.team!==before){const tm=TEAMS[S.pro.team];S._reb849=S.y;
-    article(`${ME.name}, 방출 아픔 딛고 ${jo(tm.nick,'과','와')} 1년 계약`,`재계약 불가 통보를 받았던 ${jo(ME.name,'이','가')} ${tm.city} ${jo(tm.nick,'에서','에서')} 새 출발한다.`,'move',{reb:1,yrs:1,tot:money(a.tot||S.pro.salary||3300)})}}catch(e){}return r}}}catch(e){}
+    {let og=-1;try{og=origTeam()}catch(e){}const home=S.pro.team===og;article(home?`${ME.name}, 방출 아픔 딛고 친정 ${jo(tm.nick,'으로','로')} 돌아왔다… 1년 계약`:`${ME.name}, 방출 아픔 딛고 ${jo(tm.nick,'과','와')} 1년 계약`,home?`재계약 불가 통보를 받았던 ${jo(ME.name,'이','가')} 프로 생활을 시작한 ${jo(tm.nick,'으로','로')} 돌아가 다시 뛴다.`:`재계약 불가 통보를 받았던 ${jo(ME.name,'이','가')} ${tm.city} ${jo(tm.nick,'에서','에서')} 새 출발한다.`,'move',{reb:1,yrs:1,home:home?1:0,tot:money(a.tot||S.pro.salary||3300)})}}}catch(e){}return r}}}catch(e){}
 {const _cmRB849=comments;comments=function(tone,x){let out=_cmRB849.apply(this,arguments);try{if(!Array.isArray(out)||!S||!ME||S.me!==ME||!x||!x.reb)return out;const gn=g849(),a=age();
   out=out.filter(c=>c&&!/거품|오버페이|FA로이드|대박 계약|몸값|배신|가지 ?마|떠나면 우리 팀|프런트 뭐 했|뺏겼|안 갈 수가 없지|잔류|이적료/.test(String(c.t||'')));
   put849(out,[`${gn} 재취업 ㅊㅊ 가서 꼭 잘되길`,'방출생 신화 케이스 많다 일단 줍고 보는 거다','새 팀 팬분들 우리 애 잘 부탁드립니다 ㅠ','여기서 부활하면 방출한 팀 배 아프겠다 ㅋㅋ'],['그동안 고마웠다 진심','가서 꼭 부활해라'],{pos:0,must:1,up:ri(3000,9000),rp:.7});
@@ -19778,7 +19782,7 @@ function pb868() { try { return (S.rows || []).some(r => r.y < S.y && (r.lv === 
       if (pu > 0 && pu < 15) L.push(['시장 나갔으면 더 받았을 수도 있는데 남았네', ['돈보다 마음 편한 데가 최고지', '팀이 좋긴 한가 보다']]);
       if (good) { L.push(['작년에 그렇게 했는데 안 잡으면 그게 이상한 거지', ['당연한 결과', '잡을 수밖에 없었다']]); if (pu > 0 && pu < 15) L.push(['이 성적에 이 금액이면 오히려 구단이 이득이다', ['가성비 계약 ㅋㅋ', '에이전트 좀 아쉽겠다']]); }
       else { L.push(['작년 성적 생각하면 구단이 믿어 준 거다 보답하자', ['이번엔 진짜 보여 줘야 함']]); if (pu >= 10) L.push(['솔직히 작년 성적 보면 금액이 좀 세긴 하다', ['올해 증명하면 싸게 산 거 됨', '구단은 앞으로를 보고 준 거지']]); }
-      if (ag >= 33) L.push([`이 나이에 ${yrs}년 보장이면 관리 잘한 보상이다`, ['몸 관리가 실력이다', '오래 보자']]); else if (yrs >= 4) L.push(['전성기를 이 팀에서 다 보내겠네', ['프랜차이즈 각', '오래 보자']]);
+      if (ag >= 33 && yrs >= 2) L.push([`이 나이에 ${yrs}년 보장이면 관리 잘한 보상이다`, ['몸 관리가 실력이다', '오래 보자']]); else if (yrs >= 4) L.push(['전성기를 이 팀에서 다 보내겠네', ['프랜차이즈 각', '오래 보자']]);
       if (ag >= 34 && yrs >= 3) L.push([`솔직히 이 나이에 ${yrs}년은 구단도 모험이다`, ['그래도 몸 관리는 확실한 선수', '마지막 해는 좀 걱정되긴 함']]);
       if (ag >= 36) L.push(['이 팀에서 마지막까지 가는 그림이다', ['박수 받으면서 마무리하자', '은퇴식도 여기서 하자']]);
       if (nSame >= 3) L.push(['이 팀이랑 또 재계약이네 이 정도면 종신 각', ['구단이 놓을 생각이 없다 ㅋㅋ']]);
@@ -19877,6 +19881,12 @@ const WOBAD868 = /클러치 0점|새가슴|중요할 때 못 친|찬스에 약|�
       const a = S && S.arts && S.arts[0]; if (!a || a.id === id0 || !Array.isArray(a.cm) || !ME) return r;
       const T = String(tone || ''), h = String(a.head || ''), mine = h.indexOf(ME.name) >= 0, Tx = c => c && !c.must && !c.my && !c.fight864 && !c.troll && typeof c.t === 'string';
       const featA = /^(feat|record)$/.test(T) && /^\[\d{4} (전반기|후반기)/.test(h), wo = T === 'walkoff' || /끝내기 홈런/.test(h);
+      if (T === 'move' && x && x.reb) a.cm = a.cm.filter(c => !(Tx(c) && /별거 없/.test(c.t)));/* 방출 뒤 재취업 기사에 '기사 제목 보고 들어왔는데 별거 없네' X */
+      if (T === 'move' && x && x.reb && x.home) {/* 방출 뒤 친정 복귀: '새 팀 팬분들'·'새 유니폼' X → 귀향 반응 */
+        a.cm = a.cm.filter(c => !(c && !c.my && typeof c.t === 'string' && /새 팀|새 유니폼|유니폼 색 어색|유니폼 바꿔 입은|새 출발|친정팀 상대로/.test(c.t)));
+        const HL = [['결국 돌아올 곳은 여기였다 ㅠ', ['어서 와 고생했다', '돌아와 줘서 고맙다']], ['방출 소식 듣고 속상했는데 친정이 받아 줬다', ['구단 의리 있네', '이게 낭만이지']], ['친정 유니폼 다시 입은 거 보니까 울컥한다', ['그 등번호 다시 보자', 'ㅠㅠ 반갑다']], ['여기서 마지막 불꽃 태우고 박수 받으면서 가자', ['라스트 댄스 응원한다']]];
+        let n = 0; for (const z of HL.slice().sort(() => R() - .5)) { if (n >= 2 || a.cm.length >= 6) break; if (seenHas('hb868:' + z[0])) continue; seenAdd('hb868:' + z[0]); a.cm.splice(Math.min(a.cm.length, ri(0, 2)), 0, mkC(z[0], R() < .6 ? [{ nk: pick(NICKS), t: pick(z[1]), up: ri(20, 700) }] : [], { up: ri(1500, 6000) })); n++; }
+      }
       if (featA || wo || /^(award|record)$/.test(T)) {
         a.cm = a.cm.filter(c => !(Tx(c) && (FTBAD868.test(c.t) || (wo && WOBAD868.test(c.t)))));
         let hn = 0; a.cm = a.cm.filter(c => !(Tx(c) && FTHATE868.test(c.t) && !/해봐라|어쩌고/.test(c.t)) || hn++ < 1);
