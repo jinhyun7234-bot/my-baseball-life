@@ -858,7 +858,7 @@ function releaseCut(o,w,a,L){try{if(a<27)return false;
   if(pa<200){const prev=S.rows.filter(x=>x.y===S.y-1&&PRO.includes(x.lv)).reduce((s,x)=>s+rowWAR(x),0);ww=Math.max(w,(w+prev)/2)}
   return .8*(ww-needW)*4+.2*(o-thr)<0}catch(e){return(a>=31&&o<L-6)||(a>=34&&o<L-2)||(a>=27&&o<L-11)||(a>=38&&o<L+2)}}
 function releaseEvent(o){
-  const offers=[];TEAMS.forEach((t,i)=>{if(i!==S.pro.team&&R()<cl((o-(LV.KBO-9))/12,0,.5)*knot(age(),[33,35.5,38],[1,.6,.25]))offers.push(i)});
+  const offers=[],lg867=legend867();TEAMS.forEach((t,i)=>{if(i!==S.pro.team&&R()<cl((o-(LV.KBO-9))/12,0,.5)*knot(age(),[33,35.5,38],[1,.6,.25])*(lg867?1.7:1))offers.push(i)});
   const ch=offers.slice(0,3).map(t=>({t:`${TEAMS[t].city} ${TEAMS[t].nick}와 계약`,s:'1년 · 최저 수준 연봉',act:'fa',arg:{team:t,yrs:1,tot:Math.max(3300,Math.round(S.pro.salary*.5/100)*100),cheap:true}}));
   ch.push({t:'은퇴한다',s:'커리어 종료',act:'retire'});if(!offers.length)ch.unshift({t:'입단 테스트를 받는다',s:'성공 확률 낮음',act:'tryout'});
   return{title:'방출 통보',text:`구단이 재계약 불가를 통보했다.${offers.length?' 그래도 관심을 보이는 구단이 있다.':' 아직 연락 온 구단이 없다.'}`,ch}}
@@ -12236,7 +12236,9 @@ function cRoll739(){try{S._cHot739=null;return;/* v842s: 포수 전용 타격 �
    기준 WAR: 27세 0 → 31세 0.5 → 34세 1.0 → 38세 1.5 (knot 곡선). 기준보다 모자란 만큼 방출 확률이 곡선으로 오름.
    최근 1년 안에 MVP·타이틀·골든글러브 등 수상 시 제외. 출전 적은 해는 최근 2년 평균. */
 function relNeed743(a){return knot(a,[27,31,34,38],[0,.5,1,1.5])}
-function relProb743(w,a){if(a<27)return 0;const d=relNeed743(a)-w,ag=.35+.65*s01((a-29)/7);return ag/(1+Math.exp(-(d-.8)/.35))}
+function relProb743(w,a){if(a<27)return 0;const d=relNeed743(a)-w,ag=.35+.65*s01((a-29)/7);return ag/(1+Math.exp(-(d-.8)/.35))*(legend867()&&w>=.3?.4:1)}
+/* v867t: 레전드(통산 WAR 35+ 또는 MVP·골글·사이영 5개+)는 아직 1인분 하면 쉽게 방출 안 하고, 방출돼도 관심 구단이 더 붙음 (시뮬: 36살 올스타 명예의 전당급이 방출 → 연락 0 → 테스트 탈락 은퇴가 6명 중 5명) */
+function legend867(){try{const tw=careerTot(PRO).w||0,aw=(S.awards||[]).filter(z=>/정규시즌 MVP|골든글러브|골드글러브|사이영|리그 MVP/.test(String(z.n||''))).length;return tw>=35||aw>=5}catch(e){return false}}
 function mlbRelease743(o){const offers=[];TEAMS.forEach((t,i)=>{if(R()<cl((o-(LV.KBO-12))/10,.15,.7)*knot(age(),[35,38,41],[1,.65,.35]))offers.push(i)});
   const ch=shuffle(offers).slice(0,3).map(t=>({t:`KBO 복귀: ${TEAMS[t].city} ${TEAMS[t].nick}`,s:'1년 계약',act:'fa',arg:{team:t,yrs:1,tot:Math.max(5000,Math.round(fair(o,0)*1.1/100)*100)}}));
   ch.push({t:'은퇴한다',s:'커리어 종료',act:'retire'});
@@ -13456,13 +13458,13 @@ function speech840(home){try{const P=isP(),rings=(S.hist&&S.hist.rings)||0,yrs=p
 /* ---------- v840: 방출 선수 영입 제의를 실력·최근 성적에 맞게 (못하는 선수에게 구단 3곳이 줄 서던 것 수정) ---------- */
 {const _reK840=releaseEvent;releaseEvent=function(o){const q=_reK840.apply(this,arguments);try{if(!q||!Array.isArray(q.ch))return q;const a=age();
   const ys=[S.y,S.y-1].map(y=>S.rows.filter(r=>r.y===y&&r.lv==='KBO').reduce((s,r)=>s+rowWAR(r),0)),w=(ys[0]+ys[1])/2,k1=S.rows.filter(r=>r.y>=S.y-1&&r.lv==='KBO').reduce((s,r)=>s+((r.b&&r.b.PA)||0)+((r.p&&r.p.outs)||0)/3,0);
-  const base=cl((o-(LV.KBO-4))/14,0,.4)*knot(a,[30,34,37,40],[1,.8,.55,.3])*(k1<100?.5:w<-.5?.2:w<0?.4:w<.8?.8:1.15);
+  const base=cl((o-(LV.KBO-4))/14,0,.4)*knot(a,[30,34,37,40],[1,.8,.55,.3])*(k1<100?.5:w<-.5?.2:w<0?.4:w<.8?.8:1.15)*(legend867()&&w>=0?1.6:1);
   const keep=q.ch.filter(c=>c.act!=='fa'||R()<Math.min(.85,base*2.2));q.ch=keep;
   if(!q.ch.some(c=>c.act==='fa')){if(!q.ch.some(c=>c.act==='tryout'))q.ch.unshift({t:'입단 테스트를 받는다',s:'성공 확률 낮음',act:'tryout'});q.text='구단이 재계약 불가를 통보했다. 아직 연락 온 구단이 없다.'}}catch(e){}return q}}
 
 /* ---------- v840: 방출 뒤 입단 테스트 합격률 — 나이·최근 성적 반영 (30대 중반 부진 선수가 해마다 붙던 것 수정) ---------- */
 {const _toK840=ACT.tryout;if(_toK840)ACT.tryout=function(){try{if(S&&S.stage==='pro'){const o=ovrE(),a=age(),w=S.rows.filter(r=>r.y>=S.y-1&&r.lv==='KBO').reduce((s,r)=>s+rowWAR(r),0)/2;
-  const p0=cl((o-(LV.KBO-12))/20,.05,.45),p1=cl((o-(LV.KBO-6))/20,.03,.42)*knot(a,[28,32,36,39],[1,.75,.45,.3])*(w<-.5?.35:w<0?.6:1);
+  const p0=cl((o-(LV.KBO-12))/20,.05,.45),p1=cl((o-(LV.KBO-6))/20,.03,.42)*knot(a,[28,32,36,39],[1,.75,.45,.3])*(w<-.5?.35:w<0?.6:1)*(legend867()?1.4:1);
   if(p1<p0&&R()>p1/p0){retire('입단 테스트 탈락 후 은퇴');return'테스트에 떨어졌다. 유니폼을 벗기로 했다.'}}}catch(e){}return _toK840.apply(this,arguments)}}
 
 /* ---------- v840: 고교·대학 기사에 프로 레전드급 오버 (명전 예약·영구결번·MVP 확정) 거르기 ---------- */
