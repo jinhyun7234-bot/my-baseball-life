@@ -19487,6 +19487,9 @@ function allstarArt868(n) {
     if (a <= 23) L.push(['이 나이에 올스타면 앞으로 10번은 더 간다', ['단골 확정', '이제 시작이다']]);
     else if (a >= 35) L.push(['이 나이에 팬 투표로 뽑히면 그냥 레전드 대우다', ['은퇴 전까지 계속 뽑아 주자', '세월이 비껴가네']]);
     if (T) L.push([`${T.nick} 팬들 투표 화력 미쳤다 ㅋㅋ`, ['조직력 ㄷㄷ', '이 맛에 팬 투표 한다']]);
+    L.push(['올스타전은 승패보다 재미다 마음껏 즐기고 와라', ['다치지만 말고', '부상 조심']], ['다른 팀 선수들이랑 한 더그아웃에 있는 거 보면 신기하다 ㅋㅋ', ['적이었던 애들이랑 하이파이브 ㅋㅋ', '이 맛에 올스타 본다']], ['올스타 유니폼 경매 나오면 무조건 산다', ['경쟁 치열할 듯', '사인 유니폼이면 가격 미쳤겠다']], ['팬 투표 1위 했으면 좋겠다 다음엔 더 누르자', ['다음엔 매일 누른다', '알림 맞춰 놨다']]);
+    if (!P) L.push(['홈런 레이스 나가면 무조건 본다', ['나가면 우승 각', '배팅볼 투수 섭외부터 ㅋㅋ']]);
+    if (n >= 3 && a >= 28) L.push(['올스타 단골인데도 매번 설레는 건 똑같다', ['그게 팬심이지', '매년 봐도 좋다']]);
     L.push([`${gn} 올스타 유니폼 사진 빨리 보고 싶다`, ['배경화면 예약', '사진 뜨면 바로 저장']], ['올스타 브레이크 때 푹 쉬고 후반기 가자', ['쉬는 것도 실력이다', '후반기가 진짜다']], ['올스타전 티켓팅 성공한 사람들 부럽다', ['광클했는데 실패함 ㅠ', '중계로 봐야지']], ['팬 투표는 인기고 기록은 실력인데 둘 다 되네', ['이게 진짜 스타', '인정']]);
     const must = L.slice(0, n === 1 || n >= 5 ? 1 : 0), fresh = L.slice(must.length).filter(z => !seenHas(z[0])).sort(() => R() - .5), old = L.slice(must.length).filter(z => !fresh.includes(z)).sort(() => R() - .5), C = must.concat(fresh, fresh.length < 4 ? old.slice(0, 4 - fresh.length) : []).slice(0, 5 + (R() < .5 ? 1 : 0));/* 본 댓글만 남아도 최소 4~5개는 (시뮬: 8번째 올스타 기사 댓글 0개) */
     A.cm = C.map(z => { seenAdd(z[0]); return mkC(z[0], R() < .6 ? [pick(z[1])] : [], { up: ri(400, 3600) }); });/* v868: 일반 응원 댓글('아직 어리니까 기다려보자'·'트레이드 카드로 쓰지 마라' 등)이 올스타 단골 기사에 섞이지 않게 전용 댓글로만 */
@@ -19496,7 +19499,7 @@ function allstarArt868(n) {
   const _cal868 = calendar;
   calendar = function (rep, g, ps) {
     const n0 = S && S.hist ? (S.hist.allstar || 0) : 0; const r = _cal868.apply(this, arguments);
-    try { const n1 = (S.hist && S.hist.allstar) || 0; if (n1 > n0 && S.stage === 'pro' && S.pro && S.pro.league === 'KBO' && (n1 === 1 || n1 % 5 === 0 || R() < .12)) allstarArt868(n1);/* 매년 비슷한 기사 반복 X (시뮬: 한 커리어에 올스타 기사 9개) */ } catch (e) {}
+    try { const n1 = (S.hist && S.hist.allstar) || 0; if (n1 > n0 && S.stage === 'pro' && S.pro && S.pro.league === 'KBO' && (n1 === 1 || n1 % 5 === 0 || R() < .06)) allstarArt868(n1);/* 매년 비슷한 기사 반복 X (시뮬: 한 커리어에 올스타 기사 9개) */ } catch (e) {}
     return r;
   };
 }
