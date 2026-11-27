@@ -710,7 +710,7 @@ function followGame(o){
     for(let half=0;half<2;half++){
       if(inn>=9&&half===1&&G.R[1]>G.R[0])break;
       const bat=half,fld=1-half;G.line[bat].push(0);let outs=0,b=[0,0,0],ran=0,meIn=false;prOn=-1;const it=`${inn}회${half?'말':'초'}`;st.b=[0,0,0];st.outs=0;st.inn=inn;st.half=half;if(o.wbc&&inn>=10){b=[0,1,0];st.b=b.slice();snap(`${it} — 승부치기, 무사 2루에서 시작`,'inn')}
-      if(fld===my&&isB&&role==='start'){G.def=G.def||{g:0,e:0};const pg=cl((E('rng')-55)*.005,0,.07)*(['SS','2B','CF','3B'].includes(ME.pos)?1.2:.8),pe=cl((50-E('fld'))*.003+.012,.004,.07);
+      if(fld===my&&isB&&role==='start'&&!(S.dhConv&&S.y>=S.dhConv)&&!(o.title&&/차전|결승/.test(o.title)?S._dhG:S.dhNow)){G.def=G.def||{g:0,e:0};const pg=cl((E('rng')-55)*.005,0,.07)*(['SS','2B','CF','3B'].includes(ME.pos)?1.2:.8),pe=cl((50-E('fld'))*.003+.012,.004,.07);
         if(R()<pg){G.def.g++;snap(`${it} ${name}, 몸을 날리는 다이빙 캐치! 안타를 지웠다`,'me def')}
         else if(['LF','CF','RF'].includes(ME.pos)&&R()<cl((DV(E('arm'))-70)*.00014,0,.0045)*(ME.pos==='RF'?1.15:ME.pos==='LF'?.9:1)){G.def.a=(G.def.a||0)+1;try{S.oa=S.oa||{};S.oa[S.y]=(S.oa[S.y]||0)+1}catch(e){}snap(`${it} 주자 홈으로 쇄도! ${name}의 레이저 홈 송구… 아웃! 보살!`,'me def')}
         else if(R()<pe){G.def.e++;G.Et[my]++;const rr=R()<.5?1:0;G.R[bat]+=rr;G.line[bat][inn-1]+=rr;snap(`${it} ${name} 포구 실책…${rr?' 그 사이 1점을 내줬다':' 주자 출루'}`,'me bad')}}
