@@ -769,7 +769,7 @@ function followGame(o){
   if(G.R[0]===G.R[1]){const w=R()<.5?0:1;G.R[w]++;G.line[w][G.line[w].length-1]++;snap(`연장 혈투 끝 ${G.ab[w]} 결승점!`,'sc')}
   if(o.forceWin!=null&&(G.R[my]>G.R[1-my])!==o.forceWin){const s=o.forceWin?my:1-my,d=Math.abs(G.R[my]-G.R[1-my])+1;G.forced=d;G.R[s]+=d;{const L0=G.line[0],L1=G.line[1];if(s===1){if(L1.length<L0.length)L1.push(d);else L1[L1.length-1]+=d}else{L0[L0.length-1]+=d;if(L1.length<L0.length)L1.push(0)}}snap(`${o.forceWin?'막판 대역전! ':'막판 통한의 실점… '}${G.ab[s]} ${d}점`,'sc')}
   G.win=G.R[my]>G.R[1-my];
-  if(!isB&&(mp.outs||used)){mp.G=1;if(role==='SP'){mp.GS=1;if(G.win&&mp.outs>=15&&ra<=G.R[my]-1)mp.W=1;else if(!G.win&&ra>=3)mp.L=1}else if(mp.outs&&role==='CL'&&G.win&&ra===0&&relLead!=null&&relLead>=1)mp.SV=1;else if(mp.outs&&G.win&&ra===0&&relLead!=null&&relLead>=1)mp.HLD=1;else if(mp.outs&&G.win&&relLead!=null&&relLead<=0&&ra<=1&&R()<.6)mp.W=1;else if(!G.win&&relLead!=null&&relLead>=0&&ra>=1&&R()<.75)mp.L=1}
+  if(!isB&&(mp.outs||used)){mp.G=1;if(role==='SP'){mp.GS=1;if(G.win&&mp.outs>=15&&ra<=G.R[my]-1&&spHeld867(G,my,mp.outs))mp.W=1;else if(!G.win&&ra>=3)mp.L=1}else if(mp.outs&&role==='CL'&&G.win&&ra===0&&relLead!=null&&relLead>=1)mp.SV=1;else if(mp.outs&&G.win&&ra===0&&relLead!=null&&relLead>=1)mp.HLD=1;else if(mp.outs&&G.win&&relLead!=null&&relLead<=0&&ra<=1&&R()<.6)mp.W=1;else if(!G.win&&relLead!=null&&relLead>=0&&ra>=1&&R()<.75)mp.L=1}
   if(isB&&(mb.PA||G.prIn))mb.G=1;
   G.mvp=isB?(mb.HR>=1||mb.H>=3||mb.RBI>=3):(mp.outs>=18&&ra<=2)||(mp.SV&&mp.K>=2);
   G.mb=mb;G.mp=mp;
@@ -4329,6 +4329,8 @@ function myTeamNick(){if(!S.pro)return'';return S.pro.league==='KBO'?TEAMS[S.pro
 function myTeamRank(){try{const r=myRankLine();const m=r&&r.t.match(/(\d+)위/);return m?+m[1]:0}catch(e){return 0}}
 function seasonWARs(lg){const by={};S.rows.filter(r=>!lg||r.lv===lg).forEach(r=>{if(PRO.includes(r.lv))by[r.y]=(by[r.y]||0)+rowWAR(r)});return by}
 function cmX(k){S.cmX=S.cmX||{};if(S.cmX[k]===S.y)return false;S.cmX[k]=S.y;return true}
+/* v867r: 선발승은 내려간 뒤에도 리드가 안 넘어갔을 때만 (시뮬: 5.1이닝 3실점 선발이 연장 끝내기 우승 경기에서 '승리투수') — 그 이닝 끝 점수부터 매 이닝 끝에 앞서 있어야 함 */
+function spHeld867(G,my,outs){try{const L=G.line,n=Math.max(L[0].length,L[1].length),ex=Math.max(1,Math.ceil(outs/3));let a=0,b=0;for(let i=0;i<n;i++){a+=L[my][i]||0;b+=L[1-my][i]||0;if(i+1>=ex&&i+1<n&&a<=b)return false}if(my===1&&n>=ex&&a-(L[1][n-1]||0)<=b)return false;return a>b}catch(e){return true}}
 function mkC(t,re,o){return Object.assign({nk:pick(NICKS),fl:null,t,up:Math.round(ri(300,1900)*(1+((S.rel&&S.rel.fame)||0)/40)),dn:ri(0,12),nar:1,ago:pick(AGO),re:(re||[]).map(r=>typeof r==='string'?{nk:pick(NICKS),t:r,up:ri(15,320)}:r)},o||{})}
 const isGameX=x=>x&&(x.gPA!=null||x.ipO!=null);
 const fieldPos=()=>!isP()&&ME.pos!=='DH';
@@ -4361,7 +4363,7 @@ const fieldPos=()=>!isP()&&ME.pos!=='DH';
     const C=L.filter(t=>!seenHas(t));if(C.length&&cmX('hitM')){const t=pick(C);seenAdd(t);add.push(mkC(t,R()<.5?[pick(['ㄹㅇ 매일 안타 하나씩은 꼭 침','이 정도면 안타 치는 게 일상'])]:[],{up:ri(1500,5000)}))}}
 
   /* 4) 커뮤 시비: 팀은 시즌 내내 죽 쑤다 막판 반짝, 근데 나는 계속 잘함 */
-  if(seasonEnd&&tone==='hype'&&!P&&cmX('bicker')){const rk=myTeamRank();if(lg==='KBO'?rk>=6:rk>=9)add.push(mkC(`4,5월달에 뭐 하고 시즌 끝나니깐 스찌질 ㅋㅋ`,[`도대체 4월부터 시즌 끝나는 팀은… ${jo(gn,'이','가')} 5월부터 잘 쳤는데`,'5월부터 잘했는데 뭔 ㅋㅋ','여기까지가 템플릿임 ㅋㅋ'],{dn:ri(40,150)}))}
+  if(seasonEnd&&tone==='hype'&&!P&&cmX('bicker')){const rk=myTeamRank(),h1=(S.arts||[]).some(z=>z&&z.y===S.y&&/전반기/.test(String(z.head||'')));if(h1&&(lg==='KBO'?rk>=6:rk>=9))add.push(mkC(`4,5월달에 뭐 하고 시즌 끝나니깐 스찌질 ㅋㅋ`,[`도대체 4월부터 시즌 끝나는 팀은… ${jo(gn,'이','가')} 5월부터 잘 쳤는데`,'5월부터 잘했는데 뭔 ㅋㅋ','여기까지가 템플릿임 ㅋㅋ'],{dn:ri(40,150)}))}
 
   /* 5) 강견 칭찬 */
   if(fieldPos()&&E('arm')>=65&&(tone==='hype'||tone==='mix'||(G&&x.gGreat))&&R()<.5&&cmX('arm'))add.push(mkC(`${gn} 볼 때마다 느끼는데 송구가 ㅈㅉ 좋음`,['원래 강견이라 공이 쭉 뻗고 뒤가 사라짐',ME.pos==='C'?'2루 송구 레이저임 주자들 못 뜀':'홈 송구 보면 주자들 다 멈춤'],{up:ri(200,900)}));
@@ -18929,7 +18931,7 @@ const CHEER866 = {
 /* v866 비슷한 유형 몰림 막기 (11/27 13:28 유저 "비슷한 댓글 유형 많아지면 보는 재미↓ 피로도↑ · 최대한 골고루 다양하게")
    한 기사 안에서 같은 갈래 댓글은 1~2개만 (꼭 나와야 하는 댓글·싸움·응원 스레드는 그대로)
    갈래: 고생·수고 / 레전드 확정 / 연봉 / 캐스터 멘트 / 개추 / 눈물·울컥 / 행복했다 / 반박 불가 / 미쳤다 / 이 맛에 야구 본다 / 메이저 간다 / 우승 축하 / 믿고 보는 / 소름 */
-const FAM866 = [[/야구 없는/, 1], [/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1], [/1차전(은)? ?(내줬|내준|그냥)|첫 판(을)? ?(내줬|내준|부터 이러면)/, 1], [/퇴근/, 1], [/^이 페이스면/, 1], [/밥값/, 1], [/직관 승률/, 1], [/유니폼 (오늘 )?(샀|산다|질렀)/, 1]];
+const FAM866 = [[/야구 없는/, 1], [/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1], [/1차전(은)? ?(내줬|내준|그냥)|첫 판(을)? ?(내줬|내준|부터 이러면)/, 1], [/퇴근/, 1], [/^이 페이스면/, 1], [/밥값/, 1], [/직관 승률/, 1], [/유니폼 (오늘 )?(샀|산다|질렀)/, 1], [/^메이저 \d+년 차|^\d+년 차/, 1], [/^데뷔 시즌/, 1], [/담장이 낮아/, 1], [/MVP 페이스|MVP급|MVP 1순위|MVP 레이스/, 1]];
 {
   const _c866f = comments;
   comments = function (tone, x) {
@@ -19103,6 +19105,6 @@ function ctx867(a, x, tone) {
     /* 같은 계열 댓글 수 제한을 기사 단위로 한 번 더 (댓글 함수 밖에서 붙는 댓글까지) */
     if (typeof FAM866 !== 'undefined') { const cnt = FAM866.map(() => 0); a.cm = a.cm.filter(c => { if (!T(c) || c.must || c.fight864 || c.cheer866) return true; for (let i = 0; i < FAM866.length; i++) if (FAM866[i][0].test(c.t)) { cnt[i]++; if (cnt[i] > FAM866[i][1]) return false; } return true; }); }
     /* 같은 숫자(ERA 1.64·타율 .331·OPS .976)를 읊는 댓글은 기사당 1개 (시뮬: 'ERA 1.64 불펜이면…'·'ERA 1.64 실화냐…' 연달아) */
-    { const seenSt = new Set(); a.cm = a.cm.filter(c => { if (!T(c) || c.fight864 || c.cheer866) return true; const m = c.t.match(/(ERA|평균자책(점)?|타율|OPS|출루율|장타율) ?(\d?\.\d{2,3})/), n = c.t.match(/(\d{2,3})(타점|도루|홀드|세이브|탈삼진|안타)(?! 페이스)/); if (!m && !n) return true; const k = m ? m[1].replace(/점$/, '').replace('평균자책', 'ERA') + m[3] : n[1] + n[2]; if (seenSt.has(k)) return false; seenSt.add(k); return true; }); }
+    { const seenSt = new Set(); a.cm = a.cm.filter(c => { if (!T(c) || c.fight864 || c.cheer866) return true; const m = c.t.match(/(ERA|평균자책(점)?|타율|OPS|출루율|장타율) ?(\d?\.\d{2,3})/), n = c.t.match(/(\d{2,3})(타점|도루|홀드|세이브|탈삼진|안타|홈런)(?! 페이스)/); if (!m && !n) return true; const k = m ? m[1].replace(/점$/, '').replace('평균자책', 'ERA') + m[3] : n[1] + n[2]; if (seenSt.has(k)) return false; seenSt.add(k); return true; }); }
   } catch (e) {}
 }
