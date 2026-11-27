@@ -9048,7 +9048,7 @@ function retireNos(){const out=[];try{const W=rs=>{let w=0;rs.forEach(r=>{try{w+
       const tr=rs.filter(r=>r.team===team),seasons=new Set(tr.filter(r=>(r.b.G||0)+(r.p.G||0)>0).map(r=>r.y));if(seasons.size<9)continue;
       const starter=y=>tr.some(r=>r.y===y&&((r.b.PA||0)>=300||(r.p.outs||0)>=180));
       const rings=(S.awards||[]).filter(a=>a&&SER[lv].test(a.n)&&seasons.has(a.y)&&starter(a.y)).length;
-      const need=(60*(isP()?WARF842P:WARF842B)-2*rings-(lv==='KBO'?Math.max(0,mlbW)*.1:0))/WARK(lv),w=W(tr);
+      const need=(60*(isP()?WARF842P:WARF842B)-2*rings-(lv==='KBO'?Math.max(0,mlbW)*.1:0))/WARK(lv)*(lv==='MLB'&&!isP()?1.5:1),w=W(tr);/* v868: 메이저 타자 영구결번은 더 빡세게 (×1.5, 반지 없으면 한 팀 WAR 약 45) — 시뮬: 한 팀 WAR 25.9로 메이저 영결 · 투수는 원래 기준(약 50)이 이미 빡빡해서 그대로 */
       if(w>=need&&(!best||w>best.w))best={team,w,lv,traded:!one}}
     if(best)out.push(best)}}catch(e){}return out}
 retireNo=function(){const L=retireNos();return L.length?L.sort((a,b)=>(a.lv==='KBO'?0:1)-(b.lv==='KBO'?0:1))[0]:null};
@@ -14738,8 +14738,8 @@ function rec851(m,lv,P,scope){const out=[];try{if(!m||!(lv==='KBO'||lv==='MLB'))
   const add=(k,w,major,head,body,cm,re)=>out.push({k,w,major,head,body,cm:cm.filter(Boolean),re});
   if(!P){if(half?(G<30||(m.PA||0)<120):(m.PA||0)<400)return out;const AB=Math.max(1,m.AB||0),av=(m.H||0)/AB,o=opsN(m),A=f3_840(av),O=f3_840(o),HR=m.HR||0,SB=m.SB||0,RBI=m.RBI||0,hp=half?pace(HR):HR,sp=half?pace(SB):SB,rp=half?pace(RBI):RBI;
     const hrMaj=half?(hp>=(mlb?42:40)||HR>=25):(HR>=(mlb?45:40)),hrYng=young&&hp>=(mlb?30:32)||a<=22&&hp>=28;
-    if(hrMaj||hrYng){const W=hrMaj?10:8,L=half?[young?`${Y}에 ${pn}에만 ${HR}홈런?? 이 페이스면 시즌 ${hp}홈런이다 ㄷㄷ`:`${pn}에만 ${HR}홈런 시즌 ${hp}홈런 페이스 미쳤다`,young?`${Y}가 ${pn} ${HR}홈런이면 그냥 거포 탄생이다`:`${hp}홈런 페이스면 홈런왕은 맡아 놓은 거 아니냐`,a<=22?`${a}살에 ${pn} ${HR}홈런 이 나이에 이 파워면 미래 홈런왕이다`:null,young?'거포망주 드디어 터졌다 이런 거포는 안고 죽어야 한다':null,!mlb&&/우타$/.test(String(ME.hand||''))?'귀한 우타 거포 나왔다 이런 선수 국대에 꼭 필요했다':null,av<.275?`타율이 ${A}에 그쳐도 홈런 ${HR}개면 할 말 다 했다 거포는 홈런으로 말하는 거다`:null,mlb?`한국 타자가 메이저에서 ${pn}에만 ${HR}홈런 이게 된다고?`:null]
-      :[young?`${Y}에 시즌 ${HR}홈런 이건 진짜 거포 탄생이다`:`시즌 ${HR}홈런 올해 홈런 하면 무조건 ${g849()}다`,av<.275?`타율이 ${A}에 그쳐도 ${HR}홈런이면 거포는 이걸로 끝이다`:null,mlb?`한국 타자가 메이저에서 ${HR}홈런 이건 역사다`:null,a<=23?`${a}살에 ${HR}홈런 이 나이에 이런 파워 처음 본다`:null];
+    if(hrMaj||hrYng){const W=hrMaj?10:8,L=half?[young?`${Y}에 ${pn}에만 ${HR}홈런?? 이 페이스면 시즌 ${hp}홈런이다 ㄷㄷ`:`${pn}에만 ${HR}홈런 시즌 ${hp}홈런 페이스 미쳤다`,young?`${jo(Y,'이','가')} ${pn} ${HR}홈런이면 ${pb868()?'이제 거포 확정이다':'그냥 거포 탄생이다'}`:`${hp}홈런 페이스면 홈런왕은 맡아 놓은 거 아니냐`,a<=22?`${a}살에 ${pn} ${HR}홈런 이 나이에 이 파워면 미래 홈런왕이다`:null,young?'거포망주 드디어 터졌다 이런 거포는 안고 죽어야 한다':null,!mlb&&/우타$/.test(String(ME.hand||''))?'귀한 우타 거포 나왔다 이런 선수 국대에 꼭 필요했다':null,av<.275?`타율이 ${A}에 그쳐도 홈런 ${HR}개면 할 말 다 했다 거포는 홈런으로 말하는 거다`:null,mlb?`한국 타자가 메이저에서 ${pn}에만 ${HR}홈런 이게 된다고?`:null]
+      :[young?`${Y}에 시즌 ${HR}홈런 ${pb868()?'이제 거포 확정이다':'이건 진짜 거포 탄생이다'}`:`시즌 ${HR}홈런 올해 홈런 하면 무조건 ${g849()}다`,av<.275?`타율이 ${A}에 그쳐도 ${HR}홈런이면 거포는 이걸로 끝이다`:null,mlb?`한국 타자가 메이저에서 ${HR}홈런 이건 역사다`:null,a<=23?`${a}살에 ${HR}홈런 이 나이에 이런 파워 처음 본다`:null];
       add('hr',W,hrMaj||(young&&hp>=36),half?`${young?Y+' ':''}${ME.name}, ${pn}에만 ${HR}홈런… 시즌 ${hp}홈런 페이스`:null,half?`${young?`프로 ${yr}년 차인 `:''}${jo(ME.name,'은','는')} ${pn}에만 ${HR}개의 홈런을 몰아치며 시즌 ${hp}홈런 페이스를 이어 갔다.`:null,L,['벌써 홈런왕 얘기 나온다 ㅋㅋ',young?`${jo(Y,'이','가')} 이러면 몇 년 뒤엔 대체 뭐가 되냐`:'담장이 낮아 보인다 진짜','거포는 이 맛에 본다'])}
     else if(half&&hp>=(mlb?35:32))add('hr2',5,false,null,null,[`이 페이스면 시즌 ${hp}홈런 30홈런은 그냥 넘긴다`,`${pn} ${HR}홈런 장타력은 리그 상위권이다`],['장타 하나는 확실하다']);
     /* 펨코 '중국식 계산': 적게 뛴 기간 숫자를 풀타임으로 늘려 보는 농담 ('카스트로 중국식 계산으로 30홈런 페이스', '풀타임 시 42~43개') — 반기 55경기 미만일 때 */
@@ -19202,9 +19202,11 @@ const REC867 = {
   pre: ['이제 진짜 시즌은 가을부터다', '가을에 못하면 연봉 자진 반납하자 ㅋㅋ', '정규시즌은 잊고 가을에 미쳐 보자'],
   psF: ['올해는 가을 선봉장 좀 해 주라 작년처럼 말고', '작년 가을 생각하면 아직도 아프다 올해는 다르게 가자'],
   pickMe: ['가을야구 탈락 팀에서 한 명 데려올 수 있으면 다들 {n} 찍는다', '팀은 가을 못 갔어도 {n} 하나는 남는 시즌이었다'],
+  late: ['적응할 만하니까 시즌 끝나네 ㅋㅋ 내년엔 4월부터 이렇게 해라', '후반기 {n}만 보면 딴 사람이다 슬로스타터 인증'],
+  fade: ['전반기의 그 {n} 어디 갔냐 후반기에 체력 방전됐다', '여름 지나고 확 떨어졌다 풀타임 체력이 숙제다'],
 };
 const REC867RE = { inj: ['ㅠㅠ 건강이 최고', '복귀만 기다린다'], reb: ['ㄹㅇ 반성 중', '이게 맞는 거지'], rpw: ['이런 선수 연봉 더 줘라', '불펜 MVP'], faG: ['구단 일 잘했다', '돈값 인정'], faB: ['내년엔 다르겠지…', '아직 기간 남았다'],
-  feel: ['체감이랑 기록은 다르지 ㅋㅋ', '그래도 기억에 남는 시즌이다'], pre: ['가을 남자 가자', '설레발 금지'], psF: ['작년 얘기 그만 ㅠ', '올해는 다르다'], pickMe: ['ㄹㅇ 1픽', '우리 팀은 절대 안 보낸다', '내년엔 같이 가을 가자'] };
+  feel: ['체감이랑 기록은 다르지 ㅋㅋ', '그래도 기억에 남는 시즌이다'], pre: ['가을 남자 가자', '설레발 금지'], psF: ['작년 얘기 그만 ㅠ', '올해는 다르다'], pickMe: ['ㄹㅇ 1픽', '우리 팀은 절대 안 보낸다', '내년엔 같이 가을 가자'], late: ['후반기만 보면 MVP급', '내년엔 전반기부터 부탁한다'], fade: ['여름 나는 법부터 배우자', '체력 관리가 진짜 실력이다'] };
 function rcPut867(a, k, gn) {
   try {
     const U = S._rc867 = S._rc867 || {}, L = REC867[k].map(t => josaFix(t.replace(/\{n\}/g, gn))).filter(t => !(a.cm || []).some(c => c && c.t === t));
@@ -19228,6 +19230,7 @@ if (typeof phaseArticle === 'function') {
       if ((S.faList || []).some(f => f && f.y === S.y)) keys.push(good ? 'faG' : bad ? 'faB' : null);
       if (sea === 'avg' && (S.feats || []).some(f => f && f.y === S.y && f.big)) keys.push('feel');
       if (S.phase === 2 && lg === 'KBO') { let rk = 9; try { rk = myTeamRank(); } catch (e) {} if (rk >= 6 && good) keys.push('pickMe'); if (rk <= 5) { keys.push('pre'); const ps0 = S.postY && S.postY[S.y - 1]; if (ps0 && (P ? (ps0.p && ps0.p.outs >= 9 && ps0.p.R * 27 / ps0.p.outs >= 5) : (ps0.b && ps0.b.AB >= 10 && ps0.b.H / ps0.b.AB < .2))) keys.push('psF'); } }
+      try { const hv = P ? (m.outs >= 45 ? m.R * 27 / m.outs : null) : (m.PA >= 120 ? opsN(m) : null); if (hv != null) { if (S.phase === 1) S._h1_868 = { y: S.y, v: hv }; else if (S._h1_868 && S._h1_868.y === S.y) { const d = hv - S._h1_868.v; if (P ? d <= -1.3 : d >= .13) keys.push('late'); else if (P ? d >= 1.6 : d <= -.15) keys.push('fade'); } } } catch (e) {}/* v868: 전·후반기 차이 (늦게 터짐 / 여름 지나 방전) */
       const K = keys.filter(Boolean).sort(() => R() - .5); let n = 0;
       for (const k of K) { if (n >= 2) break; if (R() < (k === 'pre' ? .35 : .6) && rcPut867(a, k, gn)) n++; }
     } catch (e) {}
@@ -19689,3 +19692,6 @@ function lastGood868() { try { const lg = (S.pro && S.pro.league) || 'KBO'; retu
     return q;
   };
 }
+
+/* v868: 전에 25홈런 이상 친 시즌이 있으면 '거포 탄생'이 아니라 '거포 확정' (시뮬: 34·44·36홈런 3년 내리 '거포 탄생') */
+function pb868() { try { return (S.rows || []).some(r => r.y < S.y && (r.lv === 'KBO' || r.lv === 'MLB') && r.b && (r.b.HR || 0) >= 25); } catch (e) { return false; } }
