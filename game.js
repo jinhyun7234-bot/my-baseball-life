@@ -19130,6 +19130,9 @@ function ctx867(a, x, tone) {
       const top3 = (() => { try { return S.pro.league === 'KBO' && myTeamRank() <= 3; } catch (e) { return false; } })();
       a.cm = a.cm.filter(c => !(T(c) && !c.must && ((chBad && /커리어하이|커리어 하이|커리어 최전성기/.test(c.t)) || (top3 && /팬 하려면 멘탈이|팬 하기 힘들다|날 가만두질 않아/.test(c.t)))));
     }
+    /* 계약·이적·연봉·입단 기사엔 숨은 약점 폭로('멘탈 나간 게 보인다'·'워크에식') X (시뮬: 메이저 대형 계약 축하 기사에 '댓글 좀 그만 보라고 해라 멘탈 나간 게 보인다') */
+    if (/계약|이적|잔류|트레이드|복귀|입단|연봉|지명|포스팅/.test(head) || /^(mlbBig|faBig|faFair|abroad|kmove|move|franMove|homeBack|salary|contract|draft)$/.test(String(tone || '')))
+      a.cm = a.cm.filter(c => !(T(c) && !c.must && /멘탈이 문제임|멘탈이 아쉽다|멘탈이 발목|멘탈 나간 게 보인다|멘탈 코칭|표정부터 무너짐|워크에식|노력을 안 한다는 소문|성실함이 D급|제일 먼저 퇴근/.test(c.t)));
     /* 같은 답글이 여러 댓글에 반복되면 처음 하나만 (시뮬: '작년에도 이맘때 이 소리 했던 거 기억함'이 두 스레드에) */
     { const seenR = new Set(); a.cm.forEach(c => { if (T(c) && Array.isArray(c.re)) c.re = c.re.filter(w => { const k = String((w && w.t) || '').replace(/[ㅋㅎ!~.\s]+$/, '').slice(0, 14); if (k.length < 6) return true; if (seenR.has(k)) return false; seenR.add(k); return true; }); }); }
     /* 꼭 나오는 기록 댓글끼리도 앞머리가 같으면 하나만 (시뮬: '이 페이스면 시즌 37홈런…'·'이 페이스면 커리어하이 각' 둘 다 기록 댓글로 붙음) */
@@ -19320,6 +19323,30 @@ if (typeof phaseArticle === 'function') {
         if (!L.length) continue; const mn = Math.min(...L.map(t => U[t] || 0)), C = L.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1;
         a.cm.push(mkC(t, R() < .4 ? [pick(['ㄹㅇ', '맞는 말', '내년이 진짜다', '이게 맞지'])] : [], { up: ri(200, 1500) })); n++;
       }
+    } catch (e) {}
+    return r;
+  };
+}
+
+/* v867z2: 메이저 계약 기사 (KBO→MLB '꿈의 무대로' · MLB 안 이적 '새 팀에서 새 출발' · '다시 빅리그로') 상황 댓글
+   · 서부 팀(LA·샌디에이고·시애틀·샌프란시스코·애리조나·애슬레틱스): 한국 시간 점심때 경기 → "점심시간 각 ㅋㅋ" / 동부 팀: 아침 9시쯤 → "출근길에 본다"
+   · 연평균 $15M↑ "주전 대우" · 1년 계약 "이번 시즌이 진짜 시험대" · 33살↑ "이 나이에 메이저 계약 따낸 거 자체가 대단" · 26살↓ 장기 "전성기 통째로 잡았다" */
+{
+  const WEST867 = /LA |다저스|에인절스|샌디에이고|파드리스|시애틀|매리너스|샌프란시스코|애리조나|다이아몬드백스|애슬레틱스|오클랜드/, EAST867 = /뉴욕|양키스|메츠|보스턴|레드삭스|토론토|블루제이스|볼티모어|오리올스|탬파베이|레이스|필라델피아|필리스|애틀랜타|브레이브스|마이애미|말린스|워싱턴|내셔널스|피츠버그|파이리츠|클리블랜드|가디언스|디트로이트|타이거스|신시내티|레즈/;
+  const _arMLB867 = article;
+  article = function (head, body, tone, x) {
+    const id0 = S && S.artId; const r = _arMLB867.apply(this, arguments);
+    try {
+      const a = S && S.arts && S.arts[0], h = String(a && a.head || ''); if (!a || a.id === id0 || !Array.isArray(a.cm) || !/MLB .+ 계약! (새 팀에서 새 출발|다시 빅리그로|꿈의 무대로)$/.test(h) || !once863('mlbmv867')) return r;
+      const m = h.match(/(\d+)년 \$([\d.]+)M/), yrs = m ? +m[1] : 0, tot = m ? +m[2] : 0, per = yrs ? tot / yrs : 0, ag = age(), L = [];
+      if (WEST867.test(h)) L.push(['서부 팀이라 한국 시간으로 점심때 경기 한다 점심시간 각 ㅋㅋ', ['회사에서 몰래 봐야겠다', '점심 메뉴는 핫도그다']]);
+      else if (EAST867.test(h)) L.push(['동부 팀이면 한국 시간 아침 경기다 출근길에 보면 딱이네', ['지하철에서 소리 지르면 안 된다 ㅋㅋ', '아침 알람 맞춘다']]);
+      if (per >= 15) L.push([`연평균 ${per >= 30 ? '3천만 달러 넘게' : Math.round(per * 100) + '만 달러'}${per >= 30 ? ' 받으면' : '면'} 메이저에서도 확실한 주전 대우다`, ['돈값 하자', '구단이 진심이네']]);
+      else if (yrs === 1) L.push(['1년 계약이면 이번 시즌이 진짜 시험대다', ['증명하고 다음에 크게 받자', '단기 계약이 오히려 기회다']]);
+      if (ag >= 33) L.push([`${ag}살에 메이저 계약 따낸 거 자체가 대단하다`, ['관리 진짜 잘했다', '나이는 숫자에 불과']]);
+      else if (ag <= 26 && yrs >= 4) L.push(['전성기를 통째로 잡았다 구단이 장기적으로 본 거다', ['이 나이에 장기 계약이면 대박', '오래 보자']]);
+      const C = L.filter(z => !seenHas(z[0]) && !a.cm.some(c => c && c.t === z[0])).sort(() => R() - .5).slice(0, 2);
+      C.forEach((z, i) => { seenAdd(z[0]); a.cm.splice(Math.min(a.cm.length, 1 + i * 2), 0, mkC(z[0], R() < .55 ? [pick(z[1])] : [], { up: ri(500, 3500) })); });
     } catch (e) {}
     return r;
   };
