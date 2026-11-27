@@ -18718,7 +18718,8 @@ const FIGHT864 = {
     re: ['국뽕 한 사발 들이켰네 ㅋㅋ', '현지 반응 퍼오는 사람 꼭 있음', '백업 타령하던 사람들 다 어디 감', '메이저는 다르다고 몇 번을 말해', '숫자가 증명 중인데 뭔 소리', '국뽕이든 아니든 잘하면 됐지'] },
   ump: { root: ['오늘 심판 존 상대 팀 편이었다 진짜로', '오늘 진 건 판정 때문임 반박 불가', '그 삼진 콜은 누가 봐도 볼이었다'],
     re: ['지면 심판 탓 이기면 실력 ㅋㅋ', 'ABS 시대에 판정 탓은 좀…', '느린 화면 보고 와라 스트라이크 맞다', '판정은 판정이고 못 친 게 문제', '아니 저건 진짜 억울하긴 했음', '심판 탓하는 순간 지는 거다'] },
-  rv: { root: ['솔직히 상대 팀이 더 잘했음 인정할 건 인정하자', '오늘 이긴 건 운이다 상대가 더 강함', '상대 팀 팬인데 오늘은 축하해 줌 ㅋㅋ'],
+  rv: { root: ['오늘 이긴 건 운이다 상대가 더 강함', '상대 팀 팬인데 오늘은 축하해 줌 ㅋㅋ', '상대 팀 팬인데 오늘 심판 덕 본 거 인정하지?'],
+    rootL: ['솔직히 상대 팀이 더 잘했음 인정할 건 인정하자', '상대 팀 팬인데 오늘은 우리가 운이 좋았다 ㅋㅋ', '이 시리즈 상대 팀이 한 수 위다 인정하자'],
     re: ['타팀팬이 여기서 왜 훈수 둠', '인정은 개뿔 이긴 팀이 강한 거다', '쿨한 척하는 타팀팬 제일 무섭다 ㅋㅋ', '오 매너 좋은 타팀팬 처음 봄', '이 사람 어제는 우리 팀 욕하던데?', '내일 경기 끝나고 다시 얘기하자'] },
   end: ['둘 다 그만 싸워라 팝콘 다 먹었다', '댓글창 전쟁 났네 ㅋㅋㅋ', '이 댓글 왜 이렇게 길어짐', '싸움 구경이 제일 재밌다 ㅋㅋ', '여기서 이러지 말고 경기나 보자', '둘 다 차단 박음 ㅋㅋ'],
 };
@@ -18730,7 +18731,8 @@ const FIGHT864 = {
       if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || S.me !== ME || !S.pro) return out;
       if (out.some(c => c && c.fight864)) return out;
       const T = String(tone || ''), gn = giv(ME.name), mlb = S.pro.league === 'MLB';
-      const good = /^(hype|feat|walkoff|psHero|record|award|gold|ring)$/.test(T), badT = /^(bad|psGoat|psLose|mix)$/.test(T);
+      const good = /^(hype|feat|walkoff|psHero|record|award)$/.test(T), badT = /^(bad|psGoat|psLose|mix)$/.test(T);   /* 우승·금메달(병역 특례) 기사엔 싸움 X */
+      if (typeof ringArt681 === 'function' && ringArt681(tone, x)) return out;
       const big = x && x.ps && (x.ps === 'KS' || /한국시리즈|월드시리즈/.test(String(x.title || '')) || x.elim || x.clinch);
       let pr = badT ? .26 : good ? .18 : 0; if (big) pr *= .5;   /* 부상·계약·은퇴 같은 기사엔 싸움 X */
       if (R() > pr || !once863('fight')) return out;
@@ -18742,7 +18744,7 @@ const FIGHT864 = {
       const U = S.fg864 = S.fg864 || {}, mnK = Math.min(...K.map(k => U[k] || 0)), KC = K.filter(k => (U[k] || 0) === mnK), k = pick(KC); U[k] = mnK + 1;
       const F = FIGHT864[k], fx = t => josaFix(t.replace(/\{n\}/g, gn));
       const ru = S.fgr864 = S.fgr864 || {}, rp = L => { const mn = Math.min(...L.map(t => ru[t] || 0)), C = L.filter(t => (ru[t] || 0) === mn), t = pick(C); ru[t] = mn + 1; return t; };
-      const root = fx(rp(isP() && F.rootP ? F.rootP : F.root)), rn0 = ri(3, 5), used = new Set(), re = [];
+      const root = fx(rp(isP() && F.rootP ? F.rootP : (x && x.win === false && F.rootL) ? F.rootL : F.root)), rn0 = ri(3, 5), used = new Set(), re = [];
       const nkA = pick(NICKS);   /* 원댓 단 사람이 한 번 더 받아침 */
       for (let i = 0; i < rn0; i++) {
         let t; for (let g = 0; g < 6; g++) { t = rp(F.re); if (!used.has(t)) break; }
@@ -18779,5 +18781,42 @@ const FIGHT864 = {
       });
     } catch (e) {}
     return out;
+  };
+}
+
+/* v865d 댓글 개수 상한 (11/27 13:18 유저 "억지로 비슷한 유형 댓글 많게 할 필요 없음") — 시뮬에서 우승 기사 댓글이 34개까지 나옴
+   우승·금메달 기사 18개 · 그 밖의 가을야구·국대 큰 경기 14개 · 나머지 12개 · 넘으면 꼭 나와야 하는 댓글·싸움 스레드는 남기고 가벼운 잡담 → 좋아요 적은 것부터 뺌 */
+{
+  const _c865d = comments;
+  comments = function (tone, x) {
+    let out = _c865d.apply(this, arguments);
+    try {
+      if (!Array.isArray(out)) return out;
+      const T = String(tone || ''), ring = (typeof ringArt681 === 'function' && ringArt681(tone, x)) || T === 'ring' || T === 'gold';
+      const cap = ring ? 18 : (x && (x.ps || x.intl)) ? 14 : 12;
+      if (out.length <= cap) return out;
+      const pri = c => (c && (c.must || c.fight864) ? 1e9 : 0) + (c && typeof c.t === 'string' && typeof LIGHT863 !== 'undefined' && LIGHT863.test(c.t) ? -1e6 : 0) + ((c && c.up) || 0) + ((c && c.re && c.re.length) || 0) * 200;
+      const keep = new Set(out.map((c, i) => [pri(c), i]).sort((a, b) => b[0] - a[0]).slice(0, cap).map(z => z[1]));
+      out = out.filter((c, i) => keep.has(i));
+    } catch (e) {}
+    return out;
+  };
+}
+/* v865d 기사 단위에서도 같은 상한 (기사 쪽 후처리가 댓글을 더 붙이는 경우까지) */
+if (typeof article === 'function') {
+  const _ar865 = article;
+  article = function (head, body, tone, x) {
+    const id0 = S && S.artId; const r = _ar865.apply(this, arguments);
+    try {
+      const a = S && S.arts && S.arts[0]; if (!a || !Array.isArray(a.cm) || (id0 != null && a.id === id0)) return r;
+      const T = String(tone || ''), ring = (typeof ringArt681 === 'function' && ringArt681(tone, x)) || T === 'ring' || T === 'gold';
+      const cap = ring ? 18 : (x && (x.ps || x.intl)) ? 14 : 12;
+      if (a.cm.length > cap) {
+        const pri = c => (c && (c.must || c.fight864) ? 1e9 : 0) + (c && typeof c.t === 'string' && typeof LIGHT863 !== 'undefined' && LIGHT863.test(c.t) ? -1e6 : 0) + ((c && c.up) || 0) + ((c && c.re && c.re.length) || 0) * 200;
+        const keep = new Set(a.cm.map((c, i) => [pri(c), i]).sort((p, q) => q[0] - p[0]).slice(0, cap).map(z => z[1]));
+        a.cm = a.cm.filter((c, i) => keep.has(i));
+      }
+    } catch (e) {}
+    return r;
   };
 }
