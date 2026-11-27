@@ -659,9 +659,9 @@ function intl(rep,cy){
   if(res==='은메달'||res==='동메달'){S.awards.push({y:S.y,n:`${ev.n} ${res}`});S.rel.fame+=res==='은메달'?5:3}
   if(res==='금메달'){S.ach.gold=S.ach.gold||cy;S.awards.push({y:S.y,n:`${ev.n} 금메달`});S.rel.fame+=8;article(`대한민국, ${ev.n} 금메달! ${ME.name} ${g.mvp?'결승 히어로':'맹활약'}`,`${jo(on,'을','를')} 꺾고 정상에 올랐다.`,'gold')}
   const exempt=(ev.n.includes('아시안게임')&&res==='금메달')||(ev.n.includes('올림픽')&&['금메달','은메달','동메달'].includes(res));/* v840o: 올림픽 4강 탈락(메달 없음)에도 특례가 나오던 것 */
-  if(exempt&&S.mil.status==='none'){S.mil.status='exempt';S.mil.exY=S.y;S.mil.exEv=`${ev.n} ${res}`;rep.lines.push('🎖️ 병역 특례 확정!');news(`${ev.n} ${res}로 병역 특례 확정.`);ME.hid.men=cl(ME.hid.men+3,20,80);
+  if(exempt&&S.mil.status==='none'){S.mil.status='exempt';S.mil.exY=S.y;S.mil.exEv=`${ev.n} ${res}`;rep.lines.push('🎖️ 병역 특례 확정!');news(`${ev.n} ${res}로 병역 특례 확정.`);/* v863 (11/27 유저 "아시안게임 돌아올 때 창이 너무 많아 · 병역 해결 창 없애고 성장포인트도 없애"): 확정 창·멘탈+3 삭제 (기사·소식·리포트 줄은 그대로) */
     article(`${ME.name}, ${ev.n} ${res}로 병역 특례 확정`,`${jo(ME.name,'은','는')} 4주 기초군사훈련만 받으면 군 복무를 마친 것으로 인정된다. 이제 군 걱정 없이 커리어를 이어간다.`,'gold',{medal:res});
-    S.queue.push({title:'🎖️ 병역 특례 확정',text:`${ev.n} ${res}!\n병역법에 따라 체육요원으로 편입된다. 4주 기초군사훈련만 받으면 군 복무를 마친 것으로 인정된다.\n\n이제 군대 걱정 없이 야구에만 집중할 수 있다.`,ch:[{t:'야구에만 집중한다!',s:'멘탈 +3 (적용됨)',act:'lifeok'}]})}}
+  }}
 
 /* ===================== FOLLOW GAME ===================== */
 const HTXT={K:['헛스윙 삼진','루킹 삼진'],BB:['볼넷','볼넷 출루'],'1B':['좌전 안타','중전 안타','우전 안타','우중간 안타'],'2B':['좌중간 2루타','우중간 2루타','좌익선상 2루타'],'3B':['우중간 3루타'],HR:['좌월 홈런!','중월 홈런!','우월 홈런!'],GO:['유격수 땅볼','2루수 땅볼','3루수 땅볼'],FO:['좌익수 뜬공','중견수 뜬공','우익수 뜬공'],LO:['유격수 직선타','2루수 직선타']};
@@ -10901,7 +10901,7 @@ let __psHok=null;
 {const PSRE=/한국시리즈|플레이오프|와일드카드|월드시리즈|디비전|챔피언십/;
  const _arHK=article;article=function(head,body,tone,x){__psHok=null;try{if(S&&ME&&isP()&&x&&!x.intl&&PSRE.test(String(x.title||''))){const P=S._psSeq=S._psSeq&&S._psSeq.y===S.y?S._psSeq:{y:S.y,n:0,apps:[],outs:0};P.n++;
    const dN=S._psDayNow!=null?S._psDayNow:P.n;if((x.ipO||0)>0&&/차전/.test(String(x.title||''))&&P.apps[P.apps.length-1]!==dN){P.apps.push(dN);P.outs+=x.ipO;let st=1;for(let i=P.apps.length-1;i>0&&P.apps[i]-P.apps[i-1]===1;i--)st++;{const LG=S._psLastG;if(st>=2&&!(LG&&LG.y===S.y&&LG.p&&LG.d===dN-1))st=1}
-     const sp=ME.pos==='SP',sev=Math.max(s01((st-1.5)/2),s01((P.outs/3-(sp?18:7))/(sp?10:6)),(!sp&&st>=2&&x.ipO>=6)?.7:0);
+     const sp=ME.pos==='SP',gapG=P.apps.length>1?dN-P.apps[P.apps.length-2]:99,sev=sp?Math.max(gapG<=2?.6:0,s01((P.outs/3-32)/10)):Math.max(s01((st-1.5)/2),s01((P.outs/3-7)/6),(st>=2&&x.ipO>=6)?.7:0);/* v863 (11/27 유저 "선발이 한 경기 던지고 4차전 등판했을 때 혹사 드립은 좀 그래"): 선발은 두 경기 안에 다시 나왔을 때(짧은 휴식)나 가을 32이닝 넘게 던졌을 때만 */
      if(sev>0)__psHok={st,ipT:+(P.outs/3).toFixed(1),sev,today:x.ipO}}}
    /* 국제대회: 같은 대회에서 몇 경기·몇 이닝 던졌는지 (혹사 댓글 판단용) */
    else if(S&&ME&&isP()&&x&&x.intl&&(x.ipO||0)>0){const k=S.y+'|'+(x.wbc?'WBC':(String(x.title||'').match(/올림픽|아시안게임|프리미어/)||['intl'])[0]);const I=S._inSeq=S._inSeq&&S._inSeq.k===k?S._inSeq:{k,n:0,outs:0};I.n++;I.outs+=x.ipO}}catch(e){}const r=_arHK.apply(this,arguments);__psHok=null;return r}}
@@ -10910,7 +10910,7 @@ let __psHok=null;
   const gn=giv(ME.name),ipW=Math.floor(h.ipT)+(h.ipT%1?'.'+Math.round(h.ipT%1*3):''),L=[];
   if(h.st>=2)L.push(`${h.st}연투 실화냐 팔 빠지겠다`,`어제도 던지고 오늘도 던지고… ${gn} 팔은 하나뿐이다`,`불펜에 ${gn} 한 명만 있냐`,`${h.st}연투… 이 정도면 노동법 위반 아니냐 ㅋㅋ`,`벌떼야구인 줄 알았는데 벌이 한 마리였네`);
   L.push('투혼이냐 혹사냐 ㅋㅋ','어깨는 소모품이라고요 감독님…','이러다 내년에 수술대 올라간다',`가을 끝나면 ${gn} 얼음찜질 한 달은 해야 함`,`고무팔 인정 근데 고무도 늘어난다`);
-  if(h.ipT>=(ME.pos==='SP'?18:6))L.push(`가을에만 ${ipW}이닝… 갈아 넣는 중`,ME.pos==='SP'?`${gn} 어깨로 가을 버티는 중`:`완투형 불펜이냐 ㅋㅋ 가을에만 ${ipW}이닝`);
+  if(h.ipT>=(ME.pos==='SP'?32:6))L.push(`가을에만 ${ipW}이닝… 갈아 넣는 중`,ME.pos==='SP'?`${gn} 어깨로 가을 버티는 중`:`완투형 불펜이냐 ㅋㅋ 가을에만 ${ipW}이닝`);
   let t=josaFix(pick(L));if(seenHas(t))t=josaFix(pick(L));if(seenHas(t))return out;seenAdd(t);
   const RE=['가을인데 어쩔 수 없지','이기면 투혼 지면 혹사','본인이 던지고 싶다잖아','겨울에 푹 쉬어라 제발','이건 진짜 혹사다','우승하면 다 용서됨','팬들은 좋은데 몸이 걱정이다'].sort(()=>R()-.5).slice(0,R()<.6?2:1).map(t=>({nk:pick(NICKS),t,up:ri(80,2200)}));
   out.splice(Math.min(out.length,ri(1,3)),0,mkC(t,RE,{up:ri(1500,9000)}))}catch(e){}return out}}
@@ -18575,20 +18575,20 @@ const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠ
   };
 }
 
-/* v862c 라이벌전 (정규시즌 KBO 경기 기사 · 35%) — 잠실(트윈스·베어스) · 낙동강(자이언츠·다이노스) · 전통(라이온스·타이거스) */
+/* v862c→v863 라이벌전 (KBO 가을야구 경기 기사만 · 35%) — 잠실(트윈스·베어스) · 낙동강(자이언츠·다이노스) · 전통(라이온스·타이거스) */
 const DERBY862 = {
-  잠실: { w: ['잠실 더비는 순위 상관없다 이긴 게 최고', '같은 집 쓰는 라이벌한테 이긴 날은 지하철도 즐겁다', '잠실 더비 승리 오늘은 집주인이 누군지 알려 줬다 ㅋㅋ'], l: ['잠실 더비 지면 그 주 내내 놀림당한다 ㅠ', '룸메이트한테 진 기분 너무 별로다', '잠실 더비는 지면 잠이 안 온다'] },
-  낙동강: { w: ['낙동강 더비 승리 부산 창원 단톡방 불난다 ㅋㅋ', '강 건너 라이벌 잡았다 오늘 밤 술맛 좋다', '낙동강 더비는 이겨야 제맛'], l: ['낙동강 더비 지면 단톡방 못 들어간다 ㅠ', '강 건너 친구한테 연락 오기 전에 폰 끈다', '낙동강 더비 패배는 두 배로 아프다'] },
-  전통: { w: ['전통의 라이벌전 이긴 맛이 다르다', '영호남 라이벌전은 원래 뜨겁다 오늘 이겼다', '전통의 맞대결 승리 어르신들도 좋아하신다 ㅋㅋ'], l: ['전통의 라이벌한테 지는 건 진짜 못 참는다', '아버지가 이 경기 보고 한숨 쉬셨다 ㅠ', '라이벌전 지면 할 말이 없다'] },
+  잠실: { w: ['가을에 잠실 더비라니 이긴 맛이 두 배다', '같은 집 쓰는 라이벌을 가을에 잡았다 오늘은 집주인이 누군지 알려 줬다 ㅋㅋ', '잠실 더비 가을 버전 이건 평생 자랑한다'], l: ['가을에 잠실 라이벌한테 지는 건 평생 간다 ㅠ', '룸메이트한테 가을에 진 기분 너무 별로다', '잠실 더비 가을에 지면 겨울 내내 놀림당한다'] },
+  낙동강: { w: ['가을 낙동강 더비 승리 부산 창원 단톡방 불난다 ㅋㅋ', '강 건너 라이벌을 가을에 잡았다 오늘 밤 술맛 좋다', '낙동강 더비 가을 버전 이겨야 제맛'], l: ['가을 낙동강 더비 지면 단톡방 못 들어간다 ㅠ', '강 건너 친구한테 연락 오기 전에 폰 끈다', '가을에 낙동강 더비 패배는 두 배로 아프다'] },
+  전통: { w: ['가을에 만난 전통의 라이벌 이긴 맛이 다르다', '영호남 라이벌전 가을 버전 오늘 이겼다', '전통의 맞대결 가을 승리 어르신들도 좋아하신다 ㅋㅋ'], l: ['가을에 전통의 라이벌한테 지는 건 진짜 못 참는다', '아버지가 이 경기 보고 한숨 쉬셨다 ㅠ', '가을 라이벌전 지면 할 말이 없다'] },
 };
 {
   const _c862c = comments;
   comments = function (tone, x) {
     let out = _c862c.apply(this, arguments);
     try {
-      if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || S.me !== ME || !S.pro || S.pro.league !== 'KBO' || !x || !x.opp || x.ps || x.intl || x.win == null) return out;
+      if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || S.me !== ME || !S.pro || S.pro.league !== 'KBO' || !x || !x.opp || !x.ps || x.intl || x.win == null) return out;   /* v863 (11/27 유저 "정규시즌 라이벌전은 중계 안 하니 의미 없음 · 가을야구에선 써도 됨") */
       const my = S.pro.team, oi = TEAMS.findIndex(t => t.nick === x.opp), rv = typeof RIVAL684 !== 'undefined' && oi >= 0 ? RIVAL684.find(r => (r[0] === my && r[1] === oi) || (r[1] === my && r[0] === oi)) : null;
-      if (!rv || R() > .35) return out;
+      if (!rv || R() > .5) return out;
       const L = (DERBY862[rv[2]] || {})[x.win ? 'w' : 'l']; if (!L) return out;
       const U = S.dby862 = S.dby862 || {}, C0 = L.filter(t => !out.some(c => c && c.t === t)); if (!C0.length) return out;
       const mn = Math.min(...C0.map(t => U[t] || 0)), C = C0.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1;
@@ -18624,5 +18624,67 @@ const SLANG862 = {
       out.splice(Math.min(out.length, ri(1, 4)), 0, mkC(t, R() < .5 ? [{ nk: pick(NICKS), t: pick(good ? ['ㄹㅇ', 'ㅋㅋㅋ 인정', '가보자고'] : ['ㅋㅋㅋ ㅠ', '팩트라 반박 불가', '내일은 잘하자']), up: ri(20, 500) }] : [], { up: ri(400, 4000) }));
     } catch (e) {}
     return out;
+  };
+}
+
+/* ===== v863 (11/27 11:34~ 유저) 경기 흐름 밈 · 중요한 경기 가벼운 댓글↓
+   "중요한 경기일수록 가벼운 댓글은 덜 · 겜이 기울어졌을 때 ㅈㅈ이야~ · 병살로 기회 못 살리면 찬물 · 잘 칠 땐 용암
+    · 시리즈 0승 2패거나 한국시리즈 0승 3패면 '아 ㅈㅈ이야' + 변형"
+   ① 기울어진 경기: 5점 차 이상 패배 → 40%로 ㅈㅈ 드립
+   ② 시리즈 0승 2패(5전3선승 벼랑 끝·7전4선승 2패)·0승 3패(7전4선승) → 50%·75%로 ㅈㅈ 드립 (탈락 경기는 제외 · 그건 탈락 댓글)
+   ③ 내 병살(6회 이후, 지거나 비기고 있을 때) → 55%로 찬물 · 이기면 '봐준다'
+   ④ 팀 8점 이상 or 3안타+팀 6점 → 40%로 용암 (투수는 '용암 지원')
+   ⑤ 중요한 경기(한국시리즈·월드시리즈·탈락/우승 걸린 경기)는 가벼운 잡담(치맥·라면·셀카·외모·중계 화질·요즘 말투…) 85% 뺌 · 다른 가을·국대 경기는 50% (댓글 4개는 남김) */
+const FLOW863 = {
+  gg: ['아 ㅈㅈ이야~ 오늘은 일찍 자자', 'ㅈㅈ 치고 채널 돌린다', '5회에 이미 ㅈㅈ 선언함 ㅋㅋ', '아 제제이야~ 오늘은 여기까지', 'GG 치고 치킨이나 먹자', '이 경기 ㅈㅈ 근데 내일 또 본다 ㅋㅋ'],
+  s02: ['0승 2패… 아 ㅈㅈ이야~', '2패 먼저 하고 뒤집은 팀도 있다 (거의 없음)', '벼랑 끝이다 ㅠ 아 제제이야~', 'ㅈㅈ 각 나왔다 근데 야구는 모른다', '0승 2패면 ㅈㅈ 아니냐… 아니라고 해 줘'],
+  s03: ['아 제제이야~ 0승 3패면 끝났다', '0승 3패… 리버스 스윕 가능? (불가능)', 'ㅈㅈ 치기엔 아직 이르다… 이르겠지?', '스윕 당하기 직전 ㅠ 내일 지면 끝', '아 ㅈㅈ이야~ 내년 시즌권 예매나 하자', '0승 3패에서 뒤집으면 그건 야구가 아니라 영화다'],
+  dp: ['병살로 찬물 제대로 끼얹었다 ㅠ', '찬스에 병살… 찬물 한 바가지', '그 병살 하나로 분위기 싸늘해짐', '찬물 샤워 ㅠ 그 병살은 진짜 아프다', '{n} 병살 칠 때 TV 끌 뻔했다'],
+  dpW: ['병살로 찬물 끼얹더니 결국 이겼네 ㅋㅋ 봐준다', '그 병살 찬물은 이긴 걸로 퉁친다'],
+  lava: ['타선 용암이다 ㅋㅋ', '방망이가 용암처럼 뜨겁다', '오늘 {n} 방망이 용암 그 자체', '용암 타선 식을 줄 모른다', '방망이에 불붙었다 아니 용암이다', '오늘 타선 온도 1000도 넘음 ㅋㅋ'],
+  lavaP: ['타선이 용암 지원해 주니까 편하게 던지네', '오늘은 타자들이 {n} 등판 날 용암 됐다 ㅋㅋ'],
+};
+const LIGHT863 = /치맥|라면|편의점|중계 화질|라디오 중계|셀카|외모|잘생|실물|패션팬|얼빠|입덕|수트핏|기자님|출근 도장|평화로운|댓글창|치킨|피자|맥주|야식|회사에서|레게노|킹갓|럭키비키|도파민 공급|짜친|킹받|K 카드|팬인데 요즘 단톡|직원임|팬 다 모였네|해외 커뮤 반응|퍼오는 사람/;
+{
+  const _c863 = comments;
+  comments = function (tone, x) {
+    let out = _c863.apply(this, arguments);
+    try {
+      if (!Array.isArray(out) || !S || !ME || !x || x.myR == null) return out;
+      const gn = giv(ME.name), P = isP(), d = (x.myR || 0) - (x.opR || 0);
+      const U = S.fl863 = S.fl863 || {};
+      const put = (k, at) => { const L = FLOW863[k].map(t => josaFix(t.replace(/\{n\}/g, gn))).filter(t => !out.some(c => c && c.t === t)); if (!L.length) return; const mn = Math.min(...L.map(t => U[t] || 0)), C = L.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1; out.splice(Math.min(out.length, at == null ? ri(0, 2) : at), 0, mkC(t, R() < .5 ? [{ nk: pick(NICKS), t: pick(k === 'lava' || k === 'lavaP' ? ['ㅋㅋㅋ 뜨겁다', '용암 인정'] : k.startsWith('dp') ? ['ㅠㅠ', '그건 진짜 아팠다'] : ['ㅋㅋㅋ ㅠ', '아직 모른다…', '내일 보자']), up: ri(20, 600) }] : [], { up: ri(600, 5000) })); };
+      /* ② 시리즈 */
+      let seriesDone = false;
+      const m = String(x.sub || '').match(/시리즈 (\d+)승 (\d+)패/);
+      if (m && x.ps && x.win === false && !x.elim) {
+        const w = +m[1], l = +m[2] + 1, ks = x.ps === 'KS' || /한국시리즈|월드시리즈/.test(String(x.title || ''));
+        if (w === 0 && l === 3 && R() < .75) { put('s03', 0); seriesDone = true; }
+        else if (w === 0 && l === 2 && R() < (ks ? .4 : .5)) { put('s02', 0); seriesDone = true; }
+      }
+      /* ① 기울어진 경기 */
+      if (!seriesDone && !x.elim && d <= -5 && R() < .4) put('gg');
+      /* ③ 병살 찬물 */
+      if (!P && Array.isArray(x.pl) && x.pl.some(p => p && p.dp && p.i >= 6 && p.my <= p.op) && R() < .55) put(x.win ? 'dpW' : 'dp');
+      /* ④ 용암 */
+      if (((x.myR || 0) >= 8 || (!P && (x.gH || 0) >= 3 && (x.myR || 0) >= 6)) && R() < .4) put(P ? 'lavaP' : 'lava');
+      /* ⑤ 중요한 경기 가벼운 잡담 줄이기 */
+      const big = x.ps && (x.ps === 'KS' || /한국시리즈|월드시리즈/.test(String(x.title || '')) || x.elim || x.clinch || /지면 탈락|마지막 승부|이기면 시리즈 승리/.test(String(x.sub || '')));
+      const mid = !big && (x.ps || x.intl);
+      if (big || mid) {
+        const drop = big ? .85 : .5; let keep = out.length;
+        out = out.filter(c => { if (!(c && typeof c.t === 'string') || c.must || !LIGHT863.test(c.t) || keep <= 4) return true; if (R() < drop) { keep--; return false; } return true; });
+      }
+    } catch (e) {}
+    return out;
+  };
+}
+
+/* v863 (11/27 유저 "승부조작 브로커도 스토브리그에 안 뜨게") — 시즌 중(전·후반기) 이벤트라 비시즌(캠프·스토브리그) 큐에 남아 있으면 뺌 (원정 숙소·원정 버스 배경) */
+if (typeof render === 'function') {
+  const _rd863 = render;
+  render = function () {
+    try { if (S && S.queue && S.phase === 0 && S.queue.length) { const n = S.queue.length; S.queue = S.queue.filter(q => !/낯선 남자의 제안|동료의 주식 추천/.test((q && q.title) || '')); if (S.queue.length !== n && ui) ui.sheet = ui.sheet; } } catch (e) {}
+    return _rd863.apply(this, arguments);
   };
 }
