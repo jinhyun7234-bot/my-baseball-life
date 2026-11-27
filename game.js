@@ -2871,7 +2871,7 @@ function cmCats(tone,x){const pg=cmPGood(x),c=[],pos=['hype','psHero','feat','aw
 {const _c8=comments;comments=function(tone,x){let out=_c8(tone,x);try{if(!S||!ME)return out;const cats=cmCats(tone,x),recent=S.cmRecent||[],use=[];
   for(const id of cats){if(use.length>=2)break;if(recent.includes(id)&&!(id===2||id===7||id===14))continue;use.push(id)}
   const neg=['bad','psGoat','psLose','injury','faBig'].includes(tone),add=[];
-  use.forEach(id=>{let pool=(CMLIB[id]||[]).filter(l=>{const t=l[0];if(isP()&&BATW.test(t))return false;if(!isP()&&PITW.test(t))return false;if(id===9){const dl=deal867();if(!dl)return false;if(/계약 첫해/.test(t)&&dl.y!==S.y)return false;if(/계약하고 귀신같이/.test(t)&&S.y-dl.y>1)return false;if(/FA 전에는|FA 계약은/.test(t)&&!dl.fa)return false;if(/부상 있었으면/.test(t)&&!(S.injLast&&S.injLast.y===S.y))return false}if(id===12&&((neg&&cmPGood(x))||(neg!==NICK_NEG.test(t))))return false;if(/유격수 수비는/.test(t)&&ME.pos!=='SS')return false;if(id===19){const me=x||{},rg=/^(ring|ws)$/.test(String(tone)),N19=/어디 두고|덜 됐|대신해주진|집에 있나|침묵|실수를|차갑다|재단하진/,gd=rg||(isP()?cmPGood(x):((me.gH||0)>=2||(me.gHR||0)>=1||((me.gH||0)>=1&&(me.gRBI||0)>=1))),bd=!rg&&(isP()?((me.ra||0)>=3||(me.ipO!=null&&me.ipO<9&&(me.ra||0)>=2)):((me.gPA||0)>=3&&(me.gH||0)===0));if(/무관기운|출루 한 번도/.test(t))return false;if(/베테랑/.test(t)&&age()<30)return false;if(gd&&N19.test(t))return false;if(bd&&!N19.test(t))return false;if(!gd&&!bd)return false}if(/타율 \.250이어도|타율 \.300이면 무조건/.test(t)){try{const b=yearTot(S.y,[S.pro&&S.pro.league]).b,av=b&&b.AB>=60?b.H/b.AB:0,op=b&&b.PA?opsN(b):0;/* v868n: 실제 타율이랑 상관없는 세이버 훈수 X */if(/\.250이어도/.test(t)?!(av&&av<.275&&op>=.78):!(av>=.3&&op<.82))return false}catch(e){return false}}if(/지명타자로만 쓰기/.test(t)&&ME.pos!=='DH')return false;if(id===18&&/주루사|오배송|사고 났|아웃됐|주루 판단/.test(t)&&!(x&&(x.gCS||0)>0))return false;if(/도르 수상/.test(t)&&!(tone==='award'||(S.awards||[]).some(a=>a.y===S.y&&!/월간|주간/.test(a.n))))return false;return!seenHas(cmFillLib(t))});
+  use.forEach(id=>{let pool=(CMLIB[id]||[]).filter(l=>{const t=l[0];if(isP()&&BATW.test(t))return false;if(!isP()&&PITW.test(t))return false;if(id===9){const dl=deal867();if(!dl)return false;if(/계약 첫해/.test(t)&&dl.y!==S.y)return false;if(/계약하고 귀신같이/.test(t)&&S.y-dl.y>1)return false;if(/FA 전에는|FA 계약은/.test(t)&&!dl.fa)return false;if(/부상 있었으면/.test(t)&&!(S.injLast&&S.injLast.y===S.y))return false}if(id===12&&((neg&&cmPGood(x))||(neg!==NICK_NEG.test(t))))return false;if(/유격수 수비는/.test(t)&&ME.pos!=='SS')return false;{/* v868q: 시뮬(ah) — 한국시리즈에 '다음 시리즈까지 봐야', 투수 기사에 '변화구에 너무 쉽게 속는다', 무너진 날에 '중요한 순간에 너무 잘함·인터뷰까지 잘하면 팬덤 완성' X */const xx=x||{},fin=/한국시리즈|월드시리즈/.test(String(xx.title||'')+String(S._hd||'')),bdG=isP()?(((xx.ra||0)>=2&&xx.ipO!=null&&xx.ipO<=6)||(xx.ra||0)>=4):((xx.gPA||0)>=3&&(xx.gH||0)===0);if(fin&&/다음 시리즈까지/.test(t))return false;if(isP()&&/변화구에 (너무 )?쉽게 속/.test(t))return false;if(id===1&&tone!=='award'){let g1='none';try{g1=perfGrade()}catch(e){}if(g1!=='elite'&&g1!=='good')return false}if(bdG&&/중요한 순간에 너무 잘|팬덤 완성|인터뷰까지 잘하면/.test(t))return false}if(id===19){const me=x||{},rg=/^(ring|ws)$/.test(String(tone)),N19=/어디 두고|덜 됐|대신해주진|집에 있나|침묵|실수를|차갑다|재단하진/,gd=rg||(isP()?cmPGood(x):((me.gH||0)>=2||(me.gHR||0)>=1||((me.gH||0)>=1&&(me.gRBI||0)>=1))),bd=!rg&&(isP()?((me.ra||0)>=3||(me.ipO!=null&&me.ipO<9&&(me.ra||0)>=2)):((me.gPA||0)>=3&&(me.gH||0)===0));if(/무관기운|출루 한 번도/.test(t))return false;if(/베테랑/.test(t)&&age()<30)return false;if(gd&&N19.test(t))return false;if(bd&&!N19.test(t))return false;if(!gd&&!bd)return false}if(/타율 \.250이어도|타율 \.300이면 무조건/.test(t)){try{const b=yearTot(S.y,[S.pro&&S.pro.league]).b,av=b&&b.AB>=60?b.H/b.AB:0,op=b&&b.PA?opsN(b):0;/* v868n: 실제 타율이랑 상관없는 세이버 훈수 X */if(/\.250이어도/.test(t)?!(av&&av<.275&&op>=.78):!(av>=.3&&op<.82))return false}catch(e){return false}}if(/지명타자로만 쓰기/.test(t)&&ME.pos!=='DH')return false;if(id===18&&/주루사|오배송|사고 났|아웃됐|주루 판단/.test(t)&&!(x&&(x.gCS||0)>0))return false;if(/도르 수상/.test(t)&&!(tone==='award'||(S.awards||[]).some(a=>a.y===S.y&&!/월간|주간/.test(a.n))))return false;return!seenHas(cmFillLib(t))});
     const n=id===2||id===1?3:2;for(let i=0;i<n&&pool.length;i++){const l=pool.splice(ri(0,pool.length-1),1)[0],t=cmFillLib(l[0]);seenAdd(t);
       add.push({lib:1,nk:pick(NICKS),fl:S.pro&&S.pro.team!=null&&R()<.5?TEAMS[S.pro.team].nick:null,t,up:Math.round(ri(60,600)*(1+S.rel.fame/25)),dn:ri(1,40),ago:pick(AGO),re:l.slice(1).map(r=>({nk:pick(NICKS),t:cmFillLib(r),up:ri(20,300)}))})}});
   if(add.length){S.cmRecent=use.concat(recent).slice(0,3);add.forEach(c=>out.splice(Math.min(out.length,ri(1,5)),0,c))}}catch(e){}return out}}
@@ -5433,11 +5433,11 @@ ACT.tradeGoF=function(a){const r=ACT.tradeGo({T:a.T,big:false});S.tradeBoostY=S.
 {const _ps2=postseason;postseason=function(rep){try{const st=standings();S._psSeed=st.findIndex(z=>z.i===S.pro.team)+1}catch(e){S._psSeed=0}S.psBad2={n:0};return _ps2(rep)}}
 {const _mp3=mlbPost;mlbPost=function(rep){try{S._psSeed=mlbSeed().seed||0}catch(e){S._psSeed=0}S.psBad2={n:0};return _mp3(rep)}}
 {const _c100=comments;comments=function(tone,x){let out=_c100(tone,x);try{if(!S||!ME||!x||!x.ps||x.intl||S.stage!=='pro')return out;const P=isP(),gn=giv(ME.name),add=[],mlb=S.pro.league==='MLB',t=x.title||'',sub=x.sub||'';
-  const bad=P?((x.ipO||0)>=3&&(x.ra||0)>=4):((x.gPA||0)>=4&&(x.gH||0)===0&&!(x.gRBI>0));
+  const bad=P?(((x.ipO||0)>=3&&(x.ra||0)>=4)||((x.ra||0)>=2&&x.ipO!=null&&x.ipO<=6)):((x.gPA||0)>=4&&(x.gH||0)===0&&!(x.gRBI>0));/* v868q: 불펜 1~2이닝 2실점도 못한 날 (시뮬: 1이닝 2실점에 '중요한 순간에 너무 잘함') */
   const push=(L,re,n)=>{L.filter(s=>!seenHas(s)).sort(()=>R()-.5).slice(0,n||1).forEach(s=>{seenAdd(s);add.push(mkC(s,re&&R()<.6?[pick(re)]:[],{up:ri(300,2500),must:1}))})};
   /* 1) 못한 날 → 칭찬·게토레이 드립 빼고 솔직하게 */
   S.psBad2=S.psBad2||{n:0};const gk=t+'|'+sub+'|'+(x.ipO||0)+'|'+(x.gPA||0);if((x.gPA!=null||x.ipO!=null)&&S.psBad2.k!==gk){S.psBad2.k=gk;S.psBad2.n=bad?(S.psBad2.n||0)+1:0}
-  if(bad){const PR=/게토레이|신 강림|신 믿|신 오늘도|역시 .{0,4}신|영웅|멱살|캐리|MVP|스타성|미쳤다|미친놈|미친 새끼|도파민|쌌다|해결사|히어로|대.{1,3} ㅅㅅ|GOAT|레전드|증명|클라스|에이스 클라스|철벽|음주운전만/;out=out.filter(c=>!PR.test(c.t));out.forEach(c=>{if(c.re)c.re=c.re.filter(r=>!PR.test(r.t))});
+  if(bad){const PR=/게토레이|신 강림|신 믿|신 오늘도|역시 .{0,4}신|영웅|멱살|캐리|MVP|스타성|미쳤다|미친놈|미친 새끼|도파민|쌌다|해결사|히어로|대.{1,3} ㅅㅅ|GOAT|레전드|증명|클라스|에이스 클라스|철벽|음주운전만|중요한 순간에 너무 잘|팬덤 완성|공 하나하나가 예술|에이스 모드|흐름을 끊어|국밥|우리 형이다|잘했다 생각하면/;out=out.filter(c=>!PR.test(c.t));out.forEach(c=>{if(c.re)c.re=c.re.filter(r=>!PR.test(r.t))});
     const over=!x.win&&/마지막 승부|지면 탈락/.test(sub);
     if(over)push(P?[`${gn} 마지막 경기에서 무너진 게 제일 아프다`,`오늘 ${gn}는 솔직히 못 던졌다… 마지막이라 더 아쉽다`]:[`오늘 ${gn}는 솔직히 못했다… 마지막 경기라 더 아쉽다`,`${gn} 마지막 경기에서 침묵한 게 너무 아쉽다`],['내년 가을엔 갚아라','그래도 여기까지 온 데 ${gn} 몫도 있다'.replace('${gn}',gn)],1);
     else if(S.psBad2.n>=2&&!x.win)push(P?[`${gn} 2경기 연속 털리는 중… 솔직히 시리즈 말아먹는 중`,`${gn} 가을에 이렇게 무너지면 답이 없다`,`두 경기 연속 이러면 등판 순서 다시 생각해야 함`]:[`${gn} 2경기 연속 침묵… 솔직히 시리즈 말아먹는 중`,`${gn} 타순 좀 내려라 두 경기째 이게 뭐냐`,`가을에 ${gn} 방망이 실종됐다 진짜`],['다음 경기도 이러면 진짜 큰일','제발 깨어나라','믿고 싶은데 쉽지 않다'],1);
@@ -5565,7 +5565,7 @@ function pmPick(arr,n){const y=S.y;S.pmY=S.pmY&&S.pmY.y===y?S.pmY:{y,u:{}};const
   /* 이력·특수 조건 */
   const good=perf==='good',badP=perf==='bad';
   const yr11=proYears()>=11;if(yr11&&rings&&!fin){if(good)B('ring',['유관기운 미쳤다','역시 우승해 본 선수는 다르네','반지 있는 선수는 다르긴 하다','우승 DNA 어디 안 간다']);else if(badP)B('ring',['유관 DNA 어디 갔냐','오늘은 반지의 힘이 안 나오네','유관도 결국 사람이었네'])}
-  else if(yr11&&!rings&&good&&!champ&&!elim&&!fin)B('ring',['드디어 무관 탈출하나','무관기운 끊을 때가 됐다','이번엔 진짜 반지 하나 끼자']);
+  else if(yr11&&!rings&&good&&win&&!champ&&!elim&&!fin)B('ring',['드디어 무관 탈출하나','무관기운 끊을 때가 됐다','이번엔 진짜 반지 하나 끼자']);
   if(vet&&age()>=36){if(good)B('real',['역시 경험은 무시 못 한다','이래서 베테랑을 쓰는 거다','젊은 선수들이 보고 배워야 한다','나이 들어도 큰 경기에선 다르네']);else if(badP)B('real',['세월은 못 속이네','이제 체력적으로 힘들어 보인다','그래도 여기까지 고생했다'])}
   else if(vet){if(good)B('real',['역시 경험은 무시 못 한다','큰 경기 경험이 많아서 그런지 침착하다','가을 경험치가 다르네','이래서 경험 많은 선수를 쓰는 거다']);else if(badP)B('real',['경험 많은 선수도 오늘은 안 풀리네','이럴 때일수록 경험으로 버텨줘야지','한 경기로 판단하긴 이르다'])}
   else if(young){if(good)B('fan',['어린 선수가 이 정도면 대박이다','겁이 없네 ㅋㅋ','큰 경기에서 이렇게 해주면 믿음이 생긴다','가을야구 경험치 제대로 먹었다']);else if(badP)B('def',['아직 경험이 부족한 듯','한 번 실패로 너무 몰아가지 말자','큰 경기 경험이 필요하다'])}
@@ -15202,7 +15202,7 @@ function cmTidy853(a,tone){try{if(!a||!Array.isArray(a.cm)||!S||!ME)return;const
     if(tone!=='baby'&&RX.test(c.t)){if(dad)return false;dad=true}
     if(old)return true;
     const m=c.t.match(/^(전반기|후반기)에만 (\d+)(세이브|홀드|승|도루|홈런|탈삼진)/);
-    if(m){const u=m[3];if(!done.has(u)){done.add(u);P[u]=(P[u]||0)+1}const n=P[u];if(n>=3){const V=[`올해도 ${m[1]}에만 ${m[2]}${u} 이제 놀랍지도 않다 ㅋㅋ`,`매년 ${m[1]}에만 ${m[2]}${u} 이게 그냥 실력이다`,`${m[1]} ${m[2]}${u}는 이제 기본값이다`];c.t=V[(n-3)%3];c.re=[]}return true}
+    if(m){const u=m[3];if(!done.has(u)){done.add(u);P[u]=(P[u]||0)+1}const n=P[u];if(n>=3){const V=[`올해도 ${m[1]}에만 ${m[2]}${u} 이제 놀랍지도 않다 ㅋㅋ`,`매년 ${m[1]}에만 ${m[2]}${u} 이게 그냥 실력이다`,`${m[1]} ${m[2]}${u}${jo(String(u),'은','는').slice(String(u).length)} 이제 기본값이다`];c.t=V[(n-3)%3];c.re=[]}return true}
     if(!/\d/.test(c.t))return true;const k=c.t.replace(/\d+(\.\d+)?/g,'N');C[k]=(C[k]||0)+1;return C[k]<=3})}catch(e){}}
 /* 메이저 첫 홈런·첫 승·첫 세이브 (펨코 '빅리그 첫' 쓰임: "빅리그 첫 홈런을 선제 쓰리런으로 장식", "빅리그 첫 안타는 3루타", "데뷔전 첫 타자 삼진")
    · 메이저 첫 해 반기 결산 기사에서, 그 반기에 처음 나온 것만 (전반기에 이미 나왔으면 후반기엔 안 붙음) */
@@ -18970,7 +18970,7 @@ const CHEER866 = {
 /* v866 비슷한 유형 몰림 막기 (11/27 13:28 유저 "비슷한 댓글 유형 많아지면 보는 재미↓ 피로도↑ · 최대한 골고루 다양하게")
    한 기사 안에서 같은 갈래 댓글은 1~2개만 (꼭 나와야 하는 댓글·싸움·응원 스레드는 그대로)
    갈래: 고생·수고 / 레전드 확정 / 연봉 / 캐스터 멘트 / 개추 / 눈물·울컥 / 행복했다 / 반박 불가 / 미쳤다 / 이 맛에 야구 본다 / 메이저 간다 / 우승 축하 / 믿고 보는 / 소름 */
-const FAM866 = [[/로또 맞았/, 1], [/^사이클링 히트/, 1], [/^이게 야구지/, 1], [/다 잡은 경기/, 1], [/시리즈 분위기/, 1], [/^상대 에이스/, 1], [/수비 부담 덜/, 1], [/(수트|슈트|정장) ?핏/, 1], [/(나가서|나가고) (얼마나 )?잘하나/, 1], [/^(출근|퇴근)길에/, 1], [/구단(이|도) ?(진짜 |제대로 )?인정|구단도 인정/, 1], [/협상 (깔끔|오래 안)/, 1], [/^(이건 그냥 |와 )?구단(이|도) /, 2], [/야구 없는/, 1], [/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1], [/1차전(은)? ?(내줬|내준|그냥)|첫 판(을)? ?(내줬|내준|부터 이러면)/, 1], [/퇴근/, 1], [/^이 페이스면/, 1], [/밥값/, 1], [/직관 승률/, 1], [/유니폼 (오늘 )?(샀|산다|질렀)/, 1], [/^메이저 \d+년 차|^\d+년 차/, 1], [/^데뷔 시즌/, 1], [/담장이 낮아/, 1], [/MVP 페이스|MVP급|MVP 1순위|MVP 레이스/, 1], [/혼자 다 (했|함)|팀 이름 .{1,8}(로|으로) 바꿔|빠지면 그냥/, 1], [/라이벌전|더비|잠실 주인/, 1], [/\d승 \d패|원점이다|원점으로/, 1], [/오늘은 그냥 잊자/, 1], [/돈 앞에|돈이 제일|금액이었으면|압도적인 돈|돈 따라간/, 1], [/전설의 포켓몬|가정 방문|재활실/, 1], [/^1점 차|한 점 차 패배|1점 차 가을/, 1], [/쉬운 타구/, 1], [/^무난하다|무난무난|딱 기대한 만큼/, 1], [/계약 끝(날 때|나면) \d+살|\d+살까지 보장/, 1]];
+const FAM866 = [[/^\d+-\d+(…| )/, 1], [/실책 하나(가|에)/, 1], [/1차전 (잡은|이긴) 팀이 (우승할|올라갈) 확률/, 1], [/로또 맞았/, 1], [/^사이클링 히트/, 1], [/^이게 야구지/, 1], [/다 잡은 경기/, 1], [/시리즈 분위기/, 1], [/^상대 에이스/, 1], [/수비 부담 덜/, 1], [/(수트|슈트|정장) ?핏/, 1], [/(나가서|나가고) (얼마나 )?잘하나/, 1], [/^(출근|퇴근)길에/, 1], [/구단(이|도) ?(진짜 |제대로 )?인정|구단도 인정/, 1], [/협상 (깔끔|오래 안)/, 1], [/^(이건 그냥 |와 )?구단(이|도) /, 2], [/야구 없는/, 1], [/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1], [/1차전(은)? ?(내줬|내준|그냥)|첫 판(을)? ?(내줬|내준|부터 이러면)/, 1], [/퇴근/, 1], [/^이 페이스면/, 1], [/밥값/, 1], [/직관 승률/, 1], [/유니폼 (오늘 )?(샀|산다|질렀)/, 1], [/^메이저 \d+년 차|^\d+년 차/, 1], [/^데뷔 시즌/, 1], [/담장이 낮아/, 1], [/MVP 페이스|MVP급|MVP 1순위|MVP 레이스/, 1], [/혼자 다 (했|함)|팀 이름 .{1,8}(로|으로) 바꿔|빠지면 그냥/, 1], [/라이벌전|더비|잠실 주인/, 1], [/\d승 \d패|원점이다|원점으로/, 1], [/오늘은 그냥 잊자/, 1], [/돈 앞에|돈이 제일|금액이었으면|압도적인 돈|돈 따라간/, 1], [/전설의 포켓몬|가정 방문|재활실/, 1], [/^1점 차|한 점 차 패배|1점 차 가을/, 1], [/쉬운 타구/, 1], [/^무난하다|무난무난|딱 기대한 만큼/, 1], [/계약 끝(날 때|나면) \d+살|\d+살까지 보장/, 1]];
 {
   const _c866f = comments;
   comments = function (tone, x) {
@@ -19953,7 +19953,7 @@ if (typeof phaseArticle === 'function') {
       /* v868p 시뮬(ah): '없었으면 무너질 뻔' 한 커리어에 3번·'끝내기 쳐 준 것만' 3번 → 계약 한 번에 한 번 · 3년에 한 번 · 커리어 한 번 */
       if (good && !lastGood868() && age() <= 27 && proYears() <= 6 && !S._hv868) K.push('harvest');
       if (!isP() && (S.arts || []).filter(z => z && z.y === S.y && typeof z.head === 'string' && z.head.indexOf(ME.name) >= 0 && /끝내기/.test(z.head)).length >= 2 && !(S._wo868 && S.y - S._wo868 < 3)) K.push('woS');
-      { const dl = typeof deal867 === 'function' ? deal867() : null; if (good && S.pro.league === 'KBO' && dl && dl.fa && (dl.tot || 0) / (dl.yrs || 1) >= 150000 && S._fa868 !== dl.y) K.push('fact'); }
+      { const dl = typeof deal867 === 'function' ? deal867() : null; if (good && S.pro.league === 'KBO' && dl && dl.fa && (dl.tot || 0) / (dl.yrs || 1) >= 150000 && !S._fa868) K.push('fact'); }
       const k = K.length ? pick(K) : null;
       if (k && R() < .6) {
         if (k === 'woS') { let rk = 9; try { rk = myTeamRank(); } catch (e) {} const L = ['올해 끝내기만 몇 번이냐 클러치 하나는 확실하다']; if (S.pro.league === 'KBO' && rk <= 5) L.push('순위 싸움 때 끝내기 쳐 준 것만 생각해도 이 정도 평가는 해야지'); const t = pick(L); if (!a.cm.some(c => c && c.t === t)) { a.cm.splice(Math.min(a.cm.length, ri(1, 3)), 0, mkC(t, R() < .55 ? [pick(REC867RE.woS)] : [], { up: ri(400, 3200) })); S._wo868 = S.y; } }
@@ -19996,10 +19996,11 @@ if (typeof buildSeasonRecap === 'function') {
       const a = S && S.arts && S.arts[0]; if (!a || a.id === id0 || !Array.isArray(a.cm) || !ME || !(S.stage === 'pro' || (S.stage === 'ret' && String(tone || '') === 'retire'))) return r;
       const h = String(a.head || ''), T = String(tone || ''), mk = (t, re) => mkC(t, re && re.length && R() < .55 ? [{ nk: pick(NICKS), t: pick(re), up: ri(20, 600) }] : [], { up: ri(800, 5000) });
       const has = t => a.cm.some(c => c && typeof c.t === 'string' && (c.t === t || c.t.slice(0, 8) === t.slice(0, 8)));
-      const put1 = (L, key, pos) => { const C = L.filter(z => z && !seenHas(key + z[0]) && !has(z[0])); if (!C.length) return false; const z = pick(C); seenAdd(key + z[0]); a.cm.splice(Math.min(a.cm.length, pos == null ? ri(1, 3) : pos), 0, mk(z[0], z[1])); return true; };
+      const U8 = S._u868 = S._u868 || {};/* 커리어 한 번 (시뮬 ai: '이번엔 터지지 말고'·'우리 팀에 있는 동안' 한 커리어에 2번) */
+      const put1 = (L, key, pos) => { const C = L.filter(z => z && !U8[z[0]] && !seenHas(key + z[0]) && !has(z[0])); if (!C.length) return false; const z = pick(C); U8[z[0]] = S.y; seenAdd(key + z[0]); a.cm.splice(Math.min(a.cm.length, pos == null ? ri(1, 3) : pos), 0, mk(z[0], z[1])); return true; };
       if (h.indexOf(ME.name) < 0) return r;
       /* KBO 정규시즌 MVP (젊고 메이저 안 가 본 선수): '우리 팀 있는 동안 더 잘하자' (펨코 MVP 글: "사랑한다 ○○아 ○○ 있는 동안 더 잘하자!") */
-      if (/정규시즌 MVP는/.test(h) && S.pro.league === 'KBO' && age() <= 28 && !(S.rows || []).some(z => z.lv === 'MLB')) put1([[`${giv(ME.name)} 사랑한다 우리 팀에 있는 동안 더 잘하자!`, ['메이저 갈까 봐 벌써 불안하다', '보내기 싫다 진짜 ㅠ']], ['이제 메이저 스카우트들 줄 서겠네 벌써 무섭다', ['포스팅 얘기 나오기 전에 실컷 즐기자', '해외 가도 응원은 한다']]], 'mv868:');
+      if (/정규시즌 MVP는/.test(h) && S.pro.league === 'KBO' && age() <= 28 && !(S.rows || []).some(z => z.lv === 'MLB')) put1([[`${giv(ME.name)} 사랑한다 우리 팀에 있는 동안 더 잘하자!`, ['메이저 갈까 봐 벌써 불안하다', '보내기 싫다 진짜 ㅠ']]], 'mv868:');
       /* 부상 복귀 (펨코: '무사 복귀 기원 209일차'·'터지지 말고 무사 복귀해다오'·'요즘은 복귀하면 공 개수 세어 가며 던지고') */
       if (T === 'injRet' && !(x && (x.camp || x.fut))) {
         const L0 = S.injLast, d = L0 ? ((S.y - L0.y) * 12 + ((S.m || 0) - (L0.m || 0))) * 30 : 0, L = [['이번엔 터지지 말고 끝까지 건강하게 가자', ['제발 ㅠ', '몸이 먼저다']]];
@@ -20011,6 +20012,7 @@ if (typeof buildSeasonRecap === 'function') {
       { const mt = h.match(/(\d+)년 ([\d,]+)억/); if (mt && S.pro.league === 'KBO' && !/방출|트레이드/.test(h)) { const tot = +String(mt[2]).replace(/,/g, ''), yr = +mt[1], L = [];
         if (tot >= 100) L.push(['이 계약서 결재 올린 단장 손 떨렸을 듯 ㅋㅋ', ['사장님 결재까지 받았겠지', '구단 통장 텅장 각']], ['계약금만 해도 몇십억이네 ㄷㄷ', ['평생 놀고먹어도 되겠다', '부럽다 진짜']]);
         if (tot >= 80 && /잔류|재계약/.test(h) && age() <= 31) L.push(['그냥 종신 계약 해 줘라 20년짜리로 ㅋㅋ', ['평생 우리 팀', '은퇴도 여기서 하자']]);
+        if (yr >= 5 && /잔류|재계약/.test(h)) L.push(['이 계약 끝나면 영구결번까지 확정 아니냐', ['계약서에 은퇴식 기획서까지 넣어 둬라 ㅋㅋ', '원클럽맨 루트 확정']]);
         if (L.length) put1(L, 'bk868:'); } }
       /* 신인왕 (펨코: '작년 이맘때쯤에 ○○가 다음 시즌 신인왕 타고 홈런 20개 때리고…') */
       if (/신인왕/.test(h) && /^(award)$/.test(T)) { const yb = yearTot(S.y, [S.pro.league]).b; put1([[(!isP() && yb && yb.HR >= 15) ? `작년 이맘때 ${giv(ME.name)} 신인왕에 ${yb.HR}홈런 친다고 했으면 다들 안 믿었다` : '작년 이맘때만 해도 신인왕까지는 상상 못 했다', ['1년 만에 이렇게 크다니', '이게 야구다']]], 'ry868:'); }
@@ -20027,6 +20029,8 @@ if (typeof buildSeasonRecap === 'function') {
         if (t.w < 10) L.push(['고생했다 제2의 인생도 파이팅', ['ㅎㅇㅌ', '응원한다']], ['괜히 아쉽네… 그동안 고마웠다', ['수고 많았다']]);
         let n = 0; for (let i = 0; i < 2; i++) if (put1(L, 'rt868:')) n++;
       }
+      /* 영구결번 (펨코: '지금 영구결번 주자고 하면 찬성/불가'·'영구결번 안 된 선수 중 제일 아쉬운 선수') */
+      if (T === 'retire' && /영구결번/.test(h)) { const w = careerTot(['KBO', 'MLB']).w; put1([w >= 50 ? ['영구결번 논쟁 나올 줄 알았는데 이건 이견이 없다', ['만장일치', '당연한 결과']] : ['솔직히 영구결번은 좀 이르지 않나 싶었는데 팀에 해 준 거 보면 인정', ['반박 불가', '그래도 아쉬운 사람은 있겠지']]], 'rn868:'); }
       /* 베테랑 계약: 남은 통산 기록 계산 */
       if (age() >= 33 && /재계약|잔류|FA|계약|연봉/.test(h) && !/방출|트레이드|은퇴|\$[\d.]+M 재계약$/.test(h) && R() < .65) { const yrs = +((h.match(/(\d+)년/) || [])[1] || 1); const m = msCount868(yrs); if (m && !(S._ms868 || {})[m[2]] && !has(m[0])) { (S._ms868 = S._ms868 || {})[m[2]] = S.y; a.cm.splice(Math.min(a.cm.length, ri(1, 3)), 0, mk(m[0], m[1])); } }
     } catch (e) {}
@@ -20049,5 +20053,17 @@ if (typeof render === 'function') {
       }
     } catch (e) {}
     return _rd868p.apply(this, arguments);
+  };
+}
+/* v868q: 메이저 기사에 '야구는 144경기가 아니라…' (KBO 경기 수) → 162경기 */
+{
+  const _ctx868q = ctx867;
+  ctx867 = function (a, x, tone) {
+    _ctx868q.apply(this, arguments);
+    try {
+      if (!a || !Array.isArray(a.cm) || !S || !S.pro || S.pro.league !== 'MLB' || (x && x.intl)) return;
+      const fx = t => typeof t === 'string' ? t.replace(/144경기/g, '162경기') : t;
+      a.cm.forEach(c => { if (!c) return; c.t = fx(c.t); if (Array.isArray(c.re)) c.re.forEach(r => { if (r) r.t = fx(r.t); }); });
+    } catch (e) {}
   };
 }
