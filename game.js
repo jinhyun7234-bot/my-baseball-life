@@ -18917,6 +18917,15 @@ const GIJ867 = {
 function capCm867(cm, head) {
   try {
     if (!Array.isArray(cm)) return cm;
+    /* 결산·별도 기사에도 상황 안 맞는 말 거르기 (댓글 함수 밖에서 붙는 댓글까지) */
+    try {
+      if (S && ME && S.stage === 'pro') {
+        const ag = age(), yrs = new Set((S.rows || []).filter(r => (r.lv === 'KBO' || r.lv === 'MLB') && ((r.b && r.b.PA >= 100) || (r.p && r.p.outs >= 150))).map(r => r.y)).size;
+        const aw = (S.awards || []).map(a => a.n || ''), mvp = aw.some(n => /^(정규시즌 MVP|MLB .*MVP)$/.test(n)), mlbG = (S.rows || []).some(r => r.lv === 'MLB');
+        const bad = t => (ag >= 28 && /다 컸네/.test(t)) || (yrs >= 5 && /반짝하고 끝/.test(t)) || (mvp && /최초 MVP|첫 MVP 가즈아/.test(t)) || (mlbG && /해외 스카우트 줄/.test(t));
+        cm = cm.filter(c => !(c && typeof c.t === 'string' && !c.must && bad(c.t)));
+      }
+    } catch (e) {}
     { const s7 = new Set(); cm = cm.filter(c => { if (!(c && typeof c.t === 'string') || c.must) return true; const b = c.t.replace(/^(ㄹㅇ|솔직히|진짜|아니|근데|와|형들|ㅋㅋㅋ)\s+/, ''); if (b.length < 9) return true; const k = b.slice(0, 7); if (s7.has(k)) return false; s7.add(k); return true; }); }
     const h = String(head || ''), ring = /우승!|정상!|한국시리즈 우승|월드시리즈 우승|금메달!/.test(h) && !/준우승|고교|대학/.test(h);
     const cap = ring ? 18 : /차전|결정전|시리즈|라운드\]|8강|4강|결승|준결승|가을|플레이오프|와일드카드|디비전|챔피언십|통과/.test(h) ? 14 : 12;
@@ -18929,7 +18938,7 @@ function capCm867(cm, head) {
 if (typeof render === 'function') {
   const _rd867 = render;
   render = function () {
-    try { if (S && Array.isArray(S.arts)) for (let i = 0; i < Math.min(30, S.arts.length); i++) { const a = S.arts[i]; if (a && !a._cap867 && Array.isArray(a.cm)) { a.cm = capCm867(a.cm, a.head); a._cap867 = 1; } } } catch (e) {}
+    try { if (S && Array.isArray(S.arts)) for (let i = 0; i < Math.min(30, S.arts.length); i++) { const a = S.arts[i]; if (a && Array.isArray(a.cm) && a._cap867 !== a.cm.length) { a.cm = capCm867(a.cm, a.head); a._cap867 = a.cm.length; } } } catch (e) {}   /* 정리 후 댓글이 더 붙으면 다시 정리 */
     return _rd867.apply(this, arguments);
   };
 }
