@@ -19980,8 +19980,8 @@ if (typeof buildSeasonRecap === 'function') {
       const y = q.y || S.y, lg = S.pro.league, w = (S.rows || []).filter(r => r.y === y && r.lv === lg).reduce((s, r) => s + rowWAR(r), 0), ps = String(q.psRes || q.ps || '');/* v868y: 결산 객체 필드 이름이 psRes (시뮬: '가을 탈락 직후' 줄 0번) */
       const has = t => q.cm.some(c => c && c.t === t), put = (t, re) => { if (has(t)) return; q.cm.splice(Math.min(q.cm.length, ri(1, 3)), 0, mkC(t, R() < .55 ? [{ nk: pick(NICKS), t: pick(re), up: ri(20, 600) }] : [], { up: ri(500, 3000) })); };
       if (w >= (lg === 'MLB' ? 3 : 3.5) && /^최종 [2-5]위|12강|8강|4강/.test(ps) && !/우승/.test(ps)) {
-        const L = [['가을 탈락 직후라 다들 평가가 박하다 겨울 지나면 다시 보일 거다', ['시즌 전체로 보자', '그래도 아쉬운 건 아쉬운 거']], ['정규시즌만 놓고 보면 올해 진짜 잘했다 가을이 아쉬울 뿐', ['내년 가을엔 웃자', '가을에 한 번만 더']]].filter(z => !seenHas('po868:' + z[0]));
-        if (L.length && R() < .7) { const z = pick(L); seenAdd('po868:' + z[0]); put(z[0], z[1]); }
+        const U8 = S._u868 = S._u868 || {}, L = [['가을 탈락 직후라 다들 평가가 박하다 겨울 지나면 다시 보일 거다', ['시즌 전체로 보자', '그래도 아쉬운 건 아쉬운 거']], ['정규시즌만 놓고 보면 올해 진짜 잘했다 가을이 아쉬울 뿐', ['내년 가을엔 웃자', '가을에 한 번만 더']]].filter(z => !U8[z[0]]);
+        if (L.length && R() < .5) { const z = pick(L); U8[z[0]] = y; put(z[0], z[1]); }/* v868z: 시뮬(ar) 6커리어에 11번 → 줄마다 커리어 한 번 */
       }
       if (age() >= 33 && R() < .6) { const m = msCount868(1); if (m && !(S._ms868 || {})[m[2]]) { (S._ms868 = S._ms868 || {})[m[2]] = S.y; put(m[0], m[1]); } }
       /* 펨코 포스팅 글('○○ 포스팅이 몇 년 남았지') — KBO에서 잘하는 젊은 선수, 커리어 한 번 */
