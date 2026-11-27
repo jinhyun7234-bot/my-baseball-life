@@ -1,6 +1,6 @@
 /* v854c: 바로 뜨게 — 화면(index)·설정은 저장본 먼저 보여 주고 뒤에서 새로 받아 둠, 게임 코드(game.js?v=버전)는 버전마다 한 번만 받음
    새 버전 배포 → sw.js 내용이 바뀜 → 브라우저가 새 서비스워커를 받아 새 화면·코드를 미리 저장 → 첫 화면에 있으면 한 번 새로고침 */
-const VER='6a1c6311ff',CACHE='yagu-'+VER;
+const VER='f9ad4607c3',CACHE='yagu-'+VER;
 const SHELL=['./','manifest.webmanifest','config.js','game.js?v='+VER,'icons/icon-192.png','icons/icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL.map(u=>new Request(u,{cache:'reload'})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&/^yagu-/.test(k)).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
