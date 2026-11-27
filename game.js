@@ -18664,7 +18664,7 @@ const FLOW863 = {
   lava: ['타선 용암이다 ㅋㅋ', '방망이가 용암처럼 뜨겁다', '오늘 {n} 방망이 용암 그 자체', '용암 타선 식을 줄 모른다', '방망이에 불붙었다 아니 용암이다', '오늘 타선 온도 1000도 넘음 ㅋㅋ'],
   lavaP: ['타선이 용암 지원해 주니까 편하게 던지네', '오늘은 타자들이 {n} 등판 날 용암 됐다 ㅋㅋ'],
 };
-const LIGHT863 = /치맥|라면|편의점|중계 화질|라디오 중계|셀카|외모|잘생|실물|패션팬|얼빠|입덕|수트핏|기자님|출근 도장|평화로운|댓글창|치킨|피자|맥주|야식|회사에서|레게노|킹갓|럭키비키|도파민 공급|짜친|킹받|K 카드|팬인데 요즘 단톡|직원임|팬 다 모였네|해외 커뮤 반응|퍼오는 사람/;
+const LIGHT863 = /야구 없는|치맥|라면|편의점|중계 화질|라디오 중계|셀카|외모|잘생|실물|패션팬|얼빠|입덕|수트핏|기자님|출근 도장|평화로운|댓글창|치킨|피자|맥주|야식|회사에서|레게노|킹갓|럭키비키|도파민 공급|짜친|킹받|K 카드|팬인데 요즘 단톡|직원임|팬 다 모였네|해외 커뮤 반응|퍼오는 사람/;
 {
   const _c863 = comments;
   comments = function (tone, x) {
@@ -18753,7 +18753,7 @@ const FIGHT864 = {
       let pr = badT ? .26 : good ? .18 : 0; if (big) pr *= .5;   /* 부상·계약·은퇴 같은 기사엔 싸움 X */
       if (R() > pr || !once863('fight')) return out;
       const K = [];
-      if (good) K.push('bun', 'yal', 'top'); if (badT) K.push('bun', 'mgr', 'yal');
+      if (good) K.push('bun', 'yal', 'top'); if (badT) K.push('bun', 'yal'); if (badT && x && x.myR != null && x.win === false) K.push('mgr');   /* 감독 탓 싸움은 진 경기 기사만 (시뮬: 7승 ERA 3.30 결산에 '이 라인업 짠 사람 나와라') */
       if (((S.rel && S.rel.fame) || 0) >= 45) K.push('fan'); if (((S.rel && S.rel.fame) || 0) >= 45 && !mlb && !(x && x.intl)) K.push('old');
       if ((S.pro.salary || 0) >= (mlb ? 500000 : 50000)) K.push('pay');
       if (mlb) K.push('kor'); if (x && x.myR != null && x.win === false && !mlb) K.push('ump'); if (x && x.ps) K.push('rv'); if (!K.length) K.push('yal', 'old');
@@ -18867,7 +18867,7 @@ const CHEER866 = {
 /* v866 비슷한 유형 몰림 막기 (11/27 13:28 유저 "비슷한 댓글 유형 많아지면 보는 재미↓ 피로도↑ · 최대한 골고루 다양하게")
    한 기사 안에서 같은 갈래 댓글은 1~2개만 (꼭 나와야 하는 댓글·싸움·응원 스레드는 그대로)
    갈래: 고생·수고 / 레전드 확정 / 연봉 / 캐스터 멘트 / 개추 / 눈물·울컥 / 행복했다 / 반박 불가 / 미쳤다 / 이 맛에 야구 본다 / 메이저 간다 / 우승 축하 / 믿고 보는 / 소름 */
-const FAM866 = [[/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1]];
+const FAM866 = [[/야구 없는/, 1], [/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1]];
 {
   const _c866f = comments;
   comments = function (tone, x) {
@@ -18934,3 +18934,19 @@ if (typeof render === 'function') {
   };
 }
 if (typeof buildSeasonRecap === 'function') { const _bs867 = buildSeasonRecap; buildSeasonRecap = function () { const q = _bs867.apply(this, arguments); try { if (q && Array.isArray(q.cm)) q.cm = capCm867(q.cm, q.title || q.head || ''); } catch (e) {} return q; }; }
+
+/* v867c 유관 드립 커리어 전체 빈도 (시뮬: 반지 여러 개 선수 기사마다 '유관기운 미쳤다'·'유관의 신 강림'이 거의 매번) — 유관 드립은 기사 3개에 한 번꼴까지만 */
+{
+  const _c867c = comments;
+  comments = function (tone, x) {
+    let out = _c867c.apply(this, arguments);
+    try {
+      if (!Array.isArray(out) || !S) return out;
+      const RG = t => /유관|우승 DNA|반지 냄새|반지 낀 선수|우승해 본 선수|반지의 힘/.test(t) && !/무관/.test(t);
+      const id = S.artId || 0; let used = false;
+      out = out.filter(c => { if (!(c && typeof c.t === 'string') || c.must || !RG(c.t)) return true; if (used) return false; if (S._yg867 != null && id - S._yg867 < 3 && S._yg867 !== id) return false; used = true; return true; });
+      if (used) S._yg867 = id;
+    } catch (e) {}
+    return out;
+  };
+}
