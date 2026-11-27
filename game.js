@@ -18956,7 +18956,7 @@ const CHEER866 = {
 /* v866 비슷한 유형 몰림 막기 (11/27 13:28 유저 "비슷한 댓글 유형 많아지면 보는 재미↓ 피로도↑ · 최대한 골고루 다양하게")
    한 기사 안에서 같은 갈래 댓글은 1~2개만 (꼭 나와야 하는 댓글·싸움·응원 스레드는 그대로)
    갈래: 고생·수고 / 레전드 확정 / 연봉 / 캐스터 멘트 / 개추 / 눈물·울컥 / 행복했다 / 반박 불가 / 미쳤다 / 이 맛에 야구 본다 / 메이저 간다 / 우승 축하 / 믿고 보는 / 소름 */
-const FAM866 = [[/야구 없는/, 1], [/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1], [/1차전(은)? ?(내줬|내준|그냥)|첫 판(을)? ?(내줬|내준|부터 이러면)/, 1], [/퇴근/, 1], [/^이 페이스면/, 1], [/밥값/, 1], [/직관 승률/, 1], [/유니폼 (오늘 )?(샀|산다|질렀)/, 1], [/^메이저 \d+년 차|^\d+년 차/, 1], [/^데뷔 시즌/, 1], [/담장이 낮아/, 1], [/MVP 페이스|MVP급|MVP 1순위|MVP 레이스/, 1], [/혼자 다 (했|함)|팀 이름 .{1,8}(로|으로) 바꿔|빠지면 그냥/, 1], [/라이벌전|더비|잠실 주인/, 1], [/\d승 \d패|원점이다|원점으로/, 1], [/오늘은 그냥 잊자/, 1], [/돈 앞에|돈이 제일|금액이었으면|압도적인 돈|돈 따라간/, 1], [/전설의 포켓몬|가정 방문|재활실/, 1], [/^1점 차|한 점 차 패배|1점 차 가을/, 1], [/쉬운 타구/, 1], [/^무난하다|무난무난|딱 기대한 만큼/, 1]];
+const FAM866 = [[/야구 없는/, 1], [/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1], [/1차전(은)? ?(내줬|내준|그냥)|첫 판(을)? ?(내줬|내준|부터 이러면)/, 1], [/퇴근/, 1], [/^이 페이스면/, 1], [/밥값/, 1], [/직관 승률/, 1], [/유니폼 (오늘 )?(샀|산다|질렀)/, 1], [/^메이저 \d+년 차|^\d+년 차/, 1], [/^데뷔 시즌/, 1], [/담장이 낮아/, 1], [/MVP 페이스|MVP급|MVP 1순위|MVP 레이스/, 1], [/혼자 다 (했|함)|팀 이름 .{1,8}(로|으로) 바꿔|빠지면 그냥/, 1], [/라이벌전|더비|잠실 주인/, 1], [/\d승 \d패|원점이다|원점으로/, 1], [/오늘은 그냥 잊자/, 1], [/돈 앞에|돈이 제일|금액이었으면|압도적인 돈|돈 따라간/, 1], [/전설의 포켓몬|가정 방문|재활실/, 1], [/^1점 차|한 점 차 패배|1점 차 가을/, 1], [/쉬운 타구/, 1], [/^무난하다|무난무난|딱 기대한 만큼/, 1], [/계약 끝(날 때|나면) \d+살|\d+살까지 보장/, 1]];
 {
   const _c866f = comments;
   comments = function (tone, x) {
@@ -19137,6 +19137,8 @@ function ctx867(a, x, tone) {
     /* 계약·이적·연봉·입단 기사엔 숨은 약점 폭로('멘탈 나간 게 보인다'·'워크에식') X (시뮬: 메이저 대형 계약 축하 기사에 '댓글 좀 그만 보라고 해라 멘탈 나간 게 보인다') */
     if (/계약|이적|잔류|트레이드|복귀|입단|연봉|지명|포스팅/.test(head) || /^(mlbBig|faBig|faFair|abroad|kmove|move|franMove|homeBack|salary|contract|draft)$/.test(String(tone || '')))
       a.cm = a.cm.filter(c => !(T(c) && !c.must && /멘탈이 문제임|멘탈이 아쉽다|멘탈이 발목|멘탈 나간 게 보인다|멘탈 코칭|표정부터 무너짐|워크에식|노력을 안 한다는 소문|성실함이 D급|제일 먼저 퇴근/.test(c.t)));
+    /* 팀을 옮겼거나 메이저를 다녀온 선수한테 '원클럽맨' X */
+    if (S.stage === 'pro' && S.rows) { const ts = new Set(S.rows.filter(z => z.lv === 'KBO').map(z => z.team)); if (ts.size >= 2 || S.rows.some(z => z.lv === 'MLB')) { const OC = /원클럽맨 (성골|가자|으로|이 또|의 정석)|원클럽맨이 떠난다니|진정한 원클럽맨/; a.cm = a.cm.filter(c => !(T(c) && !c.must && OC.test(c.t))); a.cm.forEach(c => { if (T(c) && Array.isArray(c.re)) c.re = c.re.filter(w => !(w && OC.test(String(w.t || '')))); }); } }
     /* 같은 답글이 여러 댓글에 반복되면 처음 하나만 (시뮬: '작년에도 이맘때 이 소리 했던 거 기억함'이 두 스레드에) */
     { const seenR = new Set(); a.cm.forEach(c => { if (T(c) && Array.isArray(c.re)) c.re = c.re.filter(w => { const k = String((w && w.t) || '').replace(/[ㅋㅎ!~.\s]+$/, '').slice(0, 14); if (k.length < 6) return true; if (seenR.has(k)) return false; seenR.add(k); return true; }); }); }
     /* 꼭 나오는 기록 댓글끼리도 앞머리가 같으면 하나만 (시뮬: '이 페이스면 시즌 37홈런…'·'이 페이스면 커리어하이 각' 둘 다 기록 댓글로 붙음) */
@@ -19233,7 +19235,7 @@ if (typeof phaseArticle === 'function') {
     try {
       const T = String(tone || ''); if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || !/^(franMove|kmove|homeBack)$/.test(T) || !S._mv || !once863('mv867')) return out;
       const mv = S._mv, gn = giv(ME.name), N = i => (i >= 0 && TEAMS[i]) ? TEAMS[i].nick : '', add = [], put = (L, re) => { const C = L.filter(t => !seenHas(t) && !out.some(c => c && c.t === t)); if (!C.length) return; const t = josaFix(pick(C)); seenAdd(t); add.push(mkC(t, re && R() < .6 ? [pick(re)] : [], { up: ri(500, 3500) })); };
-      const reg = SREG[S.school] || '서울', home = (REGT[reg] || []).includes(mv.nw), seoulOut = reg === '서울' && TEAMS[mv.nw] && TEAMS[mv.nw].city !== '서울';
+      const reg = SREG[S.school] || '서울', home = (REGT[reg] || []).includes(mv.nw), seoulOut = reg === '서울' && TEAMS[mv.nw] && !/^(서울|수원|인천)$/.test(TEAMS[mv.nw].city);
       const lastW = (() => { try { return S.rows.filter(z => z.y === S.y && z.lv === 'KBO').reduce((s, z) => s + rowWAR(z), 0); } catch (e) { return 0; } })();
       const ringOld = (S.awards || []).some(z => z && z.n === '한국시리즈 우승' && S.rows.some(rw => rw.y === z.y && rw.lv === 'KBO' && rw.team === mv.old));
       if (T !== 'homeBack') {
@@ -19260,7 +19262,8 @@ if (typeof faEvent === 'function') { const _fe867x = faEvent; faEvent = function
     try {
       const a = S && S.arts && S.arts[0]; if (!a || a.id === id0 || !Array.isArray(a.cm) || !/ 잔류$/.test(String(a.head || '')) || S.stage !== 'pro') return r;
       const f = (S.faList || []).slice(-1)[0], mx = S._faMax867 && (S._faMax867.y === S.y || S._faMax867.y === S.y - 1) ? S._faMax867.v : 0;
-      const L = [['남아 줘서 고맙다 이제 여기서 끝까지 가자', ['원클럽맨 가자', '은퇴도 여기서 하자']]];
+      const one = (() => { try { const ts = new Set(S.rows.filter(z => z.lv === 'KBO').map(z => z.team)); return ts.size <= 1 && !S.rows.some(z => z.lv === 'MLB'); } catch (e) { return false; } })();
+      const L = [['남아 줘서 고맙다 이제 여기서 끝까지 가자', one ? ['원클럽맨 가자', '은퇴도 여기서 하자'] : ['은퇴도 여기서 하자', '이제 어디 가지 마라']]];
       if (f && mx > f.tot * 1.1) L.unshift(['밖에서 더 준다는 데도 있었다던데 남아 줬네 의리 인정', ['이게 낭만이지', '돈보다 팀을 택했다']], ['페이컷하고 남아 준 거면 진짜 고마운 거다', ['구단은 이 마음 잊지 마라']]);
       const C = L.filter(z => !seenHas(z[0]) && !a.cm.some(c => c && c.t === z[0])); if (C.length) { const z = C[0]; seenAdd(z[0]); a.cm.splice(Math.min(a.cm.length, 1), 0, mkC(z[0], R() < .6 ? [pick(z[1])] : [], { up: ri(800, 4000) })); }
     } catch (e) {}
