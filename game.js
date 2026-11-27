@@ -18817,7 +18817,7 @@ const FIGHT864 = {
       const ru = S.fgr864 = S.fgr864 || {}, rp = L => { const mn = Math.min(...L.map(t => ru[t] || 0)), C = L.filter(t => (ru[t] || 0) === mn), t = pick(C); ru[t] = mn + 1; return t; };
       /* v867i: 싸움 원댓·답글 맞물림 (시뮬: 매너 얘기 없는 원댓에 '근데 매너 얘기는 맞말임', 투수 기사에 '타율로 야구 보던 시절은 끝났다') */
       const okRoot864 = t => { try { const P = isP(), tt = yearTot(S.y, [S.pro.league]), b = tt.b, p = tt.p;
-        if (/타율 좋은데/.test(t)) return !P && b.AB >= 60 && b.H / b.AB >= .29;
+        if (/타율 좋은데/.test(t)) return !P && b.AB >= 60 && b.H / b.AB >= .29 && opsN(b) < .8;
         if (/삼진 많은 거 빼면/.test(t)) return !P && b.PA >= 60 && b.K / b.PA >= .2;
         if (/평균자책 낮으면/.test(t)) return P && p.outs >= 45 && p.R * 27 / p.outs < 3.3;
         if (/승리 많으면/.test(t)) return P && ME.pos === 'SP' && p.W >= 8;
@@ -19276,3 +19276,45 @@ if (typeof faEvent === 'function') { const _fe867x = faEvent; faEvent = function
 }
 /* 라떼 싸움 답글 추가 */
 try { if (typeof FIGHT864 === 'object' && FIGHT864.old && Array.isArray(FIGHT864.old.re)) FIGHT864.old.re.push('할배요 경기나 보쇼 ㅋㅋ'); } catch (e) {}
+
+/* v867y: 반기 결산 댓글이 2~3개뿐일 때 (평범한 반기) 상황 맞는 말 1~2개 — 나이·성적·반기·리그·보직 중 서로 다른 갈래로 (유저 "결산 댓글도 골고루")
+   예) 24살 이하 "아직 23살이다 이 정도면 충분히 잘 크고 있다" · 34살 이상 "슬슬 내년 거취가 궁금해지는 나이다" · 평범 "절반의 성공이다"(펨코 결산글 제목 '절반의 성공인가')
+       전반기 "올스타 브레이크 때 재정비하고 후반기에 치고 올라가자" · 후반기 "올해는 여기까지 내년 캠프에서 보자" · 메이저 "빅리그 한 시즌 버티는 것도 쉬운 게 아니다" */
+const RFIL867 = {
+  young: ['아직 {age}살이다 이 정도면 충분히 잘 크고 있다', '어린 선수한테 너무 많은 거 바라지 말자 내년이 더 기대된다', '지금은 경험치 쌓는 시기다 조급해하지 말자'],
+  youngH: ['아직 {age}살인데 벌써 이러면 몇 년 뒤엔 어떡하냐', '{age}살에 이 성적이면 앞으로 10년은 걱정 없다'],
+  prime: ['이제 전성기 나이다 한 단계만 더 올라가자', '이 나이면 이제 결과로 보여 줘야 할 때다'],
+  primeH: ['딱 전성기에 들어섰다 앞으로 몇 년이 커리어를 정한다', '전성기 나이에 이 성적이면 이제 리그 간판이다'],
+  vet: ['슬슬 내년 거취가 궁금해지는 나이다', '나이 생각하면 이 정도도 대단하다'],
+  vetH: ['이 나이에 이 정도면 관리 진짜 잘한 거다', '나이는 숫자에 불과하다는 걸 보여 준다'],
+  avg: ['튀진 않아도 계산은 서는 선수', '딱 1인분은 했다 무난무난', '절반의 성공이다 좋은 날도 나쁜 날도 있었다'],
+  bad: ['이번 반기는 그냥 지우자 다음이 있다', '숫자가 말해 준다 반성할 반기다', '부진이 길어지면 자리 위태롭다'],
+  h1: ['올스타 브레이크 때 재정비하고 후반기에 치고 올라가자', '전반기는 끝났고 이제 후반기 싸움이다', '후반기엔 숫자 좀 더 올려 보자'],
+  h1H: ['후반기에도 이 페이스 그대로만 가자', '올스타 브레이크 푹 쉬고 후반기도 부탁한다'],
+  h2: ['스토브리그 때 몸 잘 만들어서 내년엔 더 올라가자', '올해는 여기까지 내년 캠프에서 보자'],
+  h2H: ['올해 진짜 잘했다 내년에도 이대로만', '시즌 끝났다 일단 푹 쉬고 내년에 보자'],
+  mlb: ['메이저에서 이 정도면 자리 지키는 중이다', '현지 중계진 평가도 나쁘지 않더라', '빅리그 한 시즌 버티는 것도 쉬운 게 아니다'],
+  rpMid: ['필승조라기엔 아쉽고 추격조라기엔 아깝다', '나올 때마다 주자 하나씩은 꼭 내보낸다 ㅋㅋ 그래도 막긴 막음'],
+};
+if (typeof phaseArticle === 'function') {
+  const _pa867y = phaseArticle;
+  phaseArticle = function (g, ps) {
+    const id0 = S && S.artId; const r = _pa867y.apply(this, arguments);
+    try {
+      const a = S && S.arts && S.arts[0]; if (!a || a.id === id0 || !Array.isArray(a.cm) || S.stage !== 'pro' || !S.pro || S.me !== ME || !g || !g.m) return r;
+      { const P0 = isP(), m0 = g.m, hot0 = P0 ? (m0.outs >= 45 && m0.R * 27 / m0.outs <= 3.0) : (m0.PA >= 60 && opsN(m0) >= .85); if (hot0) a.cm = a.cm.filter(c => !(c && typeof c.t === 'string' && !c.must && /운이 좀 없는 시즌|폼은 좋은데 결과가 안|기복만 (잡으면|줄이면)|좋은 날 나쁜 날|좋은 날이랑 나쁜 날|장점은 확실한데 약점도|잘하긴 하는데 뭔가 아쉬움|스탯은 좋은데 영양가는|아직 평가하긴 이르다/.test(c.t))); }/* v867y: 반기 성적이 뜨거우면 '운이 좀 없는 시즌'·'기복만 잡으면' 같은 미지근한 평가 X */
+      if (a.cm.length > 3) return r;
+      const ag = age(), sea = (() => { try { return stdSeason(); } catch (e) { return 'na'; } })(), P = isP(), m = g.m, rp = P && (m.GS || 0) < (m.G || 0) / 2;
+      const hot = P ? (m.outs >= 45 && m.R * 27 / m.outs <= 3.0) : (m.PA >= 60 && opsN(m) >= .85), H = k => k ? (hot && RFIL867[k + 'H'] ? k + 'H' : k) : null;
+      const cats = [H(ag <= 24 ? 'young' : ag >= 34 ? 'vet' : (ag >= 27 && ag <= 31 ? 'prime' : null)), (sea === 'avg' && !hot) ? (rp && R() < .5 ? 'rpMid' : 'avg') : (sea === 'bad' && !hot) ? 'bad' : null, S.phase === 2 ? ((() => { try { return myTeamRank() > (S.pro.league === 'MLB' ? 6 : 5); } catch (e) { return false; } })() ? H('h2') : null) : H('h1'), S.pro.league === 'MLB' ? 'mlb' : null].filter(Boolean).sort(() => R() - .5);
+      const U = S._rf867 = S._rf867 || {}, want = a.cm.length <= 2 ? 2 : 1; let n = 0;
+      for (const k of cats) {
+        if (n >= want) break;
+        const L = RFIL867[k].map(t => t.replace(/\{age\}/g, ag)).filter(t => !a.cm.some(c => c && c.t === t));
+        if (!L.length) continue; const mn = Math.min(...L.map(t => U[t] || 0)), C = L.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1;
+        a.cm.push(mkC(t, R() < .4 ? [pick(['ㄹㅇ', '맞는 말', '내년이 진짜다', '이게 맞지'])] : [], { up: ri(200, 1500) })); n++;
+      }
+    } catch (e) {}
+    return r;
+  };
+}
