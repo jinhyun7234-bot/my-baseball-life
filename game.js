@@ -5251,7 +5251,7 @@ function fillN(s,gn){return String(s).replace(/\{n\}(이|가)(?=[\s,.!?ㅋㅠ]|$
   if((H.we||50)<=40&&R()<.3&&cmX('wkwe'+S.y+half)){const L=[`${gn} 워크에식이 별로라는 얘기 계속 나오던데…`,`재능만 믿고 노력을 안 한다는 소문 있음`,`캠프 때 몸 덜 만들어 온 거 보면 워크에식 안 좋은 듯`,`${jo(gn,'이','가')} 연습만 좀 더 하면 리그 씹어먹을 텐데`,`훈련 끝나면 제일 먼저 퇴근한다던데 ㄹㅇ?`,`타고난 건 S급인데 성실함이 D급이라는 평`,P?'불펜 피칭 대충 한다는 썰 돌던데':'특타 한 번을 안 한다던데 ㄹㅇ임?'];
     one(L,['그 재능에 노력까지 하면 메이저 감인데','코치들이 좀 잡아줘야 함','썰은 썰일 뿐 성적으로 보여주면 됨','ㄹㅇ 이게 제일 아쉬움','나이 들면 철 들겠지'],R()<.6?2:1)}
   /* 4) 내구성 약함 (부상 중이면 더 자주) */
-  const hurt=!!ME.inj;if((H.dur||50)<=40&&R()<(hurt?.7:.3)&&cmX('wkdur'+S.y+half)){const L=[`유리몸인 것 같은데 ㄱㅊ으려나`,`${gn} 또 어디 아프다는 거 아니지?`,`잘하는데 맨날 아파서 풀타임을 못 뛰네`,`${gn} 건강하게 한 시즌만 풀로 뛰어보자 제발`,`몸만 튼튼하면 S급인데 유리몸이 너무 아쉽다`,`${gn} 이름 보면 성적보다 부상 기사가 먼저 떠오름`,`트레이너 붙여서 관리 좀 해라 진짜`,P?'어깨 팔꿈치 괜찮은 거 맞냐 투구수 관리 좀':'전력질주 할 때마다 햄스트링 걱정됨'];
+  const hurt=!!ME.inj;if((H.dur||50)<=40&&(hurt||S.injLast)&&R()<(hurt?.7:.3)&&cmX('wkdur'+S.y+half)){/* v868: 다친 적 없는데 '또 어디 아프다는 거 아니지?' X */const L=[`유리몸인 것 같은데 ㄱㅊ으려나`,`${gn} 또 어디 아프다는 거 아니지?`,`잘하는데 맨날 아파서 풀타임을 못 뛰네`,`${gn} 건강하게 한 시즌만 풀로 뛰어보자 제발`,`몸만 튼튼하면 S급인데 유리몸이 너무 아쉽다`,`${gn} 이름 보면 성적보다 부상 기사가 먼저 떠오름`,`트레이너 붙여서 관리 좀 해라 진짜`,P?'어깨 팔꿈치 괜찮은 거 맞냐 투구수 관리 좀':'전력질주 할 때마다 햄스트링 걱정됨'];
     if(hurt)L.push(`또 부상이냐… 유리몸 소리 나올 만하다`,`${gn} 부상 소식에 하루 종일 우울함`);
     one(L,['몸 관리가 실력이다','건강만 하면 진짜 무서운 선수','이번엔 오래 안 쉬었으면','유리몸은 답 없더라','관리하면 좋아질 수도 있음'],R()<.6?2:1)}
   out.splice(Math.min(out.length,2),0,...add)}catch(e){}return out}}
@@ -13139,7 +13139,7 @@ function recapLines840(rc){const out=[],g=rc.g,P=g.kind==='P',m=g.m,lv=g.lvk,hal
     const reg=m.G>0&&m.PA/m.G>=3.0;
     Object.assign(o,{avg:f3_840(avg),ops:f3_840(ops),hr:m.HR,rbi:m.RBI,sb:m.SB||0,bb:m.BB,k:m.K,gdp:m.GDP||0,e:m.E||0,pace:Math.round(m.HR/m.PA*(lv==='MLB'?660:610))});up=t>=3?1:t<=1?-1:0;
     if(reg)take(avg>=.33?RCB840[t].filter(s=>!/준수하다 국밥/.test(s)):RCB840[t]);/* v842s: 타율 3할 3푼 넘는데 '준수하다' X */
-    if(reg&&R()<.45&&!S._rcPosHave840){const pb=RCPB840[pos];if(pb){if(t>=4)take(pb.g.filter(s=>!/거포/.test(s)||m.HR/Math.max(1,m.PA)>=.04));else if(t<=1)take(pb.b)}}/* v842s: 홈런 적은데 '거포' X */
+    if(reg&&R()<.45&&!S._rcPosHave840){const pb=RCPB840[pos];if(pb){if(t>=4)take(pb.g.filter(s=>!/거포/.test(s)||m.HR/Math.max(1,m.PA)>=.04));else if(t<=1){const de=(['SS','C','CF'].includes(pos)&&typeof defEval==='function')?defEval():null;if(!de||de.d>-.3)take(pb.b)}}}/* v868: '유격수니까 타격은 참아 준다 수비가 먼저다'는 수비가 괜찮을 때만 (시뮬: 같은 기사에 'dWAR -0.8 실화냐 수비 좀…') *//* v842s: 홈런 적은데 '거포' X */
     const H=[];if(m.HR/m.PA>=.055&&m.HR>=12)H.push('hrPace');if(avg>=.38&&m.PA>=150)H.push('avg4');else if(avg>=.345&&m.PA>=150)H.push('avgHi');if((m.SB||0)>=14)H.push('sbHi');if(m.RBI/m.PA>=.19&&m.RBI>=45)H.push('rbiHi');
     if(m.BB/m.PA>=.145&&m.PA>=150)H.push('bbHi');if(m.K/m.PA>=.29&&m.PA>=150)H.push(m.HR/m.PA>=.05?'kHiPow':'kHi');if((m.GDP||0)>=9||((m.GDP||0)>=7&&(m.GDP||0)/m.PA>=.027))H.push('gdpHi');if((m.E||0)>=9)H.push('eHi');
     if(m.HR/m.PA>=.05&&avg<.245&&m.PA>=150)H.push('powNoAvg');else if(m.HR/m.PA<.012&&avg>=.315&&m.PA>=150)H.push('conNoPow');
@@ -19085,7 +19085,7 @@ function ctx867(a, x, tone) {
     if (a.cm.some(c => T(c) && /몸이 벌써 완성형/.test(c.t))) a.cm = a.cm.filter(c => !(T(c) && !c.must && /몸만 좀 키우면/.test(c.t)));
     if (S.stage !== 'pro' || !S.pro) return;
     /* 캐스터 멘트 댓글은 기사당 1개 · 'N년을 기다렸다' 같은 우승 가뭄 얘기는 2개까지 (시뮬: KS 우승 기사에 캐스터 2개·38년 3번) */
-    { let nc = 0, nd = 0; a.cm = a.cm.filter(c => { if (!T(c) || c.fight864 || c.cheer866) return true; if (/^캐스터 /.test(c.t)) { nc++; if (nc > 1) return false; } if (/\d+년 ?(을|의|만에|기다)/.test(c.t) && /기다|만에|가뭄/.test(c.t)) { nd++; if (nd > 2 && !c.must) return false; } return true; }); }
+    { let nc = 0, nd = 0; a.cm = a.cm.filter(c => { if (!T(c) || c.fight864 || c.cheer866) return true; if (/^캐스터 /.test(c.t)) { nc++; if (nc > 1) return false; } if (/\d+년 ?(을|의|만에|기다|묵혀|동안)/.test(c.t) && /기다|만에|가뭄|묵혀/.test(c.t)) { nd++; if (nd > 2 && !c.must) return false; } return true; }); }
     /* 한국시리즈·월드시리즈는 '올라가도'가 아니라 '우승해도' */
     if (/한국시리즈|월드시리즈/.test(head)) a.cm.forEach(c => { if (T(c)) c.t = c.t.replace('어느 팀이 올라가도 이상하지 않았던', '어느 팀이 우승해도 이상하지 않았던'); });
     /* 우승·금메달·은퇴·수상 같은 축하 기사: 울컥·축하 댓글이나 캐스터 멘트 밑에 '스탯 보고 말하자' 같은 반박 답글 X */
@@ -19441,7 +19441,8 @@ function deal867(){try{const L=[...(S.faList||[]).map(e=>({...e,fa:1})),...(S.ab
       const LUKE = /운이 좀 없는 시즌|폼은 좋은데 결과가 안|기복만 잡으면|좋은 날 나쁜 날|장점은 확실한데 약점도|장점 단점 확실|중립기어|한 시즌 풀로 봐야|아직 평가하기|아직 평가하긴|기대치를 어디 두냐|못하는 건 아닌데|이 정도면 평타|하위 타선이면 개꿀|스탯은 좋은데 눈으로 보면|좀 더 지켜봐야|장단점이 너무 확실|롤러코스터|평가 박하게|팬들 기대치가 너무 높/;
       const h = String(a.head || ''), T = String(tone || ''), P = isP(), g = x && (x.gPA != null || x.ipO != null) && x.gPA !== 1;
       const hero = (g && x.win !== false && (P ? (((x.ipO || 0) >= 18 && (x.ra || 0) <= 1) || (x.sv && !x.ra)) : ((x.gHR || 0) >= 1 || (x.gH || 0) >= 3 || (x.gRBI || 0) >= 3))) || /끝내기|원맨쇼|지배했다|대기록|달성|MVP|골든글러브|정상|우승/.test(h) || /^(feat|record|ring|ws|psHero|award|gold|legend)$/.test(T);
-      if (hero) { a.cm = a.cm.filter(c => !(c && typeof c.t === 'string' && !c.must && LUKE.test(c.t))); a.cm.forEach(c => { if (c && Array.isArray(c.re)) c.re = c.re.filter(w => !(w && typeof w.t === 'string' && LUKE.test(w.t))); }); }
+      const MENT = /찬스만 오면 어깨에 힘|부담감 내려놓기만|멘탈이 발목|멘탈이 문제|위기 때 얼굴 보면|맞기 시작하면 표정부터 무너|한 번 흔들리면 그 이닝|삼진 하나 먹으면 다음 타석/;
+      if (hero) { a.cm = a.cm.filter(c => !(c && typeof c.t === 'string' && !c.must && (LUKE.test(c.t) || MENT.test(c.t)))); a.cm.forEach(c => { if (c && Array.isArray(c.re)) c.re = c.re.filter(w => !(w && typeof w.t === 'string' && LUKE.test(w.t))); }); }
     } catch (e) {}
   };
 }
@@ -19574,5 +19575,26 @@ function tryArt868(t) {
     const id0 = S && S.artId, r = _ar868s.apply(this, arguments);
     try { if (x && x.ser) { const a = S.arts && S.arts[0]; if (a && a.id !== id0 && Array.isArray(a.cm)) { a.cm = a.cm.filter(c => !(c && typeof c.t === 'string' && NEG868.test(c.t))); a.cm.forEach(c => { if (c && Array.isArray(c.re)) c.re = c.re.filter(w => !(w && typeof w.t === 'string' && NEG868.test(w.t))); }); } } } catch (e) {}
     return r;
+  };
+}
+
+/* v868: 기사 단위 마무리 — ① 우승 확정 경기에서 못 친(던진) 선수한테 '동상 세워라'·'가을의 전설 확정' X (시리즈 MVP면 OK) ② 시리즈 MVP 받은 해 우승 기사에 'MVP 투표 결과 궁금하다' X
+   ③ '작년 봄에도 이랬다 결국 7월에 꺾임'은 정규시즌 봄(6월까지)에만 ④ 답글 '여기 해설위원 계셨네'는 분석하는 댓글 밑에만 (시뮬: '울면서 봤다 진짜 ↳여기 해설위원 계셨네') */
+{
+  const _ctx868b = ctx867;
+  ctx867 = function (a, x, tone) {
+    _ctx868b.apply(this, arguments);
+    try {
+      if (!a || !Array.isArray(a.cm) || !S || !ME) return;
+      const T = String(tone || ''), h = String(a.head || ''), P = isP(), aw = (S.awards || []).filter(z => z && z.y === S.y).map(z => String(z.n || '')), smvp = aw.some(n => /^(한국시리즈|월드시리즈) MVP$/.test(n));
+      const g = x && (x.gPA != null || x.ipO != null) && x.gPA !== 1, badG = g && (P ? (x.ra || 0) >= 3 : ((x.gPA || 0) >= 3 && !(x.gH || 0)));
+      const drop = [];
+      if ((/^(ring|ws)$/.test(T) || /정상!|우승!/.test(h)) && badG && !smvp) drop.push(/동상 세워라|가을의 전설 확정/);
+      if (smvp) drop.push(/MVP 투표 결과 궁금/);
+      if (!(S.stage === 'pro' && S.m >= 3 && S.m <= 6 && !(x && (x.ps || x.intl)))) drop.push(/작년 봄에도 이랬다/);
+      if (drop.length) a.cm = a.cm.filter(c => !(c && typeof c.t === 'string' && !c.must && drop.some(r => r.test(c.t))));
+      const AN = /구종|타이밍|스윙|볼배합|분석|제구|수비 범위|폼|메커니즘|코스|존|출루|장타|OPS|WAR|평자|피안타|회전|궤적|밸런스|타구|릴리스/;
+      a.cm.forEach(c => { if (c && typeof c.t === 'string' && Array.isArray(c.re) && !AN.test(c.t)) c.re = c.re.filter(w => !(w && /여기 해설위원 계셨네/.test(String(w.t || '')))); });
+    } catch (e) {}
   };
 }
