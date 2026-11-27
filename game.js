@@ -18758,7 +18758,7 @@ const FIGHT864 = {
 }
 
 /* v865 (11/27 13:11 유저 "다답글 너무 많은 건 좀 별로 · 다답글 많은 건 훈훈한 댓글일 때 · ㄱㅇㅌ 같은 것도 2~4개로 컷")
-   · 답글이 4개 넘는 댓글: 훈훈한 댓글(축하·고생·응원·감동·사랑·ㅠㅠ…)만 그대로(최대 7개) · 나머지는 2~4개로 자름
+   · 답글은 최대 4개 (넘으면 2~4개로 자름) · 우승 기사의 훈훈한 댓글(축하·고생·감동·ㅠㅠ…)만 최대 7개
    · '역시 ○○신'은 원래 있음(잘한 경기 18%) → 가끔 짧은 맞장구 답글 2~3개 붙임 */
 {
   const _c865 = comments;
@@ -18768,10 +18768,12 @@ const FIGHT864 = {
     let out = _c865.apply(this, arguments);
     try {
       if (!Array.isArray(out)) return out;
+      const ring865 = (typeof ringArt681 === 'function' && ringArt681(tone, x) && !(x && x.win === false)) || String(tone || '') === 'ring';
       out.forEach(c => {
         if (!c || !Array.isArray(c.re)) return;
         const t = String(c.t || ''), warm = WARM865.test(t) && !COLD865.test(t);
-        if (c.re.length > (warm ? 7 : 4)) c.re = c.re.slice(0, warm ? 7 : ri(2, 4));
+        const big = warm && ring865;   /* v865b (13:16 유저 "훈훈한 댓글도 최대 4개 · 우승할 때 정도만 더") */
+        if (c.re.length > (big ? 7 : 4)) c.re = c.re.slice(0, big ? 7 : ri(2, 4));
         if (/^역시 \S+신|신 오늘도 강림|신 믿습니다/.test(t) && !c.re.length && R() < .5) { const g = t.replace(/^역시 /, '').split('신')[0]; c.re = [`역시 ${g}신 ㄹㅇ`, `${g}신 찬양해`, `신 그 자체`, `${g}신 오늘도 일하신다 ㅋㅋ`].sort(() => R() - .5).slice(0, ri(2, 3)).map(r => ({ nk: pick(NICKS), t: r, up: ri(20, 400) })); }
       });
     } catch (e) {}
