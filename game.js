@@ -18843,7 +18843,8 @@ if (typeof article === 'function') {
 const CHEER866 = {
   root: ['{n}아 널 의심하지 마 넌 원래 잘하는 선수야', '{n} 힘내라 누나가 끝까지 응원한다', '슬럼프는 누구나 온다 {n} 믿는다', '{n} 기죽지 마 다음 경기에서 보여 주면 된다', '우리 {n} 밥은 잘 먹고 다니니 ㅠ 아프지만 말자', '{n} 오늘 못해도 괜찮아 내일 또 보러 간다', '의심하지 마라 {n}는 반드시 돌아온다', '{n}아 욕하는 사람들 신경 쓰지 마 네 편 많다', '{n} 이럴 때일수록 더 크게 응원한다', '한두 경기로 {n} 평가하지 마라 시즌은 길다'],
   warm: ['ㅠㅠ 나도 믿는다', '이런 팬이 진짜 팬이다', '맞말이라 반박 불가', '다음 경기 직관 간다 같이 응원하자', '{n} 이 댓글 꼭 봤으면', '이 댓글 보고 좀 울컥함'],
-  tease: ['이모팬 ㄹㅈㄷ ㅋㅋㅋ', '엄마 모드 발동 ㅋㅋ', '육아 일기냐 ㅋㅋㅋ', '누나팬 출동했다 ㅋㅋ', '밥 얘기 나오면 이모팬 확정 ㅋㅋ', '우쭈쭈 그만 ㅋㅋ 프로다 프로', '쉴드 장인 등장 ㅋㅋ'],
+  tease: ['이모팬 ㄹㅈㄷ ㅋㅋㅋ', '엄마 모드 발동 ㅋㅋ', '육아 일기냐 ㅋㅋㅋ', '누나팬 출동했다 ㅋㅋ', '우쭈쭈 그만 ㅋㅋ 프로다 프로', '쉴드 장인 등장 ㅋㅋ'],
+  teaseFood: ['밥 얘기 나오면 이모팬 확정 ㅋㅋ', '밥 챙기는 거 보니 찐 이모팬이다 ㅋㅋ'],
 };
 {
   const _c866 = comments;
@@ -18855,7 +18856,8 @@ const CHEER866 = {
       const gn = giv(ME.name), U = S.ch866 = S.ch866 || {}, rp = L => { const C0 = L.filter(t => !out.some(c => c && c.t === t)); const A = C0.length ? C0 : L, mn = Math.min(...A.map(t => U[t] || 0)), C = A.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1; return t; };
       const fx = t => josaFix(t.replace(/\{n\}/g, gn));
       const root = fx(rp(CHEER866.root)), n = ri(2, 4), re = [], used = new Set();
-      for (let i = 0; i < n; i++) { const L = (i === 0 || R() < .5) ? CHEER866.warm : CHEER866.tease; let t; for (let g = 0; g < 5; g++) { t = rp(L); if (!used.has(t)) break; } used.add(t); re.push({ nk: pick(NICKS), t: fx(t), up: ri(20, 700) }); }
+      const tz = /밥/.test(root) ? CHEER866.tease.concat(CHEER866.teaseFood) : CHEER866.tease;
+      for (let i = 0; i < n; i++) { const L = (i === 0 || R() < .5) ? CHEER866.warm : tz; let t; for (let g = 0; g < 5; g++) { t = rp(L); if (!used.has(t)) break; } used.add(t); re.push({ nk: pick(NICKS), t: fx(t), up: ri(20, 700) }); }
       out.splice(Math.min(out.length, ri(0, 3)), 0, mkC(root, [], { up: ri(800, 4000), dn: ri(0, 40), re, cheer866: 1 }));
     } catch (e) {}
     return out;
@@ -18878,6 +18880,33 @@ const FAM866 = [[/고생 많았|수고했|고생했|수고 많았/, 1], [/레전
         for (let i = 0; i < FAM866.length; i++) if (FAM866[i][0].test(c.t)) { cnt[i]++; if (cnt[i] > FAM866[i][1]) return false; }
         return true;
       });
+    } catch (e) {}
+    return out;
+  };
+}
+
+/* ===== v867 의적·양학 (나무위키 '의적(은어)': 강팀엔 강하고 약팀엔 약한 팀 · 반대는 '양민학살(양학)') — KBO 정규시즌 경기 기사, 5월부터(순위가 의미 있을 때), 해당하면 45%
+   · 우리 팀 7위 아래 + 상대 1~2위 + 이김 → 의적질
+   · 우리 팀 1~2위 + 상대 9~10위 + 짐 → 의적한테 승점 헌납
+   · 우리 팀 1~3위 + 상대 8~10위 + 5점 차 이상 이김 → 양학 */
+const GIJ867 = {
+  rob: ['의적질 제대로 했다 ㅋㅋ 1위 팀 승점 뺏어 옴', '강팀만 만나면 강해지는 의적 모드 ㅋㅋ', '이 팀 의적 기질 어디 안 간다', '상위권 승점 털어서 하위권에 나눠 주는 중 ㅋㅋ 로빈 후드냐'],
+  robbed: ['꼴찌한테 승점 헌납 ㅋㅋ 의적한테 털렸다', '의적들한테 당했다 ㅠ 이런 경기 잡아야 1위 지키지', '약팀한테 지는 게 제일 열받는다', '오늘 상대 의적 모드였네 ㅠ'],
+  bully: ['양민학살 오늘도 ㅋㅋ', '양학 클라스 강팀은 약팀 확실히 잡는다', '이게 1위 팀의 양학이지', '약팀 상대로 확실하게 잡아 주는 거 칭찬한다'],
+};
+{
+  const _c867 = comments;
+  comments = function (tone, x) {
+    let out = _c867.apply(this, arguments);
+    try {
+      if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || S.me !== ME || !S.pro || S.pro.league !== 'KBO' || !x || x.ps || x.intl || x.win == null || !x.opp || (S.m || 0) < 5) return out;
+      const st = standings(), mr = st.findIndex(t => t.i === S.pro.team) + 1, oi = TEAMS.findIndex(t => t.nick === x.opp), or = oi >= 0 ? st.findIndex(t => t.i === oi) + 1 : 0, d = (x.myR || 0) - (x.opR || 0);
+      if (!mr || !or) return out;
+      const k = (x.win && mr >= 7 && or <= 2) ? 'rob' : (!x.win && mr <= 2 && or >= 9) ? 'robbed' : (x.win && mr <= 3 && or >= 8 && d >= 5) ? 'bully' : null;
+      if (!k || R() > .45 || !once863('gij')) return out;
+      const U = S.gj867 = S.gj867 || {}, L = GIJ867[k].filter(t => !out.some(c => c && c.t === t)); if (!L.length) return out;
+      const mn = Math.min(...L.map(t => U[t] || 0)), C = L.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1;
+      out.splice(Math.min(out.length, ri(0, 3)), 0, mkC(t, R() < .5 ? [{ nk: pick(NICKS), t: pick(k === 'robbed' ? ['ㅠㅠ', '이런 경기 잡아야지'] : ['ㅋㅋㅋ', 'ㄹㅇ']), up: ri(20, 400) }] : [], { up: ri(400, 3000) }));
     } catch (e) {}
     return out;
   };
