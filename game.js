@@ -10635,7 +10635,7 @@ function lastTitleGap(){try{const my=S.pro.team,BASE=[2025,2019,null,2022,2021,1
     if((rk===1||n>=5)&&R()<(n>=5?.4:.2)){S._giseY=S.y;put(pick(['마 이게 우리팀의 기세다','마 이게 우리팀의 "기세"다','이게 바로 우리팀의 기세다 ㅋㅋㅋ']),re(GISE_RE,2+ri(0,1)),ri(800,3000))}}
   /* ④ 드디어 터지네 */
   if(S._burstY!==S.y&&(x.gPA>0||x.ipO>0||tone==='hype')){const lvs=['KBO','MLB'],cur=S.rows.filter(r=>r.y===S.y&&lvs.includes(r.lv)),prevY=[S.y-1,S.y-2,S.y-3];
-    const prevW=prevY.map(y=>S.rows.filter(r=>r.y===y&&lvs.includes(r.lv)).reduce((s,r)=>s+rowWAR(r),0)),had=prevY.filter(y=>S.rows.some(r=>r.y===y&&lvs.includes(r.lv)&&((r.b&&r.b.PA>=30)||(r.p&&r.p.outs>=30)))).length,bad=prevY.filter((y,i)=>prevW[i]<1.8&&S.rows.some(r=>r.y===y&&lvs.includes(r.lv)&&((r.b&&r.b.PA>=30)||(r.p&&r.p.outs>=30)))).length;/* v867l: 아마추어 기록 말고 1군에서 뛴 해만 (시뮬: 데뷔 시즌에 '존버는 승리한다') */
+    const prevW=prevY.map(y=>S.rows.filter(r=>r.y===y&&lvs.includes(r.lv)).reduce((s,r)=>s+rowWAR(r),0)),had=prevY.filter(y=>S.rows.some(r=>r.y===y&&lvs.includes(r.lv)&&((r.b&&r.b.PA>=30)||(r.p&&r.p.outs>=30)))).length,bad=prevY.filter((y,i)=>prevW[i]<(isP()&&ME.pos!=='SP'?.8:1.8)&&S.rows.some(r=>r.y===y&&lvs.includes(r.lv)&&((r.b&&r.b.PA>=30)||(r.p&&r.p.outs>=30)))).length;/* v867l: 아마추어 기록 말고 1군에서 뛴 해만 (시뮬: 데뷔 시즌에 '존버는 승리한다') */
     const G=cur.reduce((s,r)=>s+((r.b&&r.b.G)||(r.p&&r.p.G)||0),0),wNow=cur.reduce((s,r)=>s+rowWAR(r),0),pace=isP()?wNow:(G?wNow/G*140:0),good=x.win!==false&&!x.intl&&(x.gH>=2||x.gHR>=1||(x.ipO>=18&&(x.ra||0)<=2)||tone==='hype');
     if(had>=2&&bad>=2&&G>=25&&pace>=3.8&&good&&R()<.45){S._burstY=S.y;put(pick([`드디어 터지네`,`${gn} 드디어 터졌다 몇 년을 기다렸냐`,'존버는 승리한다 ㅠㅠ',`${gn} 이제야 포텐 터지네`,'그동안 까던 사람들 다 어디 갔냐 ㅋㅋ',`몇 년 동안 욕먹더니 ${gn} 드디어 해내네`]),re(['ㄹㅇ 기다린 보람 있다','올해는 진짜 다르다','반짝 아니길','드디어 ㅠㅠ'],R()<.7?1:0),ri(1200,5000))}}
   /* ⑤ 우승 가뭄 */
@@ -18546,6 +18546,8 @@ const SIT862 = {
    타자: 1회 선제포(0-0에서 1회 홈런) · 2루타 2개+ · 무안타인데 2타점+
    투수: 볼넷 4개+ (실점 많으면 제구 한탄 / 1실점 이하면 위기관리 감탄) · 피홈런 3개+ · 1회 3실점 뒤 무실점(선발 5이닝+) · 3타자 연속 삼진 */
 Object.assign(SIT862, {
+  noBB: ['무사사구 경기 제구 미쳤다', '볼넷 하나 없이 {IP}이닝 이게 제구지', '볼넷 0개 수비들 오늘 편했겠다'],
+  qsND: ['QS 하고도 승리 못 챙겼다 ㅠ 불펜아…', '선발승 날아가는 거 보고 리모컨 던질 뻔', '{n} 승리는 날아갔지만 팀이 이겼으니 됐다'],
   tto: ['오늘 {n} 타석이 홈런 아니면 볼넷 아니면 삼진 ㅋㅋ 수비들 할 일이 없네', '인플레이 타구가 하나도 없는 야구 실화냐 ㅋㅋㅋ', '수비수들 오늘 {n} 타석 때는 그냥 쉬었다 ㅋㅋ'],
   mo: ['오늘도 모 아니면 도 스타일인데 모가 나와서 다행이다 ㅋㅋ', '삼진 {K}개 먹다가 한 방 크게 치는 거 이게 거포지', '선풍기 돌리다가 담장 넘기는 거 보소 ㅋㅋ 모 아니면 도'],
   woBB: ['끝내기 볼넷 ㅋㅋㅋ 방망이 안 휘두르고 이겼다', '눈으로 끝냈다 이게 진짜 선구안이지', '마지막 공 볼 판정 나오는 순간 다들 뛰어나왔다 ㅋㅋ', '끝내기는 끝내기다 볼넷이든 뭐든 이겼으면 됐다'],
@@ -18561,7 +18563,7 @@ Object.assign(SIT862, {
   k3row: ['3타자 연속 삼진 ㄷㄷ 순삭이다', '삼진 삼진 삼진 오늘 공 진짜 좋다', '연속 삼진 잡을 때 소리 질렀다 ㅋㅋ', '타자 셋이 배트에 공을 한 번도 못 맞혔다'],
 });
 const SITRE862 = { k4: ['ㅋㅋㅋㅋㅋ', '내일은 쳐라 제발'], k3: ['ㅠㅠ', '내일 보자'], hr3: ['ㄷㄷㄷ', '미쳤다'], hr2: ['ㄷㄷ', '오늘 주인공'], cs: ['ㅋㅋㅋ 아', '사인 미스냐'], bb3: ['눈야구 인정', 'ㄹㅇ'], h4: ['안타 기계', 'ㄷㄷ'], noSup: ['ㅠㅠㅠ', '타자들 반성해라'], shell: ['ㅠㅠ', '다음엔 잘하자'], k10: ['ㄷㄷ', '삼진쇼'], zero7: ['에이스', 'ㄷㄷ'], big: ['ㅋㅋㅋ', '오늘 기분 좋다'], bigL: ['ㅠㅠ', '잊자'], w10: ['명경기', 'ㄹㅇ'], l10: ['ㅠ', '타자들 뭐 함'], absB: ['ㅋㅋㅋ', '억울하다'], absP: ['ㄷㄷ', '제구 미쳤다'] };
-Object.assign(SITRE862, { tto: ['세 가지 결과 야구 ㅋㅋ', '수비는 구경만 함'], mo: ['그래도 결과는 남았다', '거포는 원래 이렇다'], woBB: ['참은 게 대단하다', '투수 멘탈 나갔다 ㅋㅋ'], kid: ['귀엽네 ㅋㅋ', '막내 기 살려 주자'], aceHR: ['오늘 에이스 킬러 등극', 'ㄷㄷ'], lead1: ['기선제압 제대로', '1회부터 분위기 탔다', '상대 선발 1회부터 멘붕 ㅋㅋ'], dbl2: ['갭 파워 ㅇㅈ', '장타율 쭉쭉 오른다', 'ㄹㅇ 2루타 장인'], rbiNH: ['타점은 타점이다', '영양가 만점 ㅋㅋ', '이런 날도 있어야지'],
+Object.assign(SITRE862, { noBB: ['제구 장인', '야수들이 좋아할 투수'], qsND: ['승리는 팀 기록이다', '다음엔 챙기자'], tto: ['세 가지 결과 야구 ㅋㅋ', '수비는 구경만 함'], mo: ['그래도 결과는 남았다', '거포는 원래 이렇다'], woBB: ['참은 게 대단하다', '투수 멘탈 나갔다 ㅋㅋ'], kid: ['귀엽네 ㅋㅋ', '막내 기 살려 주자'], aceHR: ['오늘 에이스 킬러 등극', 'ㄷㄷ'], lead1: ['기선제압 제대로', '1회부터 분위기 탔다', '상대 선발 1회부터 멘붕 ㅋㅋ'], dbl2: ['갭 파워 ㅇㅈ', '장타율 쭉쭉 오른다', 'ㄹㅇ 2루타 장인'], rbiNH: ['타점은 타점이다', '영양가 만점 ㅋㅋ', '이런 날도 있어야지'],
   bb4: ['제구가 문제다', '볼넷이 제일 화난다', '포수만 고생했다 ㅠ'], bb4h: ['위기관리 ㅇㅈ', '심장 쫄깃 투구 ㅋㅋ', '결과는 막았다'], hr3p: ['실투가 너무 많았다', '오늘은 안 되는 날', '다음 등판에 갚자'],
   first1: ['1회만 아니었으면', '초반 제구만 잡으면 된다', '그래도 이닝은 먹었다'], k3row: ['ㄷㄷㄷ', '결정구 미쳤다', '타자들이 손도 못 대네'] });
 {
@@ -18597,6 +18599,8 @@ Object.assign(SITRE862, { tto: ['세 가지 결과 야구 ㅋㅋ', '수비는 �
         if (kbo && (x.gK || x.K || 0) >= 8 && R() < .35) keys.push('absP');
         { const pp = Array.isArray(x.pp) ? x.pp : [], bbN = pp.filter(q => q && q.t === 'BB').length, i0 = pp.length ? pp[0].i : 0;
           if (bbN >= 4) keys.push((x.ra || 0) <= 1 ? 'bb4h' : 'bb4');
+          if ((x.ipO || 0) >= 18 && bbN === 0 && !(x.pBB > 0)) keys.push('noBB');
+          if (ME.pos === 'SP' && (x.ipO || 0) >= 18 && (x.ra || 0) <= 3 && x.win && !(x.pW > 0)) keys.push('qsND');
           if ((x.pHR || 0) >= 3) keys.push('hr3p');
           const r1 = pp.filter(q => q && q.i === i0).reduce((s2, q) => s2 + (q.r || 0), 0), rL = pp.filter(q => q && q.i > i0).reduce((s2, q) => s2 + (q.r || 0), 0);
           if (i0 === 1 && r1 >= 3 && rL === 0 && (x.ipO || 0) >= 15) keys.push('first1');
@@ -18608,7 +18612,7 @@ Object.assign(SITRE862, { tto: ['세 가지 결과 야구 ㅋㅋ', '수비는 �
       const U = S.sit862 = S.sit862 || {}; let n = 0;
       keys.sort(() => R() - .5).forEach(k => {
         if (n >= 2 || R() > .55) return;
-        const L = SIT862[k].map(t => t.replace(/\{n\}/g, gn).replace(/\{K\}/g, String(P ? (x.gK || x.K || 0) : (x.K || 0))).replace(/\{BB\}/g, String(x.gBB || 0)).replace(/\{H\}/g, String(x.gH || 0)).replace(/\{d\}/g, String(Math.abs(d))).replace(/\{D\}/g, String((Array.isArray(x.pl) ? x.pl : []).filter(q => q && q.t === '2B').length)).replace(/\{RBI\}/g, String(x.gRBI || 0)).replace(/\{PB\}/g, String((Array.isArray(x.pp) ? x.pp : []).filter(q => q && q.t === 'BB').length)).replace(/\{PHR\}/g, String(x.pHR || 0)).replace(/\{RA\}/g, String(x.ra || 0)).replace(/\{ace\}/g, String((typeof oppAce === 'function' && oppAce(x)) || '상대 에이스')).replace(/\{R1\}/g, String((Array.isArray(x.pp) ? x.pp : []).filter(q => q && x.pp[0] && q.i === x.pp[0].i).reduce((s2, q) => s2 + (q.r || 0), 0))))
+        const L = SIT862[k].map(t => t.replace(/\{n\}/g, gn).replace(/\{K\}/g, String(P ? (x.gK || x.K || 0) : (x.K || 0))).replace(/\{BB\}/g, String(x.gBB || 0)).replace(/\{H\}/g, String(x.gH || 0)).replace(/\{d\}/g, String(Math.abs(d))).replace(/\{D\}/g, String((Array.isArray(x.pl) ? x.pl : []).filter(q => q && q.t === '2B').length)).replace(/\{RBI\}/g, String(x.gRBI || 0)).replace(/\{PB\}/g, String((Array.isArray(x.pp) ? x.pp : []).filter(q => q && q.t === 'BB').length)).replace(/\{PHR\}/g, String(x.pHR || 0)).replace(/\{RA\}/g, String(x.ra || 0)).replace(/\{IP\}/g, String(Math.floor((x.ipO || 0) / 3))).replace(/\{ace\}/g, String((typeof oppAce === 'function' && oppAce(x)) || '상대 에이스')).replace(/\{R1\}/g, String((Array.isArray(x.pp) ? x.pp : []).filter(q => q && x.pp[0] && q.i === x.pp[0].i).reduce((s2, q) => s2 + (q.r || 0), 0))))
           .map(josaFix).filter(t => !out.some(c => c && c.t === t) && !(/홈런만 장타냐/.test(t) && (x.gHR || 0) >= 1));
         if (!L.length) return;
         const mn = Math.min(...L.map(t => U[t] || 0)), C = L.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1; n++;
