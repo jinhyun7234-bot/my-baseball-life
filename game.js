@@ -19693,6 +19693,8 @@ function lastGood868() { try { const lg = (S.pro && S.pro.league) || 'KBO'; retu
         const CRIT = /병살|수비 불안|피홈런|볼넷 남발|볼넷이 너무|실책|에이징|발 느려|삼진 줄|아쉽|발목 잡|1사 1루|기도부터|발사각|펑고/;
         if (q.cm.some(c => c && CRIT.test(String(c.t || '')))) q.cm = q.cm.filter(c => !(c && /칭찬밖에 할 게 없다/.test(String(c.t || ''))));
         if (age() >= 34) q.cm = q.cm.filter(c => !(c && /FA 대박 냄새/.test(String(c.t || ''))));
+        { let n9 = 0; q.cm = q.cm.filter(c => { if (c && /9회는 그냥 끝난 경기/.test(String(c.t || ''))) { n9++; return n9 <= 1; } return true; }); }
+        if (age() < 33 && lastGood868()) q.cm.forEach(c => { if (c && typeof c.t === 'string') c.t = c.t.replace('계약 마지막 해에 터졌다 시장 반응 궁금하다', '계약 마지막 해에도 변함없다 시장 반응 궁금하다'); });/* 원래 잘하던 선수한테 '터졌다' X */
         if (age() >= 33) q.cm.forEach(c => { if (c && typeof c.t === 'string') c.t = c.t.replace('계약 마지막 해에 터졌다 시장 반응 궁금하다', '계약 마지막 해에도 이 정도면 재계약은 당연하다').replace('FA 앞두고 커리어하이 몸값 제대로 올렸다', 'FA 앞두고 베테랑의 품격 보여 줬다'); });/* 30대 중반 베테랑한테 '터졌다' X */
         q.cm.forEach(c => { if (c && Array.isArray(c.re)) c.re = c.re.filter(w => !(w && /MVP 레이스 가자/.test(String(w.t || '')))); });/* 시즌 끝난 결산에 'MVP 레이스 가자' X */
         { const TT = /(타격왕|홈런왕|타점왕|도루왕|출루율왕|장타율왕|최다안타|득점왕|다승왕|평균자책점왕|탈삼진왕|세이브왕|홀드왕)/, seenT = new Set(); q.cm = q.cm.filter(c => { const m = String((c && c.t) || '').match(TT); if (!m) return true; if (seenT.has(m[1])) return false; seenT.add(m[1]); return true; }); }/* 같은 타이틀 얘기 두 번 X */
