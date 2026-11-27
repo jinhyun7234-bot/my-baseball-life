@@ -9396,7 +9396,7 @@ FEV2.forEach(e=>FEV.push(e));
     closeT:['한 점 한 점이 이렇게 무거운 우승은 처음이다','마지막 타구 뜰 때 눈 감았다 떴는데 우승이더라','이렇게 아슬아슬하게 이기니까 눈물이 더 난다','점수 차는 작았지만 기억은 평생 크게 남을 거다','끝까지 손에 땀 쥐게 하더니 결국 해냈다'],
     g5:['5차전까지 와서 이기는 맛이 바로 이거구나','벼랑 끝 5차전, 결국 살아남은 건 우리였다','다섯 경기 내내 피 말렸는데 마지막에 웃었다','이런 시리즈 이기면 팀이 한 단계 올라간다','끝장 승부에서 이긴 기억은 오래 간다']};
   if(big){put(P1(BIG[big]),['나만 운 거 아니지?','ㄹㅇ 오늘은 그냥 다 고맙다','이 맛에 야구 본다','눈물 버튼 누르지 마라 ㅠㅠ']);
-    if(good&&R()<.85){const L=P?[`이 날을 위해 ${gn} 그 많은 공을 던졌나 보다`,`가장 큰 무대에서 가장 빛난 투수, ${gn}`,`몇십 년 뒤에도 오늘 경기 얘기하면 ${gn} 이름이 같이 나올 거다`]:[`이 날을 위해 ${gn} 그 많은 스윙을 했나 보다`,`가장 큰 무대에서 가장 빛난 선수, ${gn}`,`몇십 년 뒤에도 오늘 경기 얘기하면 ${gn} 이름이 같이 나올 거다`];if(WS)L.push(`${gn} 오늘 밤만큼은 ${city}의 영웅이다`);if(KS)L.push(`${gn} 오늘로 이 팀 레전드 확정이다`);put(P1(L),['ㄹㅇ 반박 불가','영구결번 가자']);}}
+    if(good&&R()<.85){const L=P?[`이 날을 위해 ${gn} 그 많은 공을 던졌나 보다`,`${(WS||KS)?'가장 큰 무대':'끝장 승부'}에서 가장 빛난 투수, ${gn}`,`몇십 년 뒤에도 오늘 경기 얘기하면 ${gn} 이름이 같이 나올 거다`]:[`이 날을 위해 ${gn} 그 많은 스윙을 했나 보다`,`${(WS||KS)?'가장 큰 무대':'끝장 승부'}에서 가장 빛난 선수, ${gn}`,`몇십 년 뒤에도 오늘 경기 얘기하면 ${gn} 이름이 같이 나올 거다`];if(WS)L.push(`${gn} 오늘 밤만큼은 ${city}의 영웅이다`);if(KS)L.push(`${gn} 오늘로 이 팀 레전드 확정이다`);put(P1(L),['ㄹㅇ 반박 불가','영구결번 가자']);}}
   /* 2) 구체적 장면 */
   const sp=[];let cast=null;
   if(!P){const gs=pl.find(p=>p.t==='HR'&&p.r>=4);const byI={};pl.forEach(p=>{if(p.r>0)byI[p.i]=(byI[p.i]||0)+p.r});const bi=Object.keys(byI).map(Number).sort((a,b)=>byI[b]-byI[a]||b-a)[0];
@@ -11280,7 +11280,7 @@ function cm681(a,x,tone){if(!a||!Array.isArray(a.cm)||!ME)return;x=x||{};const P
   if(ring||leagueRings()>0)drop(t=>/클럽 반지는 아직|소속팀 반지만 남/.test(t));
   /* ⑥ 가을 불펜·선발 무실점 행진 찬양 + 쉴드 */
   if(eliteP&&R()<(ring?1:.72)){const G=Q.g,ipS=ipW681(Q.outs),eS=(Q.ra*27/Q.outs).toFixed(2),sp=o>=15,L=[];
-    if(Q.ra===0)L.push(`가을 ${G}경기 ${ipS}이닝 무실점… ${gn} 이게 사람이냐`,`올가을 ERA 0.00 실화냐 ${gn}`,`불펜에서 ${ipS}이닝을 던지고도 실점이 없다는 게 말이 되냐`);else L.push(`올가을 ERA ${eS} ${gn} 가을 남자 인정`);
+    if(Q.ra===0)L.push(`가을 ${G}경기 ${ipS}이닝 무실점… ${gn} 이게 사람이냐`,`올가을 ERA 0.00 실화냐 ${gn}`,`올가을 불펜에서 ${ipS}이닝을 던지고도 실점이 없다는 게 말이 되냐`);else L.push(`올가을 ERA ${eS} ${gn} 가을 남자 인정`);
     const lost=x.win===false;if(lost)L.push(`팀은 졌어도 ${gn}은 또 무실점`,`오늘 진 건 ${gn} 탓 1도 없다 가을 무실점 행진 중`);
     if(!sp)L.push(`${gn} 올라오면 그 이닝은 그냥 끝난 거임`,`가을만 되면 ${jo(gn,'이','가')} 뒷문 잠가 버림 ㅋㅋ`,`올가을 숨은 MVP는 무조건 ${jo(gn,'이다','다')}`,...(lost?[]:[`${gn} 없었으면 이 시리즈 벌써 끝났다`,`선발이 내려가도 ${gn} 있으니까 안심된다`]),`필승조 그 이상 ${jo(gn,'은','는')} 가을의 자물쇠다`,`${gn} 등판 = 그 이닝 순삭`,`${gn} 공 받는 포수도 오늘 편했겠다`);
     else L.push(`가을 선발 ${gn} 에이스 그 자체`,`${gn} 나오는 날은 그냥 이기는 날`);
@@ -18901,7 +18901,7 @@ const CHEER866 = {
 /* v866 비슷한 유형 몰림 막기 (11/27 13:28 유저 "비슷한 댓글 유형 많아지면 보는 재미↓ 피로도↑ · 최대한 골고루 다양하게")
    한 기사 안에서 같은 갈래 댓글은 1~2개만 (꼭 나와야 하는 댓글·싸움·응원 스레드는 그대로)
    갈래: 고생·수고 / 레전드 확정 / 연봉 / 캐스터 멘트 / 개추 / 눈물·울컥 / 행복했다 / 반박 불가 / 미쳤다 / 이 맛에 야구 본다 / 메이저 간다 / 우승 축하 / 믿고 보는 / 소름 */
-const FAM866 = [[/야구 없는/, 1], [/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1], [/1차전(은)? ?(내줬|내준|그냥)|첫 판(을)? ?(내줬|내준|부터 이러면)/, 1], [/퇴근/, 1]];
+const FAM866 = [[/야구 없는/, 1], [/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1], [/1차전(은)? ?(내줬|내준|그냥)|첫 판(을)? ?(내줬|내준|부터 이러면)/, 1], [/퇴근/, 1], [/^이 페이스면/, 1], [/밥값/, 1], [/직관 승률/, 1], [/유니폼 (오늘 )?(샀|산다|질렀)/, 1]];
 {
   const _c866f = comments;
   comments = function (tone, x) {
@@ -19072,7 +19072,9 @@ function ctx867(a, x, tone) {
       a.cm.forEach(c => { if (T(c) && Array.isArray(c.re) && sp && ipGS >= 5.8) c.re = c.re.filter(w => !(w && /5이닝이 최대치/.test(String(w.t || '')))); }); }
     /* 같은 답글이 여러 댓글에 반복되면 처음 하나만 (시뮬: '작년에도 이맘때 이 소리 했던 거 기억함'이 두 스레드에) */
     { const seenR = new Set(); a.cm.forEach(c => { if (T(c) && Array.isArray(c.re)) c.re = c.re.filter(w => { const k = String((w && w.t) || '').replace(/[ㅋㅎ!~.\s]+$/, '').slice(0, 14); if (k.length < 6) return true; if (seenR.has(k)) return false; seenR.add(k); return true; }); }); }
+    /* 같은 계열 댓글 수 제한을 기사 단위로 한 번 더 (댓글 함수 밖에서 붙는 댓글까지) */
+    if (typeof FAM866 !== 'undefined') { const cnt = FAM866.map(() => 0); a.cm = a.cm.filter(c => { if (!T(c) || c.must || c.fight864 || c.cheer866) return true; for (let i = 0; i < FAM866.length; i++) if (FAM866[i][0].test(c.t)) { cnt[i]++; if (cnt[i] > FAM866[i][1]) return false; } return true; }); }
     /* 같은 숫자(ERA 1.64·타율 .331·OPS .976)를 읊는 댓글은 기사당 1개 (시뮬: 'ERA 1.64 불펜이면…'·'ERA 1.64 실화냐…' 연달아) */
-    { const seenSt = new Set(); a.cm = a.cm.filter(c => { if (!T(c) || c.fight864 || c.cheer866) return true; const m = c.t.match(/(ERA|평균자책(점)?|타율|OPS|출루율|장타율) ?(\d?\.\d{2,3})/); if (!m) return true; const k = m[1].replace(/점$/, '').replace('평균자책', 'ERA') + m[3]; if (seenSt.has(k)) return false; seenSt.add(k); return true; }); }
+    { const seenSt = new Set(); a.cm = a.cm.filter(c => { if (!T(c) || c.fight864 || c.cheer866) return true; const m = c.t.match(/(ERA|평균자책(점)?|타율|OPS|출루율|장타율) ?(\d?\.\d{2,3})/), n = c.t.match(/(\d{2,3})(타점|도루|홀드|세이브|탈삼진|안타)(?! 페이스)/); if (!m && !n) return true; const k = m ? m[1].replace(/점$/, '').replace('평균자책', 'ERA') + m[3] : n[1] + n[2]; if (seenSt.has(k)) return false; seenSt.add(k); return true; }); }
   } catch (e) {}
 }
