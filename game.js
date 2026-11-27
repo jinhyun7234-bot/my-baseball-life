@@ -10650,7 +10650,7 @@ function lastTitleGap(){try{const my=S.pro.team,BASE=[2025,2019,null,2022,2021,1
     put(pick(L.filter(t=>!seenHas(josaFix(t))))||L[0],re(['ㅇㅇ 아직 유리함','내일 잡으면 됨','멘탈 잡자','맞다 쫄지 마라'],R()<.6?1:0),ri(1500,5000),0)}
   /* ③ 기세 — v868za: 다시 켬 (gise868 참고). 1위·5연승일 때 시즌 1번 + 끝내기 홈런 기사(정규시즌 3~9월) */
   {const wo3=String(tone)==='walkoff';
-  if(kbo&&!ps&&!x.intl&&!x.wbc&&x.win!==false&&S.stage==='pro'&&!S.pro.minor&&(wo3?S.m>=3&&S.m<=9:S._giseY!==S.y&&S.m>=4&&S.m<=8)&&!/결승|준결승|라운드|올림픽|아시안게임|WBC|프리미어|2군|퓨처스|부상|방출|트레이드/.test(title+' '+String(tone))&&!out.some(c=>/기세/.test(String((c&&c.t)||'')))){const st=standings(),rk=st.findIndex(z=>z.i===my)+1,sk=streakOf((S.lg.rec||[])[my]);const n=+(String(sk).match(/^(\d+)승/)||[])[1]||0;
+  if(kbo&&!ps&&!x.intl&&!x.wbc&&x.win!==false&&S.stage==='pro'&&!S.pro.minor&&(wo3?S.m>=3&&S.m<=9:S._giseY!==S.y&&S.m>=4&&S.m<=8)&&!/결승|준결승|라운드|올림픽|아시안게임|WBC|프리미어|2군|퓨처스|부상|파열|수술|복귀|방출|트레이드/.test(title+' '+String(tone)+' '+String(S._hd||''))&&!out.some(c=>/기세/.test(String((c&&c.t)||'')))){const st=standings(),rk=st.findIndex(z=>z.i===my)+1,sk=streakOf((S.lg.rec||[])[my]);const n=+(String(sk).match(/^(\d+)승/)||[])[1]||0;
     if(wo3?R()<.7:(rk===1||n>=5)&&R()<(n>=5?.4:.2)){const g=gise868(wo3,false,false);if(g&&put(g.t,re(g.re,2+ri(0,1)),ri(800,3000))){const jt=josaFix(g.t),c=out.find(z=>z&&z.t===jt);if(c)c._gz={t:g.t,nw:g.nw,wo:wo3}/* 시즌 1번·새 줄 1번 표시는 기사에 실제로 남을 때 (파일 끝 gzCommit868) */}}}}
   /* ④ 드디어 터지네 */
   if(S._burstY!==S.y&&(x.gPA>0||x.ipO>0||tone==='hype')){const lvs=['KBO','MLB'],cur=S.rows.filter(r=>r.y===S.y&&lvs.includes(r.lv)),prevY=[S.y-1,S.y-2,S.y-3];
@@ -20078,13 +20078,19 @@ if (typeof render === 'function') {
   const _rd868p = render;
   render = function () {
     try {
-      if (S && ME && Array.isArray(S.arts)) for (let i = 0; i < Math.min(12, S.arts.length); i++) {
+      if (S && ME && Array.isArray(S.arts)) for (let i = 0; i < Math.min(40, S.arts.length); i++) {
         const a = S.arts[i]; if (!a || !Array.isArray(a.cm) || a.cm.length >= 3 || a._min868r || typeof a.head !== 'string' || a.head.indexOf(ME.name) < 0) continue;
         a._min868r = 1; const T = a._t867 || a.tone || 'mix', hd0 = S._hd; let more = [];
         S._hd = a.head; try { more = comments(T, a._g867 ? { gPA: 1 } : {}) || []; } catch (e) { more = []; } finally { S._hd = hd0; }
         const has = t => a.cm.some(c => c && typeof c.t === 'string' && (c.t === t || (t.length >= 12 && c.t.slice(0, 8) === t.slice(0, 8))));
         more = more.filter(c => c && typeof c.t === 'string' && !c.fight864 && !has(c.t) && !(typeof rm842 === 'function' && rm842(c.t)) && !(typeof FTBAD868 !== 'undefined' && FTBAD868.test(c.t)) && !(typeof META868 !== 'undefined' && META868.test(c.t)));
         for (const c of more) { if (a.cm.length >= 4) break; if (!has(c.t)) a.cm.push(c); }
+        /* v868za: 끝내기 홈런이 많은 선수는 끝내기 전용 댓글이 커리어 중반에 다 떨어져서 댓글 1개짜리 끝내기 기사가 나옴 (시뮬: 9년 차 3번째 끝내기) → 칭찬 댓글로 한 번 더 */
+        if (a.cm.length < 3 && /끝내기/.test(a.head)) {
+          let m2 = []; S._hd = a.head; try { m2 = comments('hype', {}) || []; } catch (e) { m2 = []; } finally { S._hd = hd0; }
+          m2 = m2.filter(c => c && typeof c.t === 'string' && !c.fight864 && !c.troll && !has(c.t) && !(typeof rm842 === 'function' && rm842(c.t)) && !(typeof FTBAD868 !== 'undefined' && FTBAD868.test(c.t)) && !(typeof META868 !== 'undefined' && META868.test(c.t)) && !(typeof WOBAD868 !== 'undefined' && WOBAD868.test(c.t)) && !/못 ?했|아쉽|부진|답답|실망|무안타/.test(c.t));
+          for (const c of m2) { if (a.cm.length >= 4) break; if (!has(c.t)) a.cm.push(c); }
+        }
         a._cap867 = -1;
       }
     } catch (e) {}
@@ -20151,7 +20157,10 @@ if (typeof tradeComments === 'function') {
   const _arGZ868 = article;
   article = function (head, body, tone, x) {
     const id0 = S && S.artId, r = _arGZ868.apply(this, arguments);
-    try { const a = S && S.arts && S.arts[0]; if (a && a.id !== id0) gzCommit868(a); } catch (e) {}
+    try { const a = S && S.arts && S.arts[0]; if (a && a.id !== id0) {
+      /* 끝내기 홈런으로 이긴 날 '○○가 안 받쳐준다'·'팬 하기 진짜 힘들다' X (시뮬: 끝내기 기사에 팀 탓 댓글 2개) */
+      if (String(tone) === 'walkoff' && Array.isArray(a.cm)) a.cm = a.cm.filter(c => !(c && typeof c.t === 'string' && !c.must && /안 받쳐준다|팬 하기 진짜 힘들다/.test(c.t)));
+      gzCommit868(a); } } catch (e) {}
     return r;
   };
   const _rdGZ868 = render;
