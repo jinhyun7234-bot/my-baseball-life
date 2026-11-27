@@ -19916,3 +19916,116 @@ const WOBAD868 = /클러치 0점|새가슴|중요할 때 못 친|찬스에 약|�
     return r;
   };
 }
+
+/* ===== v868p: 커뮤 공부(11/27 저녁 펨코 야구 게시판 — 재계약·FA·트레이드·시즌 결산·은퇴 글 댓글) 반영 =====
+   · 베테랑 계약·결산: '통산 2000타점까지 157개 남았으니 1~2년은 더 할 듯'처럼 남은 기록 계산하는 댓글 → 실제 통산 기록으로 계산
+   · 트레이드: '트레이드는 1~2년 지나야 뒷이야기가 풀린다'·'손해네 이득이네 따지는 게 재미' 말투
+   · 결산: '플옵 탈락 직후라 평가가 박하다'·'올해 수확은 ○○ 터진 것'·'○○ 없었으면 무너질 뻔한 건 팩트, 금액은 잘 모르겠음'·'후반기만 보면 아쉬운데 전반기에 해 준 게 더 많다'
+   · 은퇴: '은퇴 칼같이 박아서 아쉬운데 덕분에 통산 기록 깔끔'·'은퇴 후 가치가 더 오를 선수'·짧게 '고생했다 제2의 인생도 파이팅' */
+function msCount868(yrs) {
+  try {
+    const P = isP(), t = careerTot(['KBO', 'MLB']), rows = (S.rows || []).filter(r => r.lv === 'KBO' || r.lv === 'MLB');
+    const ys = rows.filter(r => P ? (r.p && r.p.outs > 0) : (r.b && r.b.PA > 0)).map(r => r.y); if (!ys.length) return null;
+    const ly = yearTot(Math.max(...ys), ['KBO', 'MLB']);
+    const C = P ? [['K', '탈삼진', [1000, 1500, 2000, 2500, 3000]], ['W', '승', [100, 150, 200]], ['SV', '세이브', [200, 300, 400]], ['HLD', '홀드', [150, 200, 250]]]
+      : [['H', '안타', [1000, 1500, 2000, 2500, 3000]], ['HR', '홈런', [200, 300, 400, 500]], ['SB', '도루', [300, 400, 500]]];
+    for (const [k, u, MS] of C) {
+      const cur = ((P ? t.p : t.b)[k]) || 0, per = ((P ? ly.p : ly.b)[k]) || 0, M = MS.find(v => v > cur); if (!M || per <= 0) continue;
+      const r = M - cur; if (r < 3 || r > per * 1.25) continue;
+      return [`통산 ${M}${u}까지 ${r}${u === '승' ? '승' : '개'} 남았다 ${yrs >= 2 ? '계약 기간 안에 무조건 찍는다' : '내년이면 충분히 된다'}`, ['카운트다운 들어간다 ㅋㅋ', '그거 보려고 1년 더 본다', '기록 욕심은 있을 거다 무조건']];
+    }
+  } catch (e) {}
+  return null;
+}
+try {
+  Object.assign(REC867, { harvest: ['올해 팀 최대 수확은 {n}이다', '{n} 터진 게 올해 제일 큰 소득이다'], woS: ['순위 싸움 때 끝내기 쳐 준 것만 생각해도 이 정도 평가는 해야지', '올해 끝내기만 몇 번이냐 클러치 하나는 확실하다'], fact: ['{n} 없었으면 이 팀 무너질 뻔한 건 팩트다 금액은… 잘 모르겠다 ㅋㅋ'] });
+  Object.assign(REC867RE, { harvest: ['내년이 더 기대된다', '이제 주전 박고 간다'], woS: ['그 장면들은 평생 기억함', '해결사 인정'], fact: ['금액 얘기는 하지 마라 ㅋㅋ', '그래도 잡길 잘했다'] });
+  if (Array.isArray(REC867RE.late)) REC867RE.late.push('전반기 생각하면 이 정도면 선방했다'); if (Array.isArray(REC867RE.fade)) REC867RE.fade.push('후반기만 보면 아쉬운데 전반기에 해 준 게 더 많다');
+} catch (e) {}
+if (typeof phaseArticle === 'function') {
+  const _pa868p = phaseArticle;
+  phaseArticle = function (g, ps) {
+    const id0 = S && S.artId; const r = _pa868p.apply(this, arguments);
+    try {
+      const a = S && S.arts && S.arts[0]; if (!a || a.id === id0 || !Array.isArray(a.cm) || !g || !g.m || S.stage !== 'pro' || !S.pro || S.me !== ME || S.phase !== 2) return r;
+      const gn = giv(ME.name), sea = (() => { try { return stdSeason(); } catch (e) { return 'na'; } })(), good = sea === 'elite' || sea === 'good', K = [];
+      if (good && !lastGood868() && age() <= 27 && proYears() <= 6) K.push('harvest');
+      if (!isP() && (S.arts || []).filter(z => z && z.y === S.y && typeof z.head === 'string' && z.head.indexOf(ME.name) >= 0 && /끝내기/.test(z.head)).length >= 2) K.push('woS');
+      if (good && S.pro.league === 'KBO' && typeof deal867 === 'function' && deal867()) K.push('fact');
+      const k = K.length ? pick(K) : null; if (k && R() < .6) rcPut867(a, k, gn);
+    } catch (e) {}
+    return r;
+  };
+}
+if (typeof buildSeasonRecap === 'function') {
+  const _bs868p = buildSeasonRecap;
+  buildSeasonRecap = function () {
+    const q = _bs868p.apply(this, arguments);
+    try {
+      if (!q || !Array.isArray(q.cm) || !S || !ME || !S.pro) return q;
+      const y = q.y || S.y, lg = S.pro.league, w = (S.rows || []).filter(r => r.y === y && r.lv === lg).reduce((s, r) => s + rowWAR(r), 0), ps = String(q.ps || '');
+      const has = t => q.cm.some(c => c && c.t === t), put = (t, re) => { if (has(t)) return; q.cm.splice(Math.min(q.cm.length, ri(1, 3)), 0, mkC(t, R() < .55 ? [{ nk: pick(NICKS), t: pick(re), up: ri(20, 600) }] : [], { up: ri(500, 3000) })); };
+      if (w >= (lg === 'MLB' ? 3 : 3.5) && /^최종 [2-5]위|12강|8강|4강/.test(ps) && !/우승/.test(ps)) {
+        const L = [['가을 탈락 직후라 다들 평가가 박하다 겨울 지나면 다시 보일 거다', ['시즌 전체로 보자', '그래도 아쉬운 건 아쉬운 거']], ['정규시즌만 놓고 보면 올해 진짜 잘했다 가을이 아쉬울 뿐', ['내년 가을엔 웃자', '가을에 한 번만 더']]].filter(z => !seenHas('po868:' + z[0]));
+        if (L.length && R() < .7) { const z = pick(L); seenAdd('po868:' + z[0]); put(z[0], z[1]); }
+      }
+      if (age() >= 33 && R() < .6) { const m = msCount868(1); if (m && !seenHas('ms868:' + m[0])) { seenAdd('ms868:' + m[0]); put(m[0], m[1]); } }
+    } catch (e) {}
+    return q;
+  };
+}
+{
+  const _rsc868p = resignComments;
+  resignComments = function (tn, yrs, good, per) {
+    const out = _rsc868p.apply(this, arguments);
+    try { if (Array.isArray(out) && age() >= 33) { const m = msCount868(yrs); if (m && !seenHas('ms868:' + m[0])) { seenAdd('ms868:' + m[0]); out.splice(Math.min(out.length, ri(1, 3)), 0, mkC(m[0], R() < .6 ? [{ nk: pick(NICKS), t: pick(m[1]), up: ri(20, 500) }] : [], { up: ri(800, 4000) })); } } } catch (e) {}
+    return out;
+  };
+}
+{
+  const _ar868p = article;
+  article = function (head, body, tone, x) {
+    const id0 = S && S.artId; const r = _ar868p.apply(this, arguments);
+    try {
+      const a = S && S.arts && S.arts[0]; if (!a || a.id === id0 || !Array.isArray(a.cm) || !ME || !(S.stage === 'pro' || (S.stage === 'ret' && String(tone || '') === 'retire'))) return r;
+      const h = String(a.head || ''), T = String(tone || ''), mk = (t, re) => mkC(t, re && re.length && R() < .55 ? [{ nk: pick(NICKS), t: pick(re), up: ri(20, 600) }] : [], { up: ri(800, 5000) });
+      const has = t => a.cm.some(c => c && typeof c.t === 'string' && (c.t === t || c.t.slice(0, 8) === t.slice(0, 8)));
+      const put1 = (L, key, pos) => { const C = L.filter(z => z && !seenHas(key + z[0]) && !has(z[0])); if (!C.length) return false; const z = pick(C); seenAdd(key + z[0]); a.cm.splice(Math.min(a.cm.length, pos == null ? ri(1, 3) : pos), 0, mk(z[0], z[1])); return true; };
+      if (h.indexOf(ME.name) < 0) return r;
+      /* 트레이드 */
+      if (/로 트레이드$|초대형 트레이드/.test(h)) put1([['트레이드는 뒷이야기가 1~2년 지나야 풀리더라 썰 기다린다', ['썰 풀리면 다시 모이자 ㅋㅋ', '단장 인터뷰 기다린다']], ['벌써부터 손해네 이득이네 말 많은데 시즌 끝나고 다시 보자', ['지금은 아무도 모른다', '결과는 성적이 말해 준다']], ['팬들끼리 누가 이득인지 따지는 게 트레이드의 재미다 ㅋㅋ', ['스토브리그 꿀잼', '오늘 커뮤 불탄다']]], 'tr868:');
+      /* 은퇴 */
+      if (T === 'retire' && /은퇴|명예의 전당/.test(h) && !/영구결번/.test(h)) {
+        const t = careerTot(['KBO', 'MLB']), why = String((S.ended && S.ended.why) || ''), vol = /은퇴를 선언/.test(why), P = isP();
+        const ly = (() => { const ys = (S.rows || []).filter(z => (z.lv === 'KBO' || z.lv === 'MLB') && ((z.b && z.b.PA > 0) || (z.p && z.p.outs > 0))).map(z => z.y); if (!ys.length) return 0; const y = Math.max(...ys); return (S.rows || []).filter(z => z.y === y && (z.lv === 'KBO' || z.lv === 'MLB')).reduce((s, z) => s + rowWAR(z), 0); })();
+        const L = [['구단 유튜브에 은퇴 브이로그 하나 찍어 줘라', ['나오면 무조건 본다', '마지막 출근길 찍어 줘라']]];
+        if (t.w >= 30) L.push(['은퇴하고 나서 가치가 더 오를 선수다', ['은퇴 후 행보가 더 기대된다', '해설이든 코치든 다 잘할 듯']]);
+        if (vol && ly >= 1 && age() >= 35) L.push(['칼같이 은퇴 박아서 아쉽긴 한데 그 덕에 통산 기록이 깔끔하게 남았다', ['1~2년은 더 할 수 있었는데', '깔끔한 마무리가 제일 멋있다']]);
+        if (P && (t.p.outs || 0) >= 6000 && age() >= 37) L.push(['나이 들어서도 관록으로 이닝 먹던 모습이 제일 기억난다', ['꾸준함 GOAT', '선발은 이닝이 깡패다']]);
+        if (t.w < 10) L.push(['고생했다 제2의 인생도 파이팅', ['ㅎㅇㅌ', '응원한다']], ['괜히 아쉽네… 그동안 고마웠다', ['수고 많았다']]);
+        let n = 0; for (let i = 0; i < 2; i++) if (put1(L, 'rt868:')) n++;
+      }
+      /* 베테랑 계약: 남은 통산 기록 계산 */
+      if (age() >= 33 && /재계약|잔류|FA|계약|연봉/.test(h) && !/방출|트레이드|은퇴|\$[\d.]+M 재계약$/.test(h) && R() < .65) { const yrs = +((h.match(/(\d+)년/) || [])[1] || 1); const m = msCount868(yrs); if (m && !seenHas('ms868:' + m[0]) && !has(m[0])) { seenAdd('ms868:' + m[0]); a.cm.splice(Math.min(a.cm.length, ri(1, 3)), 0, mk(m[0], m[1])); } }
+    } catch (e) {}
+    return r;
+  };
+}
+/* v868p: 화면 그릴 때 정리(앞뒤 안 맞는 말 빼기)로 내 기사 댓글이 2개 이하가 되면 같은 종류 댓글로 한 번만 다시 채움 (시뮬: 끝내기 기사 2개, 대학 '물오른 타격감' 2개) */
+if (typeof render === 'function') {
+  const _rd868p = render;
+  render = function () {
+    try {
+      if (S && ME && Array.isArray(S.arts)) for (let i = 0; i < Math.min(12, S.arts.length); i++) {
+        const a = S.arts[i]; if (!a || !Array.isArray(a.cm) || a.cm.length >= 3 || a._min868r || typeof a.head !== 'string' || a.head.indexOf(ME.name) < 0) continue;
+        a._min868r = 1; const T = a._t867 || a.tone || 'mix', hd0 = S._hd; let more = [];
+        S._hd = a.head; try { more = comments(T, a._g867 ? { gPA: 1 } : {}) || []; } catch (e) { more = []; } finally { S._hd = hd0; }
+        const has = t => a.cm.some(c => c && typeof c.t === 'string' && (c.t === t || (t.length >= 12 && c.t.slice(0, 8) === t.slice(0, 8))));
+        more = more.filter(c => c && typeof c.t === 'string' && !c.fight864 && !has(c.t) && !(typeof rm842 === 'function' && rm842(c.t)) && !(typeof FTBAD868 !== 'undefined' && FTBAD868.test(c.t)) && !(typeof META868 !== 'undefined' && META868.test(c.t)));
+        for (const c of more) { if (a.cm.length >= 4) break; if (!has(c.t)) a.cm.push(c); }
+        a._cap867 = -1;
+      }
+    } catch (e) {}
+    return _rd868p.apply(this, arguments);
+  };
+}
