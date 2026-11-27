@@ -5615,7 +5615,7 @@ sweep:[["{sw}연승 실화냐 ㅋㅋㅋㅋ 이게 우리 팀이라고?",["시즌
   if(!P&&pa>=3&&h===0&&fa!=null&&fa<.2)sits.push('slump');
   if(!P&&ks>=2&&h===0&&!win)sits.push('kChance');
   if(P&&!rp&&(x.gK||0)>=8)sits.push('kpit');
-  if(P&&rp&&ipO>=6&&ra<=1&&win)sits.push('multiRP');
+  if(P&&rp&&ipO>=6&&ra<=1&&win)sits.push('multiRP');/* v867p: '선발처럼 던지고 가네'는 3이닝 이상일 때만 (아래 거름) */
   if(!P&&good&&opener&&R()<.45&&!(S.pmY&&S.pmY.y===S.y&&S.pmY.ace))sits.push('ace');
   if(yrs>=10&&good)sits.push('vet');if(yrs>=11&&rings&&good)sits.push('vetRing');
   if(yrs>=11&&!rings&&good&&!(x.clinch&&win&&/한국시리즈|월드시리즈/.test(t)))sits.push('mugwan');
@@ -5627,7 +5627,7 @@ sweep:[["{sw}연승 실화냐 ㅋㅋㅋㅋ 이게 우리 팀이라고?",["시즌
   if(!sits.length)return out;
   S.pmY=S.pmY&&S.pmY.y===S.y?S.pmY:{y:S.y,u:{}};const use=sits.slice(0,2),add=[];
   const fill=s=>s.replace(/\{n\}(이|가|은|는|을|를|과|와)?(?=[\s,.!?ㅋㅠ]|$)/g,(m,j)=>j?jo(gn,{이:'이',가:'이',은:'은',는:'은',을:'을',를:'을',과:'과',와:'과'}[j],{이:'가',가:'가',은:'는',는:'는',을:'를',를:'를',과:'와',와:'와'}[j]):gn).replace(/\{n\}/g,gn).replace(/\{k\}/g,x.gK||0).replace(/\{ip\}/g,Math.floor(ipO/3)).replace(/\{inn\}/g,x.inns||10).replace(/\{hrn\}/g,['','한','두','세','네','다섯'][hr]||hr).replace(/\{sw\}/g,(typeof w0r!=='undefined'?w0r:w0)+1);
-  use.forEach((k,ii)=>{const pool=(PSIT[k]||[]).filter(c=>!S.pmY.u[c[0]]);const n=k==='ace'?1:ii===0?3:2;if(k==='ace')S.pmY.ace=1;pool.sort(()=>R()-.5).slice(0,n).forEach(c=>{S.pmY.u[c[0]]=1;const rr=c[1].slice().sort(()=>R()-.5).slice(0,R()<.5?1:2).map(fill);add.push(mkC(fill(c[0]),rr,{up:ri(300,5000),must:1}))})});
+  use.forEach((k,ii)=>{const pool=(PSIT[k]||[]).filter(c=>!S.pmY.u[c[0]]&&!(/선발처럼/.test(c[0])&&ipO<9));const n=k==='ace'?1:ii===0?3:2;if(k==='ace')S.pmY.ace=1;pool.sort(()=>R()-.5).slice(0,n).forEach(c=>{S.pmY.u[c[0]]=1;const rr=c[1].slice().sort(()=>R()-.5).slice(0,R()<.5?1:2).map(fill);add.push(mkC(fill(c[0]),rr,{up:ri(300,5000),must:1}))})});
   /* 같은 활약이라도 이전 기록에 따라 한 줄 */
   if(!P&&good&&hr>=1&&cmX('ctx'+S.y+t)){let c=null;if(sAvg!=null&&sAvg>=.32)c='역시 클래스는 영원하다';else if(sAvg!=null&&sAvg<.22)c='정규시즌에 잠수 타더니 가을에 갑자기 사람이 바뀌었네';else if(fa!=null&&fa<.15)c='드디어 사람 구실 하네 ㅋㅋㅋㅋ';else if(S.postY&&S.postY[S.y-1]&&S.postY[S.y-1].b.AB>=12&&S.postY[S.y-1].b.H/S.postY[S.y-1].b.AB>=.3)c='작년에 이어 올해도 가을의 남자 입증';else if(S.pro.years<=1&&S.pro.league==='KBO')c='FA 앞두고 이러면 이제 돈 받을 일만 남았네';if(c&&!S.pmY.u[c]){S.pmY.u[c]=1;add.push(mkC(c,[],{up:ri(500,3000),must:1}))}}
   /* 연애 기사 뜨고 1년 안: 부진하면 맛OO, 잘하면 가끔 사랑의 힘 */
@@ -11687,7 +11687,7 @@ function cm686(a,x,tone){if(!a||!Array.isArray(a.cm)||!ME||!S||!S.pro)return;x=x
       else put(take([`${C.yrs}년 보장이면 구단이 진심으로 원한 거다`,`연평균 ${usdTxt686(C.usdP)}면 ${P?(SP?'선발 로테이션에 넣겠다는':'필승조로 쓰겠다는'):'주전으로 쓰겠다는'} 거다`]),[rr(pick(['적응만 하면 된다','첫 시즌만 잘 넘기자']))],ri(2000,7000));
       if(S.pro.posted&&kt&&C.usdT>=2){const fee=postFee686(C.usdT),fe=Math.round(fee*USDM/10000);put(take([`${kt}는 포스팅비로 ${fe}억 챙기네 이걸로 FA 하나 사라`,`포스팅비 ${fe}억이면 ${kt} 프런트 오늘 회식한다 ㅋㅋ`]),[rr('그 돈으로 FA 안 사면 프런트 다 나가라 ㅋㅋ'),rr('선수 키워서 보내고 돈도 받고 이게 선순환이지')],ri(1500,6000))}}
     if(prof&&first&&S._ab686p!==S.y){S._ab686p=S.y;const L=[],o=ovrE(),lv=LV.MLB,yg=age();
-      if(o>=lv+4)L.push(['한국 야구의 이레귤러다 가서 당당하게 보여 줘라',['이 정도 툴이면 메이저에서도 주전감']]);else if(o<lv-2)L.push(['솔직히 메이저에서 통할지는 반반이다',[rr('로스터 들면 다행이라는 사람도 있던데','그런 소리 듣던 선수들이 오히려 더 잘하더라')]]);
+      if(o>=lv+4)L.push(['한국 야구의 이레귤러다 가서 당당하게 보여 줘라',[isP()?(ME.pos==='SP'?'이 정도 구위면 메이저에서도 선발감':'이 정도 구위면 메이저에서도 필승조감'):'이 정도 툴이면 메이저에서도 주전감']]);/* v867p: 투수엔 '주전감' 대신 선발감·필승조감 */else if(o<lv-2)L.push(['솔직히 메이저에서 통할지는 반반이다',[rr('로스터 들면 다행이라는 사람도 있던데','그런 소리 듣던 선수들이 오히려 더 잘하더라')]]);
       if(!P&&['SS','2B','3B'].includes(ME.pos)){const d=(DV(E('fld'))+DV(E('rng')))/2;if(d<lv-2)L.push([`메이저는 수비 안 되면 바로 벤치다 ${POS[ME.pos]} 수비가 제일 걱정`,[rr('멀티 포지션 연습 빡세게 해야 됨')]]);else if(d>=lv+3)L.push([`${POS[ME.pos]} 수비는 메이저 가서도 바로 통한다 이게 제일 큰 무기`,[rr('글러브 하나로 먹고 살 수 있는 수준')]])}
       if(P){const v=Math.round(+kmh(E('velo')));if(v<=145)L.push([`구속 ${v}로 메이저 타자들 상대 되겠냐는 사람 많은데 제구로 먹고 사는 투수다`,[rr('메이저는 실투 하나에 넘어간다','그래서 더 보고 싶다 제구로 이기는 거')]]);else if(v>=156)L.push([`${v} 던지는 투수면 메이저 가서도 무기다`,[rr('구속은 거기서도 상위권임')]])}
       if(yg<=26)L.push([`${koAge(yg)}에 넘어가는 게 맞다 전성기를 미국에서 보내라`,[]]);else if(yg>=31)L.push(['나이가 좀 걸리긴 한다 계약 기간 내내 버텨야 할 텐데',[rr('몸 관리만 하면 된다')]]);
@@ -18998,7 +18998,7 @@ function capCm867(cm, head) {
 if (typeof render === 'function') {
   const _rd867 = render;
   render = function () {
-    try { if (S && Array.isArray(S.arts)) for (let i = 0; i < Math.min(30, S.arts.length); i++) { const a = S.arts[i]; if (a && Array.isArray(a.cm) && a._cap867 !== a.cm.length) { a.cm = capCm867(a.cm, a.head); a._cap867 = a.cm.length; } } } catch (e) {}   /* 정리 후 댓글이 더 붙으면 다시 정리 */
+    try { if (S && Array.isArray(S.arts)) for (let i = 0; i < Math.min(30, S.arts.length); i++) { const a = S.arts[i]; if (a && Array.isArray(a.cm) && a._cap867 !== a.cm.length) { try { if (S.stage && typeof ctx867 === 'function') ctx867(a, a._g867 ? { gPA: 1 } : {}, a._t867); } catch (e) {} a.cm = capCm867(a.cm, a.head); a._cap867 = a.cm.length; } } } catch (e) {}   /* 정리 후 댓글이 더 붙으면 다시 정리 */
     return _rd867.apply(this, arguments);
   };
 }
@@ -19034,7 +19034,7 @@ if (typeof buildSeasonRecap === 'function') { const _bs867 = buildSeasonRecap; b
         fact688(tmp, x, tone);
         const ok = new Set(tmp.cm);
         a.cm = a.cm.filter(c => (prot(c) ? !!c : ok.has(c)));
-        ctx867(a, x, tone);
+        ctx867(a, x, tone); a._g867 = (x && (x.ipO != null || x.gPA != null)) ? 1 : 0; a._t867 = tone;
       }
     } catch (e) {}
     return r;
