@@ -19125,3 +19125,13 @@ function ctx867(a, x, tone) {
     return _arIndy867.apply(this, [head, body, tone, x]);
   };
 }
+
+/* v867v: 시즌 결산 화면 댓글에도 같은 맥락 정리 (기사가 아니라서 빠져 있던 것) */
+if (typeof buildSeasonRecap === 'function') {
+  const _bs867v = buildSeasonRecap;
+  buildSeasonRecap = function () {
+    const q = _bs867v.apply(this, arguments);
+    try { if (q && Array.isArray(q.cm) && typeof ctx867 === 'function') { const a = { head: `${q.y || S.y} 시즌 결산`, cm: q.cm }; ctx867(a, {}, 'srecap'); q.cm = a.cm; } } catch (e) {}
+    return q;
+  };
+}
