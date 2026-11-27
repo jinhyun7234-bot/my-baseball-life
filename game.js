@@ -19358,3 +19358,26 @@ if (typeof phaseArticle === 'function') {
     return r;
   };
 }
+
+/* v867z6: 연봉 대폭 인상 기사 상황 댓글 — 10억 첫 돌파 · 팀 성적(하위권 팀/우승 팀) · 나이 · 직장인 공감 드립 */
+{
+  const _arSal867 = article;
+  article = function (head, body, tone, x) {
+    const id0 = S && S.artId, sal0 = S && S.pro ? S.pro.salary : 0; const r = _arSal867.apply(this, arguments);
+    try {
+      const a = S && S.arts && S.arts[0]; if (!a || a.id === id0 || !Array.isArray(a.cm) || String(tone) !== 'salary' || !/연봉 .+% 인상/.test(String(a.head || '')) || S.stage !== 'pro') return r;
+      const gn = giv(ME.name), sal = S.pro.salary || 0, m = String(a.head).match(/(\d+)% 인상/), pc = m ? +m[1] : 0, old = pc ? sal / (1 + pc / 100) : sal, ag = age(), L = [];
+      if (sal >= 100000 && old < 100000) L.push(['드디어 연봉 10억 클럽 입성 ㄷㄷ', ['이제 진짜 리그 간판', '10억 받을 만하지']]);
+      const ring = (S.awards || []).some(z => z && z.y === S.y && /^(한국시리즈|월드시리즈) 우승$/.test(z.n || ''));
+      let rk = 5; try { rk = myTeamRank(); } catch (e) {}
+      if (ring) L.push(['우승 프리미엄까지 제대로 붙었네 ㅋㅋ', ['반지 낀 선수는 대우가 다르다']]);
+      else if (S.pro.league === 'KBO' && rk >= 8) L.push(['팀 성적은 별로였는데 개인 성적으로 받아 냈다', ['혼자 고생한 거 구단도 안다']]);
+      if (ag <= 24) L.push([`${ag}살에 이 연봉이면 앞으로가 더 무섭다`, ['FA 되면 얼마 받을지 상상도 안 됨']]);
+      else if (ag >= 33) L.push(['베테랑 대우 확실하게 해 주는 구단 좋다', ['이게 맞지']]);
+      const J = [['내 연봉은 동결인데 부럽다 ㅠ', ['나도 ㅠㅠ', '우리 회사도 이렇게 좀']], [`이번 달 치킨은 ${gn}가 쏘는 걸로 ㅋㅋ`, ['ㅋㅋㅋ 찬성']], ['연봉 기사 볼 때마다 내 통장 보고 운다', ['ㄹㅇ 현타 온다 ㅋㅋ']]];
+      const ok = z => !seenHas(z[0]) && !a.cm.some(c => c && c.t === josaFix(z[0])), sit = L.filter(ok), jk = J.filter(ok).sort(() => R() - .5), pickN = sit.slice(0, 1).concat(R() < .6 && jk.length ? [jk[0]] : []);
+      pickN.slice(0, 2).forEach((z, i) => { seenAdd(z[0]); a.cm.splice(Math.min(a.cm.length, 1 + i * 2), 0, mkC(josaFix(z[0]), R() < .5 ? [pick(z[1])] : [], { up: ri(400, 3000) })); });
+    } catch (e) {}
+    return r;
+  };
+}
