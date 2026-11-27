@@ -18911,3 +18911,26 @@ const GIJ867 = {
     return out;
   };
 }
+
+/* v867b 댓글 상한을 모든 기사에 (시뮬: 결산·'가을의 주인공'·'쏟아진 비판' 기사처럼 기사 만든 뒤 따로 붙는 댓글이 있어서 13~15개까지 나옴)
+   화면 그리기 직전에 새 기사만 한 번 정리 · 시즌 결산 카드도 같은 기준 */
+function capCm867(cm, head) {
+  try {
+    if (!Array.isArray(cm)) return cm;
+    { const s7 = new Set(); cm = cm.filter(c => { if (!(c && typeof c.t === 'string') || c.must) return true; const b = c.t.replace(/^(ㄹㅇ|솔직히|진짜|아니|근데|와|형들|ㅋㅋㅋ)\s+/, ''); if (b.length < 9) return true; const k = b.slice(0, 7); if (s7.has(k)) return false; s7.add(k); return true; }); }
+    const h = String(head || ''), ring = /우승!|정상!|한국시리즈 우승|월드시리즈 우승|금메달!/.test(h) && !/준우승|고교|대학/.test(h);
+    const cap = ring ? 18 : /차전|결정전|시리즈|라운드\]|8강|4강|결승|준결승|가을/.test(h) ? 14 : 12;
+    if (cm.length <= cap) return cm;
+    const pri = c => (c && (c.must || c.fight864 || c.cheer866) ? 1e9 : 0) + (c && typeof c.t === 'string' && typeof LIGHT863 !== 'undefined' && LIGHT863.test(c.t) ? -1e6 : 0) + ((c && c.up) || 0) + ((c && c.re && c.re.length) || 0) * 200;
+    const keep = new Set(cm.map((c, i) => [pri(c), i]).sort((p, q) => q[0] - p[0]).slice(0, cap).map(z => z[1]));
+    return cm.filter((c, i) => keep.has(i));
+  } catch (e) { return cm; }
+}
+if (typeof render === 'function') {
+  const _rd867 = render;
+  render = function () {
+    try { if (S && Array.isArray(S.arts)) for (let i = 0; i < Math.min(6, S.arts.length); i++) { const a = S.arts[i]; if (a && !a._cap867 && Array.isArray(a.cm)) { a.cm = capCm867(a.cm, a.head); a._cap867 = 1; } } } catch (e) {}
+    return _rd867.apply(this, arguments);
+  };
+}
+if (typeof buildSeasonRecap === 'function') { const _bs867 = buildSeasonRecap; buildSeasonRecap = function () { const q = _bs867.apply(this, arguments); try { if (q && Array.isArray(q.cm)) q.cm = capCm867(q.cm, q.title || q.head || ''); } catch (e) {} return q; }; }
