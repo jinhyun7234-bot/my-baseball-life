@@ -4166,8 +4166,8 @@ function g1Lines(x){const nm=ME.name,gn=giv(nm),gI=jo(gn,'이','가'),win=x.win!
       else if(bef<0&&aft>0){lb='역전포';adj=pick(['간지 빠던','경기 뒤집는','미친'])}else if(bef===0&&tot0===0){lb='선제포';adj=pick(['기선 제압','첫 판을 여는'])}
       else if(bef===0){lb=h.r>=2?h.r+'점 홈런':'솔로포';adj=pick(['균형 깨는','다시 앞서가는'])}else if(h.i>=7&&aft>=3){lb='쐐기포';adj=pick(['쐐기를 박는','확인 사살'])}else{lb=h.r>=2?h.r+'점 홈런':'솔로포';adj=pick(['달아나는','숨통 트는'])}
       const who=h.mine?gn:h.me?nick:opp,pr=(bef<0&&aft>=0?3:bef===0&&aft>0&&tot0>0?2:0)+(h.mine?2:0);return{k,pr,t:`${jo(who,'의','의')} ${h.i}회 ${adj} ${lb}`}});
-  const items=hl.slice().sort((a,b)=>b.pr-a.pr||a.k-b.k).slice(0,3).sort((a,b)=>a.k-b.k).map(h=>h.t);if(x.gErr&&items.length<3)items.push(`${gn}의 개호구 실책`);
-  const L=[...(items.length>=2?[`${items.map((t,i)=>`${i+1}. ${t}`).join(' / ')} — 이 ${items.length}개가 진심 경기 너무 재밌게 만들었다`]:[]),`홈런 ${tot}방 오가는 ${x.intl?'국제대회':'가을야구'} 실화냐 ㅋㅋㅋ`,'공이 다 담장 밖으로 날아가네 양 팀 투수들 멘탈 나갔겠다',`양 팀 다 홈런으로 치고받는 거 미쳤다 ${x.intl?'국대 경기는 이 맛이지':'이게 가을이지'}`];
+  const items=hl.slice().sort((a,b)=>b.pr-a.pr||a.k-b.k).slice(0,3).sort((a,b)=>a.k-b.k).map(h=>h.t);if(x.gErr&&items.length<3)items.push(`${gn}의 뼈아픈 실책`);
+  const L=[...(items.length>=2&&x.win!==false?[`${items.map((t,i)=>`${i+1}. ${t}`).join(' / ')} — 이 ${items.length}개가 진심 경기 너무 재밌게 만들었다`]:[]),/* v868s: 진 경기에 상대 홈런 목록 '진심 경기 너무 재밌게 만들었다' X */`홈런 ${tot}방 오가는 ${x.intl?'국제대회':'가을야구'} 실화냐 ㅋㅋㅋ`,'공이 다 담장 밖으로 날아가네 양 팀 투수들 멘탈 나갔겠다',`양 팀 다 홈런으로 치고받는 거 미쳤다 ${x.intl?'국대 경기는 이 맛이지':'이게 가을이지'}`];
   if(myHR.length)L.push(`${myHR[0].i}회 ${gn} 홈런 빠던 내 생에 최고의 빠던`);
   const P=L.filter(t=>!seenHas(t)),add=[];if(P[0]&&/이 \d개가/.test(P[0]))add.push(P.shift());while(add.length<2&&P.length)add.push(P.splice(ri(0,P.length-1),1)[0]);
   add.forEach((t,i)=>{seenAdd(t);out.splice(Math.min(out.length,i*2),0,{nk:pick(NICKS),fl:null,t,up:Math.round(ri(400,2300)*(1+S.rel.fame/30)),dn:ri(0,10),nar:1,ago:pick(AGO),re:R()<.4?[{nk:pick(NICKS),t:pick(['ㄹㅇ 홈런 나올 때마다 소리 질렀다','타자들 오늘 다 미쳤다','이 경기 하이라이트 필수 시청']),up:ri(10,200)}]:[]})})}catch(e){}return out}}
@@ -5804,7 +5804,7 @@ const TM={
  s1L:[["1차전 내줬네 아직 안 끝났다",["2차전은 무조건 잡아야 한다"]],["첫 판부터 이러면 불안한데",[]]],
  s11:[["1승 1패 원점이다 다시 시작이다",[]],["한 판씩 주고받았네 이제부터가 진짜다",[]]],
  s20:[["먼저 2승 챙겼다 분위기 완전 넘어왔다",["상대 팀 벼랑 끝으로 몰았다"]]],
- s02:[["먼저 2패… 이제 지면 끝이다",["아직 안 끝났다 역스윕 가자"]],["시리즈 분위기가 너무 안 좋다",[]]],
+ s02:[["먼저 2패… 분위기 완전히 넘어갔다",["아직 안 끝났다 역스윕 가자"]],["시리즈 분위기가 너무 안 좋다",[]]],
  s22:[["{n} 끝장 승부 간다",["이게 가을야구지","마지막 경기 심장 버틸 수 있을까"]],["{n}, 이제 진짜 마지막 한 판이다",["심장 약한 사람 내일 중계 보지 마라"]]],
  rev3:[["0승 3패에서 3연승… 역스윕 각 나온다",["이 흐름이면 마지막 경기도 우리 거다"]],["3연패 할 때 TV 끈 사람들 다시 켜라 ㅋㅋ",["나 끈 사람인데 다시 켬"]],["0-3에서 여기까지 끌고 온 것만으로도 미쳤다",["마지막 경기 직관 간다"]]],
  revS:[["벼랑 끝에서 {n}연승, 분위기 완전히 넘어왔다",["상대 덕아웃 표정 봐라"]],["탈락 직전에서 {n}연승 ㄷㄷ 이 팀 아직 안 죽었다",[]]],
@@ -10638,8 +10638,8 @@ function lastTitleGap(){try{const my=S.pro.team,BASE=[2025,2019,null,2022,2021,1
   const SS=serState(x);if(ps&&x.win===false&&SS&&SS.W>SS.L&&R()<.85){const s=SS;
     const L=['아직 시리즈 유리하다 내일 다시 다잡고 하자',`${s.W}승 ${s.L}패 아직 우리가 앞서 있다 쫄 거 없다`,'한 판 졌다고 흔들릴 필요 없음 아직 유리함','오늘 건 빨리 잊고 내일 끝내자','시리즈는 길게 봐야지 아직 우리 쪽이다','져도 되는 경기 하나 쓴 거다 내일 잡자'];
     put(pick(L.filter(t=>!seenHas(josaFix(t))))||L[0],re(['ㅇㅇ 아직 유리함','내일 잡으면 됨','멘탈 잡자','맞다 쫄지 마라'],R()<.6?1:0),ri(1500,5000),0)}
-  /* ③ 기세 */
-  if(kbo&&!ps&&!x.intl&&!x.wbc&&x.win!==false&&S.stage==='pro'&&!S.pro.minor&&S._giseY!==S.y&&S.m>=4&&S.m<=8&&!/결승|준결승|라운드|올림픽|아시안게임|WBC|프리미어|2군|퓨처스|부상|방출|트레이드/.test(title+' '+String(tone))){const st=standings(),rk=st.findIndex(z=>z.i===my)+1,sk=streakOf((S.lg.rec||[])[my]);const n=+(String(sk).match(/^(\d+)승/)||[])[1]||0;
+  /* ③ 기세 — v868s: 2023 롯데 '기세' 밈은 실존 선수 말에서 나온 롯데 놀림이라 '봄데'처럼 안 씀 */
+  if(false&&kbo&&!ps&&!x.intl&&!x.wbc&&x.win!==false&&S.stage==='pro'&&!S.pro.minor&&S._giseY!==S.y&&S.m>=4&&S.m<=8&&!/결승|준결승|라운드|올림픽|아시안게임|WBC|프리미어|2군|퓨처스|부상|방출|트레이드/.test(title+' '+String(tone))){const st=standings(),rk=st.findIndex(z=>z.i===my)+1,sk=streakOf((S.lg.rec||[])[my]);const n=+(String(sk).match(/^(\d+)승/)||[])[1]||0;
     if((rk===1||n>=5)&&R()<(n>=5?.4:.2)){S._giseY=S.y;put(pick(['마 이게 우리팀의 기세다','마 이게 우리팀의 "기세"다','이게 바로 우리팀의 기세다 ㅋㅋㅋ']),re(GISE_RE,2+ri(0,1)),ri(800,3000))}}
   /* ④ 드디어 터지네 */
   if(S._burstY!==S.y&&(x.gPA>0||x.ipO>0||tone==='hype')){const lvs=['KBO','MLB'],cur=S.rows.filter(r=>r.y===S.y&&lvs.includes(r.lv)),prevY=[S.y-1,S.y-2,S.y-3];
@@ -20018,6 +20018,15 @@ if (typeof buildSeasonRecap === 'function') {
         if (L.length) put1(L, 'bk868:'); } }
       /* 신인왕 (펨코: '작년 이맘때쯤에 ○○가 다음 시즌 신인왕 타고 홈런 20개 때리고…') */
       if (/신인왕/.test(h) && /^(award)$/.test(T)) { const yb = yearTot(S.y, [S.pro.league]).b; put1([[(!isP() && yb && yb.HR >= 15) ? `작년 이맘때 ${giv(ME.name)} 신인왕에 ${yb.HR}홈런 친다고 했으면 다들 안 믿었다` : '작년 이맘때만 해도 신인왕까지는 상상 못 했다', ['1년 만에 이렇게 크다니', '이게 야구다']]], 'ry868:'); }
+      /* 기록 타이틀(투표 없는 상)에 '투표 몇 표 차였음?'·'MVP는 성적순이지 인기투표가 아니다' X (시뮬: '장타율왕' 기사) */
+      if (T === 'award' && /(타격|홈런|타점|도루|출루율|장타율|득점|다승|세이브|홀드|탈삼진|평균자책점)왕|최다안타/.test(h) && !/MVP|골든글러브|신인왕|사이영|실버슬러거|골드글러브|올해의/.test(h)) a.cm = a.cm.filter(c => !(c && !c.must && !c.my && typeof c.t === 'string' && /투표|득표|기자단|인기투표/.test(c.t)));
+      /* 가을 부진 반어법 (펨코: '속보) ○○ 오늘 피칭으로 통산 한국시리즈 ERA 16 달성') — 커리어 한 번 */
+      if (x && x.ps && !x.intl && (x.gPA != null || x.ipO != null)) {
+        const P = isP(), bad = P ? ((x.ra || 0) >= 3) : ((x.gPA || 0) >= 4 && (x.gH || 0) === 0);
+        if (bad) { const tp = blankP(), tb = blankB(); Object.values(S.postY || {}).forEach(v => { if (v) { addTo(tb, v.b); addTo(tp, v.p); } });
+          if (P && tp.outs >= 30) { const e = tp.R * 27 / tp.outs; if (e >= 7) put1([[`속보) ${giv(ME.name)} 오늘로 가을야구 통산 평균자책 ${e.toFixed(2)} 달성 ㅋㅋ ㅠ`, ['이건 기록이 아니라 기록 말살이다', '웃픈데 웃을 수가 없다']]], 'ps868:'); }
+          else if (!P && tb.AB >= 40) { const av = tb.H / tb.AB; if (av <= .18) put1([[`속보) ${giv(ME.name)} 오늘로 가을야구 통산 타율 .${String(Math.round(av * 1000)).padStart(3, '0')} 달성 ㅋㅋ ㅠ`, ['가을만 되면 다른 사람이다', '내년 가을엔 제발']]], 'ps868:'); } }
+      }
       /* 트레이드 */
       if (/로 트레이드$|초대형 트레이드/.test(h)) put1([['트레이드는 뒷이야기가 1~2년 지나야 풀리더라 썰 기다린다', ['썰 풀리면 다시 모이자 ㅋㅋ', '단장 인터뷰 기다린다']], ['벌써부터 손해네 이득이네 말 많은데 시즌 끝나고 다시 보자', ['지금은 아무도 모른다', '결과는 성적이 말해 준다']], ['팬들끼리 누가 이득인지 따지는 게 트레이드의 재미다 ㅋㅋ', ['스토브리그 꿀잼', '오늘 커뮤 불탄다']]], 'tr868:');
       /* 은퇴 */
@@ -20063,6 +20072,7 @@ if (typeof render === 'function') {
   ctx867 = function (a, x, tone) {
     _ctx868q.apply(this, arguments);
     try {
+      if (a && Array.isArray(a.cm) && typeof META868 !== 'undefined' && a.cm.some(c => c && typeof c.t === 'string' && META868.test(c.t)) && !a.cm.some(c => c && (c.troll || c.fight864 || (typeof c.t === 'string' && !META868.test(c.t) && (FTHATE868.test(c.t) || /거품|운빨|빠는|과대|고평가|분탕|어그로|까던|실드/.test(c.t)))))) a.cm = a.cm.filter(c => !(c && !c.must && !c.my && typeof c.t === 'string' && META868.test(c.t)));/* v868s: 싸움·시비 댓글 없는데 '또 갈드컵 열렸네' X (시뮬: 금메달 병역 특례 기사) */
       if (a && Array.isArray(a.cm) && S && ME && S.stage === 'pro' && age() >= 32) a.cm = a.cm.filter(c => !(c && !c.must && !c.my && typeof c.t === 'string' && /구종 하나만 더|기복만 줄이면 (진짜 )?대박|포텐 (터지|보인)|잠재력/.test(c.t)));/* v868r: 33살 넘은 베테랑한테 '구종 하나만 더 장착하면'·'기복만 줄이면 대박' 같은 잠재력 말 X */
       if (!a || !Array.isArray(a.cm) || !S || !S.pro || S.pro.league !== 'MLB' || (x && x.intl)) return;
       const fx = t => typeof t === 'string' ? t.replace(/144경기/g, '162경기') : t;
