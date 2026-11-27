@@ -20077,6 +20077,14 @@ if (typeof render === 'function') {
   ctx867 = function (a, x, tone) {
     _ctx868q.apply(this, arguments);
     try {
+      try { if (a && Array.isArray(a.cm) && S && ME && S.stage === 'pro') { let g = 'none'; try { g = perfGrade(); } catch (e) {} const LG = typeof lastGood868 === 'function' && lastGood868();
+        a.cm = a.cm.filter(c => { if (!c || c.must || c.my || typeof c.t !== 'string') return true;
+          if (g === 'elite' && /한 단계만 더 올라가면|한 단계만 더 올라와/.test(c.t)) return false;/* v868u: 타율 .358 25홈런 반기에 '한 단계만 더 올라가면 진짜 리그급' X */
+          if (LG && /자리 잡았다 주전 확정|주전 확정 각|한 단계 올라선 게/.test(c.t)) return false;/* 작년에도 잘한 선수한테 '이제 주전 확정' X */
+          if ((age() >= 26 || proYears() >= 6) && /이 나이에 이걸 한다고\? 미래가 기대|어린 선수가 큰 경기에서 이러면/.test(c.t)) return false;
+          return true; });
+        { let n = 0; a.cm = a.cm.filter(c => { if (c && typeof c.t === 'string' && /\d+홈런 (페이스|ㄷㄷ)|1년에 \d+홈런|1년이면 \d+홈런/.test(c.t)) { n++; return n <= 1 || c.must; } return true; }); }/* 같은 기사에 '49홈런 페이스'·'시즌 47홈런 ㄷㄷ' 두 숫자 X */
+      } } catch (e) {}
       if (a && Array.isArray(a.cm) && a.cm.some(c => c && typeof c.t === 'string' && /우주의 기운|성적은 애매한데/.test(c.t))) a.cm = a.cm.filter(c => !(c && !c.must && !c.my && typeof c.t === 'string' && /리그를 지배|지배하는 수준|간첩이지|리그 최정상/.test(c.t)));/* v868t: '성적은 애매한데 우주의 기운'이랑 '리그를 지배하는 수준'이 같은 기사에 X */
       if (a && Array.isArray(a.cm) && typeof META868 !== 'undefined' && a.cm.some(c => c && typeof c.t === 'string' && META868.test(c.t)) && !a.cm.some(c => c && (c.troll || c.fight864 || (typeof c.t === 'string' && !META868.test(c.t) && (FTHATE868.test(c.t) || /거품|운빨|빠는|과대|고평가|분탕|어그로|까던|실드/.test(c.t)))))) a.cm = a.cm.filter(c => !(c && !c.must && !c.my && typeof c.t === 'string' && META868.test(c.t)));/* v868s: 싸움·시비 댓글 없는데 '또 갈드컵 열렸네' X (시뮬: 금메달 병역 특례 기사) */
       if (a && Array.isArray(a.cm) && S && ME && S.stage === 'pro' && age() >= 32) a.cm = a.cm.filter(c => !(c && !c.must && !c.my && typeof c.t === 'string' && /구종 하나만 더|기복만 줄이면 (진짜 )?대박|포텐 (터지|보인)|잠재력/.test(c.t)));/* v868r: 33살 넘은 베테랑한테 '구종 하나만 더 장착하면'·'기복만 줄이면 대박' 같은 잠재력 말 X */
