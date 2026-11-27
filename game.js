@@ -4863,11 +4863,11 @@ function tradeTargets(){if(S.pro.league==='MLB')return Object.keys(MLB_CITY).fil
   const mlb=S.pro.league==='MLB',lg=mlb||S.pro.league==='KBO';if(!lg)return;const lgk=S.pro.league,_t0=yearTot(S.y,[lgk]),ry=(_t0.b.PA<150&&_t0.p.outs<90)?S.y-1:S.y,{b,p:pp}=ry===S.y?_t0:yearTot(ry,[lgk]),ip=pp.outs/3,ryW=S.rows.filter(r=>r.y===ry&&PRO.includes(r.lv)).reduce((a,r)=>a+rowWAR(r)*WARK(r.lv),0),ryAw=S.awards.some(a=>a.y>=ry&&/MVP|골든글러브|왕|최다/.test(a.n)&&!/우승$/.test(a.n)),P=isP(),ops=b.PA?opsN(b):0,era=pp.outs?pp.R*27/pp.outs:9;
   const used=P?(ip>=100||(pp.SV+pp.HLD)>=15||pp.GS>=15):b.PA>=350,good=P?(ip>=50&&era<=3.8):(b.PA>=200&&ops>=.8),youngGood=proYears()<=2&&lastWAR()>=2;
   const bench=!used&&!['start','SP','CL','SU'].includes(S.role)&&!(lastWAR()>=2)&&ryW<2&&!ryAw&&(()=>{try{return careerTot(PRO).w<20}catch(e){return true}})(),star=DV(ovrE())>=85&&age()>=27&&proYears()>=4;
-  let p=(good||youngGood||ryAw||ryW>=3||(S.lastTradeY&&S.y-S.lastTradeY<3))?0:bench?(mlb?.06:.03):(mlb?.012:.004),big=false;const chemBad=(S.rel.chem||50)<30&&!(S.lastTradeY&&S.y-S.lastTradeY<2);if(chemBad)p=Math.max(p,mlb?.04:.03);if(star&&mlb&&R()<.006){big=true;p=1}if(R()>=p)return;
+  let p=(good||youngGood||ryAw||ryW>=3||(S.lastTradeY&&S.y-S.lastTradeY<3))?0:bench?(mlb?.06:.03):(mlb?.012:.004),big=false;const chemBad=(S.rel.chem||50)<30&&!(S.lastTradeY&&S.y-S.lastTradeY<2);if(chemBad)p=Math.max(p,mlb?.04:.03);const rkGood866=proYears()<=2&&(youngGood||good);if((star||rkGood866)&&!(S.lastTradeY&&S.y-S.lastTradeY<3)&&R()<(mlb?.02:.005)){big=true;p=1}/* v866 (11/27 13:30 유저 "빅샤이닝 트레이드 확률 KBO 1% · MLB 4% 정도 · 반시즌 이상 잘한 신인도 대형 트레이드 주인공 가능"): 7월·12월 두 번 확인 × KBO 0.5%·MLB 2% = 시즌당 약 1%·4% · 대상 = 스타(85+·27살+·4년차+) 또는 잘하는 1~2년차 · 3년 안에 트레이드됐으면 X (예전: MLB 스타만 0.6%) */if(R()>=p)return;
   const T=pick(tradeTargets()),tn=mlb?mlbFull857(T):`${TEAMS[T].city} ${TEAMS[T].nick}`,pkg=big?pick(['유망주 4명','유망주 3명 + 현금','주전급 2명 + 유망주 2명','1라운드 지명권 2장 + 유망주 2명']):(bench?pick(['유망주 1명','불펜 투수 1명','현금','하위 라운드 지명권']):(ryW>=4||lastWAR()>=4)?pick(P?['상대 주전 4번 타자','주전 외야수 + 1라운드 지명권','국가대표 마무리 투수']:['상대 에이스 선발','10승 선발 투수 + 유망주','국가대표 마무리 + 1라운드 지명권']):pick(P?['주전급 야수 1명','유망주 2명 + 현금','1라운드 지명권']:['선발 투수 1명','필승조 투수 + 유망주','1라운드 지명권']));
   const cw=(()=>{try{return careerTot(PRO).w}catch(e){return 0}})(),stP=lastWAR()>=4||ryW>=4||cw>=30*WARF842,rich=(S.pro.salary||0)>=(mlb?200000:100000);
   const why=chemBad&&!big?`라커룸 분위기가 많이 안 좋다는 거, 너도 알지? 구단이 분위기 쇄신이 필요하다고 판단했다.`:bench?'거기선 매일 뛸 수 있을 거다.':stP&&rich?`솔직히 말하마. 구단이 팀 연봉을 줄여야 한다. 네 연봉이 제일 크다.`:stP?`우승을 노리는 ${tn} 쪽에서 ${isP()?'마운드':'핵심 타선'}을 보강하려고 너를 콕 집었다.`:`우리 팀은 ${pkg}${jo(pkg,'이','가').slice(-1)} 필요하고, 그쪽은 주전급 선수가 필요하다.`;
-  const txt=big?`🔥 블록버스터 트레이드!\n${jo(tn,'이','가')} ${pkg}${jo(pkg,'을','를').slice(-1)} 내주고 ${stP?(isP()?'리그 최고 투수 중 한 명인 ':'리그 최고 타자 중 한 명인 '):''}당신을 데려간다. 리그 전체가 들썩인다.`:`${mlb?'트레이드 마감일':'비시즌'}, 단장실에 불려갔다.\n"${tn}에서 너를 원한다. ${jo(pkg,'과','와')} 맞트레이드다. ${why}"`;
+  const txt=big?`🔥 블록버스터 트레이드!\n${jo(tn,'이','가')} ${pkg}${jo(pkg,'을','를').slice(-1)} 내주고 ${stP?(isP()?'리그 최고 투수 중 한 명인 ':'리그 최고 타자 중 한 명인 '):proYears()<=2?'리그 최고 유망주로 꼽히는 ':''}당신을 데려간다. 리그 전체가 들썩인다.`:`${mlb?'트레이드 마감일':'비시즌'}, 단장실에 불려갔다.\n"${tn}에서 너를 원한다. ${jo(pkg,'과','와')} 맞트레이드다. ${why}"`;
   const ch=[{t:'새 팀에서 새 출발',s:big?'인기↑↑ · 새 감독·동료':(bench?'새 감독·동료 · 출전 기회 기대':'새 감독·동료'),act:'tradeGo',arg:{T,big}}];if(mlb&&S.pro.noMinor)ch.push({t:'트레이드 거부권을 행사한다',s:'팀에 남는다 · 구단과 관계↓',act:'tradeNo'});
   S.queue.push({title:big?'💥 블록버스터 트레이드':'📞 트레이드 통보',text:txt,ch})}catch(e){}}}
 ACT.tradeGo=function(a){S.lastTradeY=S.y;const mlb=S.pro.league==='MLB';if(mlb){S.pro.tname=a.T}else{S.pro.team=a.T}S.rel.coach=55;S.rel.chem=45;S.coach=mkName()+' 감독';if(a.big)S.rel.fame=cl(S.rel.fame+8,0,100);
@@ -6739,11 +6739,15 @@ function hofFmt(r,col,d){const v=r[col];if(v==null)return'-';if(col==='avg')retu
 function hofLine(r){return r.kind==='P'?`${r.g}경기 ${r.w}승 ${r.l}패${r.sv?` ${r.sv}세이브`:''}${r.hld?` ${r.hld}홀드`:''} · ERA ${r.era!=null?(+r.era).toFixed(2):'-'}`:`${r.g}경기 타율 ${hofFmt(r,'avg')} · ${r.hr}홈런 ${r.h}안타 · ${r.sb}도루`}
 function hofWarTxt(r){const a=[];if(+r.kbo_war)a.push(`KBO ${(+r.kbo_war).toFixed(1)}`);if(+r.mlb_war)a.push(`MLB ${(+r.mlb_war).toFixed(1)}`);if(+r.npb_war)a.push(`NPB ${(+r.npb_war).toFixed(1)}`);if(+r.minor_war)a.push(`마이너 ${(+r.minor_war).toFixed(1)}`);return a.length?'WAR '+a.join(' · '):''}
 function hofWho(r){return`<b>${esc(r.nick)}</b>${r.hof?' <span class="hof-badge">🏅 헌액</span>':''}<span class="hof-sub">${esc(r.team||'')} · ${r.years||0}시즌${r.owner?` · by ${esc(r.owner)}`:''}</span>`}
-function vHofHall(){const L=hofLoad('hall','order=wwar.desc.nullslast&limit=400');if(L.loading)return'<div class="hof-msg">불러오는 중…</div>';if(L.err)return'<div class="hof-msg">명예의 전당을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>';
-  const rows=L.data||[],used=new Set(),best=f=>{const x=rows.find(r=>!used.has(r.career_id)&&f(r));if(x)used.add(x.career_id);return x};
+/* v866 (11/27 13:28 유저 "커리어가 명예의 전당에서 삭제되는 경우가 있는 것 같은데 · 마무리가 갑자기 없어졌다")
+   원인: 명예의 전당 칸을 '점수 상위 400명' 한 번에 받아서 그 안에서 포지션별 1위를 골랐음 → 기록이 932개로 늘면서 마무리 1위(전체 450등)·불펜 1위(422등)가 400명 밖으로 밀려 칸이 '아직 주인 없음'으로 비었음 (지워진 건 아님 · 서버엔 그대로)
+   → 칸마다 따로 묻기 (포지션·보직별 점수 상위 10명 → 그중 1위) · 기록이 아무리 늘어도 안 밀림 */
+function vHofHall(){const Q=(k,f)=>hofLoad('hall:'+k,f+'&order=wwar.desc.nullslast&limit=10'),keys=[...HOF_POS.map(p=>['B'+p,'kind=eq.B&pos=eq.'+encodeURIComponent(p)]),['SP','kind=eq.P&prole=eq.SP'],['CL','kind=eq.P&prole=eq.CL'],['RP','kind=eq.P&prole=eq.RP']];
+  const Ls=keys.map(([k,f])=>[k,Q(k,f)]);if(Ls.some(([k,L])=>L.loading))return'<div class="hof-msg">불러오는 중…</div>';if(Ls.every(([k,L])=>L.err))return'<div class="hof-msg">명예의 전당을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>';
+  const used=new Set(),of=k=>{const L=(Ls.find(z=>z[0]===k)||[])[1];return(L&&L.data)||[]},best=(k,f)=>{const x=of(k).find(r=>r&&!used.has(r.career_id)&&f(r));if(x)used.add(x.career_id);return x};
   const slot=(lbl,r)=>`<div class="hof-slot ${r?'':'empty'}"><span class="hof-pos">${lbl}</span>${r?`<div class="hof-who">${hofWho(r)}<span class="hof-ln">${hofLine(r)}</span><span class="hof-sub">${hofWarTxt(r)}</span></div><span class="hof-war">점수<b>${(+(r.wwar??r.war)).toFixed(1)}</b></span>`:'<div class="hof-who"><span class="hof-sub">아직 주인 없음 — 첫 번째 주인공이 되어 보세요</span></div>'}</div>`;
-  const bat=HOF_POS.map(p=>slot(HOF_PN[p],best(r=>r.kind==='B'&&r.pos===p))).join('');
-  const sp=best(r=>r.kind==='P'&&r.prole==='SP'),cl=best(r=>r.kind==='P'&&r.prole==='CL'),rp=best(r=>r.kind==='P'&&r.prole==='RP');
+  const bat=HOF_POS.map(p=>slot(HOF_PN[p],best('B'+p,r=>r.kind==='B'&&r.pos===p))).join('');
+  const sp=best('SP',r=>r.kind==='P'&&r.prole==='SP'),cl=best('CL',r=>r.kind==='P'&&r.prole==='CL'),rp=best('RP',r=>r.kind==='P'&&r.prole==='RP');
   return`<div class="hof-note">은퇴한 모든 플레이어의 커리어 중 포지션별 명예의 전당 점수 1위가 올라요.<br>점수 = KBO WAR ×1.0 + MLB WAR ×2.0 + 마이너 WAR (AAA ×0.5 · AA 이하 ×0.3) · 퓨처스(2군) 기록은 제외</div><div class="hof-grp">야수</div>${bat}<div class="hof-grp">투수</div>${slot('1 · 선발',sp)}${slot('2 · 마무리',cl)}${slot('3 · 불펜',rp)}`}
 function vHofRank(kind){const cats=HOF_CAT[kind],cur=cats.find(c=>c[0]===(ui.hof.cat&&ui.hof.cat[kind]))||cats[0],L=hofLoad(kind+cur[0],hofQuery(kind,cur[0]));
   let body;if(L.loading)body='<div class="hof-msg">불러오는 중…</div>';else if(L.err)body='<div class="hof-msg">순위를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>';else if(!L.data.length)body=HOF_XF[cur[0]]?'<div class="hof-msg">이 항목은 새로 올라오는 기록부터 집계돼요. 은퇴하고 기록을 올리면 여기에 이름이 올라가요!</div>':'<div class="hof-msg">아직 기록이 없어요. 은퇴하면 첫 기록을 올릴 수 있어요!</div>';
@@ -18818,5 +18822,51 @@ if (typeof article === 'function') {
       }
     } catch (e) {}
     return r;
+  };
+}
+
+/* ===== v866 부진할 때 응원 댓글 (11/27 13:30 유저 "부진할 때 응원해 주는 댓글 · '널 의심하지 마' 같은 거 · 그다음 대댓글로 놀리는 것까지")
+   못한 기사(경기·결산)에 35%로 응원 원댓 1개 + 대댓 2~4개(같이 응원 + 'ㅇㅇ팬 ㄹㅈㄷ' 식 놀림 섞어서)
+   ※ 유저가 예로 든 '맘충'은 엄마들을 비하하는 말이라 안 쓰고 '이모팬·엄마 모드·육아 일기' 같은 말로 놀림 */
+const CHEER866 = {
+  root: ['{n}아 널 의심하지 마 넌 원래 잘하는 선수야', '{n} 힘내라 누나가 끝까지 응원한다', '슬럼프는 누구나 온다 {n} 믿는다', '{n} 기죽지 마 다음 경기에서 보여 주면 된다', '우리 {n} 밥은 잘 먹고 다니니 ㅠ 아프지만 말자', '{n} 오늘 못해도 괜찮아 내일 또 보러 간다', '의심하지 마라 {n}는 반드시 돌아온다', '{n}아 욕하는 사람들 신경 쓰지 마 네 편 많다', '{n} 이럴 때일수록 더 크게 응원한다', '한두 경기로 {n} 평가하지 마라 시즌은 길다'],
+  warm: ['ㅠㅠ 나도 믿는다', '이런 팬이 진짜 팬이다', '맞말이라 반박 불가', '다음 경기 직관 간다 같이 응원하자', '{n} 이 댓글 꼭 봤으면', '이 댓글 보고 좀 울컥함'],
+  tease: ['이모팬 ㄹㅈㄷ ㅋㅋㅋ', '엄마 모드 발동 ㅋㅋ', '육아 일기냐 ㅋㅋㅋ', '누나팬 출동했다 ㅋㅋ', '밥 얘기 나오면 이모팬 확정 ㅋㅋ', '우쭈쭈 그만 ㅋㅋ 프로다 프로', '쉴드 장인 등장 ㅋㅋ'],
+};
+{
+  const _c866 = comments;
+  comments = function (tone, x) {
+    let out = _c866.apply(this, arguments);
+    try {
+      if (!Array.isArray(out) || !S || !ME || S.stage !== 'pro' || S.me !== ME) return out;
+      if (!/^(bad|psGoat|psLose)$/.test(String(tone || '')) || R() > .35 || !once863('cheer')) return out;
+      const gn = giv(ME.name), U = S.ch866 = S.ch866 || {}, rp = L => { const C0 = L.filter(t => !out.some(c => c && c.t === t)); const A = C0.length ? C0 : L, mn = Math.min(...A.map(t => U[t] || 0)), C = A.filter(t => (U[t] || 0) === mn), t = pick(C); U[t] = mn + 1; return t; };
+      const fx = t => josaFix(t.replace(/\{n\}/g, gn));
+      const root = fx(rp(CHEER866.root)), n = ri(2, 4), re = [], used = new Set();
+      for (let i = 0; i < n; i++) { const L = (i === 0 || R() < .5) ? CHEER866.warm : CHEER866.tease; let t; for (let g = 0; g < 5; g++) { t = rp(L); if (!used.has(t)) break; } used.add(t); re.push({ nk: pick(NICKS), t: fx(t), up: ri(20, 700) }); }
+      out.splice(Math.min(out.length, ri(0, 3)), 0, mkC(root, [], { up: ri(800, 4000), dn: ri(0, 40), re, cheer866: 1 }));
+    } catch (e) {}
+    return out;
+  };
+}
+
+/* v866 비슷한 유형 몰림 막기 (11/27 13:28 유저 "비슷한 댓글 유형 많아지면 보는 재미↓ 피로도↑ · 최대한 골고루 다양하게")
+   한 기사 안에서 같은 갈래 댓글은 1~2개만 (꼭 나와야 하는 댓글·싸움·응원 스레드는 그대로)
+   갈래: 고생·수고 / 레전드 확정 / 연봉 / 캐스터 멘트 / 개추 / 눈물·울컥 / 행복했다 / 반박 불가 / 미쳤다 / 이 맛에 야구 본다 / 메이저 간다 / 우승 축하 / 믿고 보는 / 소름 */
+const FAM866 = [[/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1]];
+{
+  const _c866f = comments;
+  comments = function (tone, x) {
+    let out = _c866f.apply(this, arguments);
+    try {
+      if (!Array.isArray(out) || out.length < 4) return out;
+      const cnt = FAM866.map(() => 0);
+      out = out.filter(c => {
+        if (!c || typeof c.t !== 'string' || c.must || c.fight864 || c.cheer866) return true;
+        for (let i = 0; i < FAM866.length; i++) if (FAM866[i][0].test(c.t)) { cnt[i]++; if (cnt[i] > FAM866[i][1]) return false; }
+        return true;
+      });
+    } catch (e) {}
+    return out;
   };
 }
