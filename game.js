@@ -18713,7 +18713,7 @@ const FIGHT864 = {
     re: ['니 돈이냐 ㅋㅋ', '구단 돈인데 왜 니가 아까워함', '시장가가 그런 걸 어쩌라고', '연봉 얘기만 나오면 다들 구단주 빙의함 ㅋㅋ', '받는 만큼 하면 됐지', '맞말이긴 한데 니가 왜 화남'] },
   old: { root: ['요즘 유입들은 직관 매너가 없음', '옛날엔 진짜 야구 좋아하는 사람만 야구장 갔는데', '라떼는 외야석에 누워서 봤다 요즘 애들은 모름'],
     re: ['꼰대 등장 ㅋㅋㅋ', '라떼 타령 또 시작', '유입 없으면 구단 망한다', '옛날 야구장 화장실 생각하면 지금이 천국임', '근데 매너 얘기는 맞말임', '올드비 vs 유입 대전 개막 ㅋㅋ'] },
-  kor: { root: ['{n} 메이저 가도 통한다 국뽕 아니고 팩트임', '{n} 메이저에선 백업이 한계임', '{n} 현지에서도 난리 났다는데?'],
+  kor: { root: ['{n} 메이저에서도 통한다 국뽕 아니고 팩트임', '{n} 메이저에선 결국 백업이 한계임', '{n} 현지에서도 난리 났다는데?'],
     re: ['국뽕 한 사발 들이켰네 ㅋㅋ', '현지 반응 퍼오는 사람 꼭 있음', '백업 타령하던 사람들 다 어디 감', '메이저는 다르다고 몇 번을 말해', '숫자가 증명 중인데 뭔 소리', '국뽕이든 아니든 잘하면 됐지'] },
   ump: { root: ['오늘 심판 존 상대 팀 편이었다 진짜로', '오늘 진 건 판정 때문임 반박 불가', '그 삼진 콜은 누가 봐도 볼이었다'],
     re: ['지면 심판 탓 이기면 실력 ㅋㅋ', 'ABS 시대에 판정 탓은 좀…', '느린 화면 보고 와라 스트라이크 맞다', '판정은 판정이고 못 친 게 문제', '아니 저건 진짜 억울하긴 했음', '심판 탓하는 순간 지는 거다'] },
@@ -18731,11 +18731,11 @@ const FIGHT864 = {
       const T = String(tone || ''), gn = giv(ME.name), mlb = S.pro.league === 'MLB';
       const good = /^(hype|feat|walkoff|psHero|record|award|gold|ring)$/.test(T), badT = /^(bad|psGoat|psLose|mix)$/.test(T);
       const big = x && x.ps && (x.ps === 'KS' || /한국시리즈|월드시리즈/.test(String(x.title || '')) || x.elim || x.clinch);
-      let pr = badT ? .26 : good ? .18 : .12; if (big) pr *= .5;
+      let pr = badT ? .26 : good ? .18 : 0; if (big) pr *= .5;   /* 부상·계약·은퇴 같은 기사엔 싸움 X */
       if (R() > pr || !once863('fight')) return out;
       const K = [];
       if (good) K.push('bun', 'yal', 'top'); if (badT) K.push('bun', 'mgr', 'yal');
-      if (((S.rel && S.rel.fame) || 0) >= 45) K.push('fan', 'old');
+      if (((S.rel && S.rel.fame) || 0) >= 45) K.push('fan'); if (((S.rel && S.rel.fame) || 0) >= 45 && !mlb && !(x && x.intl)) K.push('old');
       if ((S.pro.salary || 0) >= (mlb ? 500000 : 50000)) K.push('pay');
       if (mlb) K.push('kor'); if (x && x.myR != null && x.win === false && !mlb) K.push('ump'); if (x && x.ps) K.push('rv'); if (!K.length) K.push('yal', 'old');
       const U = S.fg864 = S.fg864 || {}, mnK = Math.min(...K.map(k => U[k] || 0)), KC = K.filter(k => (U[k] || 0) === mnK), k = pick(KC); U[k] = mnK + 1;
