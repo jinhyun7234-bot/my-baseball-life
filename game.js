@@ -4154,7 +4154,8 @@ function g1Lines(x){const nm=ME.name,gn=giv(nm),gI=jo(gn,'이','가'),win=x.win!
   add.forEach((t,i)=>{seenAdd(t);out.splice(Math.min(out.length,i*2),0,{nk:pick(NICKS),fl:null,t,up:Math.round(ri(300,2500)*(1+S.rel.fame/30)),dn:ri(0,12),nar:1,ago:pick(AGO),re:R()<.5?Array.from({length:ri(1,2)},()=>({nk:pick(NICKS),t:pick(['ㄹㅇㅋㅋ 승패 떠나서 경기 재밌었다','이게 가을이지','소름 돋았다','인정합니다','222']),up:ri(10,200)})):[]})})}catch(e){}return out}}
 /* 투수전 (양 팀 모두 3실점 이하) */
 {const _c35=comments;comments=function(tone,x){let out=_c35(tone,x);try{if(!x||!(x.ps||x.intl)||x.myR==null||x.myR>3||x.opR>3||!S||!ME||R()>.85)return out;const gn=giv(ME.name),ace=oppAce(x)||`${x.opp||'상대'} 선발`,lg=S.pro&&S.pro.league==='MLB'?'메이저':'KBO',meSP=isP()&&(x.ipO||0)>=15;
-  const L=[`내가 본 ${lg} 경기 중 가장 수준 높은 경기다`,meSP?`오늘 ${gn} ${ace} 둘 다 인생 고점투 ㅋㅋㅋㅋㅋ`:`오늘 양 팀 선발 둘 다 인생 고점투 ㅋㅋㅋㅋㅋ`,'투수전 이 맛에 본다 한 점 한 점이 피 말림','점수 하나 날 때마다 심장 떨어지는 경기다','이게 진짜 가을 투수전이지','1점이 이렇게 무거운 경기는 오랜만이다','양 팀 투수들 오늘 미쳤다 타자들 할 게 없음'].filter(t=>!seenHas(t)&&!(isP()&&(x.ra||0)>=2&&/둘 다|양 팀 (투수|선발)/.test(t)));
+  const elimL867=x.win===false&&!!x.elim;/* v867h: 탈락 경기엔 '이 맛에 본다'·'ㅋㅋㅋ' 투수전 감탄 X (시뮬: 와카 2차전 탈락 뒤 '투수전 이 맛에 본다') */
+  const L=(elimL867?['1점이 이렇게 무거운 경기는 오랜만이다','점수 하나 날 때마다 심장 떨어졌는데 결국 이렇게 끝나네','투수전 끝에 시즌 마감이라 더 아프다','한 점 싸움에서 밀렸다 할 말이 없다','이렇게 잘 싸우고 떨어지는 게 제일 아프다',meSP?`${gn} 이렇게 던졌는데 점수를 못 내주네 타선 미안해해야 함`:`${ace} 공략 못 한 게 끝까지 발목 잡았다`]:[`내가 본 ${lg} 경기 중 가장 수준 높은 경기다`,meSP?`오늘 ${gn} ${ace} 둘 다 인생 고점투 ㅋㅋㅋㅋㅋ`:`오늘 양 팀 선발 둘 다 인생 고점투 ㅋㅋㅋㅋㅋ`,'투수전 이 맛에 본다 한 점 한 점이 피 말림','점수 하나 날 때마다 심장 떨어지는 경기다','이게 진짜 가을 투수전이지','1점이 이렇게 무거운 경기는 오랜만이다','양 팀 투수들 오늘 미쳤다 타자들 할 게 없음']).filter(t=>!seenHas(t)&&!(isP()&&(x.ra||0)>=2&&/둘 다|양 팀 (투수|선발)/.test(t)));
   const add=[];for(let i=0;i<2&&L.length;i++){const t=L.splice(ri(0,L.length-1),1)[0];seenAdd(t);add.push(t)}
   add.forEach((t,i)=>out.splice(Math.min(out.length,i*2+1),0,{nk:pick(NICKS),fl:null,t,up:Math.round(ri(100,900)*(1+S.rel.fame/30)),dn:ri(0,6),nar:1,ago:pick(AGO),re:/인생 고점투/.test(t)&&R()<.6?[{nk:pick(NICKS),t:meSP?`${jo(ace,'은','는')} 짧게 쉬고 던졌는데도 저렇게 던지네 레전드`:'둘 다 오늘 공 미쳤다',up:ri(10,120)}]:[]}))}catch(e){}return out}}
 /* 홈런 공방전 (양 팀 합계 4홈런 이상, 둘 다 1개 이상) */
@@ -5244,7 +5245,7 @@ function fillN(s,gn){return String(s).replace(/\{n\}(이|가)(?=[\s,.!?ㅋㅠ]|$
     :[`${jo(gn,'은','는')} 멘탈이 문제임. 팬들 극성이 그를 힘들게 함.`,`재능은 진짜 확실한데 멘탈이 아쉽다`,`삼진 하나 먹으면 다음 타석까지 끌고 가는 게 보임`,`${gn} 찬스만 오면 어깨에 힘 들어가는 거 보여서 안쓰러움`,`부담감 내려놓기만 하면 터질 선수인데`,`댓글 좀 그만 보라고 해라 멘탈 나간 게 보인다`];
     one(L,['멘탈 상담이라도 받았으면','ㄹㅇ 재능이 아까움','악플러들이 문제지','그래도 이겨낼 거라 믿는다','멘탈은 경험으로 커짐 기다려보자'],R()<.6?2:1)}
   /* 3) 워크에식 약함 */
-  if((H.we||50)<=40&&R()<.3&&cmX('wkwe'+S.y+half)){const L=[`${gn} 워크에식이 별로라는 얘기 계속 나오던데…`,`재능만 믿고 노력을 안 한다는 소문 있음`,`캠프 때 몸 만들어 온 거 보면 워크에식 안 좋은 듯`,`${jo(gn,'이','가')} 연습만 좀 더 하면 리그 씹어먹을 텐데`,`훈련 끝나면 제일 먼저 퇴근한다던데 ㄹㅇ?`,`타고난 건 S급인데 성실함이 D급이라는 평`,P?'불펜 피칭 대충 한다는 썰 돌던데':'특타 한 번을 안 한다던데 ㄹㅇ임?'];
+  if((H.we||50)<=40&&R()<.3&&cmX('wkwe'+S.y+half)){const L=[`${gn} 워크에식이 별로라는 얘기 계속 나오던데…`,`재능만 믿고 노력을 안 한다는 소문 있음`,`캠프 때 몸 덜 만들어 온 거 보면 워크에식 안 좋은 듯`,`${jo(gn,'이','가')} 연습만 좀 더 하면 리그 씹어먹을 텐데`,`훈련 끝나면 제일 먼저 퇴근한다던데 ㄹㅇ?`,`타고난 건 S급인데 성실함이 D급이라는 평`,P?'불펜 피칭 대충 한다는 썰 돌던데':'특타 한 번을 안 한다던데 ㄹㅇ임?'];
     one(L,['그 재능에 노력까지 하면 메이저 감인데','코치들이 좀 잡아줘야 함','썰은 썰일 뿐 성적으로 보여주면 됨','ㄹㅇ 이게 제일 아쉬움','나이 들면 철 들겠지'],R()<.6?2:1)}
   /* 4) 내구성 약함 (부상 중이면 더 자주) */
   const hurt=!!ME.inj;if((H.dur||50)<=40&&R()<(hurt?.7:.3)&&cmX('wkdur'+S.y+half)){const L=[`유리몸인 것 같은데 ㄱㅊ으려나`,`${gn} 또 어디 아프다는 거 아니지?`,`잘하는데 맨날 아파서 풀타임을 못 뛰네`,`${gn} 건강하게 한 시즌만 풀로 뛰어보자 제발`,`몸만 튼튼하면 S급인데 유리몸이 너무 아쉽다`,`${gn} 이름 보면 성적보다 부상 기사가 먼저 떠오름`,`트레이너 붙여서 관리 좀 해라 진짜`,P?'어깨 팔꿈치 괜찮은 거 맞냐 투구수 관리 좀':'전력질주 할 때마다 햄스트링 걱정됨'];
@@ -11778,7 +11779,12 @@ function fact688(a,x,tone){try{if(!a||!Array.isArray(a.cm)||!ME||!S||S.stage!=='
     if(/개인 성적은 평범해도/.test(t)&&((game&&(P?!((x.ipO||0)>0):!((x.gPA||0)>0)))||goodG))return true;
     if(/스탯은 좋은데 눈으로 보면 불안|기록만 좋지|운 좋은 거지/.test(t)&&rp&&sERA!=null&&sERA<2.5&&!badG)return true;
     if((goodG||(!badG&&['elite','good'].includes(stdSeason())))&&meRe.test(t)&&/(영 별로다|안 좋아 보인다|걱정된다|바닥이다|죽었다|불안하다|실망스럽다|답답하다)$|요즘 표정이 어둡다|쫓기는 느낌|몸이 무거워 보임/.test(t)&&!ZOK687.test(t))return true;
-    if(badG&&meRe.test(t)&&/오늘/.test(t)&&/(미쳤다|장난 아니다|물올랐다|레전드다|확실히 다르다|클래스가 다름|소름 돋음)$|언터처블|완벽했/.test(t)&&!/어제|작년|시즌|다음|저번/.test(t))return true;
+    if(badG&&meRe.test(t)&&/(미쳤다|장난 아니다|물올랐다|레전드다|확실히 다르다|클래스가 다름|소름 돋음)$|언터처블|완벽했/.test(t)&&!/어제|작년|시즌|다음|저번/.test(t))return true;/* v867h: '오늘' 없이 '솔직히 ○○ 타격감 소름 돋음'도 못한 경기엔 X (시뮬: 0안타 경기) */
+    if(meRe.test(t)&&/(미쳤다|장난 아니다|물올랐다|레전드다|확실히 다르다|완전 달라졌다|클래스가 다름|소름 돋음)$/.test(t)&&!/어제|작년|다음|저번|통산|커리어|평생|역대/.test(t)){/* v867h: 평범한 시즌(타율 .254 결산)·무안타 경기에 '타격감 확실히 다르다' X */
+      const seaOK=['elite','good'].includes(stdSeason());
+      if(/시즌|요즘|올해|최근/.test(t)){if(!seaOK)return true}
+      else if(game){if(!goodG&&(badG||!seaOK||(P?(x.ra||0)>=2:((x.gH||0)===0&&(x.gPA||0)>=3))))return true}
+      else if(!seaOK&&!/은퇴|명예의 전당|헌액|영구결번|우승|반지|금메달|대기록|달성|통산/.test(head))return true}
     return false};
   const stBad=t=>{let m;if(tyBad(t))return true;
     if(/신인왕 (그냥|지금|줘|레이스|경쟁|확정|부문|각|독주|투표|후보)|올해 신인왕|신인왕감|신인왕 (따|받겠|받을|예약)|신인왕 놓|신인왕 못 받으면/.test(t)&&!/받고|받았|출신|이후|시절|때/.test(t)&&tone!=='award'&&(!st.roy||st.fut))return true;
@@ -18351,7 +18357,7 @@ if (typeof render === 'function') { const _rd860s = render; render = function ()
 if (typeof document !== 'undefined') { try { const st = document.createElement('style'); st.textContent = `.inv858 .ivdl860{opacity:.55;pointer-events:none}.inv858 .ivdl860 .ivp b{text-decoration:line-through}.inv858 .ivtag.new{background:#2f9e5b}.inv858 .ivtag.warn{background:#e8890c}.inv858 .ivtag.liq{background:#7a1f2b}`; document.head.appendChild(st); } catch (e) {} }
 
 /* v860 (11/27 유저 "재계약 할때 댓글 살짝씩 이상하다") 오래 뛴 선수한테 안 맞는 말 거르기
-   · '우리 ○○ 다 컸네' → 28살부터 X
+   · '우리 ○○ 다 컸네' → 26살 또는 풀타임 4시즌부터 X (v867h)
    · '반짝하고 끝날 듯' → 1군(KBO·MLB) 다섯 시즌 이상 뛰었으면 X (대댓글 포함) */
 {
   const _c860 = comments;
@@ -18360,7 +18366,7 @@ if (typeof document !== 'undefined') { try { const st = document.createElement('
     try {
       if (!Array.isArray(out) || !S || !ME) return out;
       const ag = age(), yrs = new Set((S.rows || []).filter(r => (r.lv === 'KBO' || r.lv === 'MLB') && ((r.b && r.b.PA >= 100) || (r.p && r.p.outs >= 150))).map(r => r.y)).size;
-      const bad = t => (ag >= 28 && /다 컸네/.test(t)) || (yrs >= 5 && /반짝하고 끝/.test(t));
+      const bad = t => ((ag >= 26 || yrs >= 4) && /다 컸네/.test(t)) || (yrs >= 5 && /반짝하고 끝/.test(t));
       out = out.filter(c => !(c && typeof c.t === 'string' && bad(c.t)));
       out.forEach(c => { if (c && Array.isArray(c.re)) c.re = c.re.filter(r => !(r && typeof r.t === 'string' && bad(r.t))); });
     } catch (e) {}
@@ -18719,7 +18725,7 @@ const FIGHT864 = {
     re: ['타팀 분탕 또 출근했네', '분탕충 꺼져라 니네 팀 경기나 봐', '긁? ㅋㅋㅋ', '아니면 반박해 봐 왜 말을 못 해', '니네 팀 순위 보고 와라 ㅋㅋ', '신고 박았다', '매 기사마다 보이네 이 닉', '팩트로 패니까 할 말 없지?', '먹금 먹금 반응하지 마라 ㅋㅋ', '분탕한테 먹이 주지 마 먹금이 답이다'] },
   yal: { root: ['{n} 타율 좋은데 WAR는 왜 낮음? WAR 조작 아님?', '볼넷이 무슨 의미가 있냐 안타를 쳐야지', '삼진 많은 거 빼면 완벽한데? ㅋㅋ', '홈런 많이 치면 그게 최고 타자 아님?'],
     rootP: ['평균자책 낮으면 그냥 에이스지 뭘 따져', '{n} 승리 많으면 에이스 아님? 다른 걸 왜 봄', '{n} 구속 빠르면 무조건 좋은 투수 아님?', '삼진 많이 잡으면 그게 최고지 볼넷은 상관없음'],
-    re: ['야알못 인증 ㅋㅋㅋ', '세이버 공부 좀 하고 와라', '아 그럼 너는 뭘로 야구 보는데', '타율로 야구 보던 시절은 끝났다', '알못이네 ㅋㅋ 근데 귀엽다', '이건 드립인가 진심인가 헷갈리네', '숫자 하나만 보고 판단하지 마라', '야구겜 좀 해 보셨나 ㅋㅋ'] },
+    re: ['야알못 인증 ㅋㅋㅋ', '세이버 공부 좀 하고 와라', '아 그럼 너는 뭘로 야구 보는데', '타율로 야구 보던 시절은 끝났다', '알못이네 ㅋㅋ 근데 귀엽다', '이건 드립인가 진심인가 헷갈리네', '숫자 하나만 보고 판단하지 마라', '야구겜 좀 해 보셨나 ㅋㅋ', '평자책 하나로 투수 보던 시절은 끝났다'] },
   fan: { root: ['{n} 잘생겨서 야구 보기 시작했어요 ㅎㅎ 규칙은 잘 몰라요', '{n} 유니폼 예뻐서 샀는데 야구 룰 어디서 배워요?', '{n} 보러 처음 직관 갔는데 응원가 너무 재밌어요!', '{n} 웃는 거 보려고 야구 봄 ㅋㅋ'],
     re: ['패션팬 왔다 ㅋㅋ', '유입 환영합니다 근데 규칙은 좀 배워 와요', '얼빠면 어때 표 사 주면 다 팬이지', '또 시작이다 패션충 타령 그만 좀 해', '야구 인기 다 이분들 덕분임 무시하지 마라', '나도 처음엔 얼빠로 시작했다 지금은 세이버 봄 ㅋㅋ', '패션팬이 진성팬 되는 거 순식간이다', '굿즈 매출 다 이분들이 올려 줌'] },
   mgr: { root: ['오늘 진 건 100% 감독 탓이다', '이 라인업 짠 사람 나와라', '{n} 오늘 못한 건 기용이 문제임'],
@@ -18760,10 +18766,34 @@ const FIGHT864 = {
       const U = S.fg864 = S.fg864 || {}, mnK = Math.min(...K.map(k => U[k] || 0)), KC = K.filter(k => (U[k] || 0) === mnK), k = pick(KC); U[k] = mnK + 1;
       const F = FIGHT864[k], fx = t => josaFix(t.replace(/\{n\}/g, gn));
       const ru = S.fgr864 = S.fgr864 || {}, rp = L => { const mn = Math.min(...L.map(t => ru[t] || 0)), C = L.filter(t => (ru[t] || 0) === mn), t = pick(C); ru[t] = mn + 1; return t; };
-      const root = fx(rp(isP() && F.rootP ? F.rootP : (x && x.win === false && F.rootL) ? F.rootL : F.root)), rn0 = ri(3, 5), used = new Set(), re = [];
+      /* v867i: 싸움 원댓·답글 맞물림 (시뮬: 매너 얘기 없는 원댓에 '근데 매너 얘기는 맞말임', 투수 기사에 '타율로 야구 보던 시절은 끝났다') */
+      const okRoot864 = t => { try { const P = isP(), tt = yearTot(S.y, [S.pro.league]), b = tt.b, p = tt.p;
+        if (/타율 좋은데/.test(t)) return !P && b.AB >= 60 && b.H / b.AB >= .29;
+        if (/삼진 많은 거 빼면/.test(t)) return !P && b.PA >= 60 && b.K / b.PA >= .2;
+        if (/평균자책 낮으면/.test(t)) return P && p.outs >= 45 && p.R * 27 / p.outs < 3.3;
+        if (/승리 많으면/.test(t)) return P && ME.pos === 'SP' && p.W >= 8;
+        if (/구속 빠르면/.test(t)) return P && +kmh(E('velo')) >= 150;
+        if (/레전드 반열|이 페이스면 역대급/.test(t)) return proYears() >= 3;
+        return true; } catch (e) { return true; } };
+      const pool0 = isP() && F.rootP ? F.rootP : (x && x.win === false && F.rootL) ? F.rootL : F.root, pool1 = pool0.filter(okRoot864);
+      const root = fx(rp(pool1.length ? pool1 : pool0)), rn0 = ri(3, 5), used = new Set(), re = [];
+      const okRe864 = t => {
+        if (/매너 얘기/.test(t) && !/매너/.test(root)) return false;
+        if (/반박 안 받는다는/.test(t) && !/반박 안 받/.test(root)) return false;
+        if (/인정은 개뿔/.test(t) && !/인정하지\?|상대가 더 강함/.test(root)) return false;
+        if (/매너 좋은 타팀팬/.test(t) && !/상대 팀 팬인데 오늘은/.test(root)) return false;
+        if (/쿨한 척하는 타팀팬|어제는 우리 팀 욕하던데/.test(t) && !/상대 팀 팬/.test(root)) return false;
+        if (/타팀팬이 여기서 왜 훈수/.test(t) && !/상대 팀 팬|상대가 더 강함|상대 팀이/.test(root)) return false;
+        if (/내일 경기 끝나고/.test(t) && x && (x.elim || x.clinch)) return false;
+        if (/타율로 야구 보던/.test(t) && isP()) return false;
+        if (/평자책 하나로/.test(t) && !isP()) return false;
+        if (/한 시즌 반짝으로/.test(t) && proYears() >= 4) return false;
+        if (/국뽕 한 사발/.test(t) && /백업이 한계/.test(root)) return false;
+        return true; };
+      const FR864 = F.re.filter(okRe864).length >= 3 ? F.re.filter(okRe864) : F.re;
       const nkA = pick(NICKS);   /* 원댓 단 사람이 한 번 더 받아침 */
       for (let i = 0; i < rn0; i++) {
-        let t; for (let g = 0; g < 6; g++) { t = rp(F.re); if (!used.has(t)) break; }
+        let t; for (let g = 0; g < 6; g++) { t = rp(FR864); if (!used.has(t)) break; }
         used.add(t); re.push({ nk: pick(NICKS), t: fx(t), up: ri(10, 900) });
         if (i === 1 && R() < .55) re.push({ nk: nkA, t: pick(k === 'fan' ? ['아 그런가요 ㅠ 열심히 배울게요', '얼빠 맞는데 뭐 어때요 ㅋㅋ 표는 제 돈으로 삼', '규칙은 몰라도 응원은 제일 크게 함 ㅋㅋ'] : k === 'old' ? ['라떼 아니고 팩트임', '꼰대 소리 들어도 할 말은 한다'] : ['내 느낌이 그렇다는 거임 아니면 지나가셈', '왜 이렇게 다들 긁혔음 ㅋㅋ', '아니 내 말이 틀림?', '팩트 말했는데 왜 화냄', '다들 진정해 그냥 의견임']), up: ri(0, 40) });
       }
@@ -18867,7 +18897,7 @@ const CHEER866 = {
 /* v866 비슷한 유형 몰림 막기 (11/27 13:28 유저 "비슷한 댓글 유형 많아지면 보는 재미↓ 피로도↑ · 최대한 골고루 다양하게")
    한 기사 안에서 같은 갈래 댓글은 1~2개만 (꼭 나와야 하는 댓글·싸움·응원 스레드는 그대로)
    갈래: 고생·수고 / 레전드 확정 / 연봉 / 캐스터 멘트 / 개추 / 눈물·울컥 / 행복했다 / 반박 불가 / 미쳤다 / 이 맛에 야구 본다 / 메이저 간다 / 우승 축하 / 믿고 보는 / 소름 */
-const FAM866 = [[/야구 없는/, 1], [/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1]];
+const FAM866 = [[/야구 없는/, 1], [/고생 많았|수고했|고생했|수고 많았/, 1], [/레전드 (확정|인정|반열)|레전드다/, 1], [/연봉/, 2], [/^캐스터 /, 1], [/개추/, 2], [/울었다|눈물|울컥/, 2], [/행복했/, 1], [/반박 불가/, 1], [/미쳤다/, 2], [/이 맛에 야구/, 1], [/메이저 (간다|가자|각|가도)/, 1], [/우승 축하/, 2], [/믿고 보는|믿고 본다/, 1], [/소름/, 1], [/역대급/, 1], [/폼 미쳤/, 1], [/1차전 (내줬|내준|은 그냥)|첫 판(을)? (내줬|내준|부터 이러면)/, 1], [/퇴근/, 1]];
 {
   const _c866f = comments;
   comments = function (tone, x) {
@@ -18922,7 +18952,7 @@ function capCm867(cm, head) {
       if (S && ME && S.stage === 'pro') {
         const ag = age(), yrs = new Set((S.rows || []).filter(r => (r.lv === 'KBO' || r.lv === 'MLB') && ((r.b && r.b.PA >= 100) || (r.p && r.p.outs >= 150))).map(r => r.y)).size;
         const aw = (S.awards || []).map(a => a.n || ''), mvp = aw.some(n => /^(정규시즌 MVP|MLB .*MVP)$/.test(n)), mlbG = (S.rows || []).some(r => r.lv === 'MLB');
-        const bad = t => (ag >= 28 && /다 컸네/.test(t)) || (yrs >= 5 && /반짝하고 끝/.test(t)) || (mvp && /최초 MVP|첫 MVP 가즈아/.test(t)) || (mlbG && /해외 스카우트 줄/.test(t));
+        const bad = t => ((ag >= 26 || yrs >= 4) && /다 컸네/.test(t)) || (yrs >= 5 && /반짝하고 끝/.test(t)) || (mvp && /최초 MVP|첫 MVP 가즈아/.test(t)) || (mlbG && /해외 스카우트 줄/.test(t));
         cm = cm.filter(c => !(c && typeof c.t === 'string' && !c.must && bad(c.t)));
       }
     } catch (e) {}
@@ -18958,4 +18988,47 @@ if (typeof buildSeasonRecap === 'function') { const _bs867 = buildSeasonRecap; b
     } catch (e) {}
     return out;
   };
+}
+
+/* v867h: 기사 최종 사실 검증 — v686 뒤에 붙은 래퍼들이 추가한 댓글도 같은 기준으로 한 번 더 (시뮬: 무안타 경기에 '타격감 소름 돋음'·.254 결산에 '확실히 다르다') */
+{
+  const _arFin867 = article;
+  article = function (head, body, tone, x) {
+    const id0 = S && S.artId;
+    const r = _arFin867.apply(this, arguments);
+    try {
+      const a = S && S.arts && S.arts[0];
+      if (a && a.id !== id0 && Array.isArray(a.cm) && typeof fact688 === 'function') {
+        const prot = c => !c || c.must || c.fight864 || c.cheer866;
+        const tmp = { head: a.head, cm: a.cm.filter(c => !prot(c)) };
+        fact688(tmp, x, tone);
+        const ok = new Set(tmp.cm);
+        a.cm = a.cm.filter(c => (prot(c) ? !!c : ok.has(c)));
+        ctx867(a, x, tone);
+      }
+    } catch (e) {}
+    return r;
+  };
+}
+/* v867i: 기사 최종 맥락 정리 (시뮬 검수)
+   · '댓글 분위기 너무 훈훈한 거 아님?' → 욕·싸움 댓글이 있는 기사엔 X ('배신자…' 바로 밑에 나왔음)
+   · '오늘 직관 간 사람?'·'중계 화질' 같은 경기 당일 수다 → 결산·계약·수상·부상 기사, 스토브리그 기사엔 X
+   · '○○는 왜 매년 성적이 이 모양이냐' → 작년에 5위 안이었으면 '작년엔 가을야구 했는데…'
+   · '루키·신인인데'와 'N년 차'가 한 기사에 같이 → 루키 쪽 X */
+function ctx867(a, x, tone) {
+  try {
+    if (!a || !Array.isArray(a.cm) || !S || !ME || S.stage !== 'pro' || !S.pro) return;
+    const head = String(a.head || ''), game = !!(x && (x.ipO != null || x.gPA != null)), T = c => c && typeof c.t === 'string';
+    const NEG = /배신자|뭐 했냐|답답|실망|못하네|못했|한심|노답|내려가라|빼라|2군 가|거품|먹튀|ㅉㅉ|에휴|최악|짜증|혈압|정신 차려|욕 나온다|분탕|꺼져|할 말이 없/;
+    if (a.cm.some(c => T(c) && !/댓글 분위기 너무 훈훈/.test(c.t) && (NEG.test(c.t) || c.fight864)))
+      a.cm = a.cm.filter(c => !(T(c) && !c.must && /댓글 분위기 너무 훈훈/.test(c.t)));
+    const off = S.phase === 0 && !game, nonGame = !game && /결산|수상|계약|재계약|이적|트레이드|FA|부상|재활|복귀|비시즌|연봉|은퇴|명예의 전당|드래프트|지명|입단|시상|선정|캠프|오피셜|왕$|MVP$|골든글러브/.test(head);
+    const GD = /오늘 직관|득점 ㅋㅋ|중계 해설 오늘|막차 놓침|관중석 분위기|문자중계 보는 중|몰래 중계|승리 요정|중계 화질|오늘 시구|심판 판정 오늘|우천 취소|라디오 중계로|하이라이트 보고 자야|오늘 경기 (길어|시청자)|오늘 응원단장|몰래 봄|치킨 시키면 꼭 실점|치킨 시켰는데 딱|비 와서/;
+    if (off || nonGame) a.cm = a.cm.filter(c => !(T(c) && !c.must && GD.test(c.t)));
+    if (S.pro.league === 'KBO' && S.lg && Array.isArray(S.lg.prev)) {
+      const pr = S.lg.prev.indexOf(S.pro.team), tn = TEAMS[S.pro.team] && TEAMS[S.pro.team].nick;
+      if (pr >= 0 && pr <= 4 && tn) a.cm.forEach(c => { if (T(c) && /왜 매년 성적이 이 모양/.test(c.t)) c.t = `${tn} 작년엔 가을야구 했는데 올해 왜 이러냐`; });
+    }
+    if (a.cm.some(c => T(c) && /(^|\s)([2-9]|1\d)년 ?차/.test(c.t))) a.cm = a.cm.filter(c => !(T(c) && !c.must && /루키|신인(?!왕)/.test(c.t)));
+  } catch (e) {}
 }
