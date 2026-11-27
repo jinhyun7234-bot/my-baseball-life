@@ -5441,6 +5441,7 @@ ACT.tradeGoF=function(a){const r=ACT.tradeGo({T:a.T,big:false});S.tradeBoostY=S.
     const over=!x.win&&/마지막 승부|지면 탈락/.test(sub);
     if(over)push(P?[`${gn} 마지막 경기에서 무너진 게 제일 아프다`,`오늘 ${gn}는 솔직히 못 던졌다… 마지막이라 더 아쉽다`]:[`오늘 ${gn}는 솔직히 못했다… 마지막 경기라 더 아쉽다`,`${gn} 마지막 경기에서 침묵한 게 너무 아쉽다`],['내년 가을엔 갚아라','그래도 여기까지 온 데 ${gn} 몫도 있다'.replace('${gn}',gn)],1);
     else if(S.psBad2.n>=2&&!x.win)push(P?[`${gn} 2경기 연속 털리는 중… 솔직히 시리즈 말아먹는 중`,`${gn} 가을에 이렇게 무너지면 답이 없다`,`두 경기 연속 이러면 등판 순서 다시 생각해야 함`]:[`${gn} 2경기 연속 침묵… 솔직히 시리즈 말아먹는 중`,`${gn} 타순 좀 내려라 두 경기째 이게 뭐냐`,`가을에 ${gn} 방망이 실종됐다 진짜`],['다음 경기도 이러면 진짜 큰일','제발 깨어나라','믿고 싶은데 쉽지 않다'],1);
+    else if(x.win&&/통과|정상|우승|진출/.test(String(S._hd||''))){const fin=/정상|우승/.test(String(S._hd||''));/* v868n: 시리즈 끝낸 날(통과·우승)엔 '시리즈 기니까 다음에 잘하자' X */push(P?[fin?`오늘 ${gn}는 솔직히 못 던졌다 그래도 우승했으니 다 괜찮다`:`오늘 ${gn}는 솔직히 못 던졌다 그래도 팀이 이겨서 다행이다`,fin?`${gn} 오늘은 공이 안 됐는데 우승이면 됐다`:`${gn} 오늘은 공이 안 됐다 다음 시리즈에서 갚자`]:[fin?`오늘 ${gn}는 솔직히 못했다 그래도 우승했으니 다 괜찮다`:`오늘 ${gn}는 솔직히 못했다 그래도 팀이 이겨서 다행이다`,fin?`${gn} 오늘은 안 맞았는데 우승이면 됐다`:`${gn} 오늘은 안 맞았다 다음 시리즈에서 치자`],['팀이 이기면 된 거다','다음엔 잘하겠지'],1)}
     else push(P?[`오늘 ${gn}는 솔직히 못 던졌다 시리즈 기니까 다음에 잘하자`,`${gn} 오늘은 공이 안 됐다 털고 가자`,`가을에 이런 날도 있지 다음 등판 때 갚아라`]:[`오늘 ${gn}는 솔직히 못했다 시리즈 기니까 잘해보자`,`${gn} 오늘은 안 맞는 날 다음 경기 기대한다`,`${gn} 오늘 타석은 다 잊고 내일 다시 가자`],['한 경기 못한 거 가지고 뭐라 하지 말자',P?'다음엔 막겠지':'내일은 치겠지','털고 가자'],1)}
   /* 2) 하위 시드 업셋 행진 */
   const seed=S._psSeed||0,low=mlb?seed>=4:seed>=4;const big=/한국시리즈|월드시리즈|챔피언십|플레이오프/.test(t)&&!/준플레이오프/.test(t);
@@ -19449,7 +19450,7 @@ function deal867(){try{const L=[...(S.faList||[]).map(e=>({...e,fa:1})),...(S.ab
       if (!a || !Array.isArray(a.cm) || !S || !ME || S.stage !== 'pro' || !S.pro) return;
       const CH = /완전 달라졌다|표정이 밝아졌네|작년보다 몸이 좋아 보임/; if (!a.cm.some(c => c && typeof c.t === 'string' && CH.test(c.t))) return;
       const pw = S.rows.filter(z => z.y === S.y - 1 && (z.lv === 'KBO' || z.lv === 'MLB')).reduce((s2, z) => s2 + rowWAR(z), 0) / WARK(S.pro.league || 'KBO');
-      if (pw >= 2) a.cm = a.cm.filter(c => !(c && typeof c.t === 'string' && !c.must && CH.test(c.t)));
+      if (pw >= (isP() && ME.pos !== 'SP' ? 1 : 2)) a.cm = a.cm.filter(c => !(c && typeof c.t === 'string' && !c.must && CH.test(c.t)));/* v868n: 불펜은 WAR 1만 넘어도 잘한 시즌 */
     } catch (e) {} })();
     /* 영웅이 된 날·대기록·수상·우승 기사엔 미지근한 평가('못하는 건 아닌데 아쉬움'·'기대치를 어디 두냐에 따라 다름'·'좋은 날 나쁜 날 차이') X (시뮬: 끝내기 홈런 기사에 '못하는 건 아닌데 아쉬움') */
     try {
@@ -19932,7 +19933,7 @@ function msCount868(yrs) {
     for (const [k, u, MS] of C) {
       const cur = ((P ? t.p : t.b)[k]) || 0, per = ((P ? ly.p : ly.b)[k]) || 0, M = MS.find(v => v > cur); if (!M || per <= 0) continue;
       const r = M - cur; if (r < 3 || r > per * 1.25) continue;
-      return [`통산 ${M}${u}까지 ${r}${u === '승' ? '승' : '개'} 남았다 ${yrs >= 2 ? '계약 기간 안에 무조건 찍는다' : '내년이면 충분히 된다'}`, ['카운트다운 들어간다 ㅋㅋ', '그거 보려고 1년 더 본다', '기록 욕심은 있을 거다 무조건']];
+      return [`통산 ${M}${u}까지 ${r}${u === '승' ? '승' : '개'} 남았다 ${r <= Math.max(5, per * .15) ? '개막하고 금방 찍겠다' : yrs >= 2 ? '계약 기간 안에 무조건 찍는다' : '내년이면 충분히 된다'}`, ['카운트다운 들어간다 ㅋㅋ', '그거 보려고 1년 더 본다', '기록 욕심은 있을 거다 무조건'], M + u];
     }
   } catch (e) {}
   return null;
@@ -19949,10 +19950,15 @@ if (typeof phaseArticle === 'function') {
     try {
       const a = S && S.arts && S.arts[0]; if (!a || a.id === id0 || !Array.isArray(a.cm) || !g || !g.m || S.stage !== 'pro' || !S.pro || S.me !== ME || S.phase !== 2) return r;
       const gn = giv(ME.name), sea = (() => { try { return stdSeason(); } catch (e) { return 'na'; } })(), good = sea === 'elite' || sea === 'good', K = [];
-      if (good && !lastGood868() && age() <= 27 && proYears() <= 6) K.push('harvest');
-      if (!isP() && (S.arts || []).filter(z => z && z.y === S.y && typeof z.head === 'string' && z.head.indexOf(ME.name) >= 0 && /끝내기/.test(z.head)).length >= 2) K.push('woS');
-      if (good && S.pro.league === 'KBO' && typeof deal867 === 'function' && deal867()) K.push('fact');
-      const k = K.length ? pick(K) : null; if (k && R() < .6) rcPut867(a, k, gn);
+      /* v868p 시뮬(ah): '없었으면 무너질 뻔' 한 커리어에 3번·'끝내기 쳐 준 것만' 3번 → 계약 한 번에 한 번 · 3년에 한 번 · 커리어 한 번 */
+      if (good && !lastGood868() && age() <= 27 && proYears() <= 6 && !S._hv868) K.push('harvest');
+      if (!isP() && (S.arts || []).filter(z => z && z.y === S.y && typeof z.head === 'string' && z.head.indexOf(ME.name) >= 0 && /끝내기/.test(z.head)).length >= 2 && !(S._wo868 && S.y - S._wo868 < 3)) K.push('woS');
+      { const dl = typeof deal867 === 'function' ? deal867() : null; if (good && S.pro.league === 'KBO' && dl && dl.fa && (dl.tot || 0) / (dl.yrs || 1) >= 150000 && S._fa868 !== dl.y) K.push('fact'); }
+      const k = K.length ? pick(K) : null;
+      if (k && R() < .6) {
+        if (k === 'woS') { let rk = 9; try { rk = myTeamRank(); } catch (e) {} const L = ['올해 끝내기만 몇 번이냐 클러치 하나는 확실하다']; if (S.pro.league === 'KBO' && rk <= 5) L.push('순위 싸움 때 끝내기 쳐 준 것만 생각해도 이 정도 평가는 해야지'); const t = pick(L); if (!a.cm.some(c => c && c.t === t)) { a.cm.splice(Math.min(a.cm.length, ri(1, 3)), 0, mkC(t, R() < .55 ? [pick(REC867RE.woS)] : [], { up: ri(400, 3200) })); S._wo868 = S.y; } }
+        else if (rcPut867(a, k, gn)) { if (k === 'harvest') S._hv868 = S.y; if (k === 'fact') { const dl = deal867(); S._fa868 = dl && dl.y; } }
+      }
     } catch (e) {}
     return r;
   };
@@ -19969,7 +19975,7 @@ if (typeof buildSeasonRecap === 'function') {
         const L = [['가을 탈락 직후라 다들 평가가 박하다 겨울 지나면 다시 보일 거다', ['시즌 전체로 보자', '그래도 아쉬운 건 아쉬운 거']], ['정규시즌만 놓고 보면 올해 진짜 잘했다 가을이 아쉬울 뿐', ['내년 가을엔 웃자', '가을에 한 번만 더']]].filter(z => !seenHas('po868:' + z[0]));
         if (L.length && R() < .7) { const z = pick(L); seenAdd('po868:' + z[0]); put(z[0], z[1]); }
       }
-      if (age() >= 33 && R() < .6) { const m = msCount868(1); if (m && !seenHas('ms868:' + m[0])) { seenAdd('ms868:' + m[0]); put(m[0], m[1]); } }
+      if (age() >= 33 && R() < .6) { const m = msCount868(1); if (m && !(S._ms868 || {})[m[2]]) { (S._ms868 = S._ms868 || {})[m[2]] = S.y; put(m[0], m[1]); } }
     } catch (e) {}
     return q;
   };
@@ -19978,7 +19984,7 @@ if (typeof buildSeasonRecap === 'function') {
   const _rsc868p = resignComments;
   resignComments = function (tn, yrs, good, per) {
     const out = _rsc868p.apply(this, arguments);
-    try { if (Array.isArray(out) && age() >= 33) { const m = msCount868(yrs); if (m && !seenHas('ms868:' + m[0])) { seenAdd('ms868:' + m[0]); out.splice(Math.min(out.length, ri(1, 3)), 0, mkC(m[0], R() < .6 ? [{ nk: pick(NICKS), t: pick(m[1]), up: ri(20, 500) }] : [], { up: ri(800, 4000) })); } } } catch (e) {}
+    try { if (Array.isArray(out) && age() >= 33) { const m = msCount868(yrs); if (m && !(S._ms868 || {})[m[2]]) { (S._ms868 = S._ms868 || {})[m[2]] = S.y; out.splice(Math.min(out.length, ri(1, 3)), 0, mkC(m[0], R() < .6 ? [{ nk: pick(NICKS), t: pick(m[1]), up: ri(20, 500) }] : [], { up: ri(800, 4000) })); } } } catch (e) {}
     return out;
   };
 }
@@ -19992,6 +19998,22 @@ if (typeof buildSeasonRecap === 'function') {
       const has = t => a.cm.some(c => c && typeof c.t === 'string' && (c.t === t || c.t.slice(0, 8) === t.slice(0, 8)));
       const put1 = (L, key, pos) => { const C = L.filter(z => z && !seenHas(key + z[0]) && !has(z[0])); if (!C.length) return false; const z = pick(C); seenAdd(key + z[0]); a.cm.splice(Math.min(a.cm.length, pos == null ? ri(1, 3) : pos), 0, mk(z[0], z[1])); return true; };
       if (h.indexOf(ME.name) < 0) return r;
+      /* KBO 정규시즌 MVP (젊고 메이저 안 가 본 선수): '우리 팀 있는 동안 더 잘하자' (펨코 MVP 글: "사랑한다 ○○아 ○○ 있는 동안 더 잘하자!") */
+      if (/정규시즌 MVP는/.test(h) && S.pro.league === 'KBO' && age() <= 28 && !(S.rows || []).some(z => z.lv === 'MLB')) put1([[`${giv(ME.name)} 사랑한다 우리 팀에 있는 동안 더 잘하자!`, ['메이저 갈까 봐 벌써 불안하다', '보내기 싫다 진짜 ㅠ']], ['이제 메이저 스카우트들 줄 서겠네 벌써 무섭다', ['포스팅 얘기 나오기 전에 실컷 즐기자', '해외 가도 응원은 한다']]], 'mv868:');
+      /* 부상 복귀 (펨코: '무사 복귀 기원 209일차'·'터지지 말고 무사 복귀해다오'·'요즘은 복귀하면 공 개수 세어 가며 던지고') */
+      if (T === 'injRet' && !(x && (x.camp || x.fut))) {
+        const L0 = S.injLast, d = L0 ? ((S.y - L0.y) * 12 + ((S.m || 0) - (L0.m || 0))) * 30 : 0, L = [['이번엔 터지지 말고 끝까지 건강하게 가자', ['제발 ㅠ', '몸이 먼저다']]];
+        if (d >= 50 && d <= 720) L.push([`우리 ${giv(ME.name)} 무사 복귀 기원 ${d}일차였는데 드디어 돌아왔다 ㅠ`, ['매일 빌었다 진짜', '이제 아프지만 말자']]);
+        if (isP()) L.push(['요즘은 복귀하면 투구 수부터 세어 가면서 던지더라 천천히 올리자', ['무리하면 또 다친다', '관리가 먼저다']]);
+        put1(L, 'ir868:');
+      }
+      /* KBO 대형 계약 (펨코: '200억대 계약서 결재 올리는 건 단장도 두렵겠지'·'계약금만 해도 몇십억'·'15년 570억 초장기 계약 안 되나') */
+      { const mt = h.match(/(\d+)년 ([\d,]+)억/); if (mt && S.pro.league === 'KBO' && !/방출|트레이드/.test(h)) { const tot = +String(mt[2]).replace(/,/g, ''), yr = +mt[1], L = [];
+        if (tot >= 100) L.push(['이 계약서 결재 올린 단장 손 떨렸을 듯 ㅋㅋ', ['사장님 결재까지 받았겠지', '구단 통장 텅장 각']], ['계약금만 해도 몇십억이네 ㄷㄷ', ['평생 놀고먹어도 되겠다', '부럽다 진짜']]);
+        if (tot >= 80 && /잔류|재계약/.test(h) && age() <= 31) L.push(['그냥 종신 계약 해 줘라 20년짜리로 ㅋㅋ', ['평생 우리 팀', '은퇴도 여기서 하자']]);
+        if (L.length) put1(L, 'bk868:'); } }
+      /* 신인왕 (펨코: '작년 이맘때쯤에 ○○가 다음 시즌 신인왕 타고 홈런 20개 때리고…') */
+      if (/신인왕/.test(h) && /^(award)$/.test(T)) { const yb = yearTot(S.y, [S.pro.league]).b; put1([[(!isP() && yb && yb.HR >= 15) ? `작년 이맘때 ${giv(ME.name)} 신인왕에 ${yb.HR}홈런 친다고 했으면 다들 안 믿었다` : '작년 이맘때만 해도 신인왕까지는 상상 못 했다', ['1년 만에 이렇게 크다니', '이게 야구다']]], 'ry868:'); }
       /* 트레이드 */
       if (/로 트레이드$|초대형 트레이드/.test(h)) put1([['트레이드는 뒷이야기가 1~2년 지나야 풀리더라 썰 기다린다', ['썰 풀리면 다시 모이자 ㅋㅋ', '단장 인터뷰 기다린다']], ['벌써부터 손해네 이득이네 말 많은데 시즌 끝나고 다시 보자', ['지금은 아무도 모른다', '결과는 성적이 말해 준다']], ['팬들끼리 누가 이득인지 따지는 게 트레이드의 재미다 ㅋㅋ', ['스토브리그 꿀잼', '오늘 커뮤 불탄다']]], 'tr868:');
       /* 은퇴 */
@@ -20006,7 +20028,7 @@ if (typeof buildSeasonRecap === 'function') {
         let n = 0; for (let i = 0; i < 2; i++) if (put1(L, 'rt868:')) n++;
       }
       /* 베테랑 계약: 남은 통산 기록 계산 */
-      if (age() >= 33 && /재계약|잔류|FA|계약|연봉/.test(h) && !/방출|트레이드|은퇴|\$[\d.]+M 재계약$/.test(h) && R() < .65) { const yrs = +((h.match(/(\d+)년/) || [])[1] || 1); const m = msCount868(yrs); if (m && !seenHas('ms868:' + m[0]) && !has(m[0])) { seenAdd('ms868:' + m[0]); a.cm.splice(Math.min(a.cm.length, ri(1, 3)), 0, mk(m[0], m[1])); } }
+      if (age() >= 33 && /재계약|잔류|FA|계약|연봉/.test(h) && !/방출|트레이드|은퇴|\$[\d.]+M 재계약$/.test(h) && R() < .65) { const yrs = +((h.match(/(\d+)년/) || [])[1] || 1); const m = msCount868(yrs); if (m && !(S._ms868 || {})[m[2]] && !has(m[0])) { (S._ms868 = S._ms868 || {})[m[2]] = S.y; a.cm.splice(Math.min(a.cm.length, ri(1, 3)), 0, mk(m[0], m[1])); } }
     } catch (e) {}
     return r;
   };
