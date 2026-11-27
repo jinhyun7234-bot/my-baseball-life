@@ -18789,10 +18789,10 @@ const FIGHT864 = {
         if (/쿨한 척하는 타팀팬|어제는 우리 팀 욕하던데/.test(t) && !/상대 팀 팬/.test(root)) return false;
         if (/타팀팬이 여기서 왜 훈수/.test(t) && !/상대 팀 팬|상대가 더 강함|상대 팀이/.test(root)) return false;
         if (/내일 경기 끝나고/.test(t) && x && (x.elim || x.clinch)) return false;
-        if (/타율로 야구 보던/.test(t) && isP()) return false;
-        if (/평자책 하나로/.test(t) && !isP()) return false;
+        if (/타율로 야구 보던/.test(t) && (isP() || !/타율|홈런|안타|볼넷/.test(root))) return false;
+        if (/평자책 하나로/.test(t) && (!isP() || !/평균자책|승리|에이스|구속/.test(root))) return false;
         if (/한 시즌 반짝으로/.test(t) && proYears() >= 4) return false;
-        if (/국뽕 한 사발/.test(t) && /백업이 한계/.test(root)) return false;
+        if (/국뽕/.test(t) && /백업이 한계/.test(root)) return false;
         return true; };
       const FR864 = F.re.filter(okRe864).length >= 3 ? F.re.filter(okRe864) : F.re;
       const nkA = pick(NICKS);   /* 원댓 단 사람이 한 번 더 받아침 */
@@ -19051,10 +19051,27 @@ function ctx867(a, x, tone) {
     { const FUN = /^(개웃기네 ㅋㅋㅋㅋ|개웃기네 ㅋㅋㅋ|아 커피 뿜었다|이 댓글이 오늘 경기보다 재밌음|댓글 장인 등장 ㅋㅋ|이건 박제다|캡처 완|댓글이 더 재밌음|ㅋㅋㅋㅋㅋ 공감)$/, JOKE = /ㅋ|\?|!|ㄷㄷ|ㅎㅎ|;;|드립|실화|무엇|국룰|각$|냐$|함$|임$|음$|듯$/;
       a.cm.forEach(c => { if (T(c) && Array.isArray(c.re) && !c.fight864 && !JOKE.test(c.t)) c.re = c.re.filter(w => !(w && FUN.test(String(w.t || '').trim()))); }); }
     /* 경기 없는 기사엔 답글에도 '이 댓글이 오늘 경기보다 재밌음' 같은 경기 얘기 X */
-    if (nonGame || off) a.cm.forEach(c => { if (T(c) && Array.isArray(c.re)) c.re = c.re.filter(w => !(w && /오늘 경기|오늘 직관|중계/.test(String(w.t || '')))); });
+    if (nonGame || off) a.cm.forEach(c => { if (T(c) && Array.isArray(c.re)) c.re = c.re.filter(w => !(w && /오늘 경기|오늘 직관|중계|경기나 보자/.test(String(w.t || '')))); });
     /* 수비 칭찬('유격수가 두 명 같다')과 수비 약점('글러브는 마이너스')이 한 기사에 같이 → 약점 쪽 X */
     { const DP = /수비 범위|유격수가 두 명|수비 장인|그물망 수비|수비 하이라이트|수비는 리그 원탑|수비 안정감|블로킹 장인|레이저|dWAR \+/, DN = /글러브는 마이너스|수비로 1점 주고|수비는 불안해도|수비 볼 때마다 심장|병 주고 약 주는/;
       if (a.cm.some(c => T(c) && DP.test(c.t))) a.cm = a.cm.filter(c => !(T(c) && !c.must && DN.test(c.t))); }
+    /* 시즌 성적과 안 맞는 미지근한 평가 (시뮬: ERA 6.35 반기에 '스탯은 좋은데 영양가는 글쎄'·'이 정도면 평타는 친다', 36살 베테랑 시즌 결산에 '아직 평가하긴 이르다')
+       · 시즌이 끝난 기사(후반기 결산·스토브리그)엔 '시즌 끝나봐야 알지' X · 1군 5년 넘은 선수엔 '아직 평가하긴 이르다·한 시즌 풀로 봐야' X
+       · 시즌 성적이 나쁘면 '스탯은 좋은데·평타는 친다·나쁘지 않았는데' X · 작년보다 못하면 '작년보단 확실히 나아졌네' X */
+    { const sea = (() => { try { return stdSeason(); } catch (e) { return 'na'; } })(), py = (() => { try { return proYears(); } catch (e) { return 0; } })(), ended = /후반기 결산|시즌 결산/.test(head) || S.phase === 0;
+      const yrStat = y => { try { const t = yearTot(y, [S.pro.league]); if (isP()) return t.p.outs >= 60 ? -(t.p.R * 27 / t.p.outs) : null; return t.b.PA >= 80 ? opsN(t.b) : null; } catch (e) { return null; } };
+      const now = yrStat(S.y), last = yrStat(S.y - 1), worse = last == null || (now != null && now < last - (isP() ? .3 : .02));
+      const sp = isP() && ME.pos === 'SP', ipGS = (() => { try { const t = yearTot(S.y, [S.pro.league]).p; return t.GS ? t.outs / 3 / t.GS : 0; } catch (e) { return 0; } })();
+      a.cm = a.cm.filter(c => { if (!T(c) || c.must || c.fight864 || c.cheer866) return true; const t = c.t;
+        if (ended && /시즌 끝나봐야|한 시즌 풀로 봐야/.test(t)) return false;
+        if (py >= 5 && /아직 평가하긴 이르다|한 시즌 풀로 봐야|한 시즌 반짝은 누구나/.test(t)) return false;
+        if (sea === 'bad' && /스탯은 좋은데|평타는 친다|나쁘지 않았는데|잘하긴 하는데/.test(t)) return false;
+        if (worse && /작년보단 확실히 나아졌|작년보다 (확실히 )?(좋아|나아)|작년이랑 .{1,4} 완전 다름/.test(t)) return false;
+        if (sp && ipGS >= 5.8 && /공 80개만 넘으면|5이닝이 최대치|5회만 넘기면/.test(t)) return false;
+        return true; });
+      a.cm.forEach(c => { if (T(c) && Array.isArray(c.re) && sp && ipGS >= 5.8) c.re = c.re.filter(w => !(w && /5이닝이 최대치/.test(String(w.t || '')))); }); }
+    /* 같은 답글이 여러 댓글에 반복되면 처음 하나만 (시뮬: '작년에도 이맘때 이 소리 했던 거 기억함'이 두 스레드에) */
+    { const seenR = new Set(); a.cm.forEach(c => { if (T(c) && Array.isArray(c.re)) c.re = c.re.filter(w => { const k = String((w && w.t) || '').replace(/[ㅋㅎ!~.\s]+$/, '').slice(0, 14); if (k.length < 6) return true; if (seenR.has(k)) return false; seenR.add(k); return true; }); }); }
     /* 같은 숫자(ERA 1.64·타율 .331·OPS .976)를 읊는 댓글은 기사당 1개 (시뮬: 'ERA 1.64 불펜이면…'·'ERA 1.64 실화냐…' 연달아) */
     { const seenSt = new Set(); a.cm = a.cm.filter(c => { if (!T(c) || c.fight864 || c.cheer866) return true; const m = c.t.match(/(ERA|평균자책(점)?|타율|OPS|출루율|장타율) ?(\d?\.\d{2,3})/); if (!m) return true; const k = m[1].replace(/점$/, '').replace('평균자책', 'ERA') + m[3]; if (seenSt.has(k)) return false; seenSt.add(k); return true; }); }
   } catch (e) {}
