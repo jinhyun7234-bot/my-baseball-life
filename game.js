@@ -5183,7 +5183,7 @@ function interp(T,x){if(x<=T[0][0])return T[0][1];for(let i=1;i<T.length;i++)if(
 {const _c90=comments;comments=function(tone,x){let out=_c90(tone,x);try{if(!S||!ME||!x||!x.ps||x.intl)return out;const P=isP(),gn=giv(ME.name),hr=x.gHR||0;
   const great=typeof bigGreat==='function'&&bigGreat(x)||(!P&&(hr>=1||(x.gH||0)>=3||(x.gRBI||0)>=3))||(P&&(x.ipO||0)>=18&&(x.ra||0)<=1);if(!great)return out;
   const hn=x.home?myTeamNick():(x.opp||''),kp=S.pro.league==='KBO'&&!x.intl&&typeof PARK2!=='undefined'&&PARK2[hn],pk=(kp||'').replace(/돔$|필드$|파크$/,''),last=gn.slice(-1),add=[];
-  const L=['도파민 미쳤다',`ㅋㅋㅋ 스타성으로 샤워한 새끼`,'이 미친 새끼 진짜ㅋㄱㅋㅋㅋㄱ',`대${gn} ㅅㅅㅅ`,'스타성은 진짜 GOAT네 ㅋㅋ','쌌다','도파민 goat네 ㅅㅂ..','진짜 미친놈이다 ㅋㅋㅋㅋㅋㅋㅋㅋㅋ',
+  const L=['도파민 미쳤다',`ㅋㅋㅋ 스타성으로 샤워한 새끼`,'이 미친 새끼 진짜ㅋㄱㅋㅋㅋㄱ',`대${gn} ㅅㅅㅅ`,'스타성은 진짜 GOAT네 ㅋㅋ','지렸다 ㅋㅋㅋ','도파민 goat네 ㅅㅂ..','진짜 미친놈이다 ㅋㅋㅋㅋㅋㅋㅋㅋㅋ',
     `${last}어게인 멱살캐리 ㅅㅅㅅㅅ`,'한번만 더 거품이 어쩌고 해봐라 ㅋㅋㅋ','술 그냥 다 쳐무라 오늘은','오늘 밤 잠 다 잤다 ㅋㅋㅋ'];
   if(kp&&!P&&hr>=2)L.push(`${pk}런 왜 못 침? >> 두 번 쳐드렸습니다 ^^`);if(kp&&!P&&hr>=1)L.push(`${pk} 담장 그냥 장식이네 ㅋㅋ`);
   if(P)L.push(`${gn} 공 받고 타자들 다 고개 숙임 ㅋㅋ`,'오늘 마운드는 그냥 성역이었다');
@@ -18780,6 +18780,8 @@ const FIGHT864 = {
       const okRe864 = t => {
         if (/매너 얘기/.test(t) && !/매너/.test(root)) return false;
         if (/반박 안 받는다는/.test(t) && !/반박 안 받/.test(root)) return false;
+        if (/원탑은 무슨/.test(t) && !/원탑/.test(root)) return false;
+        if (/올드비들 또 옛날 얘기/.test(t) && !/역대|레전드/.test(root)) return false;
         if (/인정은 개뿔/.test(t) && !/인정하지\?|상대가 더 강함/.test(root)) return false;
         if (/매너 좋은 타팀팬/.test(t) && !/상대 팀 팬인데 오늘은/.test(root)) return false;
         if (/쿨한 척하는 타팀팬|어제는 우리 팀 욕하던데/.test(t) && !/상대 팀 팬/.test(root)) return false;
@@ -19017,12 +19019,25 @@ if (typeof buildSeasonRecap === 'function') { const _bs867 = buildSeasonRecap; b
    · '루키·신인인데'와 'N년 차'가 한 기사에 같이 → 루키 쪽 X */
 function ctx867(a, x, tone) {
   try {
-    if (!a || !Array.isArray(a.cm) || !S || !ME || S.stage !== 'pro' || !S.pro) return;
+    if (!a || !Array.isArray(a.cm) || !S || !ME) return;
     const head = String(a.head || ''), game = !!(x && (x.ipO != null || x.gPA != null)), T = c => c && typeof c.t === 'string';
+    /* 아마추어 포함: '고1치고는 몸이 벌써 완성형'과 '몸만 좀 키우면 대박'이 같이 나오면 뒤쪽 X */
+    if (a.cm.some(c => T(c) && /몸이 벌써 완성형/.test(c.t))) a.cm = a.cm.filter(c => !(T(c) && !c.must && /몸만 좀 키우면/.test(c.t)));
+    if (S.stage !== 'pro' || !S.pro) return;
+    /* 캐스터 멘트 댓글은 기사당 1개 · 'N년을 기다렸다' 같은 우승 가뭄 얘기는 2개까지 (시뮬: KS 우승 기사에 캐스터 2개·38년 3번) */
+    { let nc = 0, nd = 0; a.cm = a.cm.filter(c => { if (!T(c) || c.fight864 || c.cheer866) return true; if (/^캐스터 /.test(c.t)) { nc++; if (nc > 1) return false; } if (/\d+년 ?(을|의|만에|기다)/.test(c.t) && /기다|만에|가뭄/.test(c.t)) { nd++; if (nd > 2 && !c.must) return false; } return true; }); }
+    /* 한국시리즈·월드시리즈는 '올라가도'가 아니라 '우승해도' */
+    if (/한국시리즈|월드시리즈/.test(head)) a.cm.forEach(c => { if (T(c)) c.t = c.t.replace('어느 팀이 올라가도 이상하지 않았던', '어느 팀이 우승해도 이상하지 않았던'); });
+    /* 우승·금메달·은퇴·수상 같은 축하 기사: 울컥·축하 댓글이나 캐스터 멘트 밑에 '스탯 보고 말하자' 같은 반박 답글 X */
+    const CEL867 = /^(gold|ring|ws|retire|tourCer|tourStop|tourAnn|hof|award|wedding|baby)$/.test(String(tone || '')) || /우승!|정상!|금메달|은퇴|명예의 전당|헌액|영구결번/.test(head),
+      DIS867 = /^(응 아니야|그건 좀 오바고|스탯 보고 말하자|님 혹시 타팬\?|표본 너무 적은데 벌써\?|작년에도 이 소리 들었음 ㅋㅋ|반박 박제함|어그로 ㄴㄴ|이건 선 넘었지)$/;
+    if (CEL867) a.cm.forEach(c => { if (T(c) && Array.isArray(c.re) && !c.fight864 && !c.troll && (/^캐스터 /.test(c.t) || /울컥|눈물|울었|기다렸|보상|축하|고생|고마|ㅠㅠ|평생|최고|레전드|수고/.test(c.t))) c.re = c.re.filter(w => !(w && DIS867.test(String(w.t || '').trim()))); });
     const NEG = /배신자|뭐 했냐|답답|실망|못하네|못했|한심|노답|내려가라|빼라|2군 가|거품|먹튀|ㅉㅉ|에휴|최악|짜증|혈압|정신 차려|욕 나온다|분탕|꺼져|할 말이 없/;
     if (a.cm.some(c => T(c) && !/댓글 분위기 너무 훈훈/.test(c.t) && (NEG.test(c.t) || c.fight864)))
       a.cm = a.cm.filter(c => !(T(c) && !c.must && /댓글 분위기 너무 훈훈/.test(c.t)));
-    const off = S.phase === 0 && !game, nonGame = !game && /결산|수상|계약|재계약|이적|트레이드|FA|부상|재활|복귀|비시즌|연봉|은퇴|명예의 전당|드래프트|지명|입단|시상|선정|캠프|오피셜|왕$|MVP$|골든글러브/.test(head);
+    const off = S.phase === 0 && !game, nonGame = !game && /결산|수상|계약|재계약|이적|트레이드|FA|부상|재활|복귀|비시즌|연봉|은퇴|명예의 전당|드래프트|지명|입단|시상|선정|캠프|오피셜|왕$|MVP$|골든글러브/.test(head) && !/시리즈 MVP|플레이오프 MVP|와일드카드.*MVP|대회 MVP|결승|차전/.test(head);
+    /* 경기 없는 기사(골든글러브·결산·계약…)에 '첫 타석 안타 치더니 눈빛부터 달라짐' 같은 그날 경기 묘사 X */
+    if (nonGame) a.cm = a.cm.filter(c => !(T(c) && !c.must && (/오늘.{0,12}(안타|홈런|타석|던지|던졌|삼진|실점|등판|이닝|결승타|끝내기|호수비|타구|볼넷|출루)|첫 타석|이 경기 하나로|오늘 경기/.test(c.t)) && !/시상식|수상|발표|계약|기사|소감|인터뷰|사인/.test(c.t)));
     const GD = /오늘 직관|득점 ㅋㅋ|중계 해설 오늘|막차 놓침|관중석 분위기|문자중계 보는 중|몰래 중계|승리 요정|중계 화질|오늘 시구|심판 판정 오늘|우천 취소|라디오 중계로|하이라이트 보고 자야|오늘 경기 (길어|시청자)|오늘 응원단장|몰래 봄|치킨 시키면 꼭 실점|치킨 시켰는데 딱|비 와서/;
     if (off || nonGame) a.cm = a.cm.filter(c => !(T(c) && !c.must && GD.test(c.t)));
     if (S.pro.league === 'KBO' && S.lg && Array.isArray(S.lg.prev)) {
