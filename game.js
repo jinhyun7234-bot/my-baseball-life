@@ -6007,7 +6007,7 @@ const DEL_TR2={b_same:25,b_opp:20,p_same:25,p_opp:20};
 for(let i=TR.length-1;i>=0;i--)if(DEL_TR2[TR[i].id])TR.splice(i,1);for(let i=SKILLS.length-1;i>=0;i--)if(DEL_TR2[SKILLS[i].id])SKILLS.splice(i,1);
 const TR3=[
  {id:'p_fresh',n:'초반 전력투구',t:'P',c:25,req:{velo:48},d:'투구 수 30개 이하일 때 삼진 +2.5% · 피안타 −2%',a:{k:.025,hit:-.02},f:x=>ME.pos==='SP'?.3:.9,c_:x=>x.pc<=30},
- {id:'p_grind',n:'이닝이터',t:'P',c:30,req:{sta:52},d:'투구 수 60개 이상일 때 피안타 −3% · 볼넷 −1%',a:{hit:-.03,bb:-.01},f:x=>ME.pos==='SP'?.4:0,c_:x=>x.pc>=60},
+ {id:'p_grind',n:'끈질긴 투구',t:'P',c:30,req:{sta:52},d:'투구 수 60개 이상일 때 피안타 −3% · 볼넷 −1%',a:{hit:-.03,bb:-.01},f:x=>ME.pos==='SP'?.4:0,c_:x=>x.pc>=60},
  {id:'p_pen',n:'불펜 체질',t:'P',c:30,req:{},d:'구원 등판 시 피안타 −2.5% · 삼진 +1.5%',a:{hit:-.025,k:.015},f:x=>ME.pos==='SP'?0:1,c_:x=>x.role==='RP'},
  {id:'p_starter',n:'선발 체질',t:'P',c:35,req:{sta:50},d:'선발 등판 시 피안타 −2% · 볼넷 −1%',a:{hit:-.02,bb:-.01},f:x=>ME.pos==='SP'?1:0,c_:x=>x.role==='SP'},
  {id:'p_attack',n:'정면승부',t:'P',c:20,req:{ctl:46},d:'주자 없을 때 볼넷 −2% · 삼진 +1%',a:{bb:-.02,k:.01},f:.55,c_:x=>x.empty},
